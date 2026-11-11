@@ -3,16 +3,17 @@
 # sync-docs-to-metacrypt.sh — 通用文档单源同步（CipherCat → metacrypt_server）
 #
 # 两项目共享 Blockly 核心，以下文档在 CipherCat 维护、同步到 metacrypt：
-#   docs/guides/{CAPABILITY-MAP,TYPE-SYSTEM,BLOCKLY-GUIDE,AUDIT-REPORT,DEMO}.md(+en)
-#   docs/blocks/（8 份块文档，双语）
-#   docs/standards/（38 标准与参考目录，纯知识库）
-#   docs/demos/（5 份算法搭建文档，双语）
+#   docs/guides/{CAPABILITY-MAP,TYPE-SYSTEM,BLOCKLY-GUIDE,DEMO}.md(+en)
+#   docs/blocks/（8 份块文档 + BLOCK-IO-CONTRACT.json，双语）
+#   docs/standards/（入口页与规范 + 算法标准目录，纯知识库）
+#   docs/audits/（审计报告，standards/ 与 project/ 两类，双语）
+#   docs/demos/（5 份算法搭建文档 + ENDPOINT-MATRIX.md，双语）
 #   docs/research/（调研报告）
 #   paper/references/（调研报告引用的标准与论文 PDF）
 #   demos/（Blockly 工作区示例文件 + README，metacrypt 编辑器可直接导入）
 #
 # 不同步（平台专属）：USER-GUIDE / TUTORIALS / ARCHITECTURE / DEVELOPMENT（入口、路由及任务流程不同）
-# 链接约定：同步保持相对目录结构（guides/ + blocks/ + standards/ + demos/ + research/），
+# 链接约定：同步保持相对目录结构（guides/ + blocks/ + audits/ + standards/ + demos/ + research/），
 #           内部相对链接在目标仓库同样有效；同步后运行全仓死链检查验证。
 # =============================================================================
 set -euo pipefail
@@ -28,7 +29,7 @@ fi
 
 echo "== 同步 guides/ 通用文档 =="
 mkdir -p "$MC_ROOT/docs/guides"
-for f in CAPABILITY-MAP TYPE-SYSTEM BLOCKLY-GUIDE AUDIT-REPORT; do
+for f in CAPABILITY-MAP TYPE-SYSTEM BLOCKLY-GUIDE; do
   for ext in md en.md; do
     src="$CC_ROOT/docs/guides/$f.$ext"
     if [ -f "$src" ]; then
@@ -36,6 +37,15 @@ for f in CAPABILITY-MAP TYPE-SYSTEM BLOCKLY-GUIDE AUDIT-REPORT; do
       echo "  guides/$f.$ext"
     fi
   done
+done
+
+# AUDIT-REPORT 已归入 docs/audits/project/；目标仓库可能还留着 guides/ 下的旧副本，
+# 这里显式删除，否则旧路径会继续被目标仓库的 INDEX/DEVELOPMENT 引用成死链。
+for ext in md en.md; do
+  if [ -f "$MC_ROOT/docs/guides/AUDIT-REPORT.$ext" ]; then
+    rm "$MC_ROOT/docs/guides/AUDIT-REPORT.$ext"
+    echo "  guides/AUDIT-REPORT.$ext removed (moved to audits/project/)"
+  fi
 done
 
 echo "== 同步 blocks/ 双语块文档 =="
@@ -48,6 +58,10 @@ for f in INDEX bitwise-logic data-encoding ecc-sbox hash numtheory post-quantum 
     fi
   done
 done
+# BLOCK-IO-CONTRACT.json 是积木输入输出类型契约，内容对象属 blocks/；
+# standards/CONFORMANCE-INVENTORY.md 以 ./BLOCK-IO-CONTRACT.json 引用同目录，迁移后需同源同步。
+cp "$CC_ROOT/docs/blocks/BLOCK-IO-CONTRACT.json" "$MC_ROOT/docs/blocks/BLOCK-IO-CONTRACT.json"
+echo "  blocks/BLOCK-IO-CONTRACT.json (generated)"
 
 echo "== 同步 standards/ 算法规范知识库 =="
 mkdir -p "$MC_ROOT/docs/standards"
@@ -55,6 +69,31 @@ mkdir -p "$MC_ROOT/docs/standards"
 # Obsolete target files require an explicit reviewed removal, not a whole-tree wipe.
 cp -r "$CC_ROOT/docs/standards/." "$MC_ROOT/docs/standards/"
 echo "  standards/ canonical files copied; target-only files preserved"
+
+# 上面这 12 个文件已从 standards/ 迁到 audits/ 或 blocks/、demos/：cp -r 不删目标端多余
+# 文件，所以目标仓库会留着旧副本。逐个显式删除，清单即迁移清单；将来再迁文件时同步补项。
+STANDARDS_MIGRATED=(
+  'SOURCE-LAYERS.md' 'SOURCE-LAYERS.en.md'
+  'SOURCE-QUALITY-AUDIT.md' 'SOURCE-QUALITY-AUDIT.en.md'
+  'SOURCE-SPLIT-COVERAGE.md' 'SOURCE-SPLIT-COVERAGE.en.md'
+  'SOURCE-SPLIT-INVENTORY.md' 'SOURCE-SPLIT-INVENTORY.en.md'
+  'REEXTRACTION-REPORT.md' 'REEXTRACTION-REPORT.en.md'
+  'ENDPOINT-MATRIX.md'
+  'BLOCK-IO-CONTRACT.json'
+)
+for f in "${STANDARDS_MIGRATED[@]}"; do
+  if [ -e "$MC_ROOT/docs/standards/$f" ]; then
+    rm "$MC_ROOT/docs/standards/$f"
+    echo "  standards/$f removed (migrated out of standards/)"
+  fi
+done
+
+echo "== 同步 audits/ 审计报告 ================="
+# 审计报告是与 standards/ 平级的一级目录：standards/ 放标准文档审计，project/ 放
+# 项目全局审计。整树镜像（--delete）保证目标端与源端严格一致，不留已撤下的旧报告。
+mkdir -p "$MC_ROOT/docs/audits"
+rsync -a --delete "$CC_ROOT/docs/audits/" "$MC_ROOT/docs/audits/"
+echo "  docs/audits/（$(find "$MC_ROOT/docs/audits" -name '*.md' | wc -l) 个文件）"
 
 echo "== 同步 docs/demos/ 搭建文档 ==============="
 mkdir -p "$MC_ROOT/docs/demos"
@@ -67,6 +106,10 @@ for f in sm4 aes hash sm2 post-quantum; do
     fi
   done
 done
+# ENDPOINT-MATRIX.md 由 verify-templates.ts 生成，standards/CONFORMANCE-INVENTORY.md
+# 用 ../demos/ENDPOINT-MATRIX.md 指向它；漏同步会让目标仓库出现死链。
+cp "$CC_ROOT/docs/demos/ENDPOINT-MATRIX.md" "$MC_ROOT/docs/demos/ENDPOINT-MATRIX.md"
+echo "  docs/demos/ENDPOINT-MATRIX.md (generated)"
 
 echo "== 同步 docs/build/ 分步拼装指南 ==========="
 mkdir -p "$MC_ROOT/docs/build"
@@ -151,8 +194,8 @@ echo "== 降级 CipherCat 专属证据链接 ============="
 # 避免平台文档出现另一个仓库的名字。
 # 只处理本次同步过去的文件，避免改写目标仓库自有文档。
 sync_targets() {
-  find "$MC_ROOT/docs/standards" "$MC_ROOT/docs/blocks" "$MC_ROOT/docs/demos" "$MC_ROOT/docs/build" -name '*.md' -print0 2>/dev/null
-  for f in CAPABILITY-MAP TYPE-SYSTEM BLOCKLY-GUIDE AUDIT-REPORT DEMO; do
+  find "$MC_ROOT/docs/standards" "$MC_ROOT/docs/blocks" "$MC_ROOT/docs/demos" "$MC_ROOT/docs/build" "$MC_ROOT/docs/audits" -name '*.md' -print0 2>/dev/null
+  for f in CAPABILITY-MAP TYPE-SYSTEM BLOCKLY-GUIDE DEMO; do
     for ext in md en.md; do
       [ -f "$MC_ROOT/docs/guides/$f.$ext" ] && printf '%s\0' "$MC_ROOT/docs/guides/$f.$ext"
     done

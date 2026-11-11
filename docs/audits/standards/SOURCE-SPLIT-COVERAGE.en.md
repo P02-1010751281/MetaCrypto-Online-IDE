@@ -27,10 +27,10 @@ table in all 38 directories has been split.
 
 | Standard | Primitive/stage | Structured reference | Project mapping |
 |---|---|---|---|
-| SP 800-232 | `pC`, `pS`, `pL` | [`12-pC`](./sp800-232-ascon/12-pC.md), [`13-pS`](./sp800-232-ascon/13-pS.md), [`14-pL`](./sp800-232-ascon/14-pL.md) | Internal calls in the Ascon permutation |
-| SP 800-38D | `inc32` | [`10-inc32`](./sp800-38d-gcm/10-inc32.md) | Internal GCM counter operation |
-| FIPS 197 | SubBytes, ShiftRows, MixColumns, AddRoundKey | [AES transformation index](./fips197-AES/README.md) | Components of the AES round function |
-| FIPS 205 | ADRS member functions, WOTS+/FORS tree components | [SLH-DSA implementation overview](./fips205-SLH-DSA/README.md) | Structural blocks or top-level internals; see Algorithms 1–25 |
+| SP 800-232 | `pC`, `pS`, `pL` | [`12-pC`](../../standards/sp800-232-ascon/12-pC.md), [`13-pS`](../../standards/sp800-232-ascon/13-pS.md), [`14-pL`](../../standards/sp800-232-ascon/14-pL.md) | Internal calls in the Ascon permutation |
+| SP 800-38D | `inc32` | [`10-inc32`](../../standards/sp800-38d-gcm/10-inc32.md) | Internal GCM counter operation |
+| FIPS 197 | SubBytes, ShiftRows, MixColumns, AddRoundKey | [AES transformation index](../../standards/fips197-AES/README.md) | Components of the AES round function |
+| FIPS 205 | ADRS member functions, WOTS+/FORS tree components | [SLH-DSA implementation overview](../../standards/fips205-SLH-DSA/README.md) | Structural blocks or top-level internals; see Algorithms 1–25 |
 
 Additional field acceptance: the inventory counts 229 structured entries:
 222 with normative-source anchors and 7 with other evidence statuses (2 RFC

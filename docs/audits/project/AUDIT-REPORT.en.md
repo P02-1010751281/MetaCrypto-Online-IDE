@@ -1,6 +1,6 @@
 # Primitive and teaching-surface audit report
 
-> Snapshot date: 2026-09-24. This report distinguishes checks actually run in this review from unfinished audit work. “Covered” does not mean production cryptographic certification. See the [web research report](../research/CRYPTO-RESEARCH-2026-09-12.md) for standards and literature findings.
+> Snapshot date: 2026-09-24. This report distinguishes checks actually run in this review from unfinished audit work. “Covered” does not mean production cryptographic certification. See the [web research report](../../research/CRYPTO-RESEARCH-2026-09-12.md) for standards and literature findings.
 
 ## Current snapshot
 

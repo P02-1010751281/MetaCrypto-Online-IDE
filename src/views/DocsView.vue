@@ -130,6 +130,7 @@ import {
   getPlatformCategory,
   getStandardDocCategory,
   getStandardsIndexCategory,
+  getAuditCategory,
   parseOrder,
   type DocFile,
   type DocCategory,
@@ -266,9 +267,40 @@ function buildCategories(): DocCategory[] {
       continue;
     }
 
+    // audits/：审计报告是一级主题，按来源分子目录（standards/、project/）。
+    // 与 standards/ 平级，不藏在 standards 内部；category 由来源目录决定。
+    if (top === 'audits' && parts.length >= 2) {
+      if (parts.length === 2) {
+        // audits/README.md 这类索引页归到平台入口
+        const filename = parts[1];
+        if (!shouldIncludeLocalePath(path, locale)) continue;
+        const file: DocFile = {
+          path,
+          category: 'platform',
+          filename,
+          title: getDocTitle(path, locale),
+          order: parseOrder(filename),
+        };
+        if (!catMap.has(file.category)) catMap.set(file.category, []);
+        catMap.get(file.category)!.push(file);
+        continue;
+      }
+      if (!shouldIncludeLocalePath(path, locale)) continue;
+      const basename = parts[parts.length - 1];
+      const file: DocFile = {
+        path,
+        category: getAuditCategory(parts[1]),
+        filename: parts.slice(2).join('/'),
+        title: getDocTitle(path, locale),
+        order: parseOrder(basename),
+      };
+      if (!catMap.has(file.category)) catMap.set(file.category, []);
+      catMap.get(file.category)!.push(file);
+      continue;
+    }
+
     // blocks/：按算法家族拆开导航，同时保留总览和共享原语入口
-    if (top === 'blocks' && parts.length === 2) {
-      const filename = parts[1];
+    if (top === 'blocks' && parts.length === 2) {      const filename = parts[1];
       if (!shouldIncludeLocalePath(path, locale)) continue;
 
       const file = {

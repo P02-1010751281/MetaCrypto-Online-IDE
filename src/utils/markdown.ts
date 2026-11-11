@@ -202,7 +202,8 @@ const CATEGORY_LABELS: Record<string, { zh: string; en: string }> = {
   'user-guides': { zh: '用户文档', en: 'User documentation' },
   'build-guides': { zh: '用户文档 · 分步拼装', en: 'User docs · step-by-step assembly' },
   'development-guides': { zh: '开发文档', en: 'Development documentation' },
-  'audit-reports': { zh: '审计报告', en: 'Audit reports' },
+  'audit-standards': { zh: '审计报告 · 标准文档', en: 'Audit reports · standards documentation' },
+  'audit-project': { zh: '审计报告 · 项目', en: 'Audit reports · project' },
   'user-demos': { zh: '用户文档 · 演示教程', en: 'User docs · demos' },
   'user-reference': { zh: '密码分类与积木参考', en: 'Cryptographic families and block reference' },
   'user-reference-foundations': { zh: '通用原语 · 数学与数据编码', en: 'Shared primitives · math and encoding' },
@@ -255,23 +256,19 @@ export function getCategoryLabel(catId: string, locale: string): string {
 
 export function getStandardDocCategory(category: string): string {
   if (category.startsWith('rfc')) return 'rfc-references';
-  if (category === 'china-pqc-tracking') return 'research';
+  if (category === 'china-pqc-tracking') return 'standards-index';
   return category;
 }
 
-// 标准目录下的顶层页面分为两类：读者参照页（覆盖矩阵、原文分层）与
-// 开发/审计工具页（提取、拆分、证据台账、认证准备）。后者单独成组，
+// 标准目录下的顶层页面分为两类：读者参照页（覆盖矩阵）与
+// 开发工具页（符合性台账、状态、条目规范、认证准备）。后者单独成组，
 // 避免用户文档区出现工程流程口吻的内容。
+// 审计报告已迁到 docs/audits/，不再由这里判断。
 const STANDARDS_TOOLING_DOCS = new Set([
   'CONFORMANCE-INVENTORY',
   'DOCUMENT-STATUS',
-  'ENDPOINT-MATRIX',
   'FUNCTION-PRIMITIVE-INDEX',
   'PRODUCT-CERTIFICATION-FEASIBILITY',
-  'REEXTRACTION-REPORT',
-  'SOURCE-QUALITY-AUDIT',
-  'SOURCE-SPLIT-COVERAGE',
-  'SOURCE-SPLIT-INVENTORY',
   'STRUCTURED-ENTRY-SCHEMA',
 ]);
 
@@ -279,6 +276,12 @@ export function getStandardsIndexCategory(filename: string): string {
   return STANDARDS_TOOLING_DOCS.has(filenameStem(filename))
     ? 'standards-tooling'
     : 'standards-index';
+}
+
+// docs/audits/：审计报告按来源分子目录（standards/、project/）。
+// 审计是一级主题，与 standards 平级，不藏在 standards 内部。
+export function getAuditCategory(source: string): string {
+  return source === 'standards' ? 'audit-standards' : 'audit-project';
 }
 
 const GUIDE_CATEGORIES: Record<string, string> = {
@@ -291,7 +294,6 @@ const GUIDE_CATEGORIES: Record<string, string> = {
   SETUP: 'development-guides',
   DEVELOPMENT: 'development-guides',
   ARCHITECTURE: 'development-guides',
-  'AUDIT-REPORT': 'audit-reports',
 };
 
 function filenameStem(filename: string): string {
@@ -355,7 +357,6 @@ const TITLE_LABELS: Record<string, { zh: string; en: string }> = {
   SETUP: { zh: '环境搭建与验收', en: 'Setup and acceptance' },
   DEVELOPMENT: { zh: '开发指南', en: 'Development guide' },
   ARCHITECTURE: { zh: '系统架构', en: 'System architecture' },
-  'AUDIT-REPORT': { zh: '审计报告', en: 'Audit report' },
   'Standard-Source': { zh: '标准原文', en: 'Standard source' },
   'Extraction-Gap': { zh: '原件提取缺项', en: 'Original-text extraction gap' },
   'ML-KEM-768-Encaps-build-guide': {

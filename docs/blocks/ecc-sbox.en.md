@@ -82,9 +82,12 @@ Low-order X25519 `u` inputs can produce an all-zero output. RFC 7748 §6.1 allow
 | Block | Layer | Connection | Input→Output |
 |----|----|------|----------|
 | `crypto_return` | 1 | stmt(→→) | null→— |
+| `primitive_def` | 1 | stmt(→→) | Number&Bytes→Bytes |
 | `procedures_defreturn` | 1 | stmt(→→) | —→— |
 | `crypto_encrypt_func` | 2 | stmt(→→) | —→— |
 | `crypto_decrypt_func` | 2 | stmt(→→) | —→— |
 | `crypto_hash_func` | 2 | stmt(→→) | —→— |
 
 `crypto_encrypt_func`, `crypto_decrypt_func`, and `crypto_hash_func` are editable composition starters, not complete algorithms for production use or standards-conformance claims. The default encryption/decryption templates only prefill an ECB composition and do not provide a key; the default hash template prefills only SHA-256 padding, not the full compression/iteration process. Users must complete the parameters and algorithm flow, then validate the result.
+
+`primitive_def` emits the fixed entry `def primitive(n_bytes, seed=b"") -> bytes` used by the backend randomness assessment. Empty `n_bytes` and `seed` default to 32 bytes and the empty byte string; the `return bytes` input must be connected to a byte-typed expression, or the body must return through `crypto_return`. The block declares only the assessment entry contract; it does not prove that the tested algorithm is correct, random, or standards-compliant.

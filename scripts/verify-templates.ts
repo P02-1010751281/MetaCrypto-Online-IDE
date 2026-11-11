@@ -339,12 +339,12 @@ async function main() {
     Blockly.Events.enable();
     contractWorkspace.dispose();
   }
-  const contractPath = path.resolve(process.cwd(), 'docs/standards/BLOCK-IO-CONTRACT.json');
+  const contractPath = path.resolve(process.cwd(), 'docs/blocks/BLOCK-IO-CONTRACT.json');
   const contractText = `${JSON.stringify(blockIoContract, null, 2)}\n`;
   if (process.env.WRITE_BLOCK_IO === '1') {
     fs.writeFileSync(contractPath, contractText);
   } else if (!fs.existsSync(contractPath)) {
-    throw new Error('缺少 docs/standards/BLOCK-IO-CONTRACT.json（用 `npm run block-io:write` 生成）');
+    throw new Error('缺少 docs/blocks/BLOCK-IO-CONTRACT.json（用 `npm run block-io:write` 生成）');
   } else if (fs.readFileSync(contractPath, 'utf8') !== contractText) {
     throw new Error('块 I/O 契约与代码不一致：请运行 `npm run block-io:write` 并复核差异');
   }
@@ -485,11 +485,11 @@ async function main() {
     ...endpointRows,
     '',
   ].join('\n');
-  const endpointMatrixPath = path.resolve(process.cwd(), 'docs/standards/ENDPOINT-MATRIX.md');
+  const endpointMatrixPath = path.resolve(process.cwd(), 'docs/demos/ENDPOINT-MATRIX.md');
   if (process.env.WRITE_ENDPOINT_MATRIX === '1') {
     fs.writeFileSync(endpointMatrixPath, endpointMatrix);
   } else if (!fs.existsSync(endpointMatrixPath)) {
-    throw new Error('缺少 docs/standards/ENDPOINT-MATRIX.md（用 `npm run endpoint-matrix:write` 生成）');
+    throw new Error('缺少 docs/demos/ENDPOINT-MATRIX.md（用 `npm run endpoint-matrix:write` 生成）');
   } else if (fs.readFileSync(endpointMatrixPath, 'utf8') !== endpointMatrix) {
     throw new Error('端点级矩阵与证据台账/清单不一致：请运行 `npm run endpoint-matrix:write`');
   }

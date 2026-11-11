@@ -3,11 +3,11 @@
 > This document is the index of `docs/standards/`: one row per standards directory, showing its coverage in the CipherCat block system —
 > **atomic blocks** (registered in `src/blocks/`), **demos** (prebuilt workspaces under `demos/`), **templates** (`proc_*` prefilled templates in `src/blocks/procedure/blocks.ts`), and **build guides** (`standards/*/guides/`).
 > Extraction quality, source-artifact availability, and unfinished items are tracked separately in [DOCUMENT-STATUS.en.md](./DOCUMENT-STATUS.en.md); this matrix is not proof of full-text standards coverage.
-> Function/primitive page split rules and entry points are listed in [FUNCTION-PRIMITIVE-INDEX.en.md](./FUNCTION-PRIMITIVE-INDEX.en.md); source-layer boundaries are listed in [SOURCE-LAYERS.en.md](./SOURCE-LAYERS.en.md).
+> Function/primitive page split rules and entry points are listed in [FUNCTION-PRIMITIVE-INDEX.en.md](./FUNCTION-PRIMITIVE-INDEX.en.md); source-layer boundaries are listed in [SOURCE-LAYERS.en.md](../audits/standards/SOURCE-LAYERS.en.md).
 >
 > Block facts verified against code (2026-09-29); demo file inventory in [demos/README.en.md](../../demos/README.en.md); step-by-step tutorials in [guides/TUTORIALS.en.md](../guides/TUTORIALS.en.md) and [guides/DEMO.en.md](../guides/DEMO.en.md). `standards/papers/` is a research-material index and is not counted among the standard and reference directories reported by `npm run standards:check` (`directories=`, currently 40, including `randomness-certification-sources/` and `rfc6979-ecdsa/`).
 >
-> The object-level register (219 active blocks plus 1 compat identity, 29 template identities, 59 demos) is [CONFORMANCE-INVENTORY.md](./CONFORMANCE-INVENTORY.md); this matrix is a standards-dimension aggregate mapping and does not replace per-object test evidence.
+> The object-level register (220 active blocks plus 1 compat identity, 29 template identities, 59 demos) is [CONFORMANCE-INVENTORY.md](./CONFORMANCE-INVENTORY.md); this matrix is a standards-dimension aggregate mapping and does not replace per-object test evidence.
 
 ---
 

@@ -11,7 +11,7 @@
 注意：这不表示删除原文输入层。每个有可读本地 PDF 的标准目录都保留
 `00-Standard-Source.md`；它是结构化页面的事实来源和回链入口。本页和各目录的 `README.md`/`01-*.md`
 是从 source 拆出的结构化、面向用户和 Blockly 映射的第二层。完整索引见
-[SOURCE-LAYERS.md](./SOURCE-LAYERS.md)。
+[SOURCE-LAYERS.md](../audits/standards/SOURCE-LAYERS.md)。
 
 拆分规则：
 
@@ -59,8 +59,8 @@
 - SP 800-38A：ECB、CBC、CFB、OFB、CTR。
 
 完整的条目—source 回链见
-[SOURCE-SPLIT-INVENTORY.md](./SOURCE-SPLIT-INVENTORY.md)；原件可用性、提取质量和实现缺项见
-[DOCUMENT-STATUS.md](./DOCUMENT-STATUS.md) 与 [REEXTRACTION-REPORT.md](./REEXTRACTION-REPORT.md)。
+[SOURCE-SPLIT-INVENTORY.md](../audits/standards/SOURCE-SPLIT-INVENTORY.md)；原件可用性、提取质量和实现缺项见
+[DOCUMENT-STATUS.md](./DOCUMENT-STATUS.md) 与 [REEXTRACTION-REPORT.md](../audits/standards/REEXTRACTION-REPORT.md)。
 
 ## 结构化条目验收入口
 
@@ -80,8 +80,8 @@
 [STRUCTURED-ENTRY-SCHEMA.md](./STRUCTURED-ENTRY-SCHEMA.md)。
 
 本索引不是“所有标准条款均已逐字转录”的声明。当前已为 40 个目录、229 个结构化条目建立统一清单，GB/T 32915 的原件拆分仍待补；标准原文锚点共 222 个（187 个 source 行号、35 个精确 PDF 页码）。研究书目回链不计作标准原文锚点。逐条状态见
-[SOURCE-SPLIT-INVENTORY.md](./SOURCE-SPLIT-INVENTORY.md)，验收口径见
-[SOURCE-SPLIT-COVERAGE.md](./SOURCE-SPLIT-COVERAGE.md)。
+[SOURCE-SPLIT-INVENTORY.md](../audits/standards/SOURCE-SPLIT-INVENTORY.md)，验收口径见
+[SOURCE-SPLIT-COVERAGE.md](../audits/standards/SOURCE-SPLIT-COVERAGE.md)。
 
 GB/T 17964 的 4 个模式条目和 GM/T 0091 的 2 个 KDF 条目现已标注原 PDF 物理页码；
 两份 source 的 C 级字体映射会损坏可检索标题或字符，因此这些条目使用经视觉核对的 PDF 页码锚点。

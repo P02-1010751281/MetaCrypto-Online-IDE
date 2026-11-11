@@ -25,14 +25,14 @@
 
 ### A：文本层基本可用（8）
 
-[FIPS 198-1 / HMAC](./fips198-1-hmac/00-Standard-Source.md)、
-[FIPS 203 / ML-KEM](./fips203-ML-KEM/00-Standard-Source.md)、
-[FIPS 204 / ML-DSA](./fips204-ML-DSA/00-Standard-Source.md)、
-[NIST SP 800-232 / Ascon](./sp800-232-ascon/00-Standard-Source.md)、
-[NIST SP 800-38A](./sp800-38a-modes/00-Standard-Source.md)、
-[NIST SP 800-38C](./sp800-38c-ccm/00-Standard-Source.md)、
-[NIST SP 800-38D](./sp800-38d-gcm/00-Standard-Source.md)、
-[NIST SP 800-38E](./sp800-38e-xts/00-Standard-Source.md)。
+[FIPS 198-1 / HMAC](../../standards/fips198-1-hmac/00-Standard-Source.md)、
+[FIPS 203 / ML-KEM](../../standards/fips203-ML-KEM/00-Standard-Source.md)、
+[FIPS 204 / ML-DSA](../../standards/fips204-ML-DSA/00-Standard-Source.md)、
+[NIST SP 800-232 / Ascon](../../standards/sp800-232-ascon/00-Standard-Source.md)、
+[NIST SP 800-38A](../../standards/sp800-38a-modes/00-Standard-Source.md)、
+[NIST SP 800-38C](../../standards/sp800-38c-ccm/00-Standard-Source.md)、
+[NIST SP 800-38D](../../standards/sp800-38d-gcm/00-Standard-Source.md)、
+[NIST SP 800-38E](../../standards/sp800-38e-xts/00-Standard-Source.md)。
 
 “基本可用”不等于保持了 PDF 的图形、列宽和数学排版。
 
@@ -40,28 +40,28 @@
 
 | 标准 | 筛查信号 | 处理 |
 |---|---:|---|
-| [FIPS 180-4 / SHA-2](./fips180-4-SHA2/00-Standard-Source.md) | 私有区 466 | 公式以 PDF 和 SHA-2 结构化条目为准 |
-| [FIPS 186-5 / DSS](./fips186-5-ecdsa/00-Standard-Source.md) | 私有区 66，替换字符 0；ECDSA 为抽样核验；RSA 仅核对 PDF 物理第 27、44–51、65–68、76 页 | RSA 概率素数流程见[密钥生成](./fips186-5-ecdsa/05-RSA-Key-Generation.md)和[素性测试](./fips186-5-ecdsa/06-RSA-Primality-Testing.md)条目；本次范围不代表整份标准逐页核验 |
-| [FIPS 197 / AES](./fips197-AES/00-Standard-Source.md) | 本轮已视觉核对并修复 5 处提取替换字符 | AES 公式、表格和向量仍以 PDF/结构化条目为准 |
-| [FIPS 202 / SHA-3](./fips202-SHA3/00-Standard-Source.md) | 私有区 33 | Keccak 公式和位序以 PDF/结构化条目为准 |
-| [FIPS 205 / SLH-DSA](./fips205-SLH-DSA/00-Standard-Source.md) | 替换字符 0；Figure 12 文本层已按 PDF 视觉页修复 | 参数表和算法伪代码以 PDF 为准 |
-| [GB/T 32905 / SM3](./gbt32905-SM3/00-Standard-Source.md) | 正文可搜索；位运算符使用私有区字形，公式跨行 | 公式已按 PDF 物理第 5–7 页复核并补入规范化转录；PDF 仍是版式依据 |
-| [GB/T 32907 / SM4](./gbt32907-SM4/00-Standard-Source.md) | 正文可搜索；公式符号及 S 盒表格跨行 | §6–§7 已按 PDF 物理第 5–7 页复核；公式、S 盒表和固定参数以 PDF 为准 |
-| [NIST SP 800-132 / PBKDF2](./sp800-132-pbkdf2/00-Standard-Source.md) | 私有区 18 | PBKDF2 公式以 PDF/结构化条目为准 |
-| [NIST SP 800-38B / CMAC](./sp800-38b-cmac/00-Standard-Source.md) | 私有区 10 | 子密钥公式以 PDF/结构化条目为准 |
-| [NIST SP 800-90A](./sp800-90a-drbg/00-Standard-Source.md) | 私有区 28 | DRBG 状态机和伪代码以 PDF/结构化条目为准 |
+| [FIPS 180-4 / SHA-2](../../standards/fips180-4-SHA2/00-Standard-Source.md) | 私有区 466 | 公式以 PDF 和 SHA-2 结构化条目为准 |
+| [FIPS 186-5 / DSS](../../standards/fips186-5-ecdsa/00-Standard-Source.md) | 私有区 66，替换字符 0；ECDSA 为抽样核验；RSA 仅核对 PDF 物理第 27、44–51、65–68、76 页 | RSA 概率素数流程见[密钥生成](../../standards/fips186-5-ecdsa/05-RSA-Key-Generation.md)和[素性测试](../../standards/fips186-5-ecdsa/06-RSA-Primality-Testing.md)条目；本次范围不代表整份标准逐页核验 |
+| [FIPS 197 / AES](../../standards/fips197-AES/00-Standard-Source.md) | 本轮已视觉核对并修复 5 处提取替换字符 | AES 公式、表格和向量仍以 PDF/结构化条目为准 |
+| [FIPS 202 / SHA-3](../../standards/fips202-SHA3/00-Standard-Source.md) | 私有区 33 | Keccak 公式和位序以 PDF/结构化条目为准 |
+| [FIPS 205 / SLH-DSA](../../standards/fips205-SLH-DSA/00-Standard-Source.md) | 替换字符 0；Figure 12 文本层已按 PDF 视觉页修复 | 参数表和算法伪代码以 PDF 为准 |
+| [GB/T 32905 / SM3](../../standards/gbt32905-SM3/00-Standard-Source.md) | 正文可搜索；位运算符使用私有区字形，公式跨行 | 公式已按 PDF 物理第 5–7 页复核并补入规范化转录；PDF 仍是版式依据 |
+| [GB/T 32907 / SM4](../../standards/gbt32907-SM4/00-Standard-Source.md) | 正文可搜索；公式符号及 S 盒表格跨行 | §6–§7 已按 PDF 物理第 5–7 页复核；公式、S 盒表和固定参数以 PDF 为准 |
+| [NIST SP 800-132 / PBKDF2](../../standards/sp800-132-pbkdf2/00-Standard-Source.md) | 私有区 18 | PBKDF2 公式以 PDF/结构化条目为准 |
+| [NIST SP 800-38B / CMAC](../../standards/sp800-38b-cmac/00-Standard-Source.md) | 私有区 10 | 子密钥公式以 PDF/结构化条目为准 |
+| [NIST SP 800-90A](../../standards/sp800-90a-drbg/00-Standard-Source.md) | 私有区 28 | DRBG 状态机和伪代码以 PDF/结构化条目为准 |
 
 ### C：字体映射导致提取稿失真（7）
 
 | 标准 | 筛查信号 | 可读参照 |
 |---|---:|---|
-| [GB/T 17964](./gbt17964-modes/00-Standard-Source.md) | 大量国标字体映射失真；私有区 101 | PDF；[结构化模式条目](./gbt17964-modes/01-Modes.md) |
-| [GB/T 32918 / SM2](./gbt32918-SM2/00-Standard-Source.md) | 国标字体映射失真；私有区 8 | PDF；SM2 各结构化条目 |
-| [GB/T 33133 / ZUC](./gbt33133-ZUC/00-Standard-Source.md) | 国标字体映射失真；私有区 41 | PDF；[ZUC 参考页](./gbt33133-ZUC/01-ZUC.md)及原语页 |
-| [GB/T 38635 / SM9](./gbt38635-SM9/00-Standard-Source.md) | 大量国标字体映射失真；私有区 280 | PDF；SM9 结构化条目 |
-| [GM/T 0005](./gmt0005-randomness/00-Standard-Source.md) | 大量国标字体映射失真；私有区 52 | PDF；[检测条目](./gmt0005-randomness/02-Test-Suites.md)至 `07-*` |
-| [GM/T 0091](./gmt0091-kdf/00-Standard-Source.md) | 国标字体映射失真；私有区 167 | PDF；[KDF 条目](./gmt0091-kdf/02-KDF.md) |
-| [GM/T 0103](./gmt0103-rng/00-Standard-Source.md) | 国标字体映射失真；私有区 7 | PDF；GM/T 0103 结构化条目 |
+| [GB/T 17964](../../standards/gbt17964-modes/00-Standard-Source.md) | 大量国标字体映射失真；私有区 101 | PDF；[结构化模式条目](../../standards/gbt17964-modes/01-Modes.md) |
+| [GB/T 32918 / SM2](../../standards/gbt32918-SM2/00-Standard-Source.md) | 国标字体映射失真；私有区 8 | PDF；SM2 各结构化条目 |
+| [GB/T 33133 / ZUC](../../standards/gbt33133-ZUC/00-Standard-Source.md) | 国标字体映射失真；私有区 41 | PDF；[ZUC 参考页](../../standards/gbt33133-ZUC/01-ZUC.md)及原语页 |
+| [GB/T 38635 / SM9](../../standards/gbt38635-SM9/00-Standard-Source.md) | 大量国标字体映射失真；私有区 280 | PDF；SM9 结构化条目 |
+| [GM/T 0005](../../standards/gmt0005-randomness/00-Standard-Source.md) | 大量国标字体映射失真；私有区 52 | PDF；[检测条目](../../standards/gmt0005-randomness/02-Test-Suites.md)至 `07-*` |
+| [GM/T 0091](../../standards/gmt0091-kdf/00-Standard-Source.md) | 国标字体映射失真；私有区 167 | PDF；[KDF 条目](../../standards/gmt0091-kdf/02-KDF.md) |
+| [GM/T 0103](../../standards/gmt0103-rng/00-Standard-Source.md) | 国标字体映射失真；私有区 7 | PDF；GM/T 0103 结构化条目 |
 
 ZUC 的 `pdfminer.six` 和 Ghostscript 文本输出在部分页面改善了字距或中文标题，但会破坏
 表格列、公式布局或英文术语，不能安全地整体替换现有 `pdftotext -layout` 证据层。因此没有
@@ -92,11 +92,11 @@ ZUC 的 `pdfminer.six` 和 Ghostscript 文本输出在部分页面改善了字�
 本地 PDF：SEC 2 v2.0 和 Rijndael AES Proposal。SEC 2 正文基本可搜索；Rijndael PDF 的页面
 视觉内容可读，但部分页眉、公式字形和字距在文本层/渲染中不稳定。它们只能作为研究背景和
 历史参考；Rijndael 提案 source 仍保留 PDF 页眉/页脚中无法映射的字体字符，不能把这些字符当作正文；
-当前 AES 定义应回到 [FIPS 197](./fips197-AES/00-Standard-Source.md) 及其结构化条目。
+当前 AES 定义应回到 [FIPS 197](../../standards/fips197-AES/00-Standard-Source.md) 及其结构化条目。
 
 ### D：扫描件
 
-[GB/T 36624-2018](./gbt36624-aead/01-Extraction-Gap.md) 的本地 PDF 文本层不足以可靠恢复
+[GB/T 36624-2018](../../standards/gbt36624-aead/01-Extraction-Gap.md) 的本地 PDF 文本层不足以可靠恢复
 条款、公式和表格；继续保留缺项说明，不依据 GCM、CCM 或 Ascon 文档推断其内容。
 
 ## 视觉抽样

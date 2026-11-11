@@ -37,5 +37,5 @@ inventory. There are 222 normative-source anchors (187 source-line and 35 exact
 PDF-page anchors), plus 2 RFC full-text evidence items, 2 bibliography-only
 links, and 2 entries without an original source. Bibliography links do not
 count as normative-source anchors. See
-[SOURCE-SPLIT-INVENTORY.en.md](./SOURCE-SPLIT-INVENTORY.en.md) and
-[SOURCE-SPLIT-COVERAGE.en.md](./SOURCE-SPLIT-COVERAGE.en.md).
+[SOURCE-SPLIT-INVENTORY.en.md](../audits/standards/SOURCE-SPLIT-INVENTORY.en.md) and
+[SOURCE-SPLIT-COVERAGE.en.md](../audits/standards/SOURCE-SPLIT-COVERAGE.en.md).

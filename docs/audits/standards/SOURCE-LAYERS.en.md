@@ -17,7 +17,7 @@ records the NIST report, ISO publication record, source papers, and unavailable
 or non-extractable text explicitly; it does not pretend those items are a
 complete transcription of the paid ISO amendment.
 
-The [Classic McEliece research-source index](./mceliece-goppa/00-Research-Source.md)
+The [Classic McEliece research-source index](../../standards/mceliece-goppa/00-Research-Source.md)
 is evidence for public papers and status records, not a normative extract.
 
 The entry-by-entry relationship to the source layer is tracked in

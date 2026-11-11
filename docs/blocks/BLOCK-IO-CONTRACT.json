@@ -6090,6 +6090,45 @@
     "previousStatement": null,
     "nextStatement": null
   },
+  "primitive_def": {
+    "inputs": [
+      {
+        "name": "",
+        "type": 5,
+        "check": null
+      },
+      {
+        "name": "NBYTES",
+        "type": 1,
+        "check": [
+          "Number"
+        ]
+      },
+      {
+        "name": "SEED",
+        "type": 1,
+        "check": [
+          "Bytes"
+        ]
+      },
+      {
+        "name": "BODY",
+        "type": 3,
+        "check": null
+      },
+      {
+        "name": "RETURN",
+        "type": 1,
+        "check": [
+          "Bytes"
+        ]
+      }
+    ],
+    "fields": [],
+    "outputCheck": null,
+    "previousStatement": null,
+    "nextStatement": null
+  },
   "rsa_decrypt": {
     "inputs": [
       {

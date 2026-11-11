@@ -35,12 +35,12 @@
 
 | 文档 | 受众 | 说明 |
 |------|------|------|
-| [AUDIT-REPORT.md](./guides/AUDIT-REPORT.md) | 开发者 | 密码原语完整性审计（含国密专项） |
+| [AUDIT-REPORT.md](./audits/project/AUDIT-REPORT.md) | 开发者 | 密码原语完整性审计（含国密专项） |
 | [CRYPTO-RESEARCH-2026-09-12.md](./research/CRYPTO-RESEARCH-2026-09-12.md) | 开发者/研究者 | 全网标准、后量子密码、实现保证、随机性测评和 Blockly 教学研究；含本地文献包 |
 
 ### 🔬 算法规范
 
-覆盖矩阵（标准 ↔ 块 ↔ Demo ↔ 模板 ↔ 指南）：[standards/COVERAGE.md](./standards/COVERAGE.md)。标准原文提取层与结构化用户参照层的关系见 [standards/SOURCE-LAYERS.md](./standards/SOURCE-LAYERS.md)。文档 i18n 按 `.en.md` 配对；英文翻译尚未存在的标准页在英文界面保留 source 语言 fallback，不伪装成已翻译文本。以下为 40 个标准与参考目录；`standards/papers/` 是文献索引，不计入算法目录：
+覆盖矩阵（标准 ↔ 块 ↔ Demo ↔ 模板 ↔ 指南）：[standards/COVERAGE.md](./standards/COVERAGE.md)。标准原文提取层与结构化用户参照层的关系见 [standards/SOURCE-LAYERS.md](./audits/standards/SOURCE-LAYERS.md)。文档 i18n 按 `.en.md` 配对；英文翻译尚未存在的标准页在英文界面保留 source 语言 fallback，不伪装成已翻译文本。以下为 40 个标准与参考目录；`standards/papers/` 是文献索引，不计入算法目录：
 
 | 文档 | 说明 |
 |------|------|
@@ -88,6 +88,12 @@
 | [randomness-certification-sources/](./standards/randomness-certification-sources/README.md) | 随机源与密码模块验证的官方资料索引 |
 | [papers/](./standards/papers/README.md) | 标准版本、研究材料和本地文献包索引（非算法实现目录） |
 
+### 🔍 审计报告
+
+| 文档 | 说明 |
+|------|------|
+| [audits/](./audits/README.md) | 审计与核验报告索引；`standards/` 放标准文档审计，`project/` 放项目整体审计。审计结论不构成认证或形式化验证 |
+
 ### 🧪 标准工具与证据（开发）
 
 以下页面记录标准的提取、拆分、证据记录与认证准备工作，面向开发者，不属于用户使用指南：
@@ -95,14 +101,14 @@
 | 文档 | 说明 |
 |------|------|
 | [DOCUMENT-STATUS.md](./standards/DOCUMENT-STATUS.md) | 文档提取核验、证据层级与缺项清单 |
-| [REEXTRACTION-REPORT.md](./standards/REEXTRACTION-REPORT.md) | 标准 PDF 重新提取与抽样视觉核验记录 |
-| [SOURCE-QUALITY-AUDIT.md](./standards/SOURCE-QUALITY-AUDIT.md) | 原文提取层的公式、表格、字体映射和可读性分级 |
+| [REEXTRACTION-REPORT.md](./audits/standards/REEXTRACTION-REPORT.md) | 标准 PDF 重新提取与抽样视觉核验记录 |
+| [SOURCE-QUALITY-AUDIT.md](./audits/standards/SOURCE-QUALITY-AUDIT.md) | 原文提取层的公式、表格、字体映射和可读性分级 |
 | [FUNCTION-PRIMITIVE-INDEX.md](./standards/FUNCTION-PRIMITIVE-INDEX.md) | 标准文档按函数/原语族的结构化拆分索引 |
 | [STRUCTURED-ENTRY-SCHEMA.md](./standards/STRUCTURED-ENTRY-SCHEMA.md) | 函数、原语、公式和算法阶段的统一条目字段 |
-| [SOURCE-SPLIT-COVERAGE.md](./standards/SOURCE-SPLIT-COVERAGE.md) | source 原文到结构化条目的覆盖审计与验收标准 |
-| [SOURCE-SPLIT-INVENTORY.md](./standards/SOURCE-SPLIT-INVENTORY.md) | 229 个结构化条目的逐项 source 回链清单 |
-| [CONFORMANCE-INVENTORY.md](./standards/CONFORMANCE-INVENTORY.md) | 219 个活动块（另 1 个兼容身份）、29 个 Procedure 模板和 59 个 Demo 的验证对象与证据范围 |
-| [ENDPOINT-MATRIX.md](./standards/ENDPOINT-MATRIX.md) | 块端点（标准公开算法接口）对照表 |
+| [SOURCE-SPLIT-COVERAGE.md](./audits/standards/SOURCE-SPLIT-COVERAGE.md) | source 原文到结构化条目的覆盖审计与验收标准 |
+| [SOURCE-SPLIT-INVENTORY.md](./audits/standards/SOURCE-SPLIT-INVENTORY.md) | 229 个结构化条目的逐项 source 回链清单 |
+| [CONFORMANCE-INVENTORY.md](./standards/CONFORMANCE-INVENTORY.md) | 220 个活动块（另 1 个兼容身份）、29 个 Procedure 模板和 59 个 Demo 的验证对象与证据范围 |
+| [ENDPOINT-MATRIX.md](./demos/ENDPOINT-MATRIX.md) | 块端点（标准公开算法接口）对照表 |
 | [PRODUCT-CERTIFICATION-FEASIBILITY.md](./standards/PRODUCT-CERTIFICATION-FEASIBILITY.md) | 正式认证路径、候选产品边界、当前缺口与决策顺序 |
 
 ### 📝 规范文件（根目录）

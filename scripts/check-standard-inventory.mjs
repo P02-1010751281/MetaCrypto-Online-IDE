@@ -4,12 +4,17 @@ import { basename, dirname, join, relative, resolve } from 'node:path';
 
 const root = process.cwd();
 const standardsRoot = join(root, 'docs', 'standards');
+const auditStandardsRoot = join(root, 'docs', 'audits', 'standards');
 const write = process.argv.includes('--write');
 const check = process.argv.includes('--check');
 const inventoryFiles = [
-  join(standardsRoot, 'SOURCE-SPLIT-INVENTORY.md'),
-  join(standardsRoot, 'SOURCE-SPLIT-INVENTORY.en.md'),
+  join(auditStandardsRoot, 'SOURCE-SPLIT-INVENTORY.md'),
+  join(auditStandardsRoot, 'SOURCE-SPLIT-INVENTORY.en.md'),
 ];
+
+// 清单文件已移到 docs/audits/standards/，但表格里的条目路径仍相对 docs/standards/。
+// 这里按清单文件实际位置算出回到 standards 的相对前缀，避免把 `./` 写死。
+const standardsLinkPrefix = `${relative(dirname(inventoryFiles[0]), standardsRoot).replaceAll('\\', '/')}/`;
 
 async function collectFiles(directory) {
   const files = [];
@@ -204,8 +209,11 @@ function render(language, checkedAt = new Date().toLocaleDateString('sv-SE')) {
       const displayFile = english ? (entry.englishFile || entry.file) : entry.file;
       const position = english ? (entry.englishPosition || entry.position) : entry.position;
       const location = english ? (entry.englishLocation || entry.location) : entry.location;
-      const link = `./${displayFile}`;
-      lines.push(`| [${escapeCell(displayFile)}](${link}) | ${escapeCell(position)} | ${escapeCell(rewriteEntryLinks(location, displayFile))} | \`${entry.kind}\` |`);
+      const link = `${standardsLinkPrefix}${displayFile}`;
+      const locationCell = rewriteEntryLinks(location, displayFile)
+        .replaceAll('](./', `](${standardsLinkPrefix}`)
+        .replaceAll(`](${standardsLinkPrefix}`, `](${standardsLinkPrefix}`);
+      lines.push(`| [${escapeCell(displayFile)}](${link}) | ${escapeCell(position)} | ${escapeCell(locationCell)} | \`${entry.kind}\` |`);
     }
     lines.push('');
   }
@@ -216,8 +224,8 @@ if (errors.length) {
   console.error(errors.map((error) => `STANDARD_INVENTORY_ERROR ${error}`).join('\n'));
   process.exitCode = 1;
 } else if (write) {
-  await writeFile(join(standardsRoot, 'SOURCE-SPLIT-INVENTORY.md'), render('zh'));
-  await writeFile(join(standardsRoot, 'SOURCE-SPLIT-INVENTORY.en.md'), render('en'));
+  await writeFile(join(auditStandardsRoot, 'SOURCE-SPLIT-INVENTORY.md'), render('zh'));
+  await writeFile(join(auditStandardsRoot, 'SOURCE-SPLIT-INVENTORY.en.md'), render('en'));
   console.log(`STANDARD_INVENTORY_SUMMARY directories=${directories.length} standard_source_directories=${standardSourceDirectories} research_reference_directories=${researchReferenceDirectories} entries=${entries.length} standard_source_entries=${sourceLineEntries + sourcePdfEntries + sectionEntries} line_anchors=${sourceLineEntries} pdf_page_anchors=${sourcePdfEntries} rfc_evidence=${rfcEntries} research_reference_links=${researchReferenceEntries} official_record_only=${officialSourceRecordEntries} scanned_pdf_gaps=${scannedPdfGapEntries} non_normative_project_notes=${projectNoteEntries} section_anchors=${sectionEntries} missing_source_links=${missingSourceEntries}`);
 } else if (check) {
   const existing = await Promise.all(inventoryFiles.map(async (filePath) => {

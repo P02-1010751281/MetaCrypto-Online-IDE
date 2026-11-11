@@ -24,10 +24,29 @@ async function collectMarkdown(directory) {
   return files;
 }
 
-const topLevel = (await readdir(standardsRoot, { withFileTypes: true }))
-  .filter((item) => item.isDirectory() && item.name !== 'papers')
+// docs/standards/ 下的子目录必须全部在 manifest 里登记，allowlist 之外不允许有游离目录。
+// 反向也查：manifest 有、目录却不存在的悬空条目同样报错。
+// 这条断言存在的理由：脚本原来只用 manifest.entries 驱动，多出来的目录只被计数、从不校验，
+// 于是混进来的目录永远静默无声。
+const DIRECTORY_ALLOWLIST = new Set(['papers']);
+
+const allDirs = (await readdir(standardsRoot, { withFileTypes: true }))
+  .filter((item) => item.isDirectory())
   .map((item) => item.name)
   .sort();
+
+const topLevel = allDirs.filter((name) => !DIRECTORY_ALLOWLIST.has(name));
+
+for (const name of allDirs) {
+  if (!DIRECTORY_ALLOWLIST.has(name) && !entryMap.has(name)) {
+    errors.push(`${name}: directory exists but has no manifest entry`);
+  }
+}
+for (const id of entryMap.keys()) {
+  if (!allDirs.includes(id)) {
+    errors.push(`${id}: manifest entry has no directory on disk`);
+  }
+}
 
 const expectedFields = [
   'id',

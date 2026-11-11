@@ -43,10 +43,10 @@
 
 | 标准 | 原语/阶段 | 条目页 | 项目映射 |
 |---|---|---|---|
-| SP 800-232 | `pC`、`pS`、`pL` | [12-pC](./sp800-232-ascon/12-pC.md)、[13-pS](./sp800-232-ascon/13-pS.md)、[14-pL](./sp800-232-ascon/14-pL.md) | Ascon 置换内部调用 |
-| SP 800-38D | `inc32` | [10-inc32](./sp800-38d-gcm/10-inc32.md) | GCM 计数器内部调用 |
-| FIPS 197 | SubBytes、ShiftRows、MixColumns、AddRoundKey | [组成变换索引](./fips197-AES/README.md#组成变换索引) | AES 轮函数组成件 |
-| FIPS 205 | ADRS member functions、WOTS+/FORS 树组件 | [结构概览](./fips205-SLH-DSA/README.md#块实现明细) | 结构块/上层内部实现，详见 Algorithm 1–25 |
+| SP 800-232 | `pC`、`pS`、`pL` | [12-pC](../../standards/sp800-232-ascon/12-pC.md)、[13-pS](../../standards/sp800-232-ascon/13-pS.md)、[14-pL](../../standards/sp800-232-ascon/14-pL.md) | Ascon 置换内部调用 |
+| SP 800-38D | `inc32` | [10-inc32](../../standards/sp800-38d-gcm/10-inc32.md) | GCM 计数器内部调用 |
+| FIPS 197 | SubBytes、ShiftRows、MixColumns、AddRoundKey | [组成变换索引](../../standards/fips197-AES/README.md#组成变换索引) | AES 轮函数组成件 |
+| FIPS 205 | ADRS member functions、WOTS+/FORS 树组件 | [结构概览](../../standards/fips205-SLH-DSA/README.md#块实现明细) | 结构块/上层内部实现，详见 Algorithm 1–25 |
 
 ## 每次验收
 

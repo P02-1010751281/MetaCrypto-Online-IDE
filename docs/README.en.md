@@ -35,18 +35,18 @@ Block documentation follows one overview plus multiple details: start with the [
 
 | Doc | Audience | Description |
 |------|------|------|
-| [AUDIT-REPORT.en.md](./guides/AUDIT-REPORT.en.md) | Developers | Cryptographic primitive completeness audit (including Chinese national standards) |
+| [AUDIT-REPORT.en.md](./audits/project/AUDIT-REPORT.en.md) | Developers | Cryptographic primitive completeness audit (including Chinese national standards) |
 | [CRYPTO-RESEARCH-2026-09-12.md](./research/CRYPTO-RESEARCH-2026-09-12.md) | Developers/Researchers | Web research on standards, PQC, assurance, randomness assessment and teaching research; includes the local literature bundle |
 
 ### 🔬 Algorithm specifications
 
-Coverage matrix (standard ↔ blocks ↔ demos ↔ templates ↔ guides): [standards/COVERAGE.en.md](./standards/COVERAGE.en.md). The relationship between the original-source extraction layer and the structured user-reference layer is documented in [standards/SOURCE-LAYERS.en.md](./standards/SOURCE-LAYERS.en.md). Documentation i18n uses `.en.md` counterparts; when a standard page has no English translation, the English view keeps an explicit source-language fallback instead of pretending it is translated. The list below contains 40 standard and reference directories; `standards/papers/` is a literature index and is not counted as an algorithm directory:
+Coverage matrix (standard ↔ blocks ↔ demos ↔ templates ↔ guides): [standards/COVERAGE.en.md](./standards/COVERAGE.en.md). The relationship between the original-source extraction layer and the structured user-reference layer is documented in [standards/SOURCE-LAYERS.en.md](./audits/standards/SOURCE-LAYERS.en.md). Documentation i18n uses `.en.md` counterparts; when a standard page has no English translation, the English view keeps an explicit source-language fallback instead of pretending it is translated. The list below contains 40 standard and reference directories; `standards/papers/` is a literature index and is not counted as an algorithm directory:
 
 | Doc | Description |
 |------|------|
 | [blocks/INDEX.en.md](./blocks/INDEX.en.md) | Block standard-basis reference (split by category) |
 | [COVERAGE.en.md](./standards/COVERAGE.en.md) | Standards coverage matrix (standard ↔ block ↔ Demo ↔ template ↔ guide) |
-| [SOURCE-LAYERS.en.md](./standards/SOURCE-LAYERS.en.md) | Complete source layer versus structured reference layer |
+| [SOURCE-LAYERS.en.md](./audits/standards/SOURCE-LAYERS.en.md) | Complete source layer versus structured reference layer |
 | [fips197-AES/](./standards/fips197-AES/README.md) | FIPS 197 AES reference |
 | [fips180-4-SHA2/](./standards/fips180-4-SHA2/README.md) | FIPS 180-4 SHA-2 reference |
 | [fips202-SHA3/](./standards/fips202-SHA3/README.md) | FIPS 202 SHA-3 / SHAKE / KECCAK-p |
@@ -89,6 +89,12 @@ Coverage matrix (standard ↔ blocks ↔ demos ↔ templates ↔ guides): [stand
 | [randomness-certification-sources/](./standards/randomness-certification-sources/README.md) | Official materials on randomness sources and cryptographic module validation |
 | [papers/](./standards/papers/README.md) | Standard versions, research material and local literature index (not an algorithm implementation directory) |
 
+### 🔍 Audit reports
+
+| Document | Description |
+|------|------|
+| [audits/](./audits/README.md) | Index of audit and verification reports; `standards/` holds standards documentation audits, `project/` holds the overall project audit. Audit conclusions are not certification or formal verification |
+
 ### 🧪 Standards tooling and evidence (development)
 
 These pages record extraction, splitting, evidence ledgers, and certification preparation. They are intended for developers, not as user guides:
@@ -96,14 +102,14 @@ These pages record extraction, splitting, evidence ledgers, and certification pr
 | Doc | Description |
 |------|------|
 | [DOCUMENT-STATUS.en.md](./standards/DOCUMENT-STATUS.en.md) | Documentation extraction review, evidence tiers, and gap list |
-| [REEXTRACTION-REPORT.en.md](./standards/REEXTRACTION-REPORT.en.md) | Standards PDF re-extraction and visual spot-check record |
-| [SOURCE-QUALITY-AUDIT.en.md](./standards/SOURCE-QUALITY-AUDIT.en.md) | Source-layer quality grades for formulas, tables, font mappings, and readability |
+| [REEXTRACTION-REPORT.en.md](./audits/standards/REEXTRACTION-REPORT.en.md) | Standards PDF re-extraction and visual spot-check record |
+| [SOURCE-QUALITY-AUDIT.en.md](./audits/standards/SOURCE-QUALITY-AUDIT.en.md) | Source-layer quality grades for formulas, tables, font mappings, and readability |
 | [FUNCTION-PRIMITIVE-INDEX.en.md](./standards/FUNCTION-PRIMITIVE-INDEX.en.md) | Function/primitive-family split index for standards references |
 | [STRUCTURED-ENTRY-SCHEMA.en.md](./standards/STRUCTURED-ENTRY-SCHEMA.en.md) | Common entry fields for functions, primitives, formulas, and algorithm stages |
-| [SOURCE-SPLIT-COVERAGE.en.md](./standards/SOURCE-SPLIT-COVERAGE.en.md) | Source-to-entry split coverage and acceptance boundary |
-| [SOURCE-SPLIT-INVENTORY.en.md](./standards/SOURCE-SPLIT-INVENTORY.en.md) | Entry-by-entry source links for 229 structured entries |
-| [CONFORMANCE-INVENTORY.md](./standards/CONFORMANCE-INVENTORY.md) | Verification objects and evidence scope for 219 active blocks (plus 1 compat identity), 29 procedure templates, and 59 demos (Chinese only) |
-| [ENDPOINT-MATRIX.md](./standards/ENDPOINT-MATRIX.md) | Block endpoint (public standard algorithm interface) matrix (Chinese only) |
+| [SOURCE-SPLIT-COVERAGE.en.md](./audits/standards/SOURCE-SPLIT-COVERAGE.en.md) | Source-to-entry split coverage and acceptance boundary |
+| [SOURCE-SPLIT-INVENTORY.en.md](./audits/standards/SOURCE-SPLIT-INVENTORY.en.md) | Entry-by-entry source links for 229 structured entries |
+| [CONFORMANCE-INVENTORY.md](./standards/CONFORMANCE-INVENTORY.md) | Verification objects and evidence scope for 220 active blocks (plus 1 compat identity), 29 procedure templates, and 59 demos (Chinese only) |
+| [ENDPOINT-MATRIX.md](./demos/ENDPOINT-MATRIX.md) | Block endpoint (public standard algorithm interface) matrix (Chinese only) |
 | [PRODUCT-CERTIFICATION-FEASIBILITY.en.md](./standards/PRODUCT-CERTIFICATION-FEASIBILITY.en.md) | Formal certification routes, candidate product boundary, gaps, and decision sequence |
 
 ### 📝 Root specifications

@@ -31,7 +31,7 @@ pdftoppm -f <page> -l <page> -png -r 150 <source.pdf> <page.png>
 | Markdown 断链 | `npm run docs:check-links` 当前检查结果为 0 处 |
 | 原文与研究证据层 | 25 个标准目录保存 `00-Standard-Source.md` 原文提取；McEliece 和论文目录各有 `00-Research-Source.md` 研究索引，不计作标准全文提取。RFC `.txt` 和两个历史 `part1.txt` 继续作为原始证据 |
 | 文本层质量 | 25 个有 source 的标准目录中 8 个 A 级、10 个 B 级、7 个 C 级；GB/T 36624 为 D 级缺项 | [SOURCE-QUALITY-AUDIT.md](./SOURCE-QUALITY-AUDIT.md) |
-| 结构化条目字段 | 清单统计 229 个结构化条目：222 个有标准原文锚点（187 行号、35 个精确 PDF 页码），另有 7 个其他证据状态（2 个 RFC 全文证据项、2 个研究书目回链、1 个官方记录项、1 个扫描件缺项、1 个非规范性项目说明）；6 个条目另有结构化英文对应稿。公式检查覆盖 235 个中英文页面，均有 `公式或伪代码` 字段，211 个含 Markdown 代码块，22 个明确说明无独立公式/伪代码单元或当前无可核验原件。书目回链不计作标准原文锚点 | [STRUCTURED-ENTRY-SCHEMA.md](./STRUCTURED-ENTRY-SCHEMA.md) |
+| 结构化条目字段 | 清单统计 229 个结构化条目：222 个有标准原文锚点（187 行号、35 个精确 PDF 页码），另有 7 个其他证据状态（2 个 RFC 全文证据项、2 个研究书目回链、1 个官方记录项、1 个扫描件缺项、1 个非规范性项目说明）；6 个条目另有结构化英文对应稿。公式检查覆盖 235 个中英文页面，均有 `公式或伪代码` 字段，211 个含 Markdown 代码块，22 个明确说明无独立公式/伪代码单元或当前无可核验原件。书目回链不计作标准原文锚点 | [STRUCTURED-ENTRY-SCHEMA.md](../../standards/STRUCTURED-ENTRY-SCHEMA.md) |
 
 ## 已修复的异常类型
 
@@ -40,7 +40,7 @@ pdftoppm -f <page> -l <page> -png -r 150 <source.pdf> <page.png>
 - 把标准原件、历史草案、项目实现子集、demo 向量和认证边界分开写，避免“有 demo”被误读为“完整标准覆盖”。
 - 修正 GM/T 0005 的检测项列表，修正 SP 800-90A 项目实现误标为 CTR-DRBG，确认 SP 800-232 使用最终版而不是 2024 IPD 草案。
 - Docs 导航现已包含根文档、研究报告、标准索引、嵌套指南和文献目录，不再因固定目录深度静默漏项。
-- 新增 [FUNCTION-PRIMITIVE-INDEX.md](./FUNCTION-PRIMITIVE-INDEX.md)，并将薄的总览页继续拆成可独立核验的函数/原语族页面；没有独立块的内部阶段明确标注为“高层块内部实现”。
+- 新增 [FUNCTION-PRIMITIVE-INDEX.md](../../standards/FUNCTION-PRIMITIVE-INDEX.md)，并将薄的总览页继续拆成可独立核验的函数/原语族页面；没有独立块的内部阶段明确标注为“高层块内部实现”。
 
 ## 抽样核验页
 
@@ -57,7 +57,7 @@ pdftoppm -f <page> -l <page> -png -r 150 <source.pdf> <page.png>
 - 逐条合规审查、独立实现差分测试、负例/拒绝路径、熵评估和 CMVP/CAVP 证据不属于本次 Markdown 清理的自动结果。
 - B/C 级原文的完整逐页 OCR 或人工转录仍未完成；当前 PDF 视觉版、结构化条目和提取稿定位共同构成可核验参照。
 
-完整缺项及实现边界见 [DOCUMENT-STATUS.md](./DOCUMENT-STATUS.md)。
+完整缺项及实现边界见 [DOCUMENT-STATUS.md](../../standards/DOCUMENT-STATUS.md)。
 
 ## 2026-09-30 补充核验
 

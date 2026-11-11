@@ -31,7 +31,7 @@ pdftoppm -f <page> -l <page> -png -r 150 <source.pdf> <page.png>
 | Broken Markdown links | 0 in the current `npm run docs:check-links` result |
 | Source and research evidence | 25 standards have `00-Standard-Source.md` extracts; McEliece and the papers directory each have a `00-Research-Source.md` research index, not a full normative-standard extract. RFC `.txt` files and two historical `part1.txt` files remain raw evidence |
 | Text-layer quality | Among the 25 source-backed standard directories: 8 grade A, 10 grade B, 7 grade C; GB/T 36624 is a grade-D gap | [SOURCE-QUALITY-AUDIT.en.md](./SOURCE-QUALITY-AUDIT.en.md) |
-| Structured-entry fields | The inventory counts 229 structured entries: 222 have normative-source anchors (187 line and 35 exact PDF-page anchors), plus 7 with other evidence statuses (2 RFC full-text evidence items, 2 bibliography-only links, 1 official-record-only item, 1 scanned-source gap, and 1 non-normative project note). Six entries also have structured English counterparts. The formula checker covers all 235 Chinese/English pages, all with a `Formula or Pseudocode` field and 211 with a Markdown code block; 22 explicitly state that there is no independent formula/pseudocode unit or currently verifiable source artifact. Bibliography links do not count as normative-source anchors. | [SOURCE-SPLIT-COVERAGE.en.md](./SOURCE-SPLIT-COVERAGE.en.md), [STRUCTURED-ENTRY-SCHEMA.en.md](./STRUCTURED-ENTRY-SCHEMA.en.md) |
+| Structured-entry fields | The inventory counts 229 structured entries: 222 have normative-source anchors (187 line and 35 exact PDF-page anchors), plus 7 with other evidence statuses (2 RFC full-text evidence items, 2 bibliography-only links, 1 official-record-only item, 1 scanned-source gap, and 1 non-normative project note). Six entries also have structured English counterparts. The formula checker covers all 235 Chinese/English pages, all with a `Formula or Pseudocode` field and 211 with a Markdown code block; 22 explicitly state that there is no independent formula/pseudocode unit or currently verifiable source artifact. Bibliography links do not count as normative-source anchors. | [SOURCE-SPLIT-COVERAGE.en.md](./SOURCE-SPLIT-COVERAGE.en.md), [STRUCTURED-ENTRY-SCHEMA.en.md](../../standards/STRUCTURED-ENTRY-SCHEMA.en.md) |
 
 ## Fixed anomaly classes
 
@@ -40,7 +40,7 @@ pdftoppm -f <page> -l <page> -png -r 150 <source.pdf> <page.png>
 - Separated source artifacts, historical drafts, project subsets, demo vectors, and certification boundaries so that “has a demo” cannot be read as “full standards coverage.”
 - Corrected the GM/T 0005 test list, the project’s SP 800-90A implementation label, and the SP 800-232 final-vs-IPD status.
 - Docs navigation now includes root docs, research reports, standards indexes, nested guides, and paper indexes instead of silently dropping fixed-depth paths.
-- Added [FUNCTION-PRIMITIVE-INDEX.en.md](./FUNCTION-PRIMITIVE-INDEX.en.md) and split thin overview pages into independently reviewable function/primitive-family entries; internal stages without a standalone block are explicitly marked as implemented inside a high-level block.
+- Added [FUNCTION-PRIMITIVE-INDEX.en.md](../../standards/FUNCTION-PRIMITIVE-INDEX.en.md) and split thin overview pages into independently reviewable function/primitive-family entries; internal stages without a standalone block are explicitly marked as implemented inside a high-level block.
 
 ## Sample checks
 
@@ -57,7 +57,7 @@ pdftoppm -f <page> -l <page> -png -r 150 <source.pdf> <page.png>
 - Clause-by-clause compliance, independent differential testing, negative/rejection paths, entropy assessment, and CMVP/CAVP evidence are outside this Markdown cleanup.
 - Full page-by-page OCR or manual transcription for grade-B/C sources is still open; the PDF visual source, structured entries, and source-line locations currently form the verifiable reference together.
 
-See [DOCUMENT-STATUS.en.md](./DOCUMENT-STATUS.en.md) for the complete gap and implementation-boundary list.
+See [DOCUMENT-STATUS.en.md](../../standards/DOCUMENT-STATUS.en.md) for the complete gap and implementation-boundary list.
 
 ## 2026-09-30 Supplemental Review
 
