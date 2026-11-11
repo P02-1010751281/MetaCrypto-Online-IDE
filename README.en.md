@@ -194,4 +194,4 @@ function ntt(a, q = 3329, n = 256) {
 
 ## License
 
-[MIT](LICENSE)
+[AGPL-3.0-or-later](LICENSE)
