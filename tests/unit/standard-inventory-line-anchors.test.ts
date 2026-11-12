@@ -11,6 +11,8 @@ describe('standard inventory source-line anchors', () => {
     const fixture = mkdtempSync(join(tmpdir(), 'ciphercat-standard-anchor-'));
     const standards = join(fixture, 'docs/standards/fixture');
     mkdirSync(standards, { recursive: true });
+    // 清单文件已移到 docs/audits/standards/，--write 直接写该目录，fixture 需预建。
+    mkdirSync(join(fixture, 'docs/audits/standards'), { recursive: true });
     writeFileSync(join(standards, '00-Standard-Source.md'), 'one\ntwo\nthree\n');
     writeFileSync(join(standards, '01-entry.md'), [
       '## 条目元数据',
