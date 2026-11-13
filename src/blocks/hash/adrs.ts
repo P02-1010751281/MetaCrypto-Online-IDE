@@ -54,7 +54,7 @@ Blockly.Blocks['slh_adrs_full'] = {
       .setCheck(null)
       .appendField(' word6:');
     this.appendDummyInput().appendField(')');
-    this.setInputsInline(true);
+    this.setInputsInline(false);
     this.setOutput(true, TYPE_BYTES);
     this.setColour(ADRS_COLOUR);
     this.setTooltip(

@@ -7,7 +7,7 @@
 | 类型 | 算法阶段 / 密钥扩展 |
 | 标准定位 | GB/T 32907-2016 §7，Eq. (4)–(8) |
 | 原文证据 | [SM4 原文提取](./00-Standard-Source.md) · [PDF](./GBT-32907-2016-SM4.pdf) |
-| 原文位置 | PDF 物理第 6–7 页（标准页 3–4）；[提取稿 §7](./00-Standard-Source.md#L171) |
+| 原文位置 | PDF 物理第 6–7 页（标准页 3–4）；[提取稿 §7](./00-Standard-Source.md#L361) |
 | 项目状态 | 轮结构和密钥扩展可由模板拼装；高层实现状态见 README |
 
 ## 原文定位与引用
@@ -18,11 +18,7 @@
 
 ## 原文摘录
 
-> 以下为 00-Standard-Source.md 的说明性定位引文；仅规范化了空白和分页换行，完整正文、公式和表格请回看 [source 提取稿](./00-Standard-Source.md#L171)。
-
-    7
-    S盒 S-box
-    S 盒为固定的 8 比特输入 8 比特输出的置换,记为 Sbox(.
+> 以下为 00-Standard-Source.md 的说明性定位引文；仅规范化了空白和分页换行，完整正文、公式和表格请回看 [source 提取稿](./00-Standard-Source.md#L361)。
 
 ## 标准定义
 
@@ -32,14 +28,19 @@ SM4 加密先将明文拆成四个 32-bit 字，进行 32 次轮迭代，再做�
 ## 公式或伪代码
 
 ```text
-X[i+4] = X[i] xor T(X[i+1] xor X[i+2] xor X[i+3] xor rk[i])
+Xi+4 = F(Xi, Xi+1, Xi+2, Xi+3, rki)
 Y = (X[35], X[34], X[33], X[32])
 
 K[0..3] = MK[0..3] xor FK[0..3]
 rk[i] = K[i+4]
        = K[i] xor T'(K[i+1] xor K[i+2] xor K[i+3] xor CK[i])
 
+L'(B) = B ⊕ (B <<< 13) ⊕ (B <<< 23)
 T'(B) = B xor (B <<< 13) xor (B <<< 23)
+
+CK0 = 00070e15
+...
+CK31 = 646B7279
 ```
 
 `T` 为 [02-RoundFunction.md](./02-RoundFunction.md) 中的 `L(τ(B))`；密钥扩展中的 `T'`

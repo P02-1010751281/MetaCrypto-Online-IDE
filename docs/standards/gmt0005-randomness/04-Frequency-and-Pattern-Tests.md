@@ -35,7 +35,7 @@ X_i = 2*epsilon_i - 1
 S_n = sum(X_i, i=1..n)
 V   = S_n / sqrt(n)
 P   = erfc(abs(V) / sqrt(2))
-Q   = 0.5 * erfc(abs(V) / sqrt(2))
+Q   = 0.5 * erfc(V / sqrt(2))
 ```
 
 ### 5.2 块内频数

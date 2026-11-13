@@ -125,6 +125,7 @@ describe('markdown document metadata helpers', () => {
   it('keeps setup and type-system guides in development docs', () => {
     expect(getGuideCategory('SETUP.md')).toBe('development-guides');
     expect(getGuideCategory('TYPE-SYSTEM.en.md')).toBe('development-guides');
+    expect(getGuideCategory('SPEC-CARDS.md')).toBe('development-guides');
     expect(getGuideCategory('TUTORIALS.md')).toBe('user-guides');
   });
 
@@ -145,7 +146,7 @@ describe('markdown document metadata helpers', () => {
     ]) {
       expect(getStandardDocCategory(category)).toBe('rfc-references');
     }
-    expect(getStandardDocCategory('china-pqc-tracking')).toBe('research');
+    expect(getStandardDocCategory('china-pqc-tracking')).toBe('standards-index');
     expect(getStandardDocCategory('fips203-ML-KEM')).toBe('fips203-ML-KEM');
   });
 });

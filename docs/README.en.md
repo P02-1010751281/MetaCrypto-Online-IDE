@@ -30,6 +30,7 @@ Block documentation follows one overview plus multiple details: start with the [
 | [SETUP.en.md](./guides/SETUP.en.md) | Developers | Local startup, production preview, desktop builds, and acceptance checks |
 | [DEVELOPMENT.en.md](./guides/DEVELOPMENT.en.md) | Developers | Environment setup, adding blocks, i18n, code style |
 | [TYPE-SYSTEM.en.md](./guides/TYPE-SYSTEM.en.md) | Developers | Blockly type declarations, connection checks, and explicit conversions |
+| [SPEC-CARDS.en.md](./guides/SPEC-CARDS.en.md) | Developers | SpecCard contract and gate: how anchors, artifact hashes and block mappings are recomputed |
 
 ### 📊 Status and audits
 
@@ -37,6 +38,7 @@ Block documentation follows one overview plus multiple details: start with the [
 |------|------|------|
 | [AUDIT-REPORT.en.md](./audits/project/AUDIT-REPORT.en.md) | Developers | Cryptographic primitive completeness audit (including Chinese national standards) |
 | [CRYPTO-RESEARCH-2026-09-12.md](./research/CRYPTO-RESEARCH-2026-09-12.md) | Developers/Researchers | Web research on standards, PQC, assurance, randomness assessment and teaching research; includes the local literature bundle |
+| [AI-HELPER-RESEARCH-2026-11-13.md](./research/AI-HELPER-RESEARCH-2026-11-13.md) | Developers/Researchers | Feasibility study for an AI helper that turns literature, standards and reference code into MCL Blockly assets; Chinese source (fallback), covers current assets, external evidence, SpecCard/IR design, phases and risks |
 
 ### 🔬 Algorithm specifications
 

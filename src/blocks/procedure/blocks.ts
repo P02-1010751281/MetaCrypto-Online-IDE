@@ -13,9 +13,16 @@ import {
   MLKEM_ENCAPS_BODY_STATE,
   MLKEM_ENCAPS_RETURN_STATE,
 } from './encaps-prefill';
+import { TYPE_BYTES, TYPE_NUMBER } from '@/constants/block-types';
+import {
+  findProjectSymbol,
+  getProjectSymbols,
+  projectSymbolLabel,
+} from '@/utils/project-context';
 
 export const PROCEDURE_BLOCK_TYPES = [
   'crypto_return',
+  'primitive_def',
   'crypto_encrypt_func',
   'crypto_decrypt_func',
   'crypto_hash_func',
@@ -39,6 +46,32 @@ Blockly.Blocks['crypto_return'] = {
     this.setNextStatement(true, null);
     this.setColour(290);
     this.setTooltip('Return a value from a crypto function.');
+    this.setHelpUrl('');
+  },
+};
+
+// ─────────────────────────────────────────────────────────
+// primitive_def — 随机性测评入口（固定函数名与签名）
+// ─────────────────────────────────────────────────────────
+
+Blockly.Blocks['primitive_def'] = {
+  init: function () {
+    this.appendDummyInput().appendField('🧪 测评原语 primitive');
+    this.appendValueInput('NBYTES')
+      .setCheck(TYPE_NUMBER)
+      .appendField('字节数 n_bytes');
+    this.appendValueInput('SEED')
+      .setCheck(TYPE_BYTES)
+      .appendField('种子 seed');
+    this.appendStatementInput('BODY').appendField('执行');
+    this.appendValueInput('RETURN')
+      .setCheck(TYPE_BYTES)
+      .appendField('返回 bytes');
+    this.setColour(290);
+    this.setTooltip(
+      '生成后端随机性测评的固定入口 def primitive(n_bytes, seed=b"") -> bytes。\n' +
+        'n_bytes 留空按 32 字节，seed 留空按空字节串；返回值必须为 bytes。',
+    );
     this.setHelpUrl('');
   },
 };
@@ -425,8 +458,12 @@ function buildCallOptions(block: AnyBlock): Array<[string, string]> {
   try {
     // Manager 模板集合变化用廉价 key 表达（join 28 个名字 vs 全量扫描）
     const tplKey = toolboxTemplates.value.join(',');
+    const symbolKey = getProjectSymbols()
+      .map((symbol) => `${symbol.path}:${symbol.name}`)
+      .join(',');
+    const cacheKey = `${tplKey}|${symbolKey}`;
     const cached = callOptionsCache.get(block);
-    if (cached && cached.key === tplKey) return cached.options;
+    if (cached && cached.key === cacheKey) return cached.options;
 
     const ws = (block.workspace as unknown as { targetWorkspace?: Blockly.Workspace }).targetWorkspace || block.workspace;
     const tuples = Blockly.Procedures.allProcedures(ws);
@@ -438,10 +475,15 @@ function buildCallOptions(block: AnyBlock): Array<[string, string]> {
     // Manager 添加到 toolbox 的模板
     const toolboxNames = toolboxTemplates.value;
     const all = Array.from(new Set(names.concat(wsTemplateNames, toolboxNames)));
-    const options: Array<[string, string]> = !all.length
+    const localOptions: Array<[string, string]> = !all.length
       ? [[Blockly.Msg.PROCEDURES_UNNAMED || 'unnamed', '']]
       : all.map((n): [string, string] => [n, n]);
-    callOptionsCache.set(block, { key: tplKey, options });
+    const localNames = new Set(all);
+    const externalOptions = getProjectSymbols()
+      .filter((symbol) => !localNames.has(symbol.name))
+      .map((symbol): [string, string] => [projectSymbolLabel(symbol), symbol.name]);
+    const options = localOptions.concat(externalOptions);
+    callOptionsCache.set(block, { key: cacheKey, options });
     return options;
   } catch (error) {
     console.warn('function dropdown options failed:', error);
@@ -483,6 +525,12 @@ function syncCallParams(block: AnyBlock, funcName: string) {
         const params = tpl.params || [{ name: tpl.paramName, type: tpl.paramType }];
         args = params.map(function (param) { return param.name; });
         types = params.map(function (param) { return param.type; });
+      } else {
+        const projectSymbol = findProjectSymbol(funcName);
+        if (projectSymbol) {
+          args = projectSymbol.params.map(function (param) { return param.name; });
+          types = projectSymbol.params.map(function (param) { return param.type; });
+        }
       }
     }
   }

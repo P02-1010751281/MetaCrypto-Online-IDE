@@ -1,0 +1,183 @@
+{
+  "schema": "ciphercat.spec-card/v0",
+  "id": "sp800-38b-cmac",
+  "kind": "standard",
+  "standard": {
+    "name": "NIST SP 800-38B",
+    "version": "38B",
+    "source_url": "https://csrc.nist.gov/pubs/sp/800/38/b/final",
+    "dir": ".",
+    "artifacts": [
+      {
+        "path": "NIST.SP.800-38B.pdf",
+        "sha256": "da9dc0f1e1f08af917caf4a831a7497cf18997b8046353af89570a812f1ec5a2"
+      }
+    ]
+  },
+  "anchors": [
+    {
+      "id": "A1-subkey-steps",
+      "source": "00-Standard-Source.md",
+      "line_range": [
+        586,
+        592
+      ],
+      "quote": "Steps: 1. Let L = CIPHK(0b). 2. If MSB1(L) = 0, then K1 = L << 1; Else K1 = (L << 1) ⊕ Rb; see Sec. 5.3 for the definition of Rb. 3. If MSB1(K1) = 0, then K2 = K1 << 1; Else K2 = (K1 << 1) ⊕ Rb. 4. Return K1, K2.",
+      "quote_sha256": "35f2693887bcbe676ddd299d870dbc6405b0cf57af1440419b7ee0211ca59d20",
+      "anchor_grade": "B",
+      "extractor": {
+        "tool": "pdftotext",
+        "version": "unknown (提取稿未记录 poppler 版本)",
+        "args": "-layout"
+      },
+      "known_defects": [
+        "下标与上标被拉平：原式 CIPH_K(0^b) 在文本层显示为 CIPHK(0b)"
+      ]
+    },
+    {
+      "id": "A2-mac-steps",
+      "source": "00-Standard-Source.md",
+      "line_range": [
+        636,
+        644
+      ],
+      "quote": "2. If Mlen = 0, let n = 1; else, let n = Mlen/b. 3. Let M1, M2, ... , Mn-1, Mn* denote the unique sequence of bit strings such that M = M1 || M2 || ... || Mn-1 || Mn*, where M1, M2,..., Mn-1 are complete blocks. 2 4. If Mn* is a complete block, let Mn = K1 ⊕ Mn*; else, let Mn = K2 ⊕ (Mn*||10j), where j = nb-Mlen-1. 5. Let C0 = 0b. 6. For i = 1 to n, let Ci = CIPHK(Ci-1 ⊕ Mi). 7. Let T = MSBTlen(Cn). 8. Return T.",
+      "quote_sha256": "675bb8f8823b9447db48d4e5fe1b341009cc900b2d02b5d462fce6ce3e7c5f51",
+      "anchor_grade": "B",
+      "extractor": {
+        "tool": "pdftotext",
+        "version": "unknown (提取稿未记录 poppler 版本)",
+        "args": "-layout"
+      },
+      "known_defects": [
+        "ceiling 括号丢失：原式 n = ⌈Mlen/b⌉ 在文本层显示为 Mlen/b",
+        "脚注标记混入正文：「complete blocks. 2」里的 2 是脚注号"
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "key": "sp800-38b.cmac.subkey-generation",
+      "type": "原语",
+      "io": {
+        "inputs": [
+          {
+            "name": "K",
+            "type": "Bytes",
+            "note": "分组密码密钥（AES-128/192/256 或 SM4）"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "K1",
+            "type": "Bytes",
+            "length": "b"
+          },
+          {
+            "name": "K2",
+            "type": "Bytes",
+            "length": "b"
+          }
+        ]
+      },
+      "params": {
+        "block_bits": 128,
+        "doubling": "K1 = dbl(L), K2 = dbl(K1)；最高位为 1 时与 Rb 异或"
+      },
+      "normative_level": "MUST",
+      "pseudocode": {
+        "fidelity": "text-layer",
+        "anchor": "A1-subkey-steps",
+        "text": "Steps: 1. Let L = CIPHK(0b). 2. If MSB1(L) = 0, then K1 = L << 1; Else K1 = (L << 1) ⊕ Rb; see Sec. 5.3 for the definition of Rb. 3. If MSB1(K1) = 0, then K2 = K1 << 1; Else K2 = (K1 << 1) ⊕ Rb. 4. Return K1, K2.",
+        "known_defects": [
+          "上标与下标被拉平，见锚点 A1-subkey-steps 的 known_defects"
+        ]
+      },
+      "blocks": {
+        "existing": [
+          "cmac_subkeys",
+          "cmac_double"
+        ],
+        "planned": []
+      },
+      "vectors": {
+        "status": "missing",
+        "detail": "demos/tests.json 没有 CMAC 条目；子密钥未单独接入向量回归"
+      }
+    },
+    {
+      "key": "sp800-38b.cmac.mac-generation",
+      "type": "函数",
+      "io": {
+        "inputs": [
+          {
+            "name": "K",
+            "type": "Bytes",
+            "note": "分组密码密钥"
+          },
+          {
+            "name": "M",
+            "type": "Bytes",
+            "note": "消息（任意位长）"
+          },
+          {
+            "name": "Tlen",
+            "type": "Number",
+            "note": "标签位长；项目当前固定输出完整块"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "T",
+            "type": "Bytes",
+            "length": "b"
+          }
+        ]
+      },
+      "params": {
+        "default_tlen_bits": 128
+      },
+      "normative_level": "MUST",
+      "pseudocode": {
+        "fidelity": "text-layer",
+        "anchor": "A2-mac-steps",
+        "text": "2. If Mlen = 0, let n = 1; else, let n = Mlen/b. 3. Let M1, M2, ... , Mn-1, Mn* denote the unique sequence of bit strings such that M = M1 || M2 || ... || Mn-1 || Mn*, where M1, M2,..., Mn-1 are complete blocks. 2 4. If Mn* is a complete block, let Mn = K1 ⊕ Mn*; else, let Mn = K2 ⊕ (Mn*||10j), where j = nb-Mlen-1. 5. Let C0 = 0b. 6. For i = 1 to n, let Ci = CIPHK(Ci-1 ⊕ Mi). 7. Let T = MSBTlen(Cn). 8. Return T.",
+        "known_defects": [
+          "ceiling 括号与脚注号失真，见锚点 A2-mac-steps 的 known_defects"
+        ]
+      },
+      "blocks": {
+        "existing": [
+          "cmac_mac",
+          "cmac_subkeys"
+        ],
+        "planned": []
+      },
+      "vectors": {
+        "status": "missing",
+        "detail": "SP 800-38B 附录示例未登记到 demos/tests.json；当前 CMAC 只有仓库内的实现自测"
+      }
+    }
+  ],
+  "provenance": {
+    "extracted_by": {
+      "kind": "llm",
+      "name": "CipherCat AI helper 调研（SpecCard 骨架首例）",
+      "model": "deepseek-v4.1-flash (dsh agent)"
+    },
+    "review": {
+      "status": "draft",
+      "note": "锚点、哈希与块名由 scripts/check-spec-cards.mjs 重算；语义（位宽/端序/Rb）尚未由具名密码学审阅者签核"
+    }
+  },
+  "limits": [
+    "只覆盖 SP 800-38B §6.1 子密钥生成与 §6.2 MAC 生成；不含截断语义之外的一致性要求、CMAC 验证接口、密钥派生与消息长度上限。",
+    "cmac_mac 当前输出完整 16 字节标签；Tlen 截断没有独立块实现（见 01-CMAC.md 的项目边界）。",
+    "没有接入官方向量回归，本卡不构成任何合规、认证或「已验证」声明。"
+  ],
+  "open_questions": [
+    "Rb 的文本层锚点不可用：R128 在提取稿里被拉平成 012010000111（上标丢失），因此 Rb=0x87 取自项目转录（01-CMAC.md），没有逐字锚点。",
+    "文本层丢失 ceiling 括号，MAC 步骤 2 的 n = ⌈Mlen/b⌉ 无法从提取稿逐字复核。",
+    "SP 800-38B 附录示例向量尚未登记到 demos/tests.json，KAT 缺口需要在 P0 收尾前补上。"
+  ]
+}

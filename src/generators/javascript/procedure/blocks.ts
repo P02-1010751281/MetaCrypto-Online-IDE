@@ -14,6 +14,25 @@ javascriptGenerator.forBlock['crypto_return'] = function (
   return 'return ' + value + ';\n';
 };
 
+javascriptGenerator.forBlock['primitive_def'] = function (block: Block): string {
+  const nBytes =
+    javascriptGenerator.valueToCode(block, 'NBYTES', Order.NONE) || '32';
+  const seed =
+    javascriptGenerator.valueToCode(block, 'SEED', Order.NONE) ||
+    'new Uint8Array(0)';
+  const body = javascriptGenerator.statementToCode(block, 'BODY');
+  const returnValue =
+    javascriptGenerator.valueToCode(block, 'RETURN', Order.NONE) ||
+    'new Uint8Array(0)';
+  return [
+    'function primitive(n_bytes = ' + nBytes + ', seed = ' + seed + ') {',
+    '  const data = seed;',
+    body + '  return ' + returnValue + ';',
+    '}',
+    '',
+  ].join('\n');
+};
+
 const TYPE_MAP_JS: Record<string, string> = {
   bytes: 'Uint8Array', int: 'number', int_list: 'number[]',
   poly: 'number[]', seed: 'Uint8Array', key: 'Uint8Array', message: 'Uint8Array',

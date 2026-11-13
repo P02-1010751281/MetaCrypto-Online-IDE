@@ -24,6 +24,29 @@ const require = createRequire(resolve(process.cwd(), 'package.json'));
 setLocale(require('blockly/msg/en'));
 
 describe('procedure code generators', () => {
+  it('generates the fixed randomness primitive entry in both languages', () => {
+    const workspace = new Blockly.Workspace();
+    try {
+      workspace.newBlock('primitive_def');
+      const python = pythonGenerator.workspaceToCode(workspace);
+      const javascript = javascriptGenerator.workspaceToCode(workspace);
+      expect(python).toContain(
+        'def primitive(n_bytes: int = 32, seed: bytes = b"") -> bytes:',
+      );
+      expect(python).toContain('return b""');
+      expect(javascript).toContain(
+        'function primitive(n_bytes = 32, seed = new Uint8Array(0)) {',
+      );
+      const result = new Function(
+        `${javascript}\nreturn primitive();`,
+      )() as Uint8Array;
+      expect(result).toBeInstanceOf(Uint8Array);
+      expect(result.length).toBe(0);
+    } finally {
+      workspace.dispose();
+    }
+  });
+
   it('executes a crypto_return statement inside a generated procedure in both languages', () => {
     const workspace = new Blockly.Workspace();
     try {

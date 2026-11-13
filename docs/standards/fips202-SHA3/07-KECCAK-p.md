@@ -1,4 +1,4 @@
-# Algorithm 7  KECCAK-p[b, nr](S)
+# Algorithm 7  `KECCAK-p[b, nr](S)`
 ## 条目元数据
 
 | 字段 | 内容 |

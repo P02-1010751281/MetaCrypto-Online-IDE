@@ -14,6 +14,28 @@ pythonGenerator.forBlock['crypto_return'] = function (
   return 'return ' + value + '\n';
 };
 
+pythonGenerator.forBlock['primitive_def'] = function (block: Block): string {
+  const nBytes =
+    pythonGenerator.valueToCode(block, 'NBYTES', Order.NONE) || '32';
+  const seed =
+    pythonGenerator.valueToCode(block, 'SEED', Order.NONE) || 'b""';
+  const body = pythonGenerator.prefixLines(
+    pythonGenerator.statementToCode(block, 'BODY'),
+    pythonGenerator.INDENT,
+  );
+  const returnValue =
+    pythonGenerator.valueToCode(block, 'RETURN', Order.NONE) || 'b""';
+  return [
+    '',
+    'def primitive(n_bytes: int = ' + nBytes + ', seed: bytes = ' + seed + ') -> bytes:',
+    '    """随机性测评入口：返回至少 n_bytes 字节。"""',
+    '    seed = bytes(seed or b"")',
+    '    data = seed',
+    body + '    return ' + returnValue,
+    '',
+  ].join('\n');
+};
+
 const TYPE_MAP_PY: Record<string, string> = {
   bytes: 'bytes', int: 'int', int_list: 'list[int]',
   poly: 'list[int]', seed: 'bytes', key: 'bytes', message: 'bytes',

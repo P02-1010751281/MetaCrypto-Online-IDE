@@ -30,6 +30,7 @@
 | [SETUP.md](./guides/SETUP.md) | 开发者 | 本地启动、生产预览、桌面构建与验收检查 |
 | [DEVELOPMENT.md](./guides/DEVELOPMENT.md) | 开发者 | 环境搭建、添加积木块步骤、i18n、代码风格 |
 | [TYPE-SYSTEM.md](./guides/TYPE-SYSTEM.md) | 开发者 | Blockly 类型声明、实际连接检查规则与显式转换 |
+| [SPEC-CARDS.md](./guides/SPEC-CARDS.md) | 开发者 | 规格卡（SpecCard）契约与门禁：原文锚点、制品哈希与块映射如何被脚本重算 |
 
 ### 📊 状态与审计
 
@@ -37,6 +38,7 @@
 |------|------|------|
 | [AUDIT-REPORT.md](./audits/project/AUDIT-REPORT.md) | 开发者 | 密码原语完整性审计（含国密专项） |
 | [CRYPTO-RESEARCH-2026-09-12.md](./research/CRYPTO-RESEARCH-2026-09-12.md) | 开发者/研究者 | 全网标准、后量子密码、实现保证、随机性测评和 Blockly 教学研究；含本地文献包 |
+| [AI-HELPER-RESEARCH-2026-11-13.md](./research/AI-HELPER-RESEARCH-2026-11-13.md) | 开发者/研究者 | 文献/标准/代码 → MCL Blockly 的可行性调研：现有资产、外部证据、SpecCard 与扁平 IR 设计、分期与风险 |
 
 ### 🔬 算法规范
 

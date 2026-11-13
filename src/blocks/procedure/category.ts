@@ -33,6 +33,7 @@ export function createProcedureFlyout(workspace: Blockly.WorkspaceSvg): Blockly.
   const msg = Blockly.Msg as Record<string, string>;
 
   // 1. 基础块（原生）
+  items.push({ kind: 'block', type: 'primitive_def', gap: 16 });
   items.push({ kind: 'block', type: 'procedures_defnoreturn', gap: 16, fields: { NAME: msg.PROCEDURES_DEFNORETURN_PROCEDURE || 'do something' } });
   items.push({ kind: 'block', type: 'procedures_defreturn', gap: 16, fields: { NAME: msg.PROCEDURES_DEFRETURN_PROCEDURE || 'do something' } });
   items.push({ kind: 'block', type: 'procedures_ifreturn', gap: 24 });
