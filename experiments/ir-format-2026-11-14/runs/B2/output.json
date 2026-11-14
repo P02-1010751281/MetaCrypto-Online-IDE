@@ -1,0 +1,375 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "procedures_defreturn",
+        "id": "ccm1_def",
+        "x": 80,
+        "y": 80,
+        "extraState": {
+          "params": [],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "CCM_Encrypt"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "ccm_encrypt",
+              "id": "ccm1_ccm_encrypt",
+              "fields": {
+                "TAGLEN": "4"
+              },
+              "inputs": {
+                "KEY": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "enc_key",
+                    "fields": {
+                      "NUM": "[0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4b,0x4c,0x4d,0x4e,0x4f]"
+                    }
+                  }
+                },
+                "NONCE": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "enc_nonce",
+                    "fields": {
+                      "NUM": "[0x10,0x11,0x12,0x13,0x14,0x15,0x16]"
+                    }
+                  }
+                },
+                "AAD": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "enc_aad",
+                    "fields": {
+                      "NUM": "[0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07]"
+                    }
+                  }
+                },
+                "MSG": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "enc_msg",
+                    "fields": {
+                      "NUM": "[0x20,0x21,0x22,0x23]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defreturn",
+        "id": "ccm2_def",
+        "x": 80,
+        "y": 380,
+        "extraState": {
+          "params": [],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "CCM_B0"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "ccm_b0",
+              "id": "ccm2_ccm_b0",
+              "fields": {
+                "TAGLEN": "4"
+              },
+              "inputs": {
+                "NONCE": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "b0_nonce",
+                    "fields": {
+                      "NUM": "[0x10,0x11,0x12,0x13,0x14,0x15,0x16]"
+                    }
+                  }
+                },
+                "MSGLEN": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "b0_msglen",
+                    "fields": {
+                      "NUM": "4"
+                    }
+                  }
+                },
+                "AADLEN": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "b0_aadlen",
+                    "fields": {
+                      "NUM": "8"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defreturn",
+        "id": "ccm3_def",
+        "x": 80,
+        "y": 680,
+        "extraState": {
+          "params": [],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "CCM_AAD_PREFIX"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "ccm_aad_len_prefix",
+              "id": "ccm3_ccm_aad_len_prefix",
+              "inputs": {
+                "AADLEN": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "ap_aadlen",
+                    "fields": {
+                      "NUM": "8"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defreturn",
+        "id": "ccm4_def",
+        "x": 80,
+        "y": 980,
+        "extraState": {
+          "params": [],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "CCM_COUNTER_BLOCK"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "ccm_counter_block",
+              "id": "ccm4_ccm_counter_block",
+              "fields": {
+                "TAGLEN": "4"
+              },
+              "inputs": {
+                "NONCE": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "cb_nonce",
+                    "fields": {
+                      "NUM": "[0x10,0x11,0x12,0x13,0x14,0x15,0x16]"
+                    }
+                  }
+                },
+                "I": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "cb_i",
+                    "fields": {
+                      "NUM": "0"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defreturn",
+        "id": "ccm5_def",
+        "x": 80,
+        "y": 1280,
+        "extraState": {
+          "params": [],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "CCM_CBC_MAC"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "ccm_cbc_mac",
+              "id": "ccm5_ccm_cbc_mac",
+              "fields": {
+                "TAGLEN": "4"
+              },
+              "inputs": {
+                "KEY": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "mac_key",
+                    "fields": {
+                      "NUM": "[0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4b,0x4c,0x4d,0x4e,0x4f]"
+                    }
+                  }
+                },
+                "NONCE": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "mac_nonce",
+                    "fields": {
+                      "NUM": "[0x10,0x11,0x12,0x13,0x14,0x15,0x16]"
+                    }
+                  }
+                },
+                "AAD": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "mac_aad",
+                    "fields": {
+                      "NUM": "[0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07]"
+                    }
+                  }
+                },
+                "MSG": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "mac_msg",
+                    "fields": {
+                      "NUM": "[0x20,0x21,0x22,0x23]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defreturn",
+        "id": "ccm6_def",
+        "x": 80,
+        "y": 1580,
+        "extraState": {
+          "params": [],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "CCM_CTR"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "ccm_ctr",
+              "id": "ccm6_ccm_ctr",
+              "fields": {
+                "TAGLEN": "4"
+              },
+              "inputs": {
+                "KEY": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "ctr_key",
+                    "fields": {
+                      "NUM": "[0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4b,0x4c,0x4d,0x4e,0x4f]"
+                    }
+                  }
+                },
+                "NONCE": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "ctr_nonce",
+                    "fields": {
+                      "NUM": "[0x10,0x11,0x12,0x13,0x14,0x15,0x16]"
+                    }
+                  }
+                },
+                "MSG": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "ctr_msg",
+                    "fields": {
+                      "NUM": "[0x20,0x21,0x22,0x23]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defreturn",
+        "id": "ccm7_def",
+        "x": 80,
+        "y": 1880,
+        "extraState": {
+          "params": [],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "CCM_Decrypt"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "ccm_decrypt",
+              "id": "ccm7_ccm_decrypt",
+              "fields": {
+                "TAGLEN": "4"
+              },
+              "inputs": {
+                "KEY": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "dec_key",
+                    "fields": {
+                      "NUM": "[0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4b,0x4c,0x4d,0x4e,0x4f]"
+                    }
+                  }
+                },
+                "NONCE": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "dec_nonce",
+                    "fields": {
+                      "NUM": "[0x10,0x11,0x12,0x13,0x14,0x15,0x16]"
+                    }
+                  }
+                },
+                "AAD": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "dec_aad",
+                    "fields": {
+                      "NUM": "[0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07]"
+                    }
+                  }
+                },
+                "CT": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "dec_ct",
+                    "fields": {
+                      "NUM": "[0x71,0x62,0x01,0x5b,0x4d,0xac,0x25,0x5d]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

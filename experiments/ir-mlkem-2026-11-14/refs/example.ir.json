@@ -1,0 +1,83 @@
+{
+ "schema": "ciphercat.block-ir/v0",
+ "entry": [
+  {
+   "type": "procedures_defreturn",
+   "fields": {
+    "NAME": "CMAC_AES"
+   },
+   "extraState": {
+    "params": [
+     {
+      "name": "key",
+      "id": "param_key",
+      "type": "bytes"
+     },
+     {
+      "name": "msg",
+      "id": "param_msg",
+      "type": "bytes"
+     }
+    ],
+    "hasStatements": false
+   },
+   "inputs": {
+    "RETURN": {
+     "type": "cmac_mac",
+     "fields": {
+      "CIPHER": "aes"
+     },
+     "inputs": {
+      "KEY": {
+       "type": "variables_get",
+       "fields": {
+        "VAR": {
+         "id": "param_key"
+        }
+       }
+      },
+      "MSG": {
+       "type": "variables_get",
+       "fields": {
+        "VAR": {
+         "id": "param_msg"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "type": "procedures_defreturn",
+   "fields": {
+    "NAME": "CMAC_SUBKEYS"
+   },
+   "extraState": {
+    "params": [
+     {
+      "name": "subkey",
+      "id": "param_subkey",
+      "type": "bytes"
+     }
+    ],
+    "hasStatements": false
+   },
+   "inputs": {
+    "RETURN": {
+     "type": "cmac_subkeys",
+     "inputs": {
+      "KEY": {
+       "type": "variables_get",
+       "fields": {
+        "VAR": {
+         "id": "param_subkey"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ ]
+}

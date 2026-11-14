@@ -1,0 +1,268 @@
+{
+  "schema": "ciphercat.block-ir/v0",
+  "entry": [
+    {
+      "type": "procedures_defreturn",
+      "fields": {
+        "NAME": "CCM_Encrypt"
+      },
+      "extraState": {
+        "params": [],
+        "hasStatements": false
+      },
+      "inputs": {
+        "RETURN": {
+          "type": "ccm_encrypt",
+          "fields": {
+            "TAGLEN": "4"
+          },
+          "inputs": {
+            "KEY": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "[0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4b,0x4c,0x4d,0x4e,0x4f]"
+              }
+            },
+            "NONCE": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "[0x10,0x11,0x12,0x13,0x14,0x15,0x16]"
+              }
+            },
+            "AAD": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "[0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07]"
+              }
+            },
+            "MSG": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "[0x20,0x21,0x22,0x23]"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "procedures_defreturn",
+      "fields": {
+        "NAME": "CCM_B0"
+      },
+      "extraState": {
+        "params": [],
+        "hasStatements": false
+      },
+      "inputs": {
+        "RETURN": {
+          "type": "ccm_b0",
+          "fields": {
+            "TAGLEN": "4"
+          },
+          "inputs": {
+            "NONCE": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "[0x10,0x11,0x12,0x13,0x14,0x15,0x16]"
+              }
+            },
+            "MSGLEN": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "4"
+              }
+            },
+            "AADLEN": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "8"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "procedures_defreturn",
+      "fields": {
+        "NAME": "CCM_AAD_PREFIX"
+      },
+      "extraState": {
+        "params": [],
+        "hasStatements": false
+      },
+      "inputs": {
+        "RETURN": {
+          "type": "ccm_aad_len_prefix",
+          "inputs": {
+            "AADLEN": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "8"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "procedures_defreturn",
+      "fields": {
+        "NAME": "CCM_COUNTER_BLOCK"
+      },
+      "extraState": {
+        "params": [],
+        "hasStatements": false
+      },
+      "inputs": {
+        "RETURN": {
+          "type": "ccm_counter_block",
+          "fields": {
+            "TAGLEN": "4"
+          },
+          "inputs": {
+            "NONCE": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "[0x10,0x11,0x12,0x13,0x14,0x15,0x16]"
+              }
+            },
+            "I": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "0"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "procedures_defreturn",
+      "fields": {
+        "NAME": "CCM_CBC_MAC"
+      },
+      "extraState": {
+        "params": [],
+        "hasStatements": false
+      },
+      "inputs": {
+        "RETURN": {
+          "type": "ccm_cbc_mac",
+          "fields": {
+            "TAGLEN": "4"
+          },
+          "inputs": {
+            "KEY": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "[0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4b,0x4c,0x4d,0x4e,0x4f]"
+              }
+            },
+            "NONCE": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "[0x10,0x11,0x12,0x13,0x14,0x15,0x16]"
+              }
+            },
+            "AAD": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "[0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07]"
+              }
+            },
+            "MSG": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "[0x20,0x21,0x22,0x23]"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "procedures_defreturn",
+      "fields": {
+        "NAME": "CCM_CTR"
+      },
+      "extraState": {
+        "params": [],
+        "hasStatements": false
+      },
+      "inputs": {
+        "RETURN": {
+          "type": "ccm_ctr",
+          "fields": {
+            "TAGLEN": "4"
+          },
+          "inputs": {
+            "KEY": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "[0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4b,0x4c,0x4d,0x4e,0x4f]"
+              }
+            },
+            "NONCE": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "[0x10,0x11,0x12,0x13,0x14,0x15,0x16]"
+              }
+            },
+            "MSG": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "[0x20,0x21,0x22,0x23]"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "procedures_defreturn",
+      "fields": {
+        "NAME": "CCM_Decrypt"
+      },
+      "extraState": {
+        "params": [],
+        "hasStatements": false
+      },
+      "inputs": {
+        "RETURN": {
+          "type": "ccm_decrypt",
+          "fields": {
+            "TAGLEN": "4"
+          },
+          "inputs": {
+            "KEY": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "[0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4b,0x4c,0x4d,0x4e,0x4f]"
+              }
+            },
+            "NONCE": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "[0x10,0x11,0x12,0x13,0x14,0x15,0x16]"
+              }
+            },
+            "AAD": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "[0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07]"
+              }
+            },
+            "CT": {
+              "type": "data_value",
+              "fields": {
+                "NUM": "[0x71,0x62,0x01,0x5b,0x4d,0xac,0x25,0x5d]"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

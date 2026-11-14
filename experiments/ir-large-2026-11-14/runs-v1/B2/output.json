@@ -1,0 +1,2891 @@
+{
+ "blocks": {
+  "languageVersion": 0,
+  "blocks": [
+   {
+    "type": "procedures_defreturn",
+    "id": "b0001",
+    "x": 100,
+    "y": 100,
+    "extraState": {
+     "params": [
+      {
+       "name": "alphas",
+       "id": "goppa_param_alphas",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "GOPPA_G"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "goppa_gen_poly",
+       "id": "b0002",
+       "inputs": {
+        "ALPHA": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0003",
+          "fields": {
+           "VAR": {
+            "id": "goppa_param_alphas"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0004",
+    "x": 120,
+    "y": 420,
+    "extraState": {
+     "params": [
+      {
+       "name": "p",
+       "id": "goppa_param_p",
+       "type": "int_list"
+      },
+      {
+       "name": "x",
+       "id": "goppa_param_x",
+       "type": "int"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "GOPPA_EVAL"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "gf2m_poly_eval",
+       "id": "b0005",
+       "inputs": {
+        "P": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0006",
+          "fields": {
+           "VAR": {
+            "id": "goppa_param_p"
+           }
+          }
+         }
+        },
+        "X": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0007",
+          "fields": {
+           "VAR": {
+            "id": "goppa_param_x"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0008",
+    "x": 140,
+    "y": 740,
+    "extraState": {
+     "params": [
+      {
+       "name": "a",
+       "id": "goppa_param_a",
+       "type": "int_list"
+      },
+      {
+       "name": "b",
+       "id": "goppa_param_b",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "GA"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "gf2m_poly_add",
+       "id": "b0009",
+       "inputs": {
+        "A": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0010",
+          "fields": {
+           "VAR": {
+            "id": "goppa_param_a"
+           }
+          }
+         }
+        },
+        "B": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0011",
+          "fields": {
+           "VAR": {
+            "id": "goppa_param_b"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0012",
+    "x": 160,
+    "y": 1060,
+    "extraState": {
+     "params": [
+      {
+       "name": "a",
+       "id": "goppa_param_a",
+       "type": "int_list"
+      },
+      {
+       "name": "b",
+       "id": "goppa_param_b",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "GM"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "gf2m_poly_mul",
+       "id": "b0013",
+       "inputs": {
+        "A": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0014",
+          "fields": {
+           "VAR": {
+            "id": "goppa_param_a"
+           }
+          }
+         }
+        },
+        "B": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0015",
+          "fields": {
+           "VAR": {
+            "id": "goppa_param_b"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0016",
+    "x": 180,
+    "y": 1380,
+    "extraState": {
+     "params": [
+      {
+       "name": "a",
+       "id": "goppa_param_a",
+       "type": "int_list"
+      },
+      {
+       "name": "b",
+       "id": "goppa_param_b",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "GMod"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "gf2m_poly_mod",
+       "id": "b0017",
+       "inputs": {
+        "A": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0018",
+          "fields": {
+           "VAR": {
+            "id": "goppa_param_a"
+           }
+          }
+         }
+        },
+        "B": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0019",
+          "fields": {
+           "VAR": {
+            "id": "goppa_param_b"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0020",
+    "x": 200,
+    "y": 1700,
+    "extraState": {
+     "params": [
+      {
+       "name": "a",
+       "id": "goppa_param_a",
+       "type": "int_list"
+      },
+      {
+       "name": "g",
+       "id": "goppa_param_g",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "GOPPA_INV"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "arr_slice",
+       "id": "b0021",
+       "inputs": {
+        "LIST": {
+         "block": {
+          "type": "gf2m_poly_xgcd",
+          "id": "b0022",
+          "inputs": {
+           "A": {
+            "block": {
+             "type": "variables_get",
+             "id": "b0023",
+             "fields": {
+              "VAR": {
+               "id": "goppa_param_a"
+              }
+             }
+            }
+           },
+           "B": {
+            "block": {
+             "type": "variables_get",
+             "id": "b0024",
+             "fields": {
+              "VAR": {
+               "id": "goppa_param_g"
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "START": {
+         "block": {
+          "type": "math_number",
+          "id": "b0025",
+          "fields": {
+           "NUM": 1
+          }
+         }
+        },
+        "LENGTH": {
+         "block": {
+          "type": "math_number",
+          "id": "b0026",
+          "fields": {
+           "NUM": 2
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0027",
+    "x": 220,
+    "y": 2020,
+    "extraState": {
+     "params": [
+      {
+       "name": "a",
+       "id": "goppa_param_a",
+       "type": "int_list"
+      },
+      {
+       "name": "b",
+       "id": "goppa_param_b",
+       "type": "int_list"
+      },
+      {
+       "name": "g",
+       "id": "goppa_param_g",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "GOPPA_SYN"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "gf2m_poly_mod",
+       "id": "b0028",
+       "inputs": {
+        "A": {
+         "block": {
+          "type": "gf2m_poly_add",
+          "id": "b0029",
+          "inputs": {
+           "A": {
+            "block": {
+             "type": "arr_slice",
+             "id": "b0030",
+             "inputs": {
+              "LIST": {
+               "block": {
+                "type": "gf2m_poly_xgcd",
+                "id": "b0031",
+                "inputs": {
+                 "A": {
+                  "block": {
+                   "type": "variables_get",
+                   "id": "b0032",
+                   "fields": {
+                    "VAR": {
+                     "id": "goppa_param_a"
+                    }
+                   }
+                  }
+                 },
+                 "B": {
+                  "block": {
+                   "type": "variables_get",
+                   "id": "b0033",
+                   "fields": {
+                    "VAR": {
+                     "id": "goppa_param_g"
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              },
+              "START": {
+               "block": {
+                "type": "math_number",
+                "id": "b0034",
+                "fields": {
+                 "NUM": 1
+                }
+               }
+              },
+              "LENGTH": {
+               "block": {
+                "type": "math_number",
+                "id": "b0035",
+                "fields": {
+                 "NUM": 2
+                }
+               }
+              }
+             }
+            }
+           },
+           "B": {
+            "block": {
+             "type": "arr_slice",
+             "id": "b0036",
+             "inputs": {
+              "LIST": {
+               "block": {
+                "type": "gf2m_poly_xgcd",
+                "id": "b0037",
+                "inputs": {
+                 "A": {
+                  "block": {
+                   "type": "variables_get",
+                   "id": "b0038",
+                   "fields": {
+                    "VAR": {
+                     "id": "goppa_param_b"
+                    }
+                   }
+                  }
+                 },
+                 "B": {
+                  "block": {
+                   "type": "variables_get",
+                   "id": "b0039",
+                   "fields": {
+                    "VAR": {
+                     "id": "goppa_param_g"
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              },
+              "START": {
+               "block": {
+                "type": "math_number",
+                "id": "b0040",
+                "fields": {
+                 "NUM": 1
+                }
+               }
+              },
+              "LENGTH": {
+               "block": {
+                "type": "math_number",
+                "id": "b0041",
+                "fields": {
+                 "NUM": 2
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        },
+        "B": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0042",
+          "fields": {
+           "VAR": {
+            "id": "goppa_param_g"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0043",
+    "x": 240,
+    "y": 2340,
+    "extraState": {
+     "params": [
+      {
+       "name": "y",
+       "id": "goppa_param_y",
+       "type": "int_list"
+      },
+      {
+       "name": "g",
+       "id": "goppa_param_g",
+       "type": "int_list"
+      },
+      {
+       "name": "L",
+       "id": "goppa_param_L",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "GOPPA_DEC"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "goppa_decode",
+       "id": "b0044",
+       "inputs": {
+        "Y": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0045",
+          "fields": {
+           "VAR": {
+            "id": "goppa_param_y"
+           }
+          }
+         }
+        },
+        "G": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0046",
+          "fields": {
+           "VAR": {
+            "id": "goppa_param_g"
+           }
+          }
+         }
+        },
+        "L": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0047",
+          "fields": {
+           "VAR": {
+            "id": "goppa_param_L"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0048",
+    "x": 100,
+    "y": 2660,
+    "extraState": {
+     "params": [],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "CCM_Encrypt"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "ccm_encrypt",
+       "id": "b0049",
+       "fields": {
+        "TAGLEN": "8"
+       },
+       "inputs": {
+        "KEY": {
+         "block": {
+          "type": "data_value",
+          "id": "b0050",
+          "fields": {
+           "NUM": "[0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4b,0x4c,0x4d,0x4e,0x4f]"
+          }
+         }
+        },
+        "NONCE": {
+         "block": {
+          "type": "data_value",
+          "id": "b0051",
+          "fields": {
+           "NUM": "[0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,0x18,0x19,0x1a,0x1b]"
+          }
+         }
+        },
+        "AAD": {
+         "block": {
+          "type": "data_value",
+          "id": "b0052",
+          "fields": {
+           "NUM": "[0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,0x10,0x11,0x12,0x13]"
+          }
+         }
+        },
+        "MSG": {
+         "block": {
+          "type": "data_value",
+          "id": "b0053",
+          "fields": {
+           "NUM": "[0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,0x29,0x2a,0x2b,0x2c,0x2d,0x2e,0x2f,0x30,0x31,0x32,0x33,0x34,0x35,0x36,0x37]"
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0054",
+    "x": 120,
+    "y": 2980,
+    "extraState": {
+     "params": [],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "CCM_B0"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "ccm_b0",
+       "id": "b0055",
+       "fields": {
+        "TAGLEN": "4"
+       },
+       "inputs": {
+        "NONCE": {
+         "block": {
+          "type": "data_value",
+          "id": "b0056",
+          "fields": {
+           "NUM": "[0x10,0x11,0x12,0x13,0x14,0x15,0x16]"
+          }
+         }
+        },
+        "MSGLEN": {
+         "block": {
+          "type": "data_value",
+          "id": "b0057",
+          "fields": {
+           "NUM": "4"
+          }
+         }
+        },
+        "AADLEN": {
+         "block": {
+          "type": "data_value",
+          "id": "b0058",
+          "fields": {
+           "NUM": "8"
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0059",
+    "x": 140,
+    "y": 3300,
+    "extraState": {
+     "params": [],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "CCM_AAD_PREFIX"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "ccm_aad_len_prefix",
+       "id": "b0060",
+       "inputs": {
+        "AADLEN": {
+         "block": {
+          "type": "data_value",
+          "id": "b0061",
+          "fields": {
+           "NUM": "8"
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0062",
+    "x": 160,
+    "y": 3620,
+    "extraState": {
+     "params": [],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "CCM_COUNTER_BLOCK"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "ccm_counter_block",
+       "id": "b0063",
+       "fields": {
+        "TAGLEN": "4"
+       },
+       "inputs": {
+        "NONCE": {
+         "block": {
+          "type": "data_value",
+          "id": "b0064",
+          "fields": {
+           "NUM": "[0x10,0x11,0x12,0x13,0x14,0x15,0x16]"
+          }
+         }
+        },
+        "I": {
+         "block": {
+          "type": "data_value",
+          "id": "b0065",
+          "fields": {
+           "NUM": "0"
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0066",
+    "x": 180,
+    "y": 3940,
+    "extraState": {
+     "params": [],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "CCM_CBC_MAC"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "ccm_cbc_mac",
+       "id": "b0067",
+       "fields": {
+        "TAGLEN": "4"
+       },
+       "inputs": {
+        "KEY": {
+         "block": {
+          "type": "data_value",
+          "id": "b0068",
+          "fields": {
+           "NUM": "[0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4b,0x4c,0x4d,0x4e,0x4f]"
+          }
+         }
+        },
+        "NONCE": {
+         "block": {
+          "type": "data_value",
+          "id": "b0069",
+          "fields": {
+           "NUM": "[0x10,0x11,0x12,0x13,0x14,0x15,0x16]"
+          }
+         }
+        },
+        "AAD": {
+         "block": {
+          "type": "data_value",
+          "id": "b0070",
+          "fields": {
+           "NUM": "[0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07]"
+          }
+         }
+        },
+        "MSG": {
+         "block": {
+          "type": "data_value",
+          "id": "b0071",
+          "fields": {
+           "NUM": "[0x20,0x21,0x22,0x23]"
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0072",
+    "x": 200,
+    "y": 4260,
+    "extraState": {
+     "params": [],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "CCM_CTR"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "ccm_ctr",
+       "id": "b0073",
+       "fields": {
+        "TAGLEN": "4"
+       },
+       "inputs": {
+        "KEY": {
+         "block": {
+          "type": "data_value",
+          "id": "b0074",
+          "fields": {
+           "NUM": "[0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4b,0x4c,0x4d,0x4e,0x4f]"
+          }
+         }
+        },
+        "NONCE": {
+         "block": {
+          "type": "data_value",
+          "id": "b0075",
+          "fields": {
+           "NUM": "[0x10,0x11,0x12,0x13,0x14,0x15,0x16]"
+          }
+         }
+        },
+        "MSG": {
+         "block": {
+          "type": "data_value",
+          "id": "b0076",
+          "fields": {
+           "NUM": "[0x20,0x21,0x22,0x23]"
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0077",
+    "x": 220,
+    "y": 4580,
+    "extraState": {
+     "params": [],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "CCM_Decrypt"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "ccm_decrypt",
+       "id": "b0078",
+       "fields": {
+        "TAGLEN": "4"
+       },
+       "inputs": {
+        "KEY": {
+         "block": {
+          "type": "data_value",
+          "id": "b0079",
+          "fields": {
+           "NUM": "[0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4b,0x4c,0x4d,0x4e,0x4f]"
+          }
+         }
+        },
+        "NONCE": {
+         "block": {
+          "type": "data_value",
+          "id": "b0080",
+          "fields": {
+           "NUM": "[0x10,0x11,0x12,0x13,0x14,0x15,0x16]"
+          }
+         }
+        },
+        "AAD": {
+         "block": {
+          "type": "data_value",
+          "id": "b0081",
+          "fields": {
+           "NUM": "[0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07]"
+          }
+         }
+        },
+        "CT": {
+         "block": {
+          "type": "data_value",
+          "id": "b0082",
+          "fields": {
+           "NUM": "[0x71,0x62,0x01,0x5b,0x4d,0xac,0x25,0x5d]"
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0083",
+    "x": 240,
+    "y": 4900,
+    "extraState": {
+     "params": [
+      {
+       "name": "x",
+       "id": "gap_param_x",
+       "type": "int"
+      },
+      {
+       "name": "b",
+       "id": "gap_param_b",
+       "type": "int"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "REJ"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "pq_rej_sample",
+       "id": "b0084",
+       "inputs": {
+        "X": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0085",
+          "fields": {
+           "VAR": {
+            "id": "gap_param_x"
+           }
+          }
+         }
+        },
+        "BOUND": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0086",
+          "fields": {
+           "VAR": {
+            "id": "gap_param_b"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0087",
+    "x": 100,
+    "y": 5220,
+    "extraState": {
+     "params": [
+      {
+       "name": "a",
+       "id": "gap_param_a",
+       "type": "int_list"
+      },
+      {
+       "name": "b",
+       "id": "gap_param_b",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "PM"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "pq_poly_mul",
+       "id": "b0088",
+       "fields": {
+        "MODULUS": "none"
+       },
+       "inputs": {
+        "A": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0089",
+          "fields": {
+           "VAR": {
+            "id": "gap_param_a"
+           }
+          }
+         }
+        },
+        "B": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0090",
+          "fields": {
+           "VAR": {
+            "id": "gap_param_b"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0091",
+    "x": 120,
+    "y": 5540,
+    "extraState": {
+     "params": [
+      {
+       "name": "a",
+       "id": "gap_param_a",
+       "type": "int_list"
+      },
+      {
+       "name": "b",
+       "id": "gap_param_b",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "PMQ"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "pq_poly_mul",
+       "id": "b0092",
+       "fields": {
+        "MODULUS": "8380417"
+       },
+       "inputs": {
+        "A": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0093",
+          "fields": {
+           "VAR": {
+            "id": "gap_param_a"
+           }
+          }
+         }
+        },
+        "B": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0094",
+          "fields": {
+           "VAR": {
+            "id": "gap_param_b"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0095",
+    "x": 140,
+    "y": 5860,
+    "extraState": {
+     "params": [
+      {
+       "name": "layer",
+       "id": "gap_param_layer",
+       "type": "int"
+      },
+      {
+       "name": "tree",
+       "id": "gap_param_tree",
+       "type": "int"
+      },
+      {
+       "name": "kp",
+       "id": "gap_param_kp",
+       "type": "int"
+      },
+      {
+       "name": "h",
+       "id": "gap_param_h",
+       "type": "int"
+      },
+      {
+       "name": "idx",
+       "id": "gap_param_idx",
+       "type": "int"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "ADRS_TREE"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "slh_adrs_full",
+       "id": "b0096",
+       "fields": {
+        "TYPE": "3"
+       },
+       "inputs": {
+        "LAYER": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0097",
+          "fields": {
+           "VAR": {
+            "id": "gap_param_layer"
+           }
+          }
+         }
+        },
+        "TREE": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0098",
+          "fields": {
+           "VAR": {
+            "id": "gap_param_tree"
+           }
+          }
+         }
+        },
+        "KEYPAIR": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0099",
+          "fields": {
+           "VAR": {
+            "id": "gap_param_kp"
+           }
+          }
+         }
+        },
+        "HEIGHT": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0100",
+          "fields": {
+           "VAR": {
+            "id": "gap_param_h"
+           }
+          }
+         }
+        },
+        "INDEX": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0101",
+          "fields": {
+           "VAR": {
+            "id": "gap_param_idx"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0102",
+    "x": 160,
+    "y": 6180,
+    "extraState": {
+     "params": [
+      {
+       "name": "layer",
+       "id": "gap_param_layer",
+       "type": "int"
+      },
+      {
+       "name": "tree",
+       "id": "gap_param_tree",
+       "type": "int"
+      },
+      {
+       "name": "kp",
+       "id": "gap_param_kp",
+       "type": "int"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "ADRS_ROOTS"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "slh_adrs_full",
+       "id": "b0103",
+       "fields": {
+        "TYPE": "4"
+       },
+       "inputs": {
+        "LAYER": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0104",
+          "fields": {
+           "VAR": {
+            "id": "gap_param_layer"
+           }
+          }
+         }
+        },
+        "TREE": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0105",
+          "fields": {
+           "VAR": {
+            "id": "gap_param_tree"
+           }
+          }
+         }
+        },
+        "KEYPAIR": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0106",
+          "fields": {
+           "VAR": {
+            "id": "gap_param_kp"
+           }
+          }
+         }
+        },
+        "HEIGHT": {
+         "block": {
+          "type": "math_number",
+          "id": "b0107",
+          "fields": {
+           "NUM": 0
+          }
+         }
+        },
+        "INDEX": {
+         "block": {
+          "type": "math_number",
+          "id": "b0108",
+          "fields": {
+           "NUM": 0
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0109",
+    "x": 180,
+    "y": 6500,
+    "extraState": {
+     "params": [
+      {
+       "name": "m",
+       "id": "gap_param_m",
+       "type": "bytes"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "WC"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "wots_checksum",
+       "id": "b0110",
+       "inputs": {
+        "M": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0111",
+          "fields": {
+           "VAR": {
+            "id": "gap_param_m"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0112",
+    "x": 200,
+    "y": 6820,
+    "extraState": {
+     "params": [
+      {
+       "name": "a",
+       "id": "gap_param_a",
+       "type": "int"
+      },
+      {
+       "name": "b",
+       "id": "gap_param_b",
+       "type": "int"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "MP"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "nt_mod_pow",
+       "id": "b0113",
+       "fields": {
+        "MODULUS": "8380417"
+       },
+       "inputs": {
+        "A": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0114",
+          "fields": {
+           "VAR": {
+            "id": "gap_param_a"
+           }
+          }
+         }
+        },
+        "B": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0115",
+          "fields": {
+           "VAR": {
+            "id": "gap_param_b"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0116",
+    "x": 220,
+    "y": 7140,
+    "extraState": {
+     "params": [
+      {
+       "name": "a",
+       "id": "param_a",
+       "type": "int_list"
+      },
+      {
+       "name": "b",
+       "id": "param_b",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "PMul"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "gf2_poly_mul",
+       "id": "b0117",
+       "inputs": {
+        "A": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0118",
+          "fields": {
+           "VAR": {
+            "id": "param_a"
+           }
+          }
+         }
+        },
+        "B": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0119",
+          "fields": {
+           "VAR": {
+            "id": "param_b"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0120",
+    "x": 240,
+    "y": 7460,
+    "extraState": {
+     "params": [
+      {
+       "name": "a",
+       "id": "param_a",
+       "type": "int_list"
+      },
+      {
+       "name": "b",
+       "id": "param_b",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "PDiv"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "gf2_poly_div",
+       "id": "b0121",
+       "inputs": {
+        "A": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0122",
+          "fields": {
+           "VAR": {
+            "id": "param_a"
+           }
+          }
+         }
+        },
+        "B": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0123",
+          "fields": {
+           "VAR": {
+            "id": "param_b"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0124",
+    "x": 100,
+    "y": 7780,
+    "extraState": {
+     "params": [
+      {
+       "name": "a",
+       "id": "param_a",
+       "type": "int_list"
+      },
+      {
+       "name": "b",
+       "id": "param_b",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "PMod"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "gf2_poly_mod",
+       "id": "b0125",
+       "inputs": {
+        "A": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0126",
+          "fields": {
+           "VAR": {
+            "id": "param_a"
+           }
+          }
+         }
+        },
+        "B": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0127",
+          "fields": {
+           "VAR": {
+            "id": "param_b"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0128",
+    "x": 120,
+    "y": 8100,
+    "extraState": {
+     "params": [
+      {
+       "name": "a",
+       "id": "param_a",
+       "type": "int_list"
+      },
+      {
+       "name": "b",
+       "id": "param_b",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "PGcd"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "gf2_poly_gcd",
+       "id": "b0129",
+       "inputs": {
+        "A": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0130",
+          "fields": {
+           "VAR": {
+            "id": "param_a"
+           }
+          }
+         }
+        },
+        "B": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0131",
+          "fields": {
+           "VAR": {
+            "id": "param_b"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0132",
+    "x": 140,
+    "y": 8420,
+    "extraState": {
+     "params": [
+      {
+       "name": "a",
+       "id": "param_a",
+       "type": "int_list"
+      },
+      {
+       "name": "b",
+       "id": "param_b",
+       "type": "int_list"
+      },
+      {
+       "name": "n",
+       "id": "param_n",
+       "type": "int"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "MMul"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "bin_mat_mul",
+       "id": "b0133",
+       "inputs": {
+        "A": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0134",
+          "fields": {
+           "VAR": {
+            "id": "param_a"
+           }
+          }
+         }
+        },
+        "B": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0135",
+          "fields": {
+           "VAR": {
+            "id": "param_b"
+           }
+          }
+         }
+        },
+        "N": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0136",
+          "fields": {
+           "VAR": {
+            "id": "param_n"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0137",
+    "x": 160,
+    "y": 8740,
+    "extraState": {
+     "params": [
+      {
+       "name": "a",
+       "id": "param_a",
+       "type": "int_list"
+      },
+      {
+       "name": "n",
+       "id": "param_n",
+       "type": "int"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "MInv"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "bin_mat_inv",
+       "id": "b0138",
+       "inputs": {
+        "A": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0139",
+          "fields": {
+           "VAR": {
+            "id": "param_a"
+           }
+          }
+         }
+        },
+        "N": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0140",
+          "fields": {
+           "VAR": {
+            "id": "param_n"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0141",
+    "x": 180,
+    "y": 9060,
+    "extraState": {
+     "params": [
+      {
+       "name": "x",
+       "id": "param_x",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "HW"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "ham_weight",
+       "id": "b0142",
+       "inputs": {
+        "X": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0143",
+          "fields": {
+           "VAR": {
+            "id": "param_x"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0144",
+    "x": 200,
+    "y": 9380,
+    "extraState": {
+     "params": [
+      {
+       "name": "x",
+       "id": "param_x",
+       "type": "int_list"
+      },
+      {
+       "name": "y",
+       "id": "param_y",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "HD"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "ham_dist",
+       "id": "b0145",
+       "inputs": {
+        "X": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0146",
+          "fields": {
+           "VAR": {
+            "id": "param_x"
+           }
+          }
+         }
+        },
+        "Y": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0147",
+          "fields": {
+           "VAR": {
+            "id": "param_y"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0148",
+    "x": 220,
+    "y": 9700,
+    "extraState": {
+     "params": [
+      {
+       "name": "m",
+       "id": "tidx_param_m",
+       "type": "bytes"
+      },
+      {
+       "name": "i",
+       "id": "tidx_param_i",
+       "type": "int"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "FLI"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "fors_leaf_index",
+       "id": "b0149",
+       "inputs": {
+        "M": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0150",
+          "fields": {
+           "VAR": {
+            "id": "tidx_param_m"
+           }
+          }
+         }
+        },
+        "I": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0151",
+          "fields": {
+           "VAR": {
+            "id": "tidx_param_i"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0152",
+    "x": 240,
+    "y": 10020,
+    "extraState": {
+     "params": [
+      {
+       "name": "leaves",
+       "id": "tidx_param_leaves",
+       "type": "bytes"
+      },
+      {
+       "name": "leaf_len",
+       "id": "tidx_param_leaf_len",
+       "type": "int"
+      },
+      {
+       "name": "adrs",
+       "id": "tidx_param_adrs",
+       "type": "bytes"
+      },
+      {
+       "name": "idx",
+       "id": "tidx_param_idx",
+       "type": "int"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "AP"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "merkle_auth_path",
+       "id": "b0153",
+       "inputs": {
+        "LEAVES": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0154",
+          "fields": {
+           "VAR": {
+            "id": "tidx_param_leaves"
+           }
+          }
+         }
+        },
+        "LEAF_LEN": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0155",
+          "fields": {
+           "VAR": {
+            "id": "tidx_param_leaf_len"
+           }
+          }
+         }
+        },
+        "ADRS": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0156",
+          "fields": {
+           "VAR": {
+            "id": "tidx_param_adrs"
+           }
+          }
+         }
+        },
+        "INDEX": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0157",
+          "fields": {
+           "VAR": {
+            "id": "tidx_param_idx"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0158",
+    "x": 100,
+    "y": 10340,
+    "extraState": {
+     "params": [
+      {
+       "name": "leaves",
+       "id": "tidx_param_leaves",
+       "type": "bytes"
+      },
+      {
+       "name": "leaf_len",
+       "id": "tidx_param_leaf_len",
+       "type": "int"
+      },
+      {
+       "name": "adrs",
+       "id": "tidx_param_adrs",
+       "type": "bytes"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "MR"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "merkle_root",
+       "id": "b0159",
+       "inputs": {
+        "LEAVES": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0160",
+          "fields": {
+           "VAR": {
+            "id": "tidx_param_leaves"
+           }
+          }
+         }
+        },
+        "LEAF_LEN": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0161",
+          "fields": {
+           "VAR": {
+            "id": "tidx_param_leaf_len"
+           }
+          }
+         }
+        },
+        "ADRS": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0162",
+          "fields": {
+           "VAR": {
+            "id": "tidx_param_adrs"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0163",
+    "x": 120,
+    "y": 10660,
+    "extraState": {
+     "params": [
+      {
+       "name": "l",
+       "id": "tidx_param_l",
+       "type": "bytes"
+      },
+      {
+       "name": "r",
+       "id": "tidx_param_r",
+       "type": "bytes"
+      },
+      {
+       "name": "adrs",
+       "id": "tidx_param_adrs",
+       "type": "bytes"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "MN"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "merkle_node",
+       "id": "b0164",
+       "inputs": {
+        "LEFT": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0165",
+          "fields": {
+           "VAR": {
+            "id": "tidx_param_l"
+           }
+          }
+         }
+        },
+        "RIGHT": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0166",
+          "fields": {
+           "VAR": {
+            "id": "tidx_param_r"
+           }
+          }
+         }
+        },
+        "ADRS": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0167",
+          "fields": {
+           "VAR": {
+            "id": "tidx_param_adrs"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0168",
+    "x": 140,
+    "y": 10980,
+    "extraState": {
+     "params": [
+      {
+       "name": "layer",
+       "id": "tidx_param_layer",
+       "type": "int"
+      },
+      {
+       "name": "tree",
+       "id": "tidx_param_tree",
+       "type": "int"
+      },
+      {
+       "name": "leaf",
+       "id": "tidx_param_leaf",
+       "type": "int"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "Addr"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "slh_addr",
+       "id": "b0169",
+       "fields": {
+        "TYPE": "0"
+       },
+       "inputs": {
+        "LAYER": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0170",
+          "fields": {
+           "VAR": {
+            "id": "tidx_param_layer"
+           }
+          }
+         }
+        },
+        "TREE": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0171",
+          "fields": {
+           "VAR": {
+            "id": "tidx_param_tree"
+           }
+          }
+         }
+        },
+        "LEAF": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0172",
+          "fields": {
+           "VAR": {
+            "id": "tidx_param_leaf"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0173",
+    "x": 160,
+    "y": 11300,
+    "extraState": {
+     "params": [
+      {
+       "name": "r",
+       "id": "param_r",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "P2R_High"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "pq_power2round",
+       "id": "b0174",
+       "fields": {
+        "PART": "r1"
+       },
+       "inputs": {
+        "INPUT": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0175",
+          "fields": {
+           "VAR": {
+            "id": "param_r"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0176",
+    "x": 180,
+    "y": 11620,
+    "extraState": {
+     "params": [
+      {
+       "name": "r",
+       "id": "param_r",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "P2R_Low"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "pq_power2round",
+       "id": "b0177",
+       "fields": {
+        "PART": "r0"
+       },
+       "inputs": {
+        "INPUT": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0178",
+          "fields": {
+           "VAR": {
+            "id": "param_r"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0179",
+    "x": 200,
+    "y": 11940,
+    "extraState": {
+     "params": [
+      {
+       "name": "r",
+       "id": "param_r",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "Dec_High"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "pq_decompose",
+       "id": "b0180",
+       "fields": {
+        "PART": "r1"
+       },
+       "inputs": {
+        "INPUT": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0181",
+          "fields": {
+           "VAR": {
+            "id": "param_r"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0182",
+    "x": 220,
+    "y": 12260,
+    "extraState": {
+     "params": [
+      {
+       "name": "r",
+       "id": "param_r",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "Dec_Low"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "pq_decompose",
+       "id": "b0183",
+       "fields": {
+        "PART": "r0"
+       },
+       "inputs": {
+        "INPUT": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0184",
+          "fields": {
+           "VAR": {
+            "id": "param_r"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0185",
+    "x": 240,
+    "y": 12580,
+    "extraState": {
+     "params": [
+      {
+       "name": "z",
+       "id": "param_z",
+       "type": "int_list"
+      },
+      {
+       "name": "r",
+       "id": "param_r",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "Make_Hint"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "pq_make_hint",
+       "id": "b0186",
+       "inputs": {
+        "Z": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0187",
+          "fields": {
+           "VAR": {
+            "id": "param_z"
+           }
+          }
+         }
+        },
+        "R": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0188",
+          "fields": {
+           "VAR": {
+            "id": "param_r"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0189",
+    "x": 100,
+    "y": 12900,
+    "extraState": {
+     "params": [
+      {
+       "name": "h",
+       "id": "param_h",
+       "type": "int_list"
+      },
+      {
+       "name": "r",
+       "id": "param_r",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "Use_Hint"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "pq_use_hint",
+       "id": "b0190",
+       "inputs": {
+        "H": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0191",
+          "fields": {
+           "VAR": {
+            "id": "param_h"
+           }
+          }
+         }
+        },
+        "R": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0192",
+          "fields": {
+           "VAR": {
+            "id": "param_r"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0193",
+    "x": 120,
+    "y": 13220,
+    "extraState": {
+     "params": [
+      {
+       "name": "seed",
+       "id": "param_seed",
+       "type": "bytes"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "In_Ball"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "pq_sample_in_ball",
+       "id": "b0194",
+       "inputs": {
+        "SEED": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0195",
+          "fields": {
+           "VAR": {
+            "id": "param_seed"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0196",
+    "x": 140,
+    "y": 13540,
+    "extraState": {
+     "params": [
+      {
+       "name": "a",
+       "id": "gf2m_param_a",
+       "type": "int_list"
+      },
+      {
+       "name": "b",
+       "id": "gf2m_param_b",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "GA"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "gf2m_poly_add",
+       "id": "b0197",
+       "inputs": {
+        "A": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0198",
+          "fields": {
+           "VAR": {
+            "id": "gf2m_param_a"
+           }
+          }
+         }
+        },
+        "B": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0199",
+          "fields": {
+           "VAR": {
+            "id": "gf2m_param_b"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0200",
+    "x": 160,
+    "y": 13860,
+    "extraState": {
+     "params": [
+      {
+       "name": "a",
+       "id": "gf2m_param_a",
+       "type": "int_list"
+      },
+      {
+       "name": "b",
+       "id": "gf2m_param_b",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "GM"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "gf2m_poly_mul",
+       "id": "b0201",
+       "inputs": {
+        "A": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0202",
+          "fields": {
+           "VAR": {
+            "id": "gf2m_param_a"
+           }
+          }
+         }
+        },
+        "B": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0203",
+          "fields": {
+           "VAR": {
+            "id": "gf2m_param_b"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0204",
+    "x": 180,
+    "y": 14180,
+    "extraState": {
+     "params": [
+      {
+       "name": "a",
+       "id": "gf2m_param_a",
+       "type": "int_list"
+      },
+      {
+       "name": "b",
+       "id": "gf2m_param_b",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "GMod"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "gf2m_poly_mod",
+       "id": "b0205",
+       "inputs": {
+        "A": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0206",
+          "fields": {
+           "VAR": {
+            "id": "gf2m_param_a"
+           }
+          }
+         }
+        },
+        "B": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0207",
+          "fields": {
+           "VAR": {
+            "id": "gf2m_param_b"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0208",
+    "x": 200,
+    "y": 14500,
+    "extraState": {
+     "params": [
+      {
+       "name": "a",
+       "id": "gf2m_param_a",
+       "type": "int_list"
+      },
+      {
+       "name": "b",
+       "id": "gf2m_param_b",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "GXGcd"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "gf2m_poly_xgcd",
+       "id": "b0209",
+       "inputs": {
+        "A": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0210",
+          "fields": {
+           "VAR": {
+            "id": "gf2m_param_a"
+           }
+          }
+         }
+        },
+        "B": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0211",
+          "fields": {
+           "VAR": {
+            "id": "gf2m_param_b"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0212",
+    "x": 220,
+    "y": 14820,
+    "extraState": {
+     "params": [
+      {
+       "name": "p",
+       "id": "gf2m_param_p",
+       "type": "int_list"
+      },
+      {
+       "name": "x",
+       "id": "gf2m_param_x",
+       "type": "int"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "GEval"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "gf2m_poly_eval",
+       "id": "b0213",
+       "inputs": {
+        "P": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0214",
+          "fields": {
+           "VAR": {
+            "id": "gf2m_param_p"
+           }
+          }
+         }
+        },
+        "X": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0215",
+          "fields": {
+           "VAR": {
+            "id": "gf2m_param_x"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "b0216",
+    "x": 240,
+    "y": 15140,
+    "extraState": {
+     "params": [
+      {
+       "name": "alphas",
+       "id": "gf2m_param_alphas",
+       "type": "int_list"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "GP"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "goppa_gen_poly",
+       "id": "b0217",
+       "inputs": {
+        "ALPHA": {
+         "block": {
+          "type": "variables_get",
+          "id": "b0218",
+          "fields": {
+           "VAR": {
+            "id": "gf2m_param_alphas"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  ]
+ }
+}

@@ -1,0 +1,106 @@
+{
+ "blocks": {
+  "languageVersion": 0,
+  "blocks": [
+   {
+    "type": "procedures_defreturn",
+    "id": "demo_cmac_def_0001",
+    "x": 100,
+    "y": 100,
+    "extraState": {
+     "params": [
+      {
+       "name": "key",
+       "id": "param_key",
+       "type": "bytes"
+      },
+      {
+       "name": "msg",
+       "id": "param_msg",
+       "type": "bytes"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "CMAC_AES"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "cmac_mac",
+       "id": "demo_cmac_0002",
+       "fields": {
+        "CIPHER": "aes"
+       },
+       "inputs": {
+        "KEY": {
+         "block": {
+          "type": "variables_get",
+          "id": "demo_cmac_key_0003",
+          "fields": {
+           "VAR": {
+            "id": "param_key"
+           }
+          }
+         }
+        },
+        "MSG": {
+         "block": {
+          "type": "variables_get",
+          "id": "demo_cmac_msg_0004",
+          "fields": {
+           "VAR": {
+            "id": "param_msg"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   },
+   {
+    "type": "procedures_defreturn",
+    "id": "demo_cmac_subkeys_def_0005",
+    "x": 100,
+    "y": 360,
+    "extraState": {
+     "params": [
+      {
+       "name": "subkey",
+       "id": "param_subkey",
+       "type": "bytes"
+      }
+     ],
+     "hasStatements": false
+    },
+    "fields": {
+     "NAME": "CMAC_SUBKEYS"
+    },
+    "inputs": {
+     "RETURN": {
+      "block": {
+       "type": "cmac_subkeys",
+       "id": "demo_cmac_subkeys_0006",
+       "inputs": {
+        "KEY": {
+         "block": {
+          "type": "variables_get",
+          "id": "demo_cmac_subkey_var_0007",
+          "fields": {
+           "VAR": {
+            "id": "param_subkey"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  ]
+ }
+}

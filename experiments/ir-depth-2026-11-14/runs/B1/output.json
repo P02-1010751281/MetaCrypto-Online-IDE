@@ -1,0 +1,2437 @@
+{
+ "blocks": {
+  "languageVersion": 0,
+  "blocks": [
+   {
+    "type": "procedures_defreturn",
+    "id": "blk_0001",
+    "x": 80,
+    "y": 80,
+    "extraState": {
+     "params": [],
+     "hasStatements": true
+    },
+    "fields": {
+     "NAME": "MLKEM_SEG"
+    },
+    "inputs": {
+     "STACK": {
+      "block": {
+       "type": "variables_set",
+       "id": "blk_0002",
+       "fields": {
+        "VAR": {
+         "id": "v_H",
+         "name": "H"
+        }
+       },
+       "inputs": {
+        "VALUE": {
+         "block": {
+          "type": "sponge_squeeze",
+          "id": "blk_0003",
+          "fields": {
+           "RATE": "1088"
+          },
+          "inputs": {
+           "STATE": {
+            "block": {
+             "type": "sponge_absorb",
+             "id": "blk_0004",
+             "fields": {
+              "RATE": "1088"
+             },
+             "inputs": {
+              "STATE": {
+               "block": {
+                "type": "keccak_state_init",
+                "id": "blk_0005"
+               }
+              },
+              "BLOCK": {
+               "block": {
+                "type": "sponge_pad",
+                "id": "blk_0006",
+                "fields": {
+                 "RATE": "1088",
+                 "SUFFIX": "0x06"
+                },
+                "inputs": {
+                 "INPUT": {
+                  "block": {
+                   "type": "variables_get",
+                   "id": "blk_0007",
+                   "fields": {
+                    "VAR": {
+                     "id": "ek",
+                     "name": "ek"
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           },
+           "OUTLEN": {
+            "block": {
+             "type": "data_value",
+             "id": "blk_0008",
+             "fields": {
+              "NUM": "32"
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "next": {
+        "block": {
+         "type": "variables_set",
+         "id": "blk_0009",
+         "fields": {
+          "VAR": {
+           "id": "v_G",
+           "name": "G"
+          }
+         },
+         "inputs": {
+          "VALUE": {
+           "block": {
+            "type": "sponge_squeeze",
+            "id": "blk_0010",
+            "fields": {
+             "RATE": "576"
+            },
+            "inputs": {
+             "STATE": {
+              "block": {
+               "type": "sponge_absorb",
+               "id": "blk_0011",
+               "fields": {
+                "RATE": "576"
+               },
+               "inputs": {
+                "STATE": {
+                 "block": {
+                  "type": "keccak_state_init",
+                  "id": "blk_0012"
+                 }
+                },
+                "BLOCK": {
+                 "block": {
+                  "type": "sponge_pad",
+                  "id": "blk_0013",
+                  "fields": {
+                   "RATE": "576",
+                   "SUFFIX": "0x06"
+                  },
+                  "inputs": {
+                   "INPUT": {
+                    "block": {
+                     "type": "pq_byte_concat",
+                     "id": "blk_0014",
+                     "inputs": {
+                      "A": {
+                       "block": {
+                        "type": "variables_get",
+                        "id": "blk_0015",
+                        "fields": {
+                         "VAR": {
+                          "id": "m",
+                          "name": "m"
+                         }
+                        }
+                       }
+                      },
+                      "B": {
+                       "block": {
+                        "type": "sponge_squeeze",
+                        "id": "blk_0016",
+                        "fields": {
+                         "RATE": "1088"
+                        },
+                        "inputs": {
+                         "STATE": {
+                          "block": {
+                           "type": "sponge_absorb",
+                           "id": "blk_0017",
+                           "fields": {
+                            "RATE": "1088"
+                           },
+                           "inputs": {
+                            "STATE": {
+                             "block": {
+                              "type": "keccak_state_init",
+                              "id": "blk_0018"
+                             }
+                            },
+                            "BLOCK": {
+                             "block": {
+                              "type": "sponge_pad",
+                              "id": "blk_0019",
+                              "fields": {
+                               "RATE": "1088",
+                               "SUFFIX": "0x06"
+                              },
+                              "inputs": {
+                               "INPUT": {
+                                "block": {
+                                 "type": "variables_get",
+                                 "id": "blk_0020",
+                                 "fields": {
+                                  "VAR": {
+                                   "id": "ek",
+                                   "name": "ek"
+                                  }
+                                 }
+                                }
+                               }
+                              }
+                             }
+                            }
+                           }
+                          }
+                         },
+                         "OUTLEN": {
+                          "block": {
+                           "type": "data_value",
+                           "id": "blk_0021",
+                           "fields": {
+                            "NUM": "32"
+                           }
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             },
+             "OUTLEN": {
+              "block": {
+               "type": "data_value",
+               "id": "blk_0022",
+               "fields": {
+                "NUM": "64"
+               }
+              }
+             }
+            }
+           }
+          }
+         },
+         "next": {
+          "block": {
+           "type": "variables_set",
+           "id": "blk_0023",
+           "fields": {
+            "VAR": {
+             "id": "v_Kp",
+             "name": "Kp"
+            }
+           },
+           "inputs": {
+            "VALUE": {
+             "block": {
+              "type": "pq_bytes_slice",
+              "id": "blk_0024",
+              "inputs": {
+               "INPUT": {
+                "block": {
+                 "type": "sponge_squeeze",
+                 "id": "blk_0025",
+                 "fields": {
+                  "RATE": "576"
+                 },
+                 "inputs": {
+                  "STATE": {
+                   "block": {
+                    "type": "sponge_absorb",
+                    "id": "blk_0026",
+                    "fields": {
+                     "RATE": "576"
+                    },
+                    "inputs": {
+                     "STATE": {
+                      "block": {
+                       "type": "keccak_state_init",
+                       "id": "blk_0027"
+                      }
+                     },
+                     "BLOCK": {
+                      "block": {
+                       "type": "sponge_pad",
+                       "id": "blk_0028",
+                       "fields": {
+                        "RATE": "576",
+                        "SUFFIX": "0x06"
+                       },
+                       "inputs": {
+                        "INPUT": {
+                         "block": {
+                          "type": "pq_byte_concat",
+                          "id": "blk_0029",
+                          "inputs": {
+                           "A": {
+                            "block": {
+                             "type": "variables_get",
+                             "id": "blk_0030",
+                             "fields": {
+                              "VAR": {
+                               "id": "m",
+                               "name": "m"
+                              }
+                             }
+                            }
+                           },
+                           "B": {
+                            "block": {
+                             "type": "sponge_squeeze",
+                             "id": "blk_0031",
+                             "fields": {
+                              "RATE": "1088"
+                             },
+                             "inputs": {
+                              "STATE": {
+                               "block": {
+                                "type": "sponge_absorb",
+                                "id": "blk_0032",
+                                "fields": {
+                                 "RATE": "1088"
+                                },
+                                "inputs": {
+                                 "STATE": {
+                                  "block": {
+                                   "type": "keccak_state_init",
+                                   "id": "blk_0033"
+                                  }
+                                 },
+                                 "BLOCK": {
+                                  "block": {
+                                   "type": "sponge_pad",
+                                   "id": "blk_0034",
+                                   "fields": {
+                                    "RATE": "1088",
+                                    "SUFFIX": "0x06"
+                                   },
+                                   "inputs": {
+                                    "INPUT": {
+                                     "block": {
+                                      "type": "variables_get",
+                                      "id": "blk_0035",
+                                      "fields": {
+                                       "VAR": {
+                                        "id": "ek",
+                                        "name": "ek"
+                                       }
+                                      }
+                                     }
+                                    }
+                                   }
+                                  }
+                                 }
+                                }
+                               }
+                              },
+                              "OUTLEN": {
+                               "block": {
+                                "type": "data_value",
+                                "id": "blk_0036",
+                                "fields": {
+                                 "NUM": "32"
+                                }
+                               }
+                              }
+                             }
+                            }
+                           }
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   }
+                  },
+                  "OUTLEN": {
+                   "block": {
+                    "type": "data_value",
+                    "id": "blk_0037",
+                    "fields": {
+                     "NUM": "64"
+                    }
+                   }
+                  }
+                 }
+                }
+               },
+               "START": {
+                "block": {
+                 "type": "data_value",
+                 "id": "blk_0038",
+                 "fields": {
+                  "NUM": "0"
+                 }
+                }
+               },
+               "END": {
+                "block": {
+                 "type": "data_value",
+                 "id": "blk_0039",
+                 "fields": {
+                  "NUM": "32"
+                 }
+                }
+               }
+              }
+             }
+            }
+           },
+           "next": {
+            "block": {
+             "type": "variables_set",
+             "id": "blk_0040",
+             "fields": {
+              "VAR": {
+               "id": "v_r",
+               "name": "r"
+              }
+             },
+             "inputs": {
+              "VALUE": {
+               "block": {
+                "type": "pq_bytes_slice",
+                "id": "blk_0041",
+                "inputs": {
+                 "INPUT": {
+                  "block": {
+                   "type": "sponge_squeeze",
+                   "id": "blk_0042",
+                   "fields": {
+                    "RATE": "576"
+                   },
+                   "inputs": {
+                    "STATE": {
+                     "block": {
+                      "type": "sponge_absorb",
+                      "id": "blk_0043",
+                      "fields": {
+                       "RATE": "576"
+                      },
+                      "inputs": {
+                       "STATE": {
+                        "block": {
+                         "type": "keccak_state_init",
+                         "id": "blk_0044"
+                        }
+                       },
+                       "BLOCK": {
+                        "block": {
+                         "type": "sponge_pad",
+                         "id": "blk_0045",
+                         "fields": {
+                          "RATE": "576",
+                          "SUFFIX": "0x06"
+                         },
+                         "inputs": {
+                          "INPUT": {
+                           "block": {
+                            "type": "pq_byte_concat",
+                            "id": "blk_0046",
+                            "inputs": {
+                             "A": {
+                              "block": {
+                               "type": "variables_get",
+                               "id": "blk_0047",
+                               "fields": {
+                                "VAR": {
+                                 "id": "m",
+                                 "name": "m"
+                                }
+                               }
+                              }
+                             },
+                             "B": {
+                              "block": {
+                               "type": "sponge_squeeze",
+                               "id": "blk_0048",
+                               "fields": {
+                                "RATE": "1088"
+                               },
+                               "inputs": {
+                                "STATE": {
+                                 "block": {
+                                  "type": "sponge_absorb",
+                                  "id": "blk_0049",
+                                  "fields": {
+                                   "RATE": "1088"
+                                  },
+                                  "inputs": {
+                                   "STATE": {
+                                    "block": {
+                                     "type": "keccak_state_init",
+                                     "id": "blk_0050"
+                                    }
+                                   },
+                                   "BLOCK": {
+                                    "block": {
+                                     "type": "sponge_pad",
+                                     "id": "blk_0051",
+                                     "fields": {
+                                      "RATE": "1088",
+                                      "SUFFIX": "0x06"
+                                     },
+                                     "inputs": {
+                                      "INPUT": {
+                                       "block": {
+                                        "type": "variables_get",
+                                        "id": "blk_0052",
+                                        "fields": {
+                                         "VAR": {
+                                          "id": "ek",
+                                          "name": "ek"
+                                         }
+                                        }
+                                       }
+                                      }
+                                     }
+                                    }
+                                   }
+                                  }
+                                 }
+                                },
+                                "OUTLEN": {
+                                 "block": {
+                                  "type": "data_value",
+                                  "id": "blk_0053",
+                                  "fields": {
+                                   "NUM": "32"
+                                  }
+                                 }
+                                }
+                               }
+                              }
+                             }
+                            }
+                           }
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    },
+                    "OUTLEN": {
+                     "block": {
+                      "type": "data_value",
+                      "id": "blk_0054",
+                      "fields": {
+                       "NUM": "64"
+                      }
+                     }
+                    }
+                   }
+                  }
+                 },
+                 "START": {
+                  "block": {
+                   "type": "data_value",
+                   "id": "blk_0055",
+                   "fields": {
+                    "NUM": "32"
+                   }
+                  }
+                 },
+                 "END": {
+                  "block": {
+                   "type": "data_value",
+                   "id": "blk_0056",
+                   "fields": {
+                    "NUM": "64"
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             },
+             "next": {
+              "block": {
+               "type": "variables_set",
+               "id": "blk_0057",
+               "fields": {
+                "VAR": {
+                 "id": "v_rho",
+                 "name": "rho"
+                }
+               },
+               "inputs": {
+                "VALUE": {
+                 "block": {
+                  "type": "pq_bytes_slice",
+                  "id": "blk_0058",
+                  "inputs": {
+                   "INPUT": {
+                    "block": {
+                     "type": "variables_get",
+                     "id": "blk_0059",
+                     "fields": {
+                      "VAR": {
+                       "id": "ek",
+                       "name": "ek"
+                      }
+                     }
+                    }
+                   },
+                   "START": {
+                    "block": {
+                     "type": "data_value",
+                     "id": "blk_0060",
+                     "fields": {
+                      "NUM": "768"
+                     }
+                    }
+                   },
+                   "END": {
+                    "block": {
+                     "type": "data_value",
+                     "id": "blk_0061",
+                     "fields": {
+                      "NUM": "800"
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               },
+               "next": {
+                "block": {
+                 "type": "variables_set",
+                 "id": "blk_0062",
+                 "fields": {
+                  "VAR": {
+                   "id": "v_t0",
+                   "name": "t0"
+                  }
+                 },
+                 "inputs": {
+                  "VALUE": {
+                   "block": {
+                    "type": "pq_byte_decode",
+                    "id": "blk_0063",
+                    "fields": {
+                     "BITS": "12"
+                    },
+                    "inputs": {
+                     "INPUT": {
+                      "block": {
+                       "type": "pq_bytes_slice",
+                       "id": "blk_0064",
+                       "inputs": {
+                        "INPUT": {
+                         "block": {
+                          "type": "variables_get",
+                          "id": "blk_0065",
+                          "fields": {
+                           "VAR": {
+                            "id": "ek",
+                            "name": "ek"
+                           }
+                          }
+                         }
+                        },
+                        "START": {
+                         "block": {
+                          "type": "data_value",
+                          "id": "blk_0066",
+                          "fields": {
+                           "NUM": "0"
+                          }
+                         }
+                        },
+                        "END": {
+                         "block": {
+                          "type": "data_value",
+                          "id": "blk_0067",
+                          "fields": {
+                           "NUM": "384"
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 },
+                 "next": {
+                  "block": {
+                   "type": "variables_set",
+                   "id": "blk_0068",
+                   "fields": {
+                    "VAR": {
+                     "id": "v_t1",
+                     "name": "t1"
+                    }
+                   },
+                   "inputs": {
+                    "VALUE": {
+                     "block": {
+                      "type": "pq_byte_decode",
+                      "id": "blk_0069",
+                      "fields": {
+                       "BITS": "12"
+                      },
+                      "inputs": {
+                       "INPUT": {
+                        "block": {
+                         "type": "pq_bytes_slice",
+                         "id": "blk_0070",
+                         "inputs": {
+                          "INPUT": {
+                           "block": {
+                            "type": "variables_get",
+                            "id": "blk_0071",
+                            "fields": {
+                             "VAR": {
+                              "id": "ek",
+                              "name": "ek"
+                             }
+                            }
+                           }
+                          },
+                          "START": {
+                           "block": {
+                            "type": "data_value",
+                            "id": "blk_0072",
+                            "fields": {
+                             "NUM": "384"
+                            }
+                           }
+                          },
+                          "END": {
+                           "block": {
+                            "type": "data_value",
+                            "id": "blk_0073",
+                            "fields": {
+                             "NUM": "768"
+                            }
+                           }
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   },
+                   "next": {
+                    "block": {
+                     "type": "variables_set",
+                     "id": "blk_0074",
+                     "fields": {
+                      "VAR": {
+                       "id": "v_A00",
+                       "name": "A00"
+                      }
+                     },
+                     "inputs": {
+                      "VALUE": {
+                       "block": {
+                        "type": "pq_sample_ntt",
+                        "id": "blk_0075",
+                        "fields": {
+                         "MODULUS": "3329"
+                        },
+                        "inputs": {
+                         "SEED": {
+                          "block": {
+                           "type": "pq_seed_with_nonce",
+                           "id": "blk_0076",
+                           "inputs": {
+                            "SEED": {
+                             "block": {
+                              "type": "pq_seed_with_nonce",
+                              "id": "blk_0077",
+                              "inputs": {
+                               "SEED": {
+                                "block": {
+                                 "type": "pq_bytes_slice",
+                                 "id": "blk_0078",
+                                 "inputs": {
+                                  "INPUT": {
+                                   "block": {
+                                    "type": "variables_get",
+                                    "id": "blk_0079",
+                                    "fields": {
+                                     "VAR": {
+                                      "id": "ek",
+                                      "name": "ek"
+                                     }
+                                    }
+                                   }
+                                  },
+                                  "START": {
+                                   "block": {
+                                    "type": "data_value",
+                                    "id": "blk_0080",
+                                    "fields": {
+                                     "NUM": "768"
+                                    }
+                                   }
+                                  },
+                                  "END": {
+                                   "block": {
+                                    "type": "data_value",
+                                    "id": "blk_0081",
+                                    "fields": {
+                                     "NUM": "800"
+                                    }
+                                   }
+                                  }
+                                 }
+                                }
+                               },
+                               "NONCE": {
+                                "block": {
+                                 "type": "data_value",
+                                 "id": "blk_0082",
+                                 "fields": {
+                                  "NUM": "0"
+                                 }
+                                }
+                               }
+                              }
+                             }
+                            },
+                            "NONCE": {
+                             "block": {
+                              "type": "data_value",
+                              "id": "blk_0083",
+                              "fields": {
+                               "NUM": "0"
+                              }
+                             }
+                            }
+                           }
+                          }
+                         }
+                        }
+                       }
+                      }
+                     },
+                     "next": {
+                      "block": {
+                       "type": "variables_set",
+                       "id": "blk_0084",
+                       "fields": {
+                        "VAR": {
+                         "id": "v_A01",
+                         "name": "A01"
+                        }
+                       },
+                       "inputs": {
+                        "VALUE": {
+                         "block": {
+                          "type": "pq_sample_ntt",
+                          "id": "blk_0085",
+                          "fields": {
+                           "MODULUS": "3329"
+                          },
+                          "inputs": {
+                           "SEED": {
+                            "block": {
+                             "type": "pq_seed_with_nonce",
+                             "id": "blk_0086",
+                             "inputs": {
+                              "SEED": {
+                               "block": {
+                                "type": "pq_seed_with_nonce",
+                                "id": "blk_0087",
+                                "inputs": {
+                                 "SEED": {
+                                  "block": {
+                                   "type": "pq_bytes_slice",
+                                   "id": "blk_0088",
+                                   "inputs": {
+                                    "INPUT": {
+                                     "block": {
+                                      "type": "variables_get",
+                                      "id": "blk_0089",
+                                      "fields": {
+                                       "VAR": {
+                                        "id": "ek",
+                                        "name": "ek"
+                                       }
+                                      }
+                                     }
+                                    },
+                                    "START": {
+                                     "block": {
+                                      "type": "data_value",
+                                      "id": "blk_0090",
+                                      "fields": {
+                                       "NUM": "768"
+                                      }
+                                     }
+                                    },
+                                    "END": {
+                                     "block": {
+                                      "type": "data_value",
+                                      "id": "blk_0091",
+                                      "fields": {
+                                       "NUM": "800"
+                                      }
+                                     }
+                                    }
+                                   }
+                                  }
+                                 },
+                                 "NONCE": {
+                                  "block": {
+                                   "type": "data_value",
+                                   "id": "blk_0092",
+                                   "fields": {
+                                    "NUM": "1"
+                                   }
+                                  }
+                                 }
+                                }
+                               }
+                              },
+                              "NONCE": {
+                               "block": {
+                                "type": "data_value",
+                                "id": "blk_0093",
+                                "fields": {
+                                 "NUM": "0"
+                                }
+                               }
+                              }
+                             }
+                            }
+                           }
+                          }
+                         }
+                        }
+                       },
+                       "next": {
+                        "block": {
+                         "type": "variables_set",
+                         "id": "blk_0094",
+                         "fields": {
+                          "VAR": {
+                           "id": "v_A10",
+                           "name": "A10"
+                          }
+                         },
+                         "inputs": {
+                          "VALUE": {
+                           "block": {
+                            "type": "pq_sample_ntt",
+                            "id": "blk_0095",
+                            "fields": {
+                             "MODULUS": "3329"
+                            },
+                            "inputs": {
+                             "SEED": {
+                              "block": {
+                               "type": "pq_seed_with_nonce",
+                               "id": "blk_0096",
+                               "inputs": {
+                                "SEED": {
+                                 "block": {
+                                  "type": "pq_seed_with_nonce",
+                                  "id": "blk_0097",
+                                  "inputs": {
+                                   "SEED": {
+                                    "block": {
+                                     "type": "pq_bytes_slice",
+                                     "id": "blk_0098",
+                                     "inputs": {
+                                      "INPUT": {
+                                       "block": {
+                                        "type": "variables_get",
+                                        "id": "blk_0099",
+                                        "fields": {
+                                         "VAR": {
+                                          "id": "ek",
+                                          "name": "ek"
+                                         }
+                                        }
+                                       }
+                                      },
+                                      "START": {
+                                       "block": {
+                                        "type": "data_value",
+                                        "id": "blk_0100",
+                                        "fields": {
+                                         "NUM": "768"
+                                        }
+                                       }
+                                      },
+                                      "END": {
+                                       "block": {
+                                        "type": "data_value",
+                                        "id": "blk_0101",
+                                        "fields": {
+                                         "NUM": "800"
+                                        }
+                                       }
+                                      }
+                                     }
+                                    }
+                                   },
+                                   "NONCE": {
+                                    "block": {
+                                     "type": "data_value",
+                                     "id": "blk_0102",
+                                     "fields": {
+                                      "NUM": "0"
+                                     }
+                                    }
+                                   }
+                                  }
+                                 }
+                                },
+                                "NONCE": {
+                                 "block": {
+                                  "type": "data_value",
+                                  "id": "blk_0103",
+                                  "fields": {
+                                   "NUM": "1"
+                                  }
+                                 }
+                                }
+                               }
+                              }
+                             }
+                            }
+                           }
+                          }
+                         },
+                         "next": {
+                          "block": {
+                           "type": "variables_set",
+                           "id": "blk_0104",
+                           "fields": {
+                            "VAR": {
+                             "id": "v_A11",
+                             "name": "A11"
+                            }
+                           },
+                           "inputs": {
+                            "VALUE": {
+                             "block": {
+                              "type": "pq_sample_ntt",
+                              "id": "blk_0105",
+                              "fields": {
+                               "MODULUS": "3329"
+                              },
+                              "inputs": {
+                               "SEED": {
+                                "block": {
+                                 "type": "pq_seed_with_nonce",
+                                 "id": "blk_0106",
+                                 "inputs": {
+                                  "SEED": {
+                                   "block": {
+                                    "type": "pq_seed_with_nonce",
+                                    "id": "blk_0107",
+                                    "inputs": {
+                                     "SEED": {
+                                      "block": {
+                                       "type": "pq_bytes_slice",
+                                       "id": "blk_0108",
+                                       "inputs": {
+                                        "INPUT": {
+                                         "block": {
+                                          "type": "variables_get",
+                                          "id": "blk_0109",
+                                          "fields": {
+                                           "VAR": {
+                                            "id": "ek",
+                                            "name": "ek"
+                                           }
+                                          }
+                                         }
+                                        },
+                                        "START": {
+                                         "block": {
+                                          "type": "data_value",
+                                          "id": "blk_0110",
+                                          "fields": {
+                                           "NUM": "768"
+                                          }
+                                         }
+                                        },
+                                        "END": {
+                                         "block": {
+                                          "type": "data_value",
+                                          "id": "blk_0111",
+                                          "fields": {
+                                           "NUM": "800"
+                                          }
+                                         }
+                                        }
+                                       }
+                                      }
+                                     },
+                                     "NONCE": {
+                                      "block": {
+                                       "type": "data_value",
+                                       "id": "blk_0112",
+                                       "fields": {
+                                        "NUM": "1"
+                                       }
+                                      }
+                                     }
+                                    }
+                                   }
+                                  },
+                                  "NONCE": {
+                                   "block": {
+                                    "type": "data_value",
+                                    "id": "blk_0113",
+                                    "fields": {
+                                     "NUM": "1"
+                                    }
+                                   }
+                                  }
+                                 }
+                                }
+                               }
+                              }
+                             }
+                            }
+                           },
+                           "next": {
+                            "block": {
+                             "type": "variables_set",
+                             "id": "blk_0114",
+                             "fields": {
+                              "VAR": {
+                               "id": "v_s0",
+                               "name": "s0"
+                              }
+                             },
+                             "inputs": {
+                              "VALUE": {
+                               "block": {
+                                "type": "pq_sample_poly_cbd",
+                                "id": "blk_0115",
+                                "fields": {
+                                 "ETA": "3",
+                                 "MODULUS": "3329"
+                                },
+                                "inputs": {
+                                 "SEED": {
+                                  "block": {
+                                   "type": "pq_prf",
+                                   "id": "blk_0116",
+                                   "fields": {
+                                    "ALGO": "SHAKE256"
+                                   },
+                                   "inputs": {
+                                    "SEED": {
+                                     "block": {
+                                      "type": "pq_bytes_slice",
+                                      "id": "blk_0117",
+                                      "inputs": {
+                                       "INPUT": {
+                                        "block": {
+                                         "type": "sponge_squeeze",
+                                         "id": "blk_0118",
+                                         "fields": {
+                                          "RATE": "576"
+                                         },
+                                         "inputs": {
+                                          "STATE": {
+                                           "block": {
+                                            "type": "sponge_absorb",
+                                            "id": "blk_0119",
+                                            "fields": {
+                                             "RATE": "576"
+                                            },
+                                            "inputs": {
+                                             "STATE": {
+                                              "block": {
+                                               "type": "keccak_state_init",
+                                               "id": "blk_0120"
+                                              }
+                                             },
+                                             "BLOCK": {
+                                              "block": {
+                                               "type": "sponge_pad",
+                                               "id": "blk_0121",
+                                               "fields": {
+                                                "RATE": "576",
+                                                "SUFFIX": "0x06"
+                                               },
+                                               "inputs": {
+                                                "INPUT": {
+                                                 "block": {
+                                                  "type": "pq_byte_concat",
+                                                  "id": "blk_0122",
+                                                  "inputs": {
+                                                   "A": {
+                                                    "block": {
+                                                     "type": "variables_get",
+                                                     "id": "blk_0123",
+                                                     "fields": {
+                                                      "VAR": {
+                                                       "id": "m",
+                                                       "name": "m"
+                                                      }
+                                                     }
+                                                    }
+                                                   },
+                                                   "B": {
+                                                    "block": {
+                                                     "type": "sponge_squeeze",
+                                                     "id": "blk_0124",
+                                                     "fields": {
+                                                      "RATE": "1088"
+                                                     },
+                                                     "inputs": {
+                                                      "STATE": {
+                                                       "block": {
+                                                        "type": "sponge_absorb",
+                                                        "id": "blk_0125",
+                                                        "fields": {
+                                                         "RATE": "1088"
+                                                        },
+                                                        "inputs": {
+                                                         "STATE": {
+                                                          "block": {
+                                                           "type": "keccak_state_init",
+                                                           "id": "blk_0126"
+                                                          }
+                                                         },
+                                                         "BLOCK": {
+                                                          "block": {
+                                                           "type": "sponge_pad",
+                                                           "id": "blk_0127",
+                                                           "fields": {
+                                                            "RATE": "1088",
+                                                            "SUFFIX": "0x06"
+                                                           },
+                                                           "inputs": {
+                                                            "INPUT": {
+                                                             "block": {
+                                                              "type": "variables_get",
+                                                              "id": "blk_0128",
+                                                              "fields": {
+                                                               "VAR": {
+                                                                "id": "ek",
+                                                                "name": "ek"
+                                                               }
+                                                              }
+                                                             }
+                                                            }
+                                                           }
+                                                          }
+                                                         }
+                                                        }
+                                                       }
+                                                      },
+                                                      "OUTLEN": {
+                                                       "block": {
+                                                        "type": "data_value",
+                                                        "id": "blk_0129",
+                                                        "fields": {
+                                                         "NUM": "32"
+                                                        }
+                                                       }
+                                                      }
+                                                     }
+                                                    }
+                                                   }
+                                                  }
+                                                 }
+                                                }
+                                               }
+                                              }
+                                             }
+                                            }
+                                           }
+                                          },
+                                          "OUTLEN": {
+                                           "block": {
+                                            "type": "data_value",
+                                            "id": "blk_0130",
+                                            "fields": {
+                                             "NUM": "64"
+                                            }
+                                           }
+                                          }
+                                         }
+                                        }
+                                       },
+                                       "START": {
+                                        "block": {
+                                         "type": "data_value",
+                                         "id": "blk_0131",
+                                         "fields": {
+                                          "NUM": "32"
+                                         }
+                                        }
+                                       },
+                                       "END": {
+                                        "block": {
+                                         "type": "data_value",
+                                         "id": "blk_0132",
+                                         "fields": {
+                                          "NUM": "64"
+                                         }
+                                        }
+                                       }
+                                      }
+                                     }
+                                    },
+                                    "NONCE": {
+                                     "block": {
+                                      "type": "data_value",
+                                      "id": "blk_0133",
+                                      "fields": {
+                                       "NUM": "0"
+                                      }
+                                     }
+                                    },
+                                    "OUTLEN": {
+                                     "block": {
+                                      "type": "data_value",
+                                      "id": "blk_0134",
+                                      "fields": {
+                                       "NUM": "192"
+                                      }
+                                     }
+                                    }
+                                   }
+                                  }
+                                 }
+                                }
+                               }
+                              }
+                             },
+                             "next": {
+                              "block": {
+                               "type": "variables_set",
+                               "id": "blk_0135",
+                               "fields": {
+                                "VAR": {
+                                 "id": "v_s1",
+                                 "name": "s1"
+                                }
+                               },
+                               "inputs": {
+                                "VALUE": {
+                                 "block": {
+                                  "type": "pq_sample_poly_cbd",
+                                  "id": "blk_0136",
+                                  "fields": {
+                                   "ETA": "3",
+                                   "MODULUS": "3329"
+                                  },
+                                  "inputs": {
+                                   "SEED": {
+                                    "block": {
+                                     "type": "pq_prf",
+                                     "id": "blk_0137",
+                                     "fields": {
+                                      "ALGO": "SHAKE256"
+                                     },
+                                     "inputs": {
+                                      "SEED": {
+                                       "block": {
+                                        "type": "pq_bytes_slice",
+                                        "id": "blk_0138",
+                                        "inputs": {
+                                         "INPUT": {
+                                          "block": {
+                                           "type": "sponge_squeeze",
+                                           "id": "blk_0139",
+                                           "fields": {
+                                            "RATE": "576"
+                                           },
+                                           "inputs": {
+                                            "STATE": {
+                                             "block": {
+                                              "type": "sponge_absorb",
+                                              "id": "blk_0140",
+                                              "fields": {
+                                               "RATE": "576"
+                                              },
+                                              "inputs": {
+                                               "STATE": {
+                                                "block": {
+                                                 "type": "keccak_state_init",
+                                                 "id": "blk_0141"
+                                                }
+                                               },
+                                               "BLOCK": {
+                                                "block": {
+                                                 "type": "sponge_pad",
+                                                 "id": "blk_0142",
+                                                 "fields": {
+                                                  "RATE": "576",
+                                                  "SUFFIX": "0x06"
+                                                 },
+                                                 "inputs": {
+                                                  "INPUT": {
+                                                   "block": {
+                                                    "type": "pq_byte_concat",
+                                                    "id": "blk_0143",
+                                                    "inputs": {
+                                                     "A": {
+                                                      "block": {
+                                                       "type": "variables_get",
+                                                       "id": "blk_0144",
+                                                       "fields": {
+                                                        "VAR": {
+                                                         "id": "m",
+                                                         "name": "m"
+                                                        }
+                                                       }
+                                                      }
+                                                     },
+                                                     "B": {
+                                                      "block": {
+                                                       "type": "sponge_squeeze",
+                                                       "id": "blk_0145",
+                                                       "fields": {
+                                                        "RATE": "1088"
+                                                       },
+                                                       "inputs": {
+                                                        "STATE": {
+                                                         "block": {
+                                                          "type": "sponge_absorb",
+                                                          "id": "blk_0146",
+                                                          "fields": {
+                                                           "RATE": "1088"
+                                                          },
+                                                          "inputs": {
+                                                           "STATE": {
+                                                            "block": {
+                                                             "type": "keccak_state_init",
+                                                             "id": "blk_0147"
+                                                            }
+                                                           },
+                                                           "BLOCK": {
+                                                            "block": {
+                                                             "type": "sponge_pad",
+                                                             "id": "blk_0148",
+                                                             "fields": {
+                                                              "RATE": "1088",
+                                                              "SUFFIX": "0x06"
+                                                             },
+                                                             "inputs": {
+                                                              "INPUT": {
+                                                               "block": {
+                                                                "type": "variables_get",
+                                                                "id": "blk_0149",
+                                                                "fields": {
+                                                                 "VAR": {
+                                                                  "id": "ek",
+                                                                  "name": "ek"
+                                                                 }
+                                                                }
+                                                               }
+                                                              }
+                                                             }
+                                                            }
+                                                           }
+                                                          }
+                                                         }
+                                                        },
+                                                        "OUTLEN": {
+                                                         "block": {
+                                                          "type": "data_value",
+                                                          "id": "blk_0150",
+                                                          "fields": {
+                                                           "NUM": "32"
+                                                          }
+                                                         }
+                                                        }
+                                                       }
+                                                      }
+                                                     }
+                                                    }
+                                                   }
+                                                  }
+                                                 }
+                                                }
+                                               }
+                                              }
+                                             }
+                                            },
+                                            "OUTLEN": {
+                                             "block": {
+                                              "type": "data_value",
+                                              "id": "blk_0151",
+                                              "fields": {
+                                               "NUM": "64"
+                                              }
+                                             }
+                                            }
+                                           }
+                                          }
+                                         },
+                                         "START": {
+                                          "block": {
+                                           "type": "data_value",
+                                           "id": "blk_0152",
+                                           "fields": {
+                                            "NUM": "32"
+                                           }
+                                          }
+                                         },
+                                         "END": {
+                                          "block": {
+                                           "type": "data_value",
+                                           "id": "blk_0153",
+                                           "fields": {
+                                            "NUM": "64"
+                                           }
+                                          }
+                                         }
+                                        }
+                                       }
+                                      },
+                                      "NONCE": {
+                                       "block": {
+                                        "type": "data_value",
+                                        "id": "blk_0154",
+                                        "fields": {
+                                         "NUM": "1"
+                                        }
+                                       }
+                                      },
+                                      "OUTLEN": {
+                                       "block": {
+                                        "type": "data_value",
+                                        "id": "blk_0155",
+                                        "fields": {
+                                         "NUM": "192"
+                                        }
+                                       }
+                                      }
+                                     }
+                                    }
+                                   }
+                                  }
+                                 }
+                                }
+                               },
+                               "next": {
+                                "block": {
+                                 "type": "variables_set",
+                                 "id": "blk_0156",
+                                 "fields": {
+                                  "VAR": {
+                                   "id": "v_e1_0",
+                                   "name": "e1_0"
+                                  }
+                                 },
+                                 "inputs": {
+                                  "VALUE": {
+                                   "block": {
+                                    "type": "pq_sample_poly_cbd",
+                                    "id": "blk_0157",
+                                    "fields": {
+                                     "ETA": "2",
+                                     "MODULUS": "3329"
+                                    },
+                                    "inputs": {
+                                     "SEED": {
+                                      "block": {
+                                       "type": "pq_prf",
+                                       "id": "blk_0158",
+                                       "fields": {
+                                        "ALGO": "SHAKE256"
+                                       },
+                                       "inputs": {
+                                        "SEED": {
+                                         "block": {
+                                          "type": "pq_bytes_slice",
+                                          "id": "blk_0159",
+                                          "inputs": {
+                                           "INPUT": {
+                                            "block": {
+                                             "type": "sponge_squeeze",
+                                             "id": "blk_0160",
+                                             "fields": {
+                                              "RATE": "576"
+                                             },
+                                             "inputs": {
+                                              "STATE": {
+                                               "block": {
+                                                "type": "sponge_absorb",
+                                                "id": "blk_0161",
+                                                "fields": {
+                                                 "RATE": "576"
+                                                },
+                                                "inputs": {
+                                                 "STATE": {
+                                                  "block": {
+                                                   "type": "keccak_state_init",
+                                                   "id": "blk_0162"
+                                                  }
+                                                 },
+                                                 "BLOCK": {
+                                                  "block": {
+                                                   "type": "sponge_pad",
+                                                   "id": "blk_0163",
+                                                   "fields": {
+                                                    "RATE": "576",
+                                                    "SUFFIX": "0x06"
+                                                   },
+                                                   "inputs": {
+                                                    "INPUT": {
+                                                     "block": {
+                                                      "type": "pq_byte_concat",
+                                                      "id": "blk_0164",
+                                                      "inputs": {
+                                                       "A": {
+                                                        "block": {
+                                                         "type": "variables_get",
+                                                         "id": "blk_0165",
+                                                         "fields": {
+                                                          "VAR": {
+                                                           "id": "m",
+                                                           "name": "m"
+                                                          }
+                                                         }
+                                                        }
+                                                       },
+                                                       "B": {
+                                                        "block": {
+                                                         "type": "sponge_squeeze",
+                                                         "id": "blk_0166",
+                                                         "fields": {
+                                                          "RATE": "1088"
+                                                         },
+                                                         "inputs": {
+                                                          "STATE": {
+                                                           "block": {
+                                                            "type": "sponge_absorb",
+                                                            "id": "blk_0167",
+                                                            "fields": {
+                                                             "RATE": "1088"
+                                                            },
+                                                            "inputs": {
+                                                             "STATE": {
+                                                              "block": {
+                                                               "type": "keccak_state_init",
+                                                               "id": "blk_0168"
+                                                              }
+                                                             },
+                                                             "BLOCK": {
+                                                              "block": {
+                                                               "type": "sponge_pad",
+                                                               "id": "blk_0169",
+                                                               "fields": {
+                                                                "RATE": "1088",
+                                                                "SUFFIX": "0x06"
+                                                               },
+                                                               "inputs": {
+                                                                "INPUT": {
+                                                                 "block": {
+                                                                  "type": "variables_get",
+                                                                  "id": "blk_0170",
+                                                                  "fields": {
+                                                                   "VAR": {
+                                                                    "id": "ek",
+                                                                    "name": "ek"
+                                                                   }
+                                                                  }
+                                                                 }
+                                                                }
+                                                               }
+                                                              }
+                                                             }
+                                                            }
+                                                           }
+                                                          },
+                                                          "OUTLEN": {
+                                                           "block": {
+                                                            "type": "data_value",
+                                                            "id": "blk_0171",
+                                                            "fields": {
+                                                             "NUM": "32"
+                                                            }
+                                                           }
+                                                          }
+                                                         }
+                                                        }
+                                                       }
+                                                      }
+                                                     }
+                                                    }
+                                                   }
+                                                  }
+                                                 }
+                                                }
+                                               }
+                                              },
+                                              "OUTLEN": {
+                                               "block": {
+                                                "type": "data_value",
+                                                "id": "blk_0172",
+                                                "fields": {
+                                                 "NUM": "64"
+                                                }
+                                               }
+                                              }
+                                             }
+                                            }
+                                           },
+                                           "START": {
+                                            "block": {
+                                             "type": "data_value",
+                                             "id": "blk_0173",
+                                             "fields": {
+                                              "NUM": "32"
+                                             }
+                                            }
+                                           },
+                                           "END": {
+                                            "block": {
+                                             "type": "data_value",
+                                             "id": "blk_0174",
+                                             "fields": {
+                                              "NUM": "64"
+                                             }
+                                            }
+                                           }
+                                          }
+                                         }
+                                        },
+                                        "NONCE": {
+                                         "block": {
+                                          "type": "data_value",
+                                          "id": "blk_0175",
+                                          "fields": {
+                                           "NUM": "2"
+                                          }
+                                         }
+                                        },
+                                        "OUTLEN": {
+                                         "block": {
+                                          "type": "data_value",
+                                          "id": "blk_0176",
+                                          "fields": {
+                                           "NUM": "128"
+                                          }
+                                         }
+                                        }
+                                       }
+                                      }
+                                     }
+                                    }
+                                   }
+                                  }
+                                 },
+                                 "next": {
+                                  "block": {
+                                   "type": "variables_set",
+                                   "id": "blk_0177",
+                                   "fields": {
+                                    "VAR": {
+                                     "id": "v_e1_1",
+                                     "name": "e1_1"
+                                    }
+                                   },
+                                   "inputs": {
+                                    "VALUE": {
+                                     "block": {
+                                      "type": "pq_sample_poly_cbd",
+                                      "id": "blk_0178",
+                                      "fields": {
+                                       "ETA": "2",
+                                       "MODULUS": "3329"
+                                      },
+                                      "inputs": {
+                                       "SEED": {
+                                        "block": {
+                                         "type": "pq_prf",
+                                         "id": "blk_0179",
+                                         "fields": {
+                                          "ALGO": "SHAKE256"
+                                         },
+                                         "inputs": {
+                                          "SEED": {
+                                           "block": {
+                                            "type": "pq_bytes_slice",
+                                            "id": "blk_0180",
+                                            "inputs": {
+                                             "INPUT": {
+                                              "block": {
+                                               "type": "sponge_squeeze",
+                                               "id": "blk_0181",
+                                               "fields": {
+                                                "RATE": "576"
+                                               },
+                                               "inputs": {
+                                                "STATE": {
+                                                 "block": {
+                                                  "type": "sponge_absorb",
+                                                  "id": "blk_0182",
+                                                  "fields": {
+                                                   "RATE": "576"
+                                                  },
+                                                  "inputs": {
+                                                   "STATE": {
+                                                    "block": {
+                                                     "type": "keccak_state_init",
+                                                     "id": "blk_0183"
+                                                    }
+                                                   },
+                                                   "BLOCK": {
+                                                    "block": {
+                                                     "type": "sponge_pad",
+                                                     "id": "blk_0184",
+                                                     "fields": {
+                                                      "RATE": "576",
+                                                      "SUFFIX": "0x06"
+                                                     },
+                                                     "inputs": {
+                                                      "INPUT": {
+                                                       "block": {
+                                                        "type": "pq_byte_concat",
+                                                        "id": "blk_0185",
+                                                        "inputs": {
+                                                         "A": {
+                                                          "block": {
+                                                           "type": "variables_get",
+                                                           "id": "blk_0186",
+                                                           "fields": {
+                                                            "VAR": {
+                                                             "id": "m",
+                                                             "name": "m"
+                                                            }
+                                                           }
+                                                          }
+                                                         },
+                                                         "B": {
+                                                          "block": {
+                                                           "type": "sponge_squeeze",
+                                                           "id": "blk_0187",
+                                                           "fields": {
+                                                            "RATE": "1088"
+                                                           },
+                                                           "inputs": {
+                                                            "STATE": {
+                                                             "block": {
+                                                              "type": "sponge_absorb",
+                                                              "id": "blk_0188",
+                                                              "fields": {
+                                                               "RATE": "1088"
+                                                              },
+                                                              "inputs": {
+                                                               "STATE": {
+                                                                "block": {
+                                                                 "type": "keccak_state_init",
+                                                                 "id": "blk_0189"
+                                                                }
+                                                               },
+                                                               "BLOCK": {
+                                                                "block": {
+                                                                 "type": "sponge_pad",
+                                                                 "id": "blk_0190",
+                                                                 "fields": {
+                                                                  "RATE": "1088",
+                                                                  "SUFFIX": "0x06"
+                                                                 },
+                                                                 "inputs": {
+                                                                  "INPUT": {
+                                                                   "block": {
+                                                                    "type": "variables_get",
+                                                                    "id": "blk_0191",
+                                                                    "fields": {
+                                                                     "VAR": {
+                                                                      "id": "ek",
+                                                                      "name": "ek"
+                                                                     }
+                                                                    }
+                                                                   }
+                                                                  }
+                                                                 }
+                                                                }
+                                                               }
+                                                              }
+                                                             }
+                                                            },
+                                                            "OUTLEN": {
+                                                             "block": {
+                                                              "type": "data_value",
+                                                              "id": "blk_0192",
+                                                              "fields": {
+                                                               "NUM": "32"
+                                                              }
+                                                             }
+                                                            }
+                                                           }
+                                                          }
+                                                         }
+                                                        }
+                                                       }
+                                                      }
+                                                     }
+                                                    }
+                                                   }
+                                                  }
+                                                 }
+                                                },
+                                                "OUTLEN": {
+                                                 "block": {
+                                                  "type": "data_value",
+                                                  "id": "blk_0193",
+                                                  "fields": {
+                                                   "NUM": "64"
+                                                  }
+                                                 }
+                                                }
+                                               }
+                                              }
+                                             },
+                                             "START": {
+                                              "block": {
+                                               "type": "data_value",
+                                               "id": "blk_0194",
+                                               "fields": {
+                                                "NUM": "32"
+                                               }
+                                              }
+                                             },
+                                             "END": {
+                                              "block": {
+                                               "type": "data_value",
+                                               "id": "blk_0195",
+                                               "fields": {
+                                                "NUM": "64"
+                                               }
+                                              }
+                                             }
+                                            }
+                                           }
+                                          },
+                                          "NONCE": {
+                                           "block": {
+                                            "type": "data_value",
+                                            "id": "blk_0196",
+                                            "fields": {
+                                             "NUM": "3"
+                                            }
+                                           }
+                                          },
+                                          "OUTLEN": {
+                                           "block": {
+                                            "type": "data_value",
+                                            "id": "blk_0197",
+                                            "fields": {
+                                             "NUM": "128"
+                                            }
+                                           }
+                                          }
+                                         }
+                                        }
+                                       }
+                                      }
+                                     }
+                                    }
+                                   },
+                                   "next": {
+                                    "block": {
+                                     "type": "variables_set",
+                                     "id": "blk_0198",
+                                     "fields": {
+                                      "VAR": {
+                                       "id": "v_e2",
+                                       "name": "e2"
+                                      }
+                                     },
+                                     "inputs": {
+                                      "VALUE": {
+                                       "block": {
+                                        "type": "pq_sample_poly_cbd",
+                                        "id": "blk_0199",
+                                        "fields": {
+                                         "ETA": "2",
+                                         "MODULUS": "3329"
+                                        },
+                                        "inputs": {
+                                         "SEED": {
+                                          "block": {
+                                           "type": "pq_prf",
+                                           "id": "blk_0200",
+                                           "fields": {
+                                            "ALGO": "SHAKE256"
+                                           },
+                                           "inputs": {
+                                            "SEED": {
+                                             "block": {
+                                              "type": "pq_bytes_slice",
+                                              "id": "blk_0201",
+                                              "inputs": {
+                                               "INPUT": {
+                                                "block": {
+                                                 "type": "sponge_squeeze",
+                                                 "id": "blk_0202",
+                                                 "fields": {
+                                                  "RATE": "576"
+                                                 },
+                                                 "inputs": {
+                                                  "STATE": {
+                                                   "block": {
+                                                    "type": "sponge_absorb",
+                                                    "id": "blk_0203",
+                                                    "fields": {
+                                                     "RATE": "576"
+                                                    },
+                                                    "inputs": {
+                                                     "STATE": {
+                                                      "block": {
+                                                       "type": "keccak_state_init",
+                                                       "id": "blk_0204"
+                                                      }
+                                                     },
+                                                     "BLOCK": {
+                                                      "block": {
+                                                       "type": "sponge_pad",
+                                                       "id": "blk_0205",
+                                                       "fields": {
+                                                        "RATE": "576",
+                                                        "SUFFIX": "0x06"
+                                                       },
+                                                       "inputs": {
+                                                        "INPUT": {
+                                                         "block": {
+                                                          "type": "pq_byte_concat",
+                                                          "id": "blk_0206",
+                                                          "inputs": {
+                                                           "A": {
+                                                            "block": {
+                                                             "type": "variables_get",
+                                                             "id": "blk_0207",
+                                                             "fields": {
+                                                              "VAR": {
+                                                               "id": "m",
+                                                               "name": "m"
+                                                              }
+                                                             }
+                                                            }
+                                                           },
+                                                           "B": {
+                                                            "block": {
+                                                             "type": "sponge_squeeze",
+                                                             "id": "blk_0208",
+                                                             "fields": {
+                                                              "RATE": "1088"
+                                                             },
+                                                             "inputs": {
+                                                              "STATE": {
+                                                               "block": {
+                                                                "type": "sponge_absorb",
+                                                                "id": "blk_0209",
+                                                                "fields": {
+                                                                 "RATE": "1088"
+                                                                },
+                                                                "inputs": {
+                                                                 "STATE": {
+                                                                  "block": {
+                                                                   "type": "keccak_state_init",
+                                                                   "id": "blk_0210"
+                                                                  }
+                                                                 },
+                                                                 "BLOCK": {
+                                                                  "block": {
+                                                                   "type": "sponge_pad",
+                                                                   "id": "blk_0211",
+                                                                   "fields": {
+                                                                    "RATE": "1088",
+                                                                    "SUFFIX": "0x06"
+                                                                   },
+                                                                   "inputs": {
+                                                                    "INPUT": {
+                                                                     "block": {
+                                                                      "type": "variables_get",
+                                                                      "id": "blk_0212",
+                                                                      "fields": {
+                                                                       "VAR": {
+                                                                        "id": "ek",
+                                                                        "name": "ek"
+                                                                       }
+                                                                      }
+                                                                     }
+                                                                    }
+                                                                   }
+                                                                  }
+                                                                 }
+                                                                }
+                                                               }
+                                                              },
+                                                              "OUTLEN": {
+                                                               "block": {
+                                                                "type": "data_value",
+                                                                "id": "blk_0213",
+                                                                "fields": {
+                                                                 "NUM": "32"
+                                                                }
+                                                               }
+                                                              }
+                                                             }
+                                                            }
+                                                           }
+                                                          }
+                                                         }
+                                                        }
+                                                       }
+                                                      }
+                                                     }
+                                                    }
+                                                   }
+                                                  },
+                                                  "OUTLEN": {
+                                                   "block": {
+                                                    "type": "data_value",
+                                                    "id": "blk_0214",
+                                                    "fields": {
+                                                     "NUM": "64"
+                                                    }
+                                                   }
+                                                  }
+                                                 }
+                                                }
+                                               },
+                                               "START": {
+                                                "block": {
+                                                 "type": "data_value",
+                                                 "id": "blk_0215",
+                                                 "fields": {
+                                                  "NUM": "32"
+                                                 }
+                                                }
+                                               },
+                                               "END": {
+                                                "block": {
+                                                 "type": "data_value",
+                                                 "id": "blk_0216",
+                                                 "fields": {
+                                                  "NUM": "64"
+                                                 }
+                                                }
+                                               }
+                                              }
+                                             }
+                                            },
+                                            "NONCE": {
+                                             "block": {
+                                              "type": "data_value",
+                                              "id": "blk_0217",
+                                              "fields": {
+                                               "NUM": "4"
+                                              }
+                                             }
+                                            },
+                                            "OUTLEN": {
+                                             "block": {
+                                              "type": "data_value",
+                                              "id": "blk_0218",
+                                              "fields": {
+                                               "NUM": "128"
+                                              }
+                                             }
+                                            }
+                                           }
+                                          }
+                                         }
+                                        }
+                                       }
+                                      }
+                                     },
+                                     "next": {
+                                      "block": {
+                                       "type": "variables_set",
+                                       "id": "blk_0219",
+                                       "fields": {
+                                        "VAR": {
+                                         "id": "v_sh0",
+                                         "name": "sh0"
+                                        }
+                                       },
+                                       "inputs": {
+                                        "VALUE": {
+                                         "block": {
+                                          "type": "pq_ntt",
+                                          "id": "blk_0220",
+                                          "fields": {
+                                           "MODULUS": "3329",
+                                           "DEGREE": "256"
+                                          },
+                                          "inputs": {
+                                           "INPUT": {
+                                            "block": {
+                                             "type": "pq_sample_poly_cbd",
+                                             "id": "blk_0221",
+                                             "fields": {
+                                              "ETA": "3",
+                                              "MODULUS": "3329"
+                                             },
+                                             "inputs": {
+                                              "SEED": {
+                                               "block": {
+                                                "type": "pq_prf",
+                                                "id": "blk_0222",
+                                                "fields": {
+                                                 "ALGO": "SHAKE256"
+                                                },
+                                                "inputs": {
+                                                 "SEED": {
+                                                  "block": {
+                                                   "type": "pq_bytes_slice",
+                                                   "id": "blk_0223",
+                                                   "inputs": {
+                                                    "INPUT": {
+                                                     "block": {
+                                                      "type": "sponge_squeeze",
+                                                      "id": "blk_0224",
+                                                      "fields": {
+                                                       "RATE": "576"
+                                                      },
+                                                      "inputs": {
+                                                       "STATE": {
+                                                        "block": {
+                                                         "type": "sponge_absorb",
+                                                         "id": "blk_0225",
+                                                         "fields": {
+                                                          "RATE": "576"
+                                                         },
+                                                         "inputs": {
+                                                          "STATE": {
+                                                           "block": {
+                                                            "type": "keccak_state_init",
+                                                            "id": "blk_0226"
+                                                           }
+                                                          },
+                                                          "BLOCK": {
+                                                           "block": {
+                                                            "type": "sponge_pad",
+                                                            "id": "blk_0227",
+                                                            "fields": {
+                                                             "RATE": "576",
+                                                             "SUFFIX": "0x06"
+                                                            },
+                                                            "inputs": {
+                                                             "INPUT": {
+                                                              "block": {
+                                                               "type": "pq_byte_concat",
+                                                               "id": "blk_0228",
+                                                               "inputs": {
+                                                                "A": {
+                                                                 "block": {
+                                                                  "type": "variables_get",
+                                                                  "id": "blk_0229",
+                                                                  "fields": {
+                                                                   "VAR": {
+                                                                    "id": "m",
+                                                                    "name": "m"
+                                                                   }
+                                                                  }
+                                                                 }
+                                                                },
+                                                                "B": {
+                                                                 "block": {
+                                                                  "type": "sponge_squeeze",
+                                                                  "id": "blk_0230",
+                                                                  "fields": {
+                                                                   "RATE": "1088"
+                                                                  },
+                                                                  "inputs": {
+                                                                   "STATE": {
+                                                                    "block": {
+                                                                     "type": "sponge_absorb",
+                                                                     "id": "blk_0231",
+                                                                     "fields": {
+                                                                      "RATE": "1088"
+                                                                     },
+                                                                     "inputs": {
+                                                                      "STATE": {
+                                                                       "block": {
+                                                                        "type": "keccak_state_init",
+                                                                        "id": "blk_0232"
+                                                                       }
+                                                                      },
+                                                                      "BLOCK": {
+                                                                       "block": {
+                                                                        "type": "sponge_pad",
+                                                                        "id": "blk_0233",
+                                                                        "fields": {
+                                                                         "RATE": "1088",
+                                                                         "SUFFIX": "0x06"
+                                                                        },
+                                                                        "inputs": {
+                                                                         "INPUT": {
+                                                                          "block": {
+                                                                           "type": "variables_get",
+                                                                           "id": "blk_0234",
+                                                                           "fields": {
+                                                                            "VAR": {
+                                                                             "id": "ek",
+                                                                             "name": "ek"
+                                                                            }
+                                                                           }
+                                                                          }
+                                                                         }
+                                                                        }
+                                                                       }
+                                                                      }
+                                                                     }
+                                                                    }
+                                                                   },
+                                                                   "OUTLEN": {
+                                                                    "block": {
+                                                                     "type": "data_value",
+                                                                     "id": "blk_0235",
+                                                                     "fields": {
+                                                                      "NUM": "32"
+                                                                     }
+                                                                    }
+                                                                   }
+                                                                  }
+                                                                 }
+                                                                }
+                                                               }
+                                                              }
+                                                             }
+                                                            }
+                                                           }
+                                                          }
+                                                         }
+                                                        }
+                                                       },
+                                                       "OUTLEN": {
+                                                        "block": {
+                                                         "type": "data_value",
+                                                         "id": "blk_0236",
+                                                         "fields": {
+                                                          "NUM": "64"
+                                                         }
+                                                        }
+                                                       }
+                                                      }
+                                                     }
+                                                    },
+                                                    "START": {
+                                                     "block": {
+                                                      "type": "data_value",
+                                                      "id": "blk_0237",
+                                                      "fields": {
+                                                       "NUM": "32"
+                                                      }
+                                                     }
+                                                    },
+                                                    "END": {
+                                                     "block": {
+                                                      "type": "data_value",
+                                                      "id": "blk_0238",
+                                                      "fields": {
+                                                       "NUM": "64"
+                                                      }
+                                                     }
+                                                    }
+                                                   }
+                                                  }
+                                                 },
+                                                 "NONCE": {
+                                                  "block": {
+                                                   "type": "data_value",
+                                                   "id": "blk_0239",
+                                                   "fields": {
+                                                    "NUM": "0"
+                                                   }
+                                                  }
+                                                 },
+                                                 "OUTLEN": {
+                                                  "block": {
+                                                   "type": "data_value",
+                                                   "id": "blk_0240",
+                                                   "fields": {
+                                                    "NUM": "192"
+                                                   }
+                                                  }
+                                                 }
+                                                }
+                                               }
+                                              }
+                                             }
+                                            }
+                                           }
+                                          }
+                                         }
+                                        }
+                                       }
+                                      }
+                                     }
+                                    }
+                                   }
+                                  }
+                                 }
+                                }
+                               }
+                              }
+                             }
+                            }
+                           }
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     },
+     "RETURN": {
+      "block": {
+       "type": "variables_get",
+       "id": "blk_0241",
+       "fields": {
+        "VAR": {
+         "id": "v_ret",
+         "name": "ret"
+        }
+       }
+      }
+     }
+    }
+   }
+  ]
+ }
+}

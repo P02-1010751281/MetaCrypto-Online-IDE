@@ -1,0 +1,194 @@
+[
+ {
+  "name": "GOPPA_G",
+  "nodes": 3
+ },
+ {
+  "name": "GOPPA_EVAL",
+  "nodes": 4
+ },
+ {
+  "name": "GA_GO",
+  "nodes": 4
+ },
+ {
+  "name": "GM_GO",
+  "nodes": 4
+ },
+ {
+  "name": "GMod_GO",
+  "nodes": 4
+ },
+ {
+  "name": "GOPPA_INV",
+  "nodes": 7
+ },
+ {
+  "name": "GOPPA_SYN",
+  "nodes": 16
+ },
+ {
+  "name": "GOPPA_DEC",
+  "nodes": 5
+ },
+ {
+  "name": "CCM_Encrypt",
+  "nodes": 6
+ },
+ {
+  "name": "CCM_B0",
+  "nodes": 5
+ },
+ {
+  "name": "CCM_AAD_PREFIX",
+  "nodes": 3
+ },
+ {
+  "name": "CCM_COUNTER_BLOCK",
+  "nodes": 4
+ },
+ {
+  "name": "CCM_CBC_MAC",
+  "nodes": 6
+ },
+ {
+  "name": "CCM_CTR",
+  "nodes": 5
+ },
+ {
+  "name": "CCM_Decrypt",
+  "nodes": 6
+ },
+ {
+  "name": "REJ",
+  "nodes": 4
+ },
+ {
+  "name": "PM",
+  "nodes": 4
+ },
+ {
+  "name": "PMQ",
+  "nodes": 4
+ },
+ {
+  "name": "ADRS_TREE",
+  "nodes": 7
+ },
+ {
+  "name": "ADRS_ROOTS",
+  "nodes": 7
+ },
+ {
+  "name": "WC",
+  "nodes": 3
+ },
+ {
+  "name": "MP",
+  "nodes": 4
+ },
+ {
+  "name": "PMul",
+  "nodes": 4
+ },
+ {
+  "name": "PDiv",
+  "nodes": 4
+ },
+ {
+  "name": "PMod",
+  "nodes": 4
+ },
+ {
+  "name": "PGcd",
+  "nodes": 4
+ },
+ {
+  "name": "MMul",
+  "nodes": 5
+ },
+ {
+  "name": "MInv",
+  "nodes": 4
+ },
+ {
+  "name": "HW",
+  "nodes": 3
+ },
+ {
+  "name": "HD",
+  "nodes": 4
+ },
+ {
+  "name": "FLI",
+  "nodes": 4
+ },
+ {
+  "name": "AP",
+  "nodes": 6
+ },
+ {
+  "name": "MR",
+  "nodes": 5
+ },
+ {
+  "name": "MN",
+  "nodes": 5
+ },
+ {
+  "name": "Addr",
+  "nodes": 5
+ },
+ {
+  "name": "P2R_High",
+  "nodes": 3
+ },
+ {
+  "name": "P2R_Low",
+  "nodes": 3
+ },
+ {
+  "name": "Dec_High",
+  "nodes": 3
+ },
+ {
+  "name": "Dec_Low",
+  "nodes": 3
+ },
+ {
+  "name": "Make_Hint",
+  "nodes": 4
+ },
+ {
+  "name": "Use_Hint",
+  "nodes": 4
+ },
+ {
+  "name": "In_Ball",
+  "nodes": 3
+ },
+ {
+  "name": "GA",
+  "nodes": 4
+ },
+ {
+  "name": "GM",
+  "nodes": 4
+ },
+ {
+  "name": "GMod",
+  "nodes": 4
+ },
+ {
+  "name": "GXGcd",
+  "nodes": 4
+ },
+ {
+  "name": "GEval",
+  "nodes": 4
+ },
+ {
+  "name": "GP",
+  "nodes": 3
+ }
+]
