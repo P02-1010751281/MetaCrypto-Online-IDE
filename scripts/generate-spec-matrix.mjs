@@ -7,8 +7,8 @@
  * 本脚本只做确定性连接：
  *
  *   - 条目 → 积木：取卡片 entries[].blocks.existing（卡自己声明的）；
- *   - 积木 → Demo：遍历 demos/tests.json 登记的 60 个工作区，用
- *     scripts/lib/block-ir.mjs 把工作区拆成扁平 IR，收集块类型与过程名；
+ *   - 积木 → Demo：遍历 demos/tests.json 登记的 60 个工作区，直接递归 Blockly
+ *     工作区 JSON，收集块类型与过程名；
  *   - 条目 → 运行清单：spec-runs/<run-id>/manifest.json 的 outputs 里出现该卡片即视为冻结；
  *   - 积木是否存在：以 docs/blocks/BLOCK-IO-CONTRACT.json 的键为准。
  *
@@ -23,7 +23,6 @@
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { basename, join, relative, resolve } from 'node:path';
 import process from 'node:process';
-import { flattenWorkspace } from './lib/block-ir.mjs';
 
 const root = process.cwd();
 const standardsRoot = resolve(root, 'docs/standards');
@@ -66,19 +65,21 @@ export function loadDemos() {
   for (const file of Object.keys(registry).sort()) {
     const workspacePath = resolve(root, 'demos', file);
     if (!existsSync(workspacePath)) throw new Error(`demos/tests.json 登记了不存在的工作区：demos/${file}`);
-    const ir = flattenWorkspace(readJson(workspacePath), file);
+    const doc = readJson(workspacePath);
     const types = new Set();
     const procedures = [];
+    // Blockly 工作区里输入槽与 next 都是 {"block": …} 包装；这里统一剥一层再递归。
+    const child = (value) => (value && typeof value === 'object' && 'block' in value ? value.block : value);
     const visit = (node, body) => {
       if (!node || typeof node !== 'object') return;
       if (node.type) {
         types.add(node.type);
         if (body) body.add(node.type);
       }
-      if (node.next) visit(node.next, body);
-      if (node.inputs) for (const child of Object.values(node.inputs)) visit(child, body);
+      if (node.next) visit(child(node.next), body);
+      for (const value of Object.values(node.inputs || {})) visit(child(value), body);
     };
-    for (const node of ir.entry) {
+    for (const node of doc.blocks.blocks) {
       // 每个顶层 procedures_def* 节点连同它的子槽构成一个过程体；过程名取自 NAME 字段。
       if (node.type?.startsWith('procedures_def')) {
         const name = node.fields?.NAME;
@@ -227,7 +228,7 @@ function render({ cardRows, entryRows, gaps, stats }) {
   lines.push('这张表只做**确定性连接**，不做任何判定：');
   lines.push('');
   lines.push('- **声明积木**取自卡片自身的 `entries[].blocks.existing`，不是从代码反推的；');
-  lines.push(`- **工作区覆盖**是把 \`demos/tests.json\` 登记的 ${stats.demos} 个工作区经 [扁平 IR](../blocks/BLOCK-IO-CONTRACT.json) 拆解后，按「该 Demo 是否同时包含条目声明的全部积木」判定的；`);
+  lines.push(`- **工作区覆盖**是把 \`demos/tests.json\` 登记的 ${stats.demos} 个工作区 JSON 逐块递归后，按「该 Demo 是否同时包含条目声明的全部积木」判定的；`);
   lines.push('- **专用过程**指 Demo 里存在与某个声明积木同名（忽略大小写与分隔符）的 `procedures_def*` 过程，即该块有独立的执行入口；');
   lines.push('- **冻结运行清单**指 `spec-runs/<run-id>/manifest.json` 的 `outputs` 里包含该卡片路径的运行；');
   lines.push('- **积木是否存在**以 [`BLOCK-IO-CONTRACT.json`](../blocks/BLOCK-IO-CONTRACT.json) 为准，它本身由真实块定义生成并由 `verify:all` 逐字节校验。');

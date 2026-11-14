@@ -7,7 +7,7 @@
 这张表只做**确定性连接**，不做任何判定：
 
 - **声明积木**取自卡片自身的 `entries[].blocks.existing`，不是从代码反推的；
-- **工作区覆盖**是把 `demos/tests.json` 登记的 60 个工作区经 [扁平 IR](../blocks/BLOCK-IO-CONTRACT.json) 拆解后，按「该 Demo 是否同时包含条目声明的全部积木」判定的；
+- **工作区覆盖**是把 `demos/tests.json` 登记的 60 个工作区 JSON 逐块递归后，按「该 Demo 是否同时包含条目声明的全部积木」判定的；
 - **专用过程**指 Demo 里存在与某个声明积木同名（忽略大小写与分隔符）的 `procedures_def*` 过程，即该块有独立的执行入口；
 - **冻结运行清单**指 `spec-runs/<run-id>/manifest.json` 的 `outputs` 里包含该卡片路径的运行；
 - **积木是否存在**以 [`BLOCK-IO-CONTRACT.json`](../blocks/BLOCK-IO-CONTRACT.json) 为准，它本身由真实块定义生成并由 `verify:all` 逐字节校验。

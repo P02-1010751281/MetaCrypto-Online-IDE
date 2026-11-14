@@ -253,7 +253,7 @@ SPEC_ANCHOR_SUMMARY cards=3 anchors=12 grade_a=12 verified=12 pages=9 tool=pdfto
 | 连接 | 判定方式 | 数据来源 |
 |---|---|---|
 | 条目 → 声明积木 | 直接取卡片 `entries[].blocks.existing` | 三张 `SPEC-CARD.json` |
-| 积木 → 工作区 | 把 `demos/tests.json` 登记的 60 个工作区拆成扁平 IR 后，看该工作区是否同时含该条目的全部声明积木 | `demos/**/*.json` + `scripts/lib/block-ir.mjs` |
+| 积木 → 工作区 | 直接递归 `demos/tests.json` 登记的 60 个工作区 JSON，看该工作区是否同时含该条目的全部声明积木 | `demos/**/*.json` + `scripts/generate-spec-matrix.mjs` |
 | 积木 → 执行过程 | 过程体的块树里真的出现该积木（按块包含关系，不按过程名相似） | 同上 |
 | 卡片 → 冻结运行 | `spec-runs/<run-id>/manifest.json` 的 `outputs` 里含该卡片路径 | `spec-runs/` |
 | 积木是否存在 | 以 `BLOCK-IO-CONTRACT.json` 的键为准 | 由真实块定义生成 |

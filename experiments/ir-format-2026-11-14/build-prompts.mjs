@@ -2,7 +2,7 @@
 import process from 'node:process';
 import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { flattenWorkspace } from '../../scripts/lib/block-ir.mjs';
+import { flattenWorkspace } from '../lib/block-ir.mjs';
 
 const root = resolve(import.meta.dirname, '../..');
 const out = import.meta.dirname;

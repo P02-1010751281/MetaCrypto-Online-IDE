@@ -253,7 +253,7 @@ A card can declare `vectors.status: wired`, but "which workspace and which proce
 | Connection | How it is decided | Source |
 |---|---|---|
 | entry → declared blocks | read straight from the card's `entries[].blocks.existing` | the three `SPEC-CARD.json` files |
-| blocks → workspace | flatten the 60 workspaces registered in `demos/tests.json` into the flat IR, then ask whether one workspace holds every block the entry declares | `demos/**/*.json` + `scripts/lib/block-ir.mjs` |
+| blocks → workspace | recurse the 60 workspace JSON files registered in `demos/tests.json` directly, then ask whether one workspace holds every block the entry declares | `demos/**/*.json` + `scripts/generate-spec-matrix.mjs` |
 | blocks → executing procedure | the block really appears in a procedure body's block tree (containment, not name similarity) | same |
 | card → frozen run | `spec-runs/<run-id>/manifest.json` lists the card path in `outputs` | `spec-runs/` |
 | block existence | keyed by `BLOCK-IO-CONTRACT.json` | generated from the real block definitions |

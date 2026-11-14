@@ -1,3 +1,6 @@
+// 实验专用副本：该库曾是产品代码（scripts/lib/block-ir.mjs），因四轮对照实验证明
+// 扁平 IR 相对 workspace JSON 无正确率收益、仅有体积差，已从产品树移除；
+// 保留在 experiments/ 下仅为让四轮实验的 build/score 脚本可复跑。
 /**
  * 扁平 IR（block-ir v0）的拆解 / 组装 / 校验。
  *

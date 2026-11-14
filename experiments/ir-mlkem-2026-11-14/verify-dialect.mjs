@@ -9,7 +9,7 @@
 import process from 'node:process';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { canonicalWorkspace, sameCanonical } from '../../scripts/lib/block-ir.mjs';
+import { canonicalWorkspace, sameCanonical } from '../lib/block-ir.mjs';
 
 const dir = import.meta.dirname === undefined ? '.' : import.meta.dirname;
 const spec = readFileSync(resolve(dir, 'spec.md'), 'utf8');

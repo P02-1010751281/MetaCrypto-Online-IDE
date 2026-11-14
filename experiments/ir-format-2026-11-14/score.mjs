@@ -11,7 +11,7 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import process from 'node:process';
 import { Buffer } from 'node:buffer';
-import { flattenWorkspace, assembleIr, canonicalWorkspace, validateIr, IrError } from '../../scripts/lib/block-ir.mjs';
+import { flattenWorkspace, assembleIr, canonicalWorkspace, validateIr, IrError } from '../lib/block-ir.mjs';
 
 const root = resolve(import.meta.dirname, '../..');
 const expDir = import.meta.dirname;

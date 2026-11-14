@@ -8,7 +8,7 @@ import { resolve } from 'node:path';
 import { Buffer } from 'node:buffer';
 import {
   flattenWorkspace, assembleIr, canonicalWorkspace, validateIr, IrError,
-} from '../../scripts/lib/block-ir.mjs';
+} from '../lib/block-ir.mjs';
 
 const root = resolve(import.meta.dirname, '../..');
 const expDir = import.meta.dirname;

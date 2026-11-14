@@ -8,7 +8,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import process from 'node:process';
 import { Buffer } from 'node:buffer';
-import { flattenWorkspace, assembleIr } from '../../scripts/lib/block-ir.mjs';
+import { flattenWorkspace, assembleIr } from '../lib/block-ir.mjs';
 
 const root = resolve(import.meta.dirname, '../..');
 const tests = JSON.parse(readFileSync(resolve(root, 'demos/tests.json'), 'utf8'));

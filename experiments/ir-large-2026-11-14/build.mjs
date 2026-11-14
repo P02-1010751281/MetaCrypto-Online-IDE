@@ -110,7 +110,7 @@ writeFileSync(resolve(out, 'blocks.md'), `${blockLines.join('\n')}\n`);
 
 // ——— 两臂格式说明 ———
 const example = JSON.parse(readFileSync(resolve(root, 'demos/procedures/CMAC-AES.json'), 'utf8'));
-const { flattenWorkspace } = await import('../../scripts/lib/block-ir.mjs');
+const { flattenWorkspace } = await import('../lib/block-ir.mjs');
 const exampleIr = flattenWorkspace(example, 'example');
 mkdirSync(resolve(out, 'refs'), { recursive: true });
 writeFileSync(resolve(out, 'refs/example.ir.json'), `${JSON.stringify(exampleIr, null, 1)}\n`);
@@ -131,7 +131,7 @@ const formatIr = `# 目标格式：扁平 IR（ciphercat.block-ir/v0）
 
 - \`extraState.params[].id\` 与 \`variables_get\` 的 \`fields.VAR.id\` 是 spec 直接给出的**字段值**，必须照抄；它们不是块级 id。
 
-**校验**：产物会被 \`scripts/lib/block-ir.mjs\` 的 schema 与契约校验读取。
+**校验**：产物会被 \`experiments/lib/block-ir.mjs\` 的 schema 与契约校验读取。
 `;
 const formatJson = `# 目标格式：Blockly 工作区 JSON
 
