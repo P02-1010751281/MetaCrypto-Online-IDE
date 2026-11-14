@@ -66,21 +66,39 @@
 | 「IR 装得进 32k、JSON 装不进」 | **降级**：紧凑口径下成立，但本环境实测预算 ≥51k；且缩进风格的影响远大于格式 |
 | 「大工作区必须分块生成」 | **推翻**：1494 块可以单次生成（本次两次都做到） |
 
-## 5. 局限（必须一起读）
+## 5. 加载进真实 Blockly：越过「结构同构」的最后一公里
+
+结构同构只说明两棵 JSON 树的形状一样，不说明产品能吃下产物。补做的验证是把两席 IR 组装成 workspace JSON，交给仓库自带的 `dist-verify/verify-demo.js`——它用 `Blockly.serialization.workspaces.load` 真实加载、经注册表与连接检查、再走 Python/JS 生成器：
+
+| 检查 | A1 | A2 | 原始 Demo |
+|---|---|---|---|
+| Blockly 加载 | 通过 | 通过 | 通过 |
+| 识别 `procedures_defreturn` | `ML_KEM_Encaps` | `ML_KEM_Encaps` | `ML_KEM_Encaps` |
+| 生成代码字节 | 80 905 | 80 905 | 80 905 |
+| 生成代码 sha256 | `a7abfa9f…` | `a7abfa9f…` | `a7abfa9f…` |
+| 官方向量（Python） | PASS | PASS | PASS |
+| 官方向量（JS） | PASS | PASS | PASS |
+
+两席产物生成的 Python/JS 代码与真实文件**逐字节一致**（三份都是 `a7abfa9ff7fc1a55ad56c41b26855d27a6aea0c80997344d1eb17aa1ec1b54fc`），且 `--exec` 跑官方 ML-KEM 向量（`demos/tests.json` 登记的密文期望值）两种语言都通过。这一步把证据从「树同构」升级到「真实 Blockly 加载 → 生成 → 执行 → 向量一致」。
+
+复跑：先 `node experiments/ir-mlkem-2026-11-14/load-check.mjs` 组装产物，再按 `…/demos/procedures/ML-KEM-Encaps.json` 的路径形状暂存，交给 `node dist-verify/verify-demo.js <暂存路径> --exec`。
+
+## 6. 局限（必须一起读）
 
 - **只测了 IR 臂**（2 席），没有 JSON 臂做对照。因此本轮不能声称「JSON 做不到」——只能说 JSON 的紧凑文本是 38 006 token，若同样缩进排版会更大；
 - **N=2**，两席规范化后相同（采样方差为零），给不出置信区间；
 - **任务仍是转写**：给定格式中立规格，不含算法推理；
-- **未加载进真实 Blockly 跑生成代码**，只有契约校验（逐块对照 `BLOCK-IO-CONTRACT.json`）+ 结构同构；
+- Blockly 验证用的是**仓库自己的生成器与向量**，证明产物可加载、可生成、可执行；它不证明生成器本身与标准的符合性（那由既有 `verify:demos` 负责）；
 - 判分依赖 mtime 稳定：本轮 A2 在 14:21:15 落盘，第一次判分在它写完之前，读数会显示「缺产物」，等写完重判才有效（前三轮踩过同样的坑）。
 
-## 6. 复跑
+## 7. 复跑
 
 ```bash
 node experiments/ir-mlkem-2026-11-14/build.mjs        # 从真实 ML-KEM 文件生成规格、契约摘录、样例与两个运行目录
 node experiments/ir-mlkem-2026-11-14/verify-dialect.mjs  # 证明方言可机械还原（必须输出「同构：true」）
 # 两个 runs/A{1,2}/ 各交给一个独立生成席，产出 output.json
 node experiments/ir-mlkem-2026-11-14/score.mjs        # 打分，写 RESULTS-MLKEM.md / RESULTS-MLKEM.json
+node experiments/ir-mlkem-2026-11-14/load-check.mjs   # 组装成 workspace JSON（runs/A*/assembled.workspace.json）
 node experiments/measure-tokens.mjs                   # 导出紧凑文本（供 token 计数）
 python3 experiments/measure-tokens.py                 # 实测 token，写 MEASURED-TOKENS.md
 ```

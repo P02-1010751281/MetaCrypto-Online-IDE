@@ -78,3 +78,6 @@ nohup.out
 
 # 规格卡生产者候选（spec:scaffold 生成的本地产物，不合并、不入库）
 spec-runs/candidates/
+
+# 实验产物的派生文件：由 load-check.mjs 从已入库的 output.json 确定性重生成，不入库
+experiments/**/runs/*/assembled.workspace.json
