@@ -155,13 +155,15 @@ writeFileSync(resolve(out, 'task.ir.md'), task(acc.nodes));
 writeFileSync(resolve(out, 'task.json.md'), task(acc.nodes));
 writeFileSync(resolve(out, 'ground-truth.json'), `${JSON.stringify(source)}\n`);
 
-for (const run of ['A1', 'A2']) {
+for (const run of ['A1', 'A2', 'B1', 'B2']) {
+  const isIr = run.startsWith('A');
   const dir = resolve(out, 'runs', run);
   mkdirSync(resolve(dir, 'refs'), { recursive: true });
   for (const f of ['spec.md', 'blocks.md']) writeFileSync(resolve(dir, f), readFileSync(resolve(out, f)));
-  for (const f of ['example.ir.json', 'example.workspace.json']) writeFileSync(resolve(dir, 'refs', f), readFileSync(resolve(out, 'refs', f)));
-  writeFileSync(resolve(dir, 'task.md'), readFileSync(resolve(out, 'task.ir.md')));
-  writeFileSync(resolve(dir, 'format.md'), readFileSync(resolve(out, 'format-ir.md')));
+  const example = isIr ? 'example.ir.json' : 'example.workspace.json';
+  writeFileSync(resolve(dir, 'refs', example), readFileSync(resolve(out, 'refs', example)));
+  writeFileSync(resolve(dir, 'task.md'), readFileSync(resolve(out, isIr ? 'task.ir.md' : 'task.json.md')));
+  writeFileSync(resolve(dir, 'format.md'), readFileSync(resolve(out, isIr ? 'format-ir.md' : 'format-json.md')));
 }
 
 process.stdout.write(`nodes=${acc.nodes} depth=${acc.depth} nextHops=${acc.nextHops} statements=${acc.statements} types=${used.size}\n`);

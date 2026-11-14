@@ -63,7 +63,7 @@ v2 修正这两点（重命名 + 改掉那句说明）后重跑，两臂都变�
 | 扁平 IR | 90 064 | **25 484** | 26 208 |
 | Blockly 工作区 JSON | 125 110 | **38 006** | 38 623 |
 
-紧凑口径下 IR 约为 JSON 的 67%。注意这里的两条限定：**第 4 轮已实测 1494 块可以单次生成**（两席都一次写成、逐块精确），且两席实际写出 51 477 token，说明本环境的输出预算高于 32k；同时两席都把产物缩进排版（占 85% 字节），格式带来的体积优势被排版风格吃掉。详见 [../ir-mlkem-2026-11-14/RESULTS.md](../ir-mlkem-2026-11-14/RESULTS.md)。数字由 `experiments/measure-tokens.mjs` + `experiments/measure-tokens.py` 实测，明细见 [../MEASURED-TOKENS.md](../MEASURED-TOKENS.md)；tokenizer 是 OpenAI 家族公开 BPE，不是各实验席所用模型的 tokenizer，故只作量级证据。
+紧凑口径下 IR 约为 JSON 的 67%。注意这里的两条限定：**第 4 轮已实测 1494 块可以单次生成**（四席都一次写成、逐块精确），IR 两席实际写出 51 477 token、JSON 两席 82 004–83 498 token，说明本环境的输出预算高于 32k；同时四席都把产物缩进排版（占 85%–91% 字节），格式带来的体积优势被排版风格吃掉。详见 [../ir-mlkem-2026-11-14/RESULTS.md](../ir-mlkem-2026-11-14/RESULTS.md)。数字由 `experiments/measure-tokens.mjs` + `experiments/measure-tokens.py` 实测，明细见 [../MEASURED-TOKENS.md](../MEASURED-TOKENS.md)；tokenizer 是 OpenAI 家族公开 BPE，不是各实验席所用模型的 tokenizer，故只作量级证据。
 
 ## 5. 局限
 

@@ -118,7 +118,7 @@ function formatDefects(kind, doc, limit = 40) {
 }
 
 const results = [];
-for (const run of ['A1', 'A2']) {
+for (const run of ['A1', 'A2', 'B1', 'B2']) {
   const expected = run.startsWith('A') ? 'ir' : 'json';
   const runsDir = process.env.RUNS_DIR || 'runs';
   const file = resolve(expDir, runsDir, run, 'output.json');
@@ -186,9 +186,12 @@ for (const run of ['A1', 'A2']) {
 
 const keys = Object.keys(Object.fromEntries(results.filter((r) => r.canonicalText).map((r) => [r.run, 1])));
 const cross = [];
-for (const a of keys.filter((k) => k.startsWith('A'))) {
-  for (const b of keys.filter((k) => k.startsWith('A') && k !== a)) {
-    cross.push({ pair: `${a}≡${b}`, same: results.find((r) => r.run === a).canonicalText === results.find((r) => r.run === b).canonicalText });
+for (let i = 0; i < keys.length; i += 1) {
+  for (let j = i + 1; j < keys.length; j += 1) {
+    cross.push({
+      pair: `${keys[i]}≡${keys[j]}`,
+      same: results.find((r) => r.run === keys[i]).canonicalText === results.find((r) => r.run === keys[j]).canonicalText,
+    });
   }
 }
 

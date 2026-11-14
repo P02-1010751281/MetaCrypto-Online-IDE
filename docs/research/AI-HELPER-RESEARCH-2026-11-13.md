@@ -356,7 +356,7 @@ flowchart BT
 - 组装前用 `BLOCK-IO-CONTRACT.json` 做离线类型邻接检查（不启动 Blockly）；
 - 组装后必须走 `src/utils/workspace/serialization.ts` 的既有加载路径（`exceedsJsonNesting` 嵌套上限、`migrateJsonState` 迁移、失败回滚），不得新开一条「直接塞 JSON」的旁路。
 
-> **实测结论（2026-11-14，已修正本节假设）**：上面这条「LLM 的面应是扁平 IR」的推断，经四轮对照实验后被证否——在 35 / 218 / 241 / 1494 块四个规模上，IR 与 Blockly workspace JSON 两臂的产物**规范化后同构**，正确率差异恒为 0；IR 唯一稳定赢的是体积（字符少 22%–31%、token 少 27%–33%），而这个优势在实测中被「缩进排版」这一风格选择盖过（14 份产物缩进占 43%–90% 字节）。1494 块的单次生成在第 4 轮也做成了（两席逐块精确）。因此扁平 IR 已从产品树移除，只保留在 `experiments/` 作为实验材料，契约校验改为直接递归 workspace JSON（`npm run contract:check`）。证据见 `experiments/ir-format-2026-11-14/`、`ir-large-2026-11-14/`、`ir-depth-2026-11-14/`、`ir-mlkem-2026-11-14/` 的 RESULTS.md。
+> **实测结论（2026-11-14，已修正本节假设）**：上面这条「LLM 的面应是扁平 IR」的推断，经四轮对照实验后被证否——在 35 / 218 / 241 / 1494 块四个规模上，IR 与 Blockly workspace JSON 两臂的产物**规范化后同构**，正确率差异恒为 0；IR 唯一稳定赢的是体积（紧凑口径字符少 22%–31%、token 少 27%–33%；第 4 轮实际写出少 37%–38%），而这个优势在实测中被「缩进排版」这一风格选择盖过（16 份产物缩进占 43%–91% 字节）。1494 块的单次生成在第 4 轮也做成了：两臂四席全部逐块精确，并经真实 Blockly 加载、生成代码与官方向量执行验证。因此扁平 IR 已从产品树移除，只保留在 `experiments/` 作为实验材料，契约校验改为直接递归 workspace JSON（`npm run contract:check`）。证据见 `experiments/ir-format-2026-11-14/`、`ir-large-2026-11-14/`、`ir-depth-2026-11-14/`、`ir-mlkem-2026-11-14/` 的 RESULTS.md。
 
 契约本身已经够做约束（本次实测）：220 个块中 **192 个值块 / 28 个语句块**；输入类型计数为值输入 460、语句槽 254、其余 5；`check` 标签分布 Bytes 152、IntList 117、Number 87、String 26、SBox 2、Bits 1；88 个字段中 64 个带 `options`，可直接变成 IR 的 enum 约束。这意味着「块是否存在、字段是否合法、类型是否接得上」可以在模型之外被完全判定。
 
