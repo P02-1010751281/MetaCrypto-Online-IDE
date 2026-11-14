@@ -266,6 +266,7 @@ export function getStandardDocCategory(category: string): string {
 // 审计报告已迁到 docs/audits/，不再由这里判断。
 const STANDARDS_TOOLING_DOCS = new Set([
   'CONFORMANCE-INVENTORY',
+  'SPEC-CARD-MATRIX',
   'DOCUMENT-STATUS',
   'FUNCTION-PRIMITIVE-INDEX',
   'PRODUCT-CERTIFICATION-FEASIBILITY',

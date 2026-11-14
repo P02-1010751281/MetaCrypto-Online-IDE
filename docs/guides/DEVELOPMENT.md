@@ -237,8 +237,9 @@ npm run tauri:build  # Tauri 桌面打包
 npm run lint:check   # ESLint 检查（不改文件）
 npm run type-check   # vue-tsc 类型检查
 npm run test:unit    # Vitest 单元测试
-npm run verify:all   # 构建验证产物 + 29 个模板 + 59 个 Demo
+npm run verify:all   # 构建验证产物 + 29 个模板 + 60 个 Demo
 npm run docs:check-links # 文档本地链接检查
+npm run docs:mermaid:check # 文档 mermaid 语法检查（只解析，不渲染）
 npm run standards:check   # 标准元数据、PDF 哈希和 Errata 检查
 npm run cycles:check      # TypeScript/Vue 循环依赖检查
 ```
@@ -269,11 +270,12 @@ npm run build
 npm run build:check-bundle
 npm run verify:all
 npm run docs:check-links
+npm run docs:mermaid:check
 npm run standards:check
 npm run cycles:check
 ```
 
-`verify:all` 会加载全部 29 个函数模板，并执行 `demos/tests.json` 注册的 59 个 Demo；其中会分别检查 JavaScript 和 Python 生成结果。Python 子进程默认在 Linux/macOS 使用 `python3`，Windows 使用 `python`，也可通过 `CIPHER_CAT_PYTHON` 指定解释器。浏览器手动检查仍用于 UI 交互，但不能替代平台后端随机性测评。
+`verify:all` 会加载全部 29 个函数模板，并执行 `demos/tests.json` 注册的 60 个 Demo；其中会分别检查 JavaScript 和 Python 生成结果。Python 子进程默认在 Linux/macOS 使用 `python3`，Windows 使用 `python`，也可通过 `CIPHER_CAT_PYTHON` 指定解释器。浏览器手动检查仍用于 UI 交互，但不能替代平台后端随机性测评。
 
 当前 Vitest 单元测试覆盖 `utils/markdown`、工作区迁移、错误处理和类型兼容规则；新增稳定的 `utils/`、`composables/` 或生成器公共 API 后，应继续补充边界/异常用例。随机性测评则在 `metacrypt_server` 后端隔离环境中执行。
 

@@ -7,8 +7,8 @@
 | 类型 | 算法阶段 / 原语 / 函数 |
 | 标准定位 | NIST SP 800-38C — CCM 参考 |
 | 原文证据 | [source 提取稿](./00-Standard-Source.md)（本目录 PDF 清单见 source 页） |
-| 原文位置 | [提取稿 §6，行 580–715](./00-Standard-Source.md#L580-L715)；PDF 物理页需结合同目录 PDF 核对 |
-| 项目状态 | 部分实现（不代表完整标准覆盖） |
+| 原文位置 | [提取稿 §6.1，行 580–644](./00-Standard-Source.md#L580-L644) · [§6.2，行 645–695](./00-Standard-Source.md#L645-L695)；PDF 物理页见 SPEC-CARD 锚点 |
+| 项目状态 | 部分实现：生成-加密与解密-验证两条路径均已映射为原子块，未覆盖全部参数组合（不代表完整标准覆盖） |
 
 ## 原文定位与引用
 
@@ -33,4 +33,10 @@
 
 ## CipherCat 覆盖边界
 
-`ccm_encrypt(key, nonce, aad, msg, tagLen)` 已实现 AES-128 加密路径，demo 为 `demos/procedures/CCM-Encrypt.json`。未覆盖 CCM 解密、标签拒绝路径、所有可选标签长度和完整长度上限检查。
+`ccm_encrypt(key, nonce, aad, msg, tagLen)` 实现 §6.1 的 AES-128 生成-加密路径，`ccm_decrypt(key, nonce, aad, ctTag, tagLen)` 实现 §6.2 的解密-验证路径：先 CTR 解出明文，再对 (N, A, P) 重算标签并比对，不符即抛错、不返回明文；demo 均为 `demos/procedures/CCM-Encrypt.json`。
+
+具体边界：
+
+- `ccm_decrypt` 按 §6.2 步 1 把 `Clen ≤ Tlen`（空载荷）判为 INVALID，因此 `ccm_encrypt` 能产出的空消息密文不可解——这不是实现缺陷，而是标准要求；
+- 只覆盖 AES-128、Tlen ∈ {4,6,8,10,12,14,16} 与 n ∈ 7..13 的已测组合（附录 C Example 1/2/3 及单测），不覆盖全部 nonce/tag 长度组合；
+- 抛出错误只保证调用方拿不到未认证明文，**不**构成常量时间或认证安全证明；`ccm_aad_len_prefix` 只实现 2 字节与 6 字节两档（a < 2³²）。

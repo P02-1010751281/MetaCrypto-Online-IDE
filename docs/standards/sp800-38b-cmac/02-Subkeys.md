@@ -8,7 +8,7 @@
 | 标准定位 | CMAC — 子密钥生成原语 |
 | 原文证据 | [source 提取稿](./00-Standard-Source.md)（本目录 PDF 清单见 source 页） |
 | 原文位置 | [提取稿 §6.1，行 568–598](./00-Standard-Source.md#L568-L598)；PDF 第 7 页 |
-| 项目状态 | 仅参考（未映射为块实现） |
+| 项目状态 | 已映射为 `cmac_subkeys` / `cmac_double`（不代表完整标准覆盖） |
 
 ## 原文定位与引用
 
@@ -54,4 +54,7 @@ K2 = dbl(K1)
 
 ## CipherCat 映射
 
-`cmac_mac` 内部完成子密钥生成，没有独立 `cmac_subkey` 块；CIPHER 下拉支持 AES-128 和 SM4。
+§6.1 的整段过程有独立块 `cmac_subkeys`（输出 `K1‖K2`），单次 GF(2¹²⁸) 加倍另有 `cmac_double`
+（输出 `dbl(X)`）；`cmac_mac` 也内部完成同一步子密钥生成。CIPHER 下拉支持 AES-128 和 SM4。
+验证入口：`cmac-xts-primitives-contract.test.ts` 双语言复现 RFC 4493 §4 的 `L→K1→K2`，
+`demos/procedures/CMAC-AES.json` 的 `CMAC_SUBKEYS` 过程在 `verify:demos` 中执行同一 `K1‖K2`。

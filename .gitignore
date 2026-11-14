@@ -75,3 +75,6 @@ nohup.out
 
 # 本地备份归档（.bak 目录只存改前快照，不入库）
 .bak/
+
+# 规格卡生产者候选（spec:scaffold 生成的本地产物，不合并、不入库）
+spec-runs/candidates/

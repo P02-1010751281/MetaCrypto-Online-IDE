@@ -1,0 +1,65 @@
+{
+  "schema": "ciphercat.spec-run/v0",
+  "run_id": "2026-11-13-cmac-extract",
+  "created_at": "2026-11-13T16:28:04+08:00",
+  "inputs": [
+    {
+      "path": "docs/standards/sp800-38b-cmac/NIST.SP.800-38B.pdf",
+      "sha256": "da9dc0f1e1f08af917caf4a831a7497cf18997b8046353af89570a812f1ec5a2",
+      "role": "standard-source"
+    },
+    {
+      "path": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+      "sha256": "a1e96171e2c31baaf3338a19f68135c12d67b124ceb9b0aae59430b8130cc0d6",
+      "role": "standard-source"
+    }
+  ],
+  "extractor": {
+    "tool": "pdftotext -layout",
+    "version": "未记录（提取稿生成于 2026-09-21；本机现为 26.10.0，未重跑）"
+  },
+  "model": {
+    "provider": "deepseek",
+    "id": "deepseek-v4.1-flash",
+    "version": "dsh agent 2026-11-13（提示词未归档，故不写 prompt_sha256）"
+  },
+  "outputs": [
+    {
+      "path": "docs/standards/sp800-38b-cmac/SPEC-CARD.json"
+    },
+    {
+      "path": "demos/procedures/CMAC-AES.json"
+    }
+  ],
+  "shared": [
+    {
+      "path": "demos/tests.json"
+    },
+    {
+      "path": "demos/evidence.json"
+    },
+    {
+      "path": "docs/standards/sp800-38b-cmac/README.md"
+    },
+    {
+      "path": "src/generators/javascript/cmac/blocks.ts"
+    },
+    {
+      "path": "tests/unit/cmac-block-contract.test.ts"
+    }
+  ],
+  "gates": [
+    {
+      "cmd": "npm run spec:validate",
+      "exit": 0,
+      "summary": "SPEC_CARD_SUMMARY cards=1 anchors=2 entries=2 artifacts=1 errors=0"
+    },
+    {
+      "cmd": "npm run verify:all",
+      "exit": 0,
+      "summary": "DEMO_SUMMARY total=60 pass=60 fail=0"
+    }
+  ],
+  "decision": "gated",
+  "notes": "RFC 4493 §4 是 Demo 向量的来源，但仓库没有该 RFC 的本地制品，因此不作为 input 记账（不编造哈希）。生成器在 Bytes 补齐分支缺 push 的缺陷由本次 Demo 接入暴露，修复与回归用例在同一次运行内完成；语义审阅仍是 provenance.review=draft，decision=gated 不等于 L3 签核。"
+}

@@ -1,0 +1,602 @@
+{
+  "schema": "ciphercat.spec-card/v0",
+  "id": "sp800-38c-ccm",
+  "kind": "standard",
+  "standard": {
+    "name": "NIST SP 800-38C",
+    "version": "38C",
+    "source_url": "https://csrc.nist.gov/pubs/sp/800/38/c/final",
+    "dir": ".",
+    "artifacts": [
+      {
+        "path": "NIST.SP.800-38C.pdf",
+        "sha256": "16ec6f99424192757b5b9928a7dcf41817be3aaf85d48366740dfdf7c16db250"
+      }
+    ]
+  },
+  "anchors": [
+    {
+      "id": "A1-encrypt-steps",
+      "source": "00-Standard-Source.md",
+      "line_range": [
+        611,
+        635
+      ],
+      "quote": "Steps: 1. Apply the formatting function to (N, A, P) to produce the blocks B0, B1, …, Br. B B B 2. Set Y0= CIPHK(B0).B 3. For i = 1 to r, do Yi = CIPHK(Bi ⊕ Yi-1). B 9 4. Set T=MSBTlen(Yr). 5. Apply the counter generation function to generate the counter blocks Ctr0, Ctr1, …, Ctrm, where m = ⎡Plen 128⎤ . 6. For j=0 to m, do Sj = CIPHK(Ctrj). 7. Set S= S1 || S2 || …|| Sm. 8. Return C=(P ⊕ MSBPlen(S)) || (T ⊕ MSBTlen(S0)).",
+      "quote_sha256": "87b2d41e4944511e17826100b1e379f9c123b231f12cce9870013fcef85bddcb",
+      "anchor_grade": "A",
+      "extractor": {
+        "tool": "pdftotext",
+        "version": "unknown (提取稿未记录 poppler 版本)",
+        "args": "-layout"
+      },
+      "known_defects": [
+        "锚点跨 PDF 第 9 页：页码「9」混在步骤 3 与步骤 4 之间",
+        "下标被拉平：CIPH_K 显示为 CIPHK，MSB_Tlen 显示为 MSBTlen",
+        "步骤 5 的 ceiling 除号丢失：m = ⌈Plen/128⌉ 显示为 m = ⎡Plen 128⎤"
+      ],
+      "pdf_pages": [
+        15,
+        16
+      ]
+    },
+    {
+      "id": "A2-decrypt-steps",
+      "source": "00-Standard-Source.md",
+      "line_range": [
+        645,
+        695
+      ],
+      "quote": "Steps: 1. If Clen ≤ Tlen, then return INVALID. 2. Apply the counter generation function to generate the counter blocks Ctr0, Ctr1, …, Ctrm, where m = ⎡(Clen − Tlen) 128⎤ . 3. For j=0 to m, do Sj = CIPHK(Ctrj). 4. Set S= S1 || S2 || …|| Sm. 5. Set P=MSBClen-Tlen(C) ⊕ MSBClen-Tlen(S). 6. Set T=LSBTlen(C) ⊕ MSBTlen(S0). B 7. If N, A, or P is not valid, as discussed in Section 5.4, then return INVALID, else apply the formatting function to (N, A, P) to produce the blocks B0, B1, …, Br. B B B 8. Set Y0= CIPHK(B0).B 9. For i = 1 to r, do Yj = CIPHK(Bi ⊕ Yi-1). B 10. If T ≠ MSBTlen(Yr), then return INVALID, else return P.",
+      "quote_sha256": "5eeb39cfdc3724dc424e871076aa89f6bcbd8fe39e102aba3c4ebf7b5f824965",
+      "anchor_grade": "A",
+      "extractor": {
+        "tool": "pdftotext",
+        "version": "unknown (提取稿未记录 poppler 版本)",
+        "args": "-layout"
+      },
+      "known_defects": [
+        "下标被拉平：CIPH_K 显示为 CIPHK，MSB_Tlen/Tlen 显示为 MSBTlen/Tlen",
+        "ceiling 除号丢失：Ctrm 的 m 定义与 O(1) 符号在文本层变形",
+        "≤、⊕ 等符号与上标在文本层可能被拆行或拉平，逐字复核须回看 PDF"
+      ],
+      "pdf_pages": [
+        16
+      ]
+    },
+    {
+      "id": "A2-cbc-mac-steps",
+      "source": "00-Standard-Source.md",
+      "line_range": [
+        618,
+        623
+      ],
+      "quote": "2. Set Y0= CIPHK(B0).B 3. For i = 1 to r, do Yi = CIPHK(Bi ⊕ Yi-1).",
+      "quote_sha256": "3b94b63d04e112093718e91595d4c048eeb8afc8a2118a416b0167d565a8949f",
+      "anchor_grade": "A",
+      "extractor": {
+        "tool": "pdftotext",
+        "version": "unknown (提取稿未记录 poppler 版本)",
+        "args": "-layout"
+      },
+      "known_defects": [
+        "下标被拉平：CIPH_K 显示为 CIPHK",
+        "步骤 2 行末有下标残留字符 B（CIPH_K(B0) 的上标碎片）"
+      ],
+      "pdf_pages": [
+        15
+      ]
+    },
+    {
+      "id": "A3-counter-steps",
+      "source": "00-Standard-Source.md",
+      "line_range": [
+        631,
+        635
+      ],
+      "quote": "5. Apply the counter generation function to generate the counter blocks Ctr0, Ctr1, …, Ctrm, where m = ⎡Plen 128⎤ . 6. For j=0 to m, do Sj = CIPHK(Ctrj). 7. Set S= S1 || S2 || …|| Sm. 8. Return C=(P ⊕ MSBPlen(S)) || (T ⊕ MSBTlen(S0)).",
+      "quote_sha256": "9ba0d264a61361d684c576611b3afcd2fb7073bffd46b7bcd86bea4c351d353c",
+      "anchor_grade": "A",
+      "extractor": {
+        "tool": "pdftotext",
+        "version": "unknown (提取稿未记录 poppler 版本)",
+        "args": "-layout"
+      },
+      "known_defects": [
+        "下标被拉平：CIPH_K / MSB_Tlen / MSB_Plen 显示为 CIPHK / MSBTlen / MSBPlen",
+        "步骤 5 的 ceiling 除号丢失"
+      ],
+      "pdf_pages": [
+        16
+      ]
+    },
+    {
+      "id": "A4-b0-format",
+      "source": "00-Standard-Source.md",
+      "line_range": [
+        772,
+        802
+      ],
+      "quote": "The leading octet of the first block of the formatting, B0, contains four flags for control B information: two single bits, called Reserved and Adata, and two strings of three bits, to encode the values t and q. The encoding of t is [(t-2)/2]3, and the encoding of q is [q-1]3. Thus, for example, if the MAC length is 8 octets, then t is encoded as 011. Note that the encoding 000 in both cases does not correspond to a permitted value of t or q. The Reserved bit is reserved to enable future extensions of the formatting; it shall be set to ‘0’. The Adata bit is ‘0’ if a=0 and ‘1’ if a>0. The ordering of the flags within the octet is given in Table 1. Table 1: Formatting of the Flags Octet in B0 B Bit number 7 6 5 4 3 2 1 0 Contents Reserved Adata [(t-2)/2]3 [q-1]3 The remaining 15 octets of the first block of the formatting are devoted to the nonce and the binary representation of the message length in q octets, as given in Table 2. Table 2: Formatting of B0 B Octet number 0 1 ... 15-q 16-q ... 15 Contents Flags N Q",
+      "quote_sha256": "cbf4f9af39c50cdb73449ba795ed02bd8d5b10c82b2797d43b106994b863a045",
+      "anchor_grade": "A",
+      "extractor": {
+        "tool": "pdftotext",
+        "version": "unknown (提取稿未记录 poppler 版本)",
+        "args": "-layout"
+      },
+      "known_defects": [
+        "上标被拉平：[(t-2)/2]_3 显示为 [(t-2)/2]3，[q-1]_3 显示为 [q-1]3",
+        "表 1/表 2 的表头与行列在文本层按空白展开，列对齐不可逐字还原",
+        "B0 的下标在表 2 标题后留下孤立字符 B"
+      ],
+      "pdf_pages": [
+        19
+      ]
+    },
+    {
+      "id": "A5-aad-encoding",
+      "source": "00-Standard-Source.md",
+      "line_range": [
+        844,
+        846
+      ],
+      "quote": "• If 0 < a < 216-28, then a is encoded as [a]16, i.e., two octets. • If 216-28 ≤ a < 232, then a is encoded as 0xff || 0xfe || [a]32, i.e., six octets. • If 232 ≤ a < 264, then a is encoded as 0xff || 0xff || [a]64, i.e., ten octets.",
+      "quote_sha256": "3cc8aa9593020f6d519bab41bda0c0e685ecfe0954c06db7cc6df9767c2bb9ef",
+      "anchor_grade": "A",
+      "extractor": {
+        "tool": "pdftotext",
+        "version": "unknown (提取稿未记录 poppler 版本)",
+        "args": "-layout"
+      },
+      "known_defects": [
+        "上标被拉平：2^16-2^8 / 2^32 / 2^64 显示为 216-28 / 232 / 264",
+        "同页上方的页码 13 不在锚点范围内"
+      ],
+      "pdf_pages": [
+        20
+      ]
+    },
+    {
+      "id": "A6-counter-block-format",
+      "source": "00-Standard-Source.md",
+      "line_range": [
+        870,
+        892
+      ],
+      "quote": "The counter generation function in this section is equivalent to a formatting of the counter index i into a complete data block. The counter blocks Ctri are formatted as shown in Table 3 below. Table 3: Formatting of Ctri Octet number: 0 1 ... 15-q 16-q ... 15 Contents: Flags N [i]8q Within each block Ctri, the Flags field is formatted as shown in Table 4 below. Table 4: Formatting of the Flags Field in Ctri Bit number 7 6 5 4 3 2 1 0 Contents Reserved Reserved 0 0 0 [q-1]3 The Reserved bits are reserved for future expansions and shall be set to 0. Bits 3, 4, and 5 shall also be set to 0, to ensure that all the counter blocks are distinct from B0 (as specified in A.2.1 B above). Bits 0, 1, and 2 contain the same encoding of q as in B0. B",
+      "quote_sha256": "a354f95d746d4d87dd5a418806acbac06044df38a6e3f5ea79d8fdac2355a232",
+      "anchor_grade": "A",
+      "extractor": {
+        "tool": "pdftotext",
+        "version": "unknown (提取稿未记录 poppler 版本)",
+        "args": "-layout"
+      },
+      "known_defects": [
+        "上标被拉平：Ctr_i / [i]_{8q} / [q-1]_3 显示为 Ctri / [i]8q / [q-1]3",
+        "表格列对齐在文本层不可逐字还原"
+      ],
+      "pdf_pages": [
+        20
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "key": "ccm-format-b0",
+      "type": "原语",
+      "io": {
+        "inputs": [
+          {
+            "name": "NONCE",
+            "type": "IntList",
+            "note": "7–13 字节 nonce"
+          },
+          {
+            "name": "MSGLEN",
+            "type": "Number",
+            "note": "明文长度（字节）"
+          },
+          {
+            "name": "AADLEN",
+            "type": "Number",
+            "note": "关联数据长度（字节）；>0 时置 Adata 位"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "B0",
+            "type": "IntList",
+            "length": "16 字节"
+          }
+        ]
+      },
+      "params": {
+        "tag_len_octets": "TAGLEN 字段（4/6/8/10/12/14/16）",
+        "layout": "B0 = flags ‖ N ‖ l(m)（q = 15 − |N| 字节大端）"
+      },
+      "normative_level": "MUST",
+      "level": "L1",
+      "pseudocode": {
+        "fidelity": "text-layer",
+        "anchor": "A4-b0-format",
+        "text": "The leading octet of the first block of the formatting, B0, contains four flags for control B information: two single bits, called Reserved and Adata, and two strings of three bits, to encode the values t and q. The encoding of t is [(t-2)/2]3, and the encoding of q is [q-1]3. Thus, for example, if the MAC length is 8 octets, then t is encoded as 011. Note that the encoding 000 in both cases does not correspond to a permitted value of t or q. The Reserved bit is reserved to enable future extensions of the formatting; it shall be set to ‘0’. The Adata bit is ‘0’ if a=0 and ‘1’ if a>0. The ordering of the flags within the octet is given in Table 1. Table 1: Formatting of the Flags Octet in B0 B Bit number 7 6 5 4 3 2 1 0 Contents Reserved Adata [(t-2)/2]3 [q-1]3 The remaining 15 octets of the first block of the formatting are devoted to the nonce and the binary representation of the message length in q octets, as given in Table 2. Table 2: Formatting of B0 B Octet number 0 1 ... 15-q 16-q ... 15 Contents Flags N Q",
+        "known_defects": [
+          "见锚点 A4-b0-format 的 known_defects"
+        ]
+      },
+      "blocks": {
+        "existing": [
+          "ccm_b0"
+        ],
+        "planned": []
+      },
+      "vectors": {
+        "status": "wired",
+        "detail": "demos/procedures/CCM-Encrypt.json 的 CCM_B0 过程由 verify:demos 双语言执行附录 C.1 的 B0（4f101112131415160000000000000004）；tests/unit/ccm-primitives-contract.test.ts 另直接驱动块"
+      }
+    },
+    {
+      "key": "ccm-aad-len-prefix",
+      "type": "原语",
+      "io": {
+        "inputs": [
+          {
+            "name": "AADLEN",
+            "type": "Number",
+            "note": "0 ≤ a < 2^32（项目实现的取值范围）"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "prefix",
+            "type": "IntList",
+            "note": "2 或 6 字节长度编码"
+          }
+        ]
+      },
+      "params": {
+        "two_octet_boundary": 65280,
+        "six_octet_prefix": "0xff 0xfe"
+      },
+      "normative_level": "MUST",
+      "level": "L1",
+      "pseudocode": {
+        "fidelity": "text-layer",
+        "anchor": "A5-aad-encoding",
+        "text": "• If 0 < a < 216-28, then a is encoded as [a]16, i.e., two octets. • If 216-28 ≤ a < 232, then a is encoded as 0xff || 0xfe || [a]32, i.e., six octets. • If 232 ≤ a < 264, then a is encoded as 0xff || 0xff || [a]64, i.e., ten octets.",
+        "known_defects": [
+          "见锚点 A5-aad-encoding 的 known_defects"
+        ]
+      },
+      "blocks": {
+        "existing": [
+          "ccm_aad_len_prefix"
+        ],
+        "planned": []
+      },
+      "vectors": {
+        "status": "wired",
+        "detail": "demos/procedures/CCM-Encrypt.json 的 CCM_AAD_PREFIX 过程由 verify:demos 双语言执行 Example 1 的 AAD 长度前缀 0008；tests/unit/rsa-ccm-encoding-primitives.test.ts 另覆盖 0/8/0xfeff/0xff00/0x01020304 五档与越界拒绝"
+      }
+    },
+    {
+      "key": "ccm-counter-block",
+      "type": "原语",
+      "io": {
+        "inputs": [
+          {
+            "name": "NONCE",
+            "type": "IntList",
+            "note": "7–13 字节 nonce"
+          },
+          {
+            "name": "I",
+            "type": "Number",
+            "note": "计数器索引 i"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "Ctr_i",
+            "type": "IntList",
+            "length": "16 字节"
+          }
+        ]
+      },
+      "params": {
+        "flags": "L − 1（高 5 位为 0）",
+        "counter_bytes": "q 字节大端"
+      },
+      "normative_level": "MUST",
+      "level": "L1",
+      "pseudocode": {
+        "fidelity": "text-layer",
+        "anchor": "A6-counter-block-format",
+        "text": "The counter generation function in this section is equivalent to a formatting of the counter index i into a complete data block. The counter blocks Ctri are formatted as shown in Table 3 below. Table 3: Formatting of Ctri Octet number: 0 1 ... 15-q 16-q ... 15 Contents: Flags N [i]8q Within each block Ctri, the Flags field is formatted as shown in Table 4 below. Table 4: Formatting of the Flags Field in Ctri Bit number 7 6 5 4 3 2 1 0 Contents Reserved Reserved 0 0 0 [q-1]3 The Reserved bits are reserved for future expansions and shall be set to 0. Bits 3, 4, and 5 shall also be set to 0, to ensure that all the counter blocks are distinct from B0 (as specified in A.2.1 B above). Bits 0, 1, and 2 contain the same encoding of q as in B0. B",
+        "known_defects": [
+          "见锚点 A6-counter-block-format 的 known_defects"
+        ]
+      },
+      "blocks": {
+        "existing": [
+          "ccm_counter_block"
+        ],
+        "planned": []
+      },
+      "vectors": {
+        "status": "wired",
+        "detail": "demos/procedures/CCM-Encrypt.json 的 CCM_COUNTER_BLOCK 过程由 verify:demos 双语言执行 Example 1 的 Ctr0（07101112131415160000000000000000）；单测另核对 Ctr1"
+      }
+    },
+    {
+      "key": "ccm-cbc-mac",
+      "type": "函数",
+      "io": {
+        "inputs": [
+          {
+            "name": "KEY",
+            "type": "Bytes",
+            "note": "AES-128 密钥（16 字节）"
+          },
+          {
+            "name": "NONCE",
+            "type": "IntList"
+          },
+          {
+            "name": "AAD",
+            "type": "IntList"
+          },
+          {
+            "name": "MSG",
+            "type": "Bytes"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "X",
+            "type": "Bytes",
+            "length": "16 字节"
+          }
+        ]
+      },
+      "params": {
+        "cipher": "AES-128",
+        "padding": "AAD 段与明文段各自零填充到 16 字节边界"
+      },
+      "normative_level": "MUST",
+      "level": "L2",
+      "pseudocode": {
+        "fidelity": "text-layer",
+        "anchor": "A2-cbc-mac-steps",
+        "text": "2. Set Y0= CIPHK(B0).B 3. For i = 1 to r, do Yi = CIPHK(Bi ⊕ Yi-1).",
+        "known_defects": [
+          "见锚点 A2-cbc-mac-steps 的 known_defects"
+        ]
+      },
+      "composes": [
+        "ccm-format-b0",
+        "ccm-aad-len-prefix"
+      ],
+      "blocks": {
+        "existing": [
+          "ccm_cbc_mac",
+          "ccm_b0",
+          "ccm_aad_len_prefix"
+        ],
+        "planned": []
+      },
+      "vectors": {
+        "status": "wired",
+        "detail": "demos/procedures/CCM-Encrypt.json 的 CCM_CBC_MAC 过程由 verify:demos 双语言执行 Example 1 参数，期望值为 16 字节中间值 6084341b32042bf000b4b7995553a3c5（附录 C 未单独公布，按 B0/AAD/明文与 AES-128 逐块算出）；单测另核对 16 字节输出与双语言一致"
+      }
+    },
+    {
+      "key": "ccm-ctr",
+      "type": "函数",
+      "io": {
+        "inputs": [
+          {
+            "name": "KEY",
+            "type": "Bytes",
+            "note": "AES-128 密钥（16 字节）"
+          },
+          {
+            "name": "NONCE",
+            "type": "IntList"
+          },
+          {
+            "name": "MSG",
+            "type": "Bytes"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "ct",
+            "type": "Bytes",
+            "note": "密文段（不含标签）"
+          }
+        ]
+      },
+      "params": {
+        "counter_start": 1,
+        "tag_mask": "S0 在 ccm_encrypt 内用于掩码标签"
+      },
+      "normative_level": "MUST",
+      "level": "L2",
+      "pseudocode": {
+        "fidelity": "text-layer",
+        "anchor": "A3-counter-steps",
+        "text": "5. Apply the counter generation function to generate the counter blocks Ctr0, Ctr1, …, Ctrm, where m = ⎡Plen 128⎤ . 6. For j=0 to m, do Sj = CIPHK(Ctrj). 7. Set S= S1 || S2 || …|| Sm. 8. Return C=(P ⊕ MSBPlen(S)) || (T ⊕ MSBTlen(S0)).",
+        "known_defects": [
+          "见锚点 A3-counter-steps 的 known_defects"
+        ]
+      },
+      "composes": [
+        "ccm-counter-block"
+      ],
+      "blocks": {
+        "existing": [
+          "ccm_ctr",
+          "ccm_counter_block"
+        ],
+        "planned": []
+      },
+      "vectors": {
+        "status": "wired",
+        "detail": "demos/procedures/CCM-Encrypt.json 的 CCM_CTR 过程由 verify:demos 双语言执行 Example 1 的密文段 7162015b；单测另直接驱动块"
+      }
+    },
+    {
+      "key": "ccm-encrypt",
+      "type": "模式",
+      "io": {
+        "inputs": [
+          {
+            "name": "KEY",
+            "type": "Bytes",
+            "note": "AES-128 密钥（16 字节）"
+          },
+          {
+            "name": "NONCE",
+            "type": "IntList",
+            "note": "7–13 字节"
+          },
+          {
+            "name": "AAD",
+            "type": "IntList"
+          },
+          {
+            "name": "MSG",
+            "type": "Bytes"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "C",
+            "type": "Bytes",
+            "note": "密文 ‖ 标签（Tlen 字节）"
+          }
+        ]
+      },
+      "params": {
+        "direction": "仅 generation-encryption",
+        "tag_len_octets": "TAGLEN 字段"
+      },
+      "normative_level": "MUST",
+      "level": "L3",
+      "pseudocode": {
+        "fidelity": "text-layer",
+        "anchor": "A1-encrypt-steps",
+        "text": "Steps: 1. Apply the formatting function to (N, A, P) to produce the blocks B0, B1, …, Br. B B B 2. Set Y0= CIPHK(B0).B 3. For i = 1 to r, do Yi = CIPHK(Bi ⊕ Yi-1). B 9 4. Set T=MSBTlen(Yr). 5. Apply the counter generation function to generate the counter blocks Ctr0, Ctr1, …, Ctrm, where m = ⎡Plen 128⎤ . 6. For j=0 to m, do Sj = CIPHK(Ctrj). 7. Set S= S1 || S2 || …|| Sm. 8. Return C=(P ⊕ MSBPlen(S)) || (T ⊕ MSBTlen(S0)).",
+        "known_defects": [
+          "见锚点 A1-encrypt-steps 的 known_defects"
+        ]
+      },
+      "composes": [
+        "ccm-cbc-mac",
+        "ccm-ctr"
+      ],
+      "blocks": {
+        "existing": [
+          "ccm_encrypt",
+          "ccm_cbc_mac",
+          "ccm_ctr"
+        ],
+        "planned": []
+      },
+      "vectors": {
+        "status": "wired",
+        "detail": "demos/procedures/CCM-Encrypt.json 经 verify:demos 双语言执行 SP 800-38C 附录 C Example 1/2/3（tagLen 4/6/8）；tests/unit/demo-vector-crosscheck.test.ts 用 cryptography AESCCM 独立复算"
+      }
+    },
+    {
+      "key": "ccm-decrypt",
+      "type": "模式",
+      "io": {
+        "inputs": [
+          {
+            "name": "KEY",
+            "type": "Bytes",
+            "note": "AES-128 密钥（16 字节）"
+          },
+          {
+            "name": "NONCE",
+            "type": "IntList",
+            "note": "7–13 字节"
+          },
+          {
+            "name": "AAD",
+            "type": "IntList"
+          },
+          {
+            "name": "CT",
+            "type": "Bytes",
+            "note": "密文 ‖ 标签（Tlen 字节）"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "P",
+            "type": "Bytes",
+            "note": "验证通过才返回明文"
+          }
+        ]
+      },
+      "params": {
+        "direction": "仅 decryption-verification",
+        "tag_len_octets": "TAGLEN 字段"
+      },
+      "normative_level": "MUST",
+      "level": "L3",
+      "pseudocode": {
+        "fidelity": "text-layer",
+        "anchor": "A2-decrypt-steps",
+        "text": "Steps: 1. If Clen ≤ Tlen, then return INVALID. 2. Apply the counter generation function to generate the counter blocks Ctr0, Ctr1, …, Ctrm, where m = ⎡(Clen − Tlen) 128⎤ . 3. For j=0 to m, do Sj = CIPHK(Ctrj). 4. Set S= S1 || S2 || …|| Sm. 5. Set P=MSBClen-Tlen(C) ⊕ MSBClen-Tlen(S). 6. Set T=LSBTlen(C) ⊕ MSBTlen(S0). B 7. If N, A, or P is not valid, as discussed in Section 5.4, then return INVALID, else apply the formatting function to (N, A, P) to produce the blocks B0, B1, …, Br. B B B 8. Set Y0= CIPHK(B0).B 9. For i = 1 to r, do Yj = CIPHK(Bi ⊕ Yi-1). B 10. If T ≠ MSBTlen(Yr), then return INVALID, else return P.",
+        "known_defects": [
+          "见锚点 A2-decrypt-steps 的 known_defects"
+        ]
+      },
+      "composes": [
+        "ccm-cbc-mac",
+        "ccm-ctr"
+      ],
+      "blocks": {
+        "existing": [
+          "ccm_decrypt",
+          "ccm_cbc_mac",
+          "ccm_ctr"
+        ],
+        "planned": []
+      },
+      "vectors": {
+        "status": "wired",
+        "detail": "tests/unit/ccm-decrypt-contract.test.ts 通过真实 Blockly 块双语言执行附录 C.1 Example 1 与 C.2 Example 2（6 字节标签、L=7），核对明文恢复与篡改标签/篡改 AAD/Clen≤Tlen 三类拒绝；demos/procedures/CCM-Encrypt.json 的 CCM_Decrypt 过程由 verify:demos 双语言回归（含篡改标签必须抛错）"
+      }
+    }
+  ],
+  "provenance": {
+    "extracted_by": {
+      "kind": "llm",
+      "name": "CipherCat SpecCard 第二、三张卡（同一快照）",
+      "model": "deepseek-v4.1-flash (dsh agent)"
+    },
+    "review": {
+      "status": "draft",
+      "note": "锚点、哈希与块名由 scripts/check-spec-cards.mjs 重算；语义（B0 位域、长度编码边界、计数器排序）尚未由具名密码学审阅者签核；PDF 物理页与引文位置由 scripts/check-spec-anchors.mjs 逐页重抽取核对"
+    }
+  },
+  "limits": [
+    "只覆盖 §6.1 generation-encryption 与 §6.2 decryption-verification 及附录 A 的格式化/计数器生成；不含附录 B 的标签长度取舍与 §5.4 的 MaxErrs 密钥退役策略。",
+    "项目固定 AES-128；条目映射到已注册块，不代表覆盖全部 nonce/tag 长度组合或完整附录 C 测试集。",
+    "ccm_aad_len_prefix 只实现两字节与六字节两档（a < 2^32）；标准中 2^32 ≤ a < 2^64 的十字节编码未实现。",
+    "ccm_ctr 只返回密文段；标签掩码在 ccm_encrypt 内用 S0 完成，不是独立块。",
+    "ccm_decrypt 按 §6.2 步 1 把 Clen ≤ Tlen 判为 INVALID，因此 ccm_encrypt 产出的空消息密文不可解；这是标准要求，不是实现缺陷。",
+    "ccm_decrypt 抛错只保证调用方拿不到未认证明文，不构成常量时间或认证安全证明。"
+  ],
+  "open_questions": [
+    "附录 C 未公布 CBC-MAC 中间值，ccm_cbc_mac 只有双语言一致性与 B0/CTR 官方向量的间接约束。",
+    "文本层把上标拉平（216-28 实为 2^16-2^8，232/264 实为 2^32/2^64，220 实为 2^20），逐字复核必须回看 PDF。",
+    "§6.2 的 INVALID 路径已由 ccm_decrypt 覆盖到「抛出异常」这一表达层；标准里的 MaxErrs 计数与密钥退役仍无块表达。"
+  ]
+}

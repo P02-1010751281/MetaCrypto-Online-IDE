@@ -14,7 +14,7 @@
 - 🧩 **Visual programming** — drag and drop blocks to write crypto code like building with LEGO
 - 🌐 **Multilingual** — Chinese/English UI, Blockly blocks switch in sync
 - 💻 **Code generation** — generate executable JavaScript / Python code in one click
-- ✅ **Regression checks** — 29 templates receive structural/executability checks; 59 demos receive registered output regressions in JavaScript and Python
+- ✅ **Regression checks** — 29 templates receive structural/executability checks; 60 demos receive registered output regressions in JavaScript and Python
 - 📁 **Project management** — multi-project local management based on IndexedDB, with auto-save
 - 🖥️ **Desktop app** — Tauri wrapper, runs natively on Windows / Linux / macOS
 - 📱 **Responsive** — adapts to wide and narrow screens, panels resizable by dragging

@@ -8,7 +8,7 @@
 | 标准定位 | CMAC — CBC-MAC 与标签输出原语 |
 | 原文证据 | [source 提取稿](./00-Standard-Source.md)（本目录 PDF 清单见 source 页） |
 | 原文位置 | [提取稿 §6.2，行 600–666](./00-Standard-Source.md#L600-L666)；PDF 第 7–8 页 |
-| 项目状态 | 仅参考（未映射为块实现） |
+| 项目状态 | 已映射为 `cmac_mac`（AES-128 与 SM4 路径；不代表完整标准覆盖） |
 
 ## 原文定位与引用
 

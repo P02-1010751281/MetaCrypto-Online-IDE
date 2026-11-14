@@ -1,0 +1,99 @@
+{
+  "schema": "ciphercat.spec-run/v0",
+  "run_id": "2026-11-13-anchor-pages",
+  "created_at": "2026-11-13T22:26:00+08:00",
+  "inputs": [
+    {
+      "path": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+      "sha256": "a1e96171e2c31baaf3338a19f68135c12d67b124ceb9b0aae59430b8130cc0d6",
+      "role": "standard-source"
+    },
+    {
+      "path": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+      "sha256": "fa850e54502d229a95266435fee3d6722a2ac5a327e5e89d687ca8ba370c1360",
+      "role": "standard-source"
+    },
+    {
+      "path": "docs/standards/sp800-38e-xts/00-Standard-Source.md",
+      "sha256": "8f3a9854ead4d97092237b569d031c9da680bf12376c5f7af3c75a2bcbc59464",
+      "role": "standard-source"
+    },
+    {
+      "path": "docs/standards/sp800-38b-cmac/NIST.SP.800-38B.pdf",
+      "sha256": "da9dc0f1e1f08af917caf4a831a7497cf18997b8046353af89570a812f1ec5a2",
+      "role": "standard-source"
+    },
+    {
+      "path": "docs/standards/sp800-38c-ccm/NIST.SP.800-38C.pdf",
+      "sha256": "16ec6f99424192757b5b9928a7dcf41817be3aaf85d48366740dfdf7c16db250",
+      "role": "standard-source"
+    },
+    {
+      "path": "docs/standards/sp800-38e-xts/NIST.SP.800-38E.pdf",
+      "sha256": "b43ed11fd9f85bf06aa3a6e54206da361a3d02eb09da6974b80eb1b3e1803342",
+      "role": "standard-source"
+    }
+  ],
+  "extractor": {
+    "tool": "pdftotext -layout",
+    "version": "poppler 26.10.0（本轮重新抽取 PDF 逐页核对页码；00-Standard-Source.md 沿用既有提取稿，未重新生成）"
+  },
+  "model": {
+    "provider": "deepseek",
+    "id": "deepseek-v4.1-flash",
+    "version": "dsh agent 2026-11-13（提示词未归档，故不写 prompt_sha256）"
+  },
+  "outputs": [
+    {
+      "path": "scripts/check-spec-anchors.mjs"
+    },
+    {
+      "path": "docs/standards/sp800-38b-cmac/SPEC-CARD.json"
+    },
+    {
+      "path": "docs/standards/sp800-38c-ccm/SPEC-CARD.json"
+    },
+    {
+      "path": "docs/standards/sp800-38e-xts/SPEC-CARD.json"
+    }
+  ],
+  "shared": [
+    {
+      "path": "scripts/spec-card.schema.json"
+    },
+    {
+      "path": "package.json"
+    },
+    {
+      "path": ".github/workflows/quality.yml"
+    },
+    {
+      "path": "docs/guides/SPEC-CARDS.md"
+    },
+    {
+      "path": "docs/guides/SPEC-CARDS.en.md"
+    },
+    {
+      "path": "docs/research/AI-HELPER-RESEARCH-2026-11-13.md"
+    }
+  ],
+  "gates": [
+    {
+      "cmd": "npm run spec:anchors",
+      "exit": 0,
+      "summary": "SPEC_ANCHOR_SELFTEST controls=11 fired=11; SPEC_ANCHOR_SUMMARY cards=3 anchors=11 grade_a=11 verified=11 pages=9 tool=pdftotext/26.10.0 errors=0"
+    },
+    {
+      "cmd": "npm run spec:validate",
+      "exit": 0,
+      "summary": "SPEC_CARD_SELFTEST controls=12 fired=12; SPEC_CARD_SUMMARY cards=3 anchors=11 entries=10 artifacts=3 errors=0"
+    },
+    {
+      "cmd": "npm run verify:all",
+      "exit": 0,
+      "summary": "SPEC_CARD_SUMMARY cards=3 anchors=11 entries=10 artifacts=3 errors=0; SPEC_ANCHOR_SUMMARY cards=3 anchors=11 grade_a=11 verified=11 pages=9 tool=pdftotext/26.10.0 errors=0; SPEC_RUN_SUMMARY runs=4 inputs=14 outputs=10 shared=24 gates=10 decision=gated errors=0; SPEC_CANDIDATE_SUMMARY candidates=1 errors=0; DOC_LINK_SUMMARY files=440 broken=0; DEMO_SUMMARY total=60 pass=60 fail=0"
+    }
+  ],
+  "decision": "gated",
+  "notes": "把 anchor_grade 从 B 升到 A 并给出可复核的 PDF 物理页：pdf_pages 由提取稿换页符回填（spec:anchors --write），再用 pdftotext -layout 逐页重抽取同一 PDF 核验引文确实在该页。CMAC 第 12/13 页、CCM 15–20 页（A1-encrypt-steps 跨 15–16 页）、XTS 9/10/11 页。核对对象是文本层，不是页面图像；位宽/端序/Rb 的语义签核仍未做，三张卡 provenance.review 保持 draft。清单里三个 PDF 的哈希同时是卡片 standard.artifacts 的哈希来源，二者不一致时 spec:validate 会先红。本轮跑过两次 verify:all（exit 0）：第一次在脚本定稿前、第二次在补上本清单之后，上表记的是最终树上的那次（因此 runs=4）。"
+}

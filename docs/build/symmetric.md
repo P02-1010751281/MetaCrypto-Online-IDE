@@ -19,6 +19,7 @@
 | `Mode-CTR` | `demos/procedures/Mode-CTR.json` |
 | `GCM-Encrypt` | `demos/procedures/GCM-Encrypt.json` |
 | `CCM-Encrypt` | `demos/procedures/CCM-Encrypt.json` |
+| `CMAC-AES` | `demos/procedures/CMAC-AES.json` |
 | `XTS-Encrypt` | `demos/procedures/XTS-Encrypt.json` |
 | `ASCON` | `demos/procedures/ASCON.json` |
 | `ASCON-Extended` | `demos/procedures/ASCON-Extended.json` |
@@ -320,8 +321,8 @@
 ### CCM-Encrypt
 
 - 证据类别：标准/官方用例
-- 参数范围：AES-128 CCM：Example 1（N=7B、A=8B、P=4B、Tlen=4）、Example 2（N=8B、A=16B、P=16B、Tlen=6）、Example 3（N=12B、A=20B、P=24B、Tlen=8）
-- 依据：SP 800-38C 附录 C Example 1、Example 2、Example 3
+- 参数范围：AES-128 CCM：Example 1（N=7B、A=8B、P=4B、Tlen=4）、Example 2（N=8B、A=16B、P=16B、Tlen=6）、Example 3（N=12B、A=20B、P=24B、Tlen=8）；原语过程用 Example 1 参数；解密过程用 Example 1 参数（Tlen=…
+- 依据：SP 800-38C 附录 C Example 1、Example 2、Example 3；同工作区的 CCM_B0 / CCM_AAD_PREFIX / CCM_COUNTER_BLOCK / CCM_CBC_MAC / CCM_CTR 过程按 Example 1 参数逐块核对 B0、AAD 长度前缀、计数器块、C…
 - 核对入口：`print(''.join(f'{x:02x}' for x in CCM_Encrypt()))`
 - 期望结果：`e3b201a9f5b71a7a9b1ceaeccd97e70b6176aad9a4428aa5484392fbc1b09951 7162015b4dac255d d2a1f0e…`
 
@@ -341,11 +342,109 @@
 
 **该函数用到的算法块**：`ccm_encrypt`
 
+**函数 `CCM_B0()` 的返回值**
+
+- `ccm_b0`（CCM 首块 B0 (SP 800-38C §A.2)：flags ‖ nonce ‖ 明文长度；tagLen 下拉 4–16）：TAGLEN=4
+  - `NONCE` ←
+    - 常量 `[0x10,0x11,0x12,0x13,0x14,0x15,0x16]`
+  - `MSGLEN` ←
+    - 常量 `4`
+  - `AADLEN` ←
+    - 常量 `8`
+
+**该函数用到的算法块**：`ccm_b0`
+
+**函数 `CCM_AAD_PREFIX()` 的返回值**
+
+- `ccm_aad_len_prefix`（CCM AAD 长度编码 (SP 800-38C §A.2.2)：< 0xFF00 用 2 字节大端，否则 0xFFFE ‖ 4 字节大端）
+  - `AADLEN` ←
+    - 常量 `8`
+
+**该函数用到的算法块**：`ccm_aad_len_prefix`
+
+**函数 `CCM_COUNTER_BLOCK()` 的返回值**
+
+- `ccm_counter_block`（CCM 计数器块 A_i (§A.3)：flags(=L−1) ‖ nonce ‖ i（L 字节大端））：TAGLEN=4
+  - `NONCE` ←
+    - 常量 `[0x10,0x11,0x12,0x13,0x14,0x15,0x16]`
+  - `I` ←
+    - 常量 `0`
+
+**该函数用到的算法块**：`ccm_counter_block`
+
+**函数 `CCM_CBC_MAC()` 的返回值**
+
+- `ccm_cbc_mac`（CCM CBC-MAC (§A.2)：对 B0‖长度编码 AAD‖明文（分段零填充）整串做 CBC-MAC，输出 16 字节）：TAGLEN=4
+  - `KEY` ←
+    - 常量 `[0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4…`
+  - `NONCE` ←
+    - 常量 `[0x10,0x11,0x12,0x13,0x14,0x15,0x16]`
+  - `AAD` ←
+    - 常量 `[0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07]`
+  - `MSG` ←
+    - 常量 `[0x20,0x21,0x22,0x23]`
+
+**该函数用到的算法块**：`ccm_cbc_mac`
+
+**函数 `CCM_CTR()` 的返回值**
+
+- `ccm_ctr`（CCM 计数器模式 (§A.3)：只输出密文，不含标签）：TAGLEN=4
+  - `KEY` ←
+    - 常量 `[0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4…`
+  - `NONCE` ←
+    - 常量 `[0x10,0x11,0x12,0x13,0x14,0x15,0x16]`
+  - `MSG` ←
+    - 常量 `[0x20,0x21,0x22,0x23]`
+
+**该函数用到的算法块**：`ccm_ctr`
+
+**函数 `CCM_Decrypt()` 的返回值**
+
+- `ccm_decrypt`：TAGLEN=4
+  - `KEY` ←
+    - 常量 `[0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4…`
+  - `NONCE` ←
+    - 常量 `[0x10,0x11,0x12,0x13,0x14,0x15,0x16]`
+  - `AAD` ←
+    - 常量 `[0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07]`
+  - `CT` ←
+    - 常量 `[0x71,0x62,0x01,0x5b,0x4d,0xac,0x25,0x5d]`
+
+**该函数用到的算法块**：`ccm_decrypt`
+
+### CMAC-AES
+
+- 证据类别：标准/官方用例
+- 参数范围：AES-128（16 字节密钥，128-bit 标签；子密钥 K1‖K2）
+- 依据：RFC 4493 §4 Example vectors（AES-128 CMAC：0/16/40/64 字节消息；同节子密钥 L→K1→K2 的 K1‖K2 与 NIST SP 800-38B §6.1 对应）；与 NIST SP 800-38B §6.2 的 CMAC 语义对应
+- 核对入口：`key = bytes.fromhex('2b7e151628aed2a6abf7158809cf4f3c')`
+- 期望结果：`bb1d6929e95937287fa37d129b756746 070a16b46b4d4144f79bdd9dd04a287c dfa66747de9ae63030ca326…`
+
+#### 拼装步骤
+
+**函数 `CMAC_AES(key: bytes, msg: bytes)` 的返回值**
+
+- `cmac_mac`：CIPHER=aes
+  - `KEY` ←
+    - 变量 `key`
+  - `MSG` ←
+    - 变量 `msg`
+
+**该函数用到的算法块**：`cmac_mac`
+
+**函数 `CMAC_SUBKEYS(subkey: bytes)` 的返回值**
+
+- `cmac_subkeys`（CMAC 子密钥 K1‖K2 (§6.1, AES-128)：输出 32 字节）
+  - `KEY` ←
+    - 变量 `subkey`
+
+**该函数用到的算法块**：`cmac_subkeys`
+
 ### XTS-Encrypt
 
 - 证据类别：项目固定回归（非官方向量）
 - 参数范围：AES-128 XTS（32B key 拆两半、16B tweak、支持密文窃取）
-- 依据：IEEE 1619-2007 XTS-AES-128 经典向量（key=00..1f、tweak=00000000000000000102030405060708、64 字节数据单元）；该标准为付费文档且未随仓库分发，仓库内无可离线核对的来源，故不登记为官方向量
+- 依据：IEEE 1619-2007 XTS-AES-128 经典向量（key=00..1f、tweak=00000000000000000102030405060708、64 字节数据单元）；同工作区的 XTS_TWEAK_MUL 过程核对 GF(2^128) 最高位进位路径（T=0^120‖0x80 → 0x87‖0…0…
 - 核对入口：`print(''.join(f'{x:02x}' for x in XTS_Encrypt()))`
 - 期望结果：`76cbc38d4c92206b50338462cbc8795a74f66940f3300ce2aeb061b81dd5cc7233ecdaf43dc3db2f2a8d7a6e0…`
 
@@ -362,6 +461,14 @@
     - 常量 `[0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0…`
 
 **该函数用到的算法块**：`xts_encrypt`
+
+**函数 `XTS_TWEAK_MUL()` 的返回值**
+
+- `xts_tweak_mul`（XTS tweak ×α (SP 800-38E / IEEE 1619)：小端左移一位，字节 15 进位时异或 0x87 进字节 0）
+  - `TWEAK` ←
+    - 常量 `[0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0…`
+
+**该函数用到的算法块**：`xts_tweak_mul`
 
 ### ASCON
 

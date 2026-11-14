@@ -30,7 +30,7 @@
 | [SETUP.md](./guides/SETUP.md) | 开发者 | 本地启动、生产预览、桌面构建与验收检查 |
 | [DEVELOPMENT.md](./guides/DEVELOPMENT.md) | 开发者 | 环境搭建、添加积木块步骤、i18n、代码风格 |
 | [TYPE-SYSTEM.md](./guides/TYPE-SYSTEM.md) | 开发者 | Blockly 类型声明、实际连接检查规则与显式转换 |
-| [SPEC-CARDS.md](./guides/SPEC-CARDS.md) | 开发者 | 规格卡（SpecCard）契约与门禁：原文锚点、制品哈希与块映射如何被脚本重算 |
+| [SPEC-CARDS.md](./guides/SPEC-CARDS.md) | 开发者 | 规格卡（SpecCard）与运行清单契约及门禁：原文锚点、制品哈希、输入/产出哈希与块映射如何被脚本重算 |
 
 ### 📊 状态与审计
 
@@ -42,7 +42,7 @@
 
 ### 🔬 算法规范
 
-覆盖矩阵（标准 ↔ 块 ↔ Demo ↔ 模板 ↔ 指南）：[standards/COVERAGE.md](./standards/COVERAGE.md)。标准原文提取层与结构化用户参照层的关系见 [standards/SOURCE-LAYERS.md](./audits/standards/SOURCE-LAYERS.md)。文档 i18n 按 `.en.md` 配对；英文翻译尚未存在的标准页在英文界面保留 source 语言 fallback，不伪装成已翻译文本。以下为 40 个标准与参考目录；`standards/papers/` 是文献索引，不计入算法目录：
+覆盖矩阵（标准 ↔ 块 ↔ Demo ↔ 模板 ↔ 指南）：[standards/COVERAGE.md](./standards/COVERAGE.md)。标准原文提取层与结构化用户参照层的关系见 [standards/SOURCE-LAYERS.md](./audits/standards/SOURCE-LAYERS.md)。标准义务级的条目对照（每条标准条目由哪个 Demo 工作区/过程执行、哪些还没被执行）见生成物 [standards/SPEC-CARD-MATRIX.md](./standards/SPEC-CARD-MATRIX.md)，由 `npm run spec:matrix` 复核。文档 i18n 按 `.en.md` 配对；英文翻译尚未存在的标准页在英文界面保留 source 语言 fallback，不伪装成已翻译文本。以下为 40 个标准与参考目录；`standards/papers/` 是文献索引，不计入算法目录：
 
 | 文档 | 说明 |
 |------|------|
@@ -109,7 +109,7 @@
 | [STRUCTURED-ENTRY-SCHEMA.md](./standards/STRUCTURED-ENTRY-SCHEMA.md) | 函数、原语、公式和算法阶段的统一条目字段 |
 | [SOURCE-SPLIT-COVERAGE.md](./audits/standards/SOURCE-SPLIT-COVERAGE.md) | source 原文到结构化条目的覆盖审计与验收标准 |
 | [SOURCE-SPLIT-INVENTORY.md](./audits/standards/SOURCE-SPLIT-INVENTORY.md) | 229 个结构化条目的逐项 source 回链清单 |
-| [CONFORMANCE-INVENTORY.md](./standards/CONFORMANCE-INVENTORY.md) | 220 个活动块（另 1 个兼容身份）、29 个 Procedure 模板和 59 个 Demo 的验证对象与证据范围 |
+| [CONFORMANCE-INVENTORY.md](./standards/CONFORMANCE-INVENTORY.md) | 221 个活动块（另 1 个兼容身份）、29 个 Procedure 模板和 60 个 Demo 的验证对象与证据范围 |
 | [ENDPOINT-MATRIX.md](./demos/ENDPOINT-MATRIX.md) | 块端点（标准公开算法接口）对照表 |
 | [PRODUCT-CERTIFICATION-FEASIBILITY.md](./standards/PRODUCT-CERTIFICATION-FEASIBILITY.md) | 正式认证路径、候选产品边界、当前缺口与决策顺序 |
 

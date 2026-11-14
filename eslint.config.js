@@ -14,6 +14,8 @@ export default [
       '**/node_modules/**',
       '**/target/**',
       '**/.cargo/**',
+      // 规格卡候选产物（spec:scaffold 生成，含 TODO 骨架）：是产物不是源码，不纳入 lint
+      '**/spec-runs/**',
       'src/blocks/procedure/encaps-prefill.ts',
     ],
   },

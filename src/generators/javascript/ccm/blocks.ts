@@ -126,6 +126,30 @@ function registerCcmEncrypt(): string {
   ]);
 }
 
+/** 完整 CCM-Decrypt（SP 800-38C §6.2）：先 CTR 解出明文，再重算并比对标签；不符即抛错 */
+function registerCcmDecrypt(): string {
+  const cbcMac = registerCcmCbcMac();
+  const counterBlock = registerCcmCounterBlock();
+  const ctr = registerCcmCtr();
+  return javascriptGenerator.provideFunction_('ccmDecrypt', [
+    'function ' + javascriptGenerator.FUNCTION_NAME_PLACEHOLDER_ + '(key, nonce, aad, ct, tagLen) {',
+    '  if (key.length !== 16) throw new Error("CCM key must be 16 bytes");',
+    '  if (ct.length <= tagLen) throw new Error("CCM ciphertext must be longer than tagLen (SP 800-38C 6.2 step 1)");',
+    '  var body = [], tag = [];',
+    '  for (var i = 0; i < ct.length - tagLen; i++) body.push(ct[i]);',
+    '  for (var j = 0; j < tagLen; j++) tag.push(ct[ct.length - tagLen + j]);',
+    '  var P = ' + ctr + '(key, nonce, body, tagLen);',
+    '  // §6.2 步 7-10：CBC-MAC 的输入是解出的明文 P，不是密文段',
+    '  var X = ' + cbcMac + '(key, nonce, aad, P, tagLen);',
+    '  var S0 = aesEncryptBlock(' + counterBlock + '(nonce, 0, tagLen), key);',
+    '  var diff = 0;',
+    '  for (var t = 0; t < tagLen; t++) diff |= X[t] ^ S0[t] ^ tag[t];',
+    '  if (diff !== 0) throw new Error("CCM tag mismatch: authentication failed");',
+    '  return P;',
+    '}',
+  ]);
+}
+
 function ccmTagLen(block: Block): number {
   return Number(block.getFieldValue('TAGLEN')) || 16;
 }
@@ -139,6 +163,17 @@ javascriptGenerator.forBlock['ccm_encrypt'] = function (block: Block): [string, 
   registerAesEcb();
   const fn = registerCcmEncrypt();
   return ['Uint8Array.from(' + fn + '(' + key + ', ' + nonce + ', ' + aad + ', ' + msg + ', ' + tagLen + '))', Order.ATOMIC];
+};
+
+javascriptGenerator.forBlock['ccm_decrypt'] = function (block: Block): [string, number] {
+  const key = javascriptGenerator.valueToCode(block, 'KEY', Order.ATOMIC) || '[]';
+  const nonce = javascriptGenerator.valueToCode(block, 'NONCE', Order.ATOMIC) || '[]';
+  const aad = javascriptGenerator.valueToCode(block, 'AAD', Order.ATOMIC) || '[]';
+  const ct = javascriptGenerator.valueToCode(block, 'CT', Order.ATOMIC) || '[]';
+  const tagLen = Number(block.getFieldValue('TAGLEN')) || 16;
+  registerAesEcb();
+  const fn = registerCcmDecrypt();
+  return ['Uint8Array.from(' + fn + '(' + key + ', ' + nonce + ', ' + aad + ', ' + ct + ', ' + tagLen + '))', Order.ATOMIC];
 };
 
 javascriptGenerator.forBlock['ccm_b0'] = function (block: Block): [string, number] {

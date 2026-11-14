@@ -54,8 +54,9 @@ The demos below wrap atomic-block chains with `procedures_defreturn` (custom fun
 | ZUC EEA3 stream | `procedures/EEA3.json` | GB/T 33133.2 Annex A.1 |
 | ZUC EIA3 message integrity | `procedures/EIA3.json` | GB/T 33133.3-2021 Appendix B Examples 1 and 2 (1/577 bits) |
 | GCM | `procedures/GCM-Encrypt.json` | SP 800-38D Test Case 2 and Test Case 13; plus a project-chosen zero key/IV + 16-byte AAD variant (not a standard TC). **TC3 is not covered** |
-| CCM | `procedures/CCM-Encrypt.json` | SP 800-38C Annex C Example 1-3 |
-| XTS | `procedures/XTS-Encrypt.json` | SP 800-38E + IEEE 1619-2007 |
+| CCM | `procedures/CCM-Encrypt.json` | SP 800-38C Annex C Example 1-3; five primitive procedures in the same workspace check each stage with Example 1 parameters; `CCM_Decrypt` follows §6.2 back to the payload and proves a tampered tag is rejected |
+| CMAC | `procedures/CMAC-AES.json` | RFC 4493 §4 AES-128 (0/16/40/64-byte messages; same-section subkeys K1‖K2) |
+| XTS | `procedures/XTS-Encrypt.json` | SP 800-38E + IEEE 1619-2007; the `xts_tweak_mul` procedure in the same workspace checks the high-bit carry path |
 | ASCON | `procedures/ASCON.json` · `procedures/ASCON-Extended.json` | Fixed AEAD / Hash / XOF cases, empty-message decryption, and bad-tag/parameter rejection; not the full 1,089-case AEAD KAT or complete Hash/XOF suites |
 
 ## Procedure-Wrapped Demos (PQC math foundations / property-vector verification)

@@ -8,7 +8,7 @@
 | 标准定位 | NIST SP 800-38C §6.3 |
 | 原文证据 | [CCM 原文提取](./00-Standard-Source.md) · [PDF](./NIST.SP.800-38C.pdf) |
 | 原文位置 | PDF 物理第 15–17 页（标准页 9–11）；[提取稿 §6.1 步骤 1–4](./00-Standard-Source.md#L592) |
-| 项目状态 | 由 `ccm_encrypt` 内部实现；无独立 CBC-MAC 块 |
+| 项目状态 | 已映射为 `ccm_cbc_mac`；标签掩码与端点组装仍由 `ccm_encrypt` 完成 |
 
 ## 原文定位与引用
 
@@ -44,7 +44,9 @@ T = first_t_bytes(X_last xor AES_K(Ctr(0)))
 
 ## 项目映射
 
-`ccm_encrypt` 内部完成 CBC-MAC；没有独立 `ccm_cbc_mac` 或标签验证块。完整流程见 [01-CCM.md](./01-CCM.md)。
+`ccm_cbc_mac` 完成从 `B0` 起的 CBC-MAC 链并输出 16 字节链终值；标签掩码
+`T = MSB_t(X_last xor S0)` 与 B0/AAD/明文块的拼接仍由 `ccm_encrypt` 组装，没有独立的
+标签掩码块，也没有解密后先验标签再释放明文的路径。完整流程见 [01-CCM.md](./01-CCM.md)。
 
 ## 核验与缺项
 

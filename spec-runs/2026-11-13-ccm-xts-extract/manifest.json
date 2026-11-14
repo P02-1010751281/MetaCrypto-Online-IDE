@@ -1,0 +1,69 @@
+{
+  "schema": "ciphercat.spec-run/v0",
+  "run_id": "2026-11-13-ccm-xts-extract",
+  "created_at": "2026-11-13T21:22:00+08:00",
+  "inputs": [
+    {
+      "path": "docs/standards/sp800-38c-ccm/NIST.SP.800-38C.pdf",
+      "sha256": "16ec6f99424192757b5b9928a7dcf41817be3aaf85d48366740dfdf7c16db250",
+      "role": "standard-source"
+    },
+    {
+      "path": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+      "sha256": "fa850e54502d229a95266435fee3d6722a2ac5a327e5e89d687ca8ba370c1360",
+      "role": "standard-source"
+    },
+    {
+      "path": "docs/standards/sp800-38e-xts/NIST.SP.800-38E.pdf",
+      "sha256": "b43ed11fd9f85bf06aa3a6e54206da361a3d02eb09da6974b80eb1b3e1803342",
+      "role": "standard-source"
+    },
+    {
+      "path": "docs/standards/sp800-38e-xts/00-Standard-Source.md",
+      "sha256": "8f3a9854ead4d97092237b569d031c9da680bf12376c5f7af3c75a2bcbc59464",
+      "role": "standard-source"
+    }
+  ],
+  "extractor": {
+    "tool": "pdftotext -layout",
+    "version": "提取稿生成时未记录 poppler 版本；本机现为 26.10.0，本轮未重跑提取"
+  },
+  "model": {
+    "provider": "deepseek",
+    "id": "deepseek-v4.1-flash",
+    "version": "dsh agent 2026-11-13（提示词未归档，故不写 prompt_sha256）"
+  },
+  "outputs": [
+    {
+      "path": "docs/standards/sp800-38c-ccm/SPEC-CARD.json"
+    },
+    {
+      "path": "docs/standards/sp800-38e-xts/SPEC-CARD.json"
+    }
+  ],
+  "shared": [
+    {
+      "path": "docs/guides/SPEC-CARDS.md"
+    },
+    {
+      "path": "docs/guides/SPEC-CARDS.en.md"
+    },
+    {
+      "path": "docs/research/AI-HELPER-RESEARCH-2026-11-13.md"
+    }
+  ],
+  "gates": [
+    {
+      "cmd": "npm run spec:validate",
+      "exit": 0,
+      "summary": "SPEC_CARD_SELFTEST controls=12 fired=12; SPEC_CARD_SUMMARY cards=3 anchors=11 entries=10 artifacts=3 errors=0"
+    },
+    {
+      "cmd": "npm run verify:all",
+      "exit": 0,
+      "summary": "SPEC_CARD_SUMMARY cards=3 anchors=11 entries=10 artifacts=3 errors=0; DOC_LINK_SUMMARY files=440 broken=0; DEMO_SUMMARY total=60 pass=60 fail=0"
+    }
+  ],
+  "decision": "gated",
+  "notes": "一次运行写两张卡：CCM（SP 800-38C）与 XTS（SP 800-38E）。XTS 的本地标准文本不含算法步骤（§3 委托 IEEE Std 1619-2007），仓库未分发该付费文档，因此两条目使用 fidelity=paraphrase 并把缺项写进 limits/open_questions，不伪造逐字锚点。CCM 的五条原语只有单测直接驱动，vectors.status=partial，spec:plan 会为它们与 xts_tweak_mul 报 6 条 wire-vectors 缺口——这些是待接线清单，不是本轮失败。 本清单记录提取阶段；同日的 2026-11-13-ccm-xts-wiring 已把这六条接进 Demo，卡片的 vectors 状态随后改为 wired。"
+}

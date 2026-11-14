@@ -19,6 +19,7 @@ Block ciphers, modes, and authenticated encryption: assemble round/mode chains f
 | `Mode-CTR` | `demos/procedures/Mode-CTR.json` |
 | `GCM-Encrypt` | `demos/procedures/GCM-Encrypt.json` |
 | `CCM-Encrypt` | `demos/procedures/CCM-Encrypt.json` |
+| `CMAC-AES` | `demos/procedures/CMAC-AES.json` |
 | `XTS-Encrypt` | `demos/procedures/XTS-Encrypt.json` |
 | `ASCON` | `demos/procedures/ASCON.json` |
 | `ASCON-Extended` | `demos/procedures/ASCON-Extended.json` |
@@ -320,8 +321,8 @@ Block ciphers, modes, and authenticated encryption: assemble round/mode chains f
 ### CCM-Encrypt
 
 - Evidence class: standards or official cases
-- Parameter scope: AES-128 CCM：Example 1（N=7B、A=8B、P=4B、Tlen=4）、Example 2（N=8B、A=16B、P=16B、Tlen=6）、Example 3（N=12B、A=20B、P=24B、Tlen=8）
-- Basis: SP 800-38C 附录 C Example 1、Example 2、Example 3（source text in Chinese）
+- Parameter scope: AES-128 CCM：Example 1（N=7B、A=8B、P=4B、Tlen=4）、Example 2（N=8B、A=16B、P=16B、Tlen=6）、Example 3（N=12B、A=20B、P=24B、Tlen=8）；原语过程用 Example 1 参数；解密过程用 Example 1 参数（Tlen=…（source text in Chinese）
+- Basis: SP 800-38C 附录 C Example 1、Example 2、Example 3；同工作区的 CCM_B0 / CCM_AAD_PREFIX / CCM_COUNTER_BLOCK / CCM_CBC_MAC / CCM_CTR 过程按 Example 1 参数逐块核对 B0、AAD 长度前缀、计数器块、C…（source text in Chinese）
 - Check: `print(''.join(f'{x:02x}' for x in CCM_Encrypt()))`
 - Expected result: `e3b201a9f5b71a7a9b1ceaeccd97e70b6176aad9a4428aa5484392fbc1b09951 7162015b4dac255d d2a1f0e…`
 
@@ -341,11 +342,109 @@ Block ciphers, modes, and authenticated encryption: assemble round/mode chains f
 
 **Algorithm blocks used by this function**: `ccm_encrypt`
 
+**Return value of `CCM_B0()`**
+
+- `ccm_b0` (CCM B0 block (SP 800-38C §A.2): flags ‖ nonce ‖ message length; tagLen …): TAGLEN=4
+  - `NONCE` ←
+    - constant `[0x10,0x11,0x12,0x13,0x14,0x15,0x16]`
+  - `MSGLEN` ←
+    - constant `4`
+  - `AADLEN` ←
+    - constant `8`
+
+**Algorithm blocks used by this function**: `ccm_b0`
+
+**Return value of `CCM_AAD_PREFIX()`**
+
+- `ccm_aad_len_prefix` (CCM AAD length encoding (SP 800-38C §A.2.2): two big-endian bytes below…)
+  - `AADLEN` ←
+    - constant `8`
+
+**Algorithm blocks used by this function**: `ccm_aad_len_prefix`
+
+**Return value of `CCM_COUNTER_BLOCK()`**
+
+- `ccm_counter_block` (CCM counter block A_i (§A.3): flags(=L−1) ‖ nonce ‖ i (L-byte big-endia…): TAGLEN=4
+  - `NONCE` ←
+    - constant `[0x10,0x11,0x12,0x13,0x14,0x15,0x16]`
+  - `I` ←
+    - constant `0`
+
+**Algorithm blocks used by this function**: `ccm_counter_block`
+
+**Return value of `CCM_CBC_MAC()`**
+
+- `ccm_cbc_mac` (CCM CBC-MAC (§A.2): whole-string CBC-MAC over B0‖length-coded AAD‖plain…): TAGLEN=4
+  - `KEY` ←
+    - constant `[0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4…`
+  - `NONCE` ←
+    - constant `[0x10,0x11,0x12,0x13,0x14,0x15,0x16]`
+  - `AAD` ←
+    - constant `[0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07]`
+  - `MSG` ←
+    - constant `[0x20,0x21,0x22,0x23]`
+
+**Algorithm blocks used by this function**: `ccm_cbc_mac`
+
+**Return value of `CCM_CTR()`**
+
+- `ccm_ctr` (CCM counter mode (§A.3): ciphertext only, no tag): TAGLEN=4
+  - `KEY` ←
+    - constant `[0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4…`
+  - `NONCE` ←
+    - constant `[0x10,0x11,0x12,0x13,0x14,0x15,0x16]`
+  - `MSG` ←
+    - constant `[0x20,0x21,0x22,0x23]`
+
+**Algorithm blocks used by this function**: `ccm_ctr`
+
+**Return value of `CCM_Decrypt()`**
+
+- `ccm_decrypt` (CCM decryption takes ciphertext concatenated with the tag and returns t…): TAGLEN=4
+  - `KEY` ←
+    - constant `[0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,0x49,0x4a,0x4…`
+  - `NONCE` ←
+    - constant `[0x10,0x11,0x12,0x13,0x14,0x15,0x16]`
+  - `AAD` ←
+    - constant `[0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07]`
+  - `CT` ←
+    - constant `[0x71,0x62,0x01,0x5b,0x4d,0xac,0x25,0x5d]`
+
+**Algorithm blocks used by this function**: `ccm_decrypt`
+
+### CMAC-AES
+
+- Evidence class: standards or official cases
+- Parameter scope: AES-128（16 字节密钥，128-bit 标签；子密钥 K1‖K2）（source text in Chinese）
+- Basis: RFC 4493 §4 Example vectors（AES-128 CMAC：0/16/40/64 字节消息；同节子密钥 L→K1→K2 的 K1‖K2 与 NIST SP 800-38B §6.1 对应）；与 NIST SP 800-38B §6.2 的 CMAC 语义对应（source text in Chinese）
+- Check: `key = bytes.fromhex('2b7e151628aed2a6abf7158809cf4f3c')`
+- Expected result: `bb1d6929e95937287fa37d129b756746 070a16b46b4d4144f79bdd9dd04a287c dfa66747de9ae63030ca326…`
+
+#### Assembly steps
+
+**Return value of `CMAC_AES(key: bytes, msg: bytes)`**
+
+- `cmac_mac`: CIPHER=aes
+  - `KEY` ←
+    - variable `key`
+  - `MSG` ←
+    - variable `msg`
+
+**Algorithm blocks used by this function**: `cmac_mac`
+
+**Return value of `CMAC_SUBKEYS(subkey: bytes)`**
+
+- `cmac_subkeys` (CMAC subkeys K1‖K2 (§6.1, AES-128): 32-byte output)
+  - `KEY` ←
+    - variable `subkey`
+
+**Algorithm blocks used by this function**: `cmac_subkeys`
+
 ### XTS-Encrypt
 
 - Evidence class: project fixed regression (not an official vector)
 - Parameter scope: AES-128 XTS（32B key 拆两半、16B tweak、支持密文窃取）（source text in Chinese）
-- Basis: IEEE 1619-2007 XTS-AES-128 经典向量（key=00..1f、tweak=00000000000000000102030405060708、64 字节数据单元）；该标准为付费文档且未随仓库分发，仓库内无可离线核对的来源，故不登记为官方向量（source text in Chinese）
+- Basis: IEEE 1619-2007 XTS-AES-128 经典向量（key=00..1f、tweak=00000000000000000102030405060708、64 字节数据单元）；同工作区的 XTS_TWEAK_MUL 过程核对 GF(2^128) 最高位进位路径（T=0^120‖0x80 → 0x87‖0…0…（source text in Chinese）
 - Check: `print(''.join(f'{x:02x}' for x in XTS_Encrypt()))`
 - Expected result: `76cbc38d4c92206b50338462cbc8795a74f66940f3300ce2aeb061b81dd5cc7233ecdaf43dc3db2f2a8d7a6e0…`
 
@@ -362,6 +461,14 @@ Block ciphers, modes, and authenticated encryption: assemble round/mode chains f
     - constant `[0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0…`
 
 **Algorithm blocks used by this function**: `xts_encrypt`
+
+**Return value of `XTS_TWEAK_MUL()`**
+
+- `xts_tweak_mul` (XTS tweak ×α (SP 800-38E / IEEE 1619): little-endian one-bit shift, XOR…)
+  - `TWEAK` ←
+    - constant `[0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0…`
+
+**Algorithm blocks used by this function**: `xts_tweak_mul`
 
 ### ASCON
 

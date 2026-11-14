@@ -53,8 +53,9 @@
 | ZUC EEA3 流加密 | `procedures/EEA3.json` | GB/T 33133.2 附录 A.1 |
 | ZUC EIA3 消息完整性 | `procedures/EIA3.json` | GB/T 33133.3-2021 附录 B 示例 1、2（1/577 bit） |
 | GCM | `procedures/GCM-Encrypt.json` | SP 800-38D Test Case 2、Test Case 13；另有项目自选的零 key/IV + 16B AAD 变体（非标准 TC）。**不含 TC3** |
-| CCM | `procedures/CCM-Encrypt.json` | SP 800-38C 附录 C Example 1-3 |
-| XTS | `procedures/XTS-Encrypt.json` | SP 800-38E + IEEE 1619-2007 |
+| CCM | `procedures/CCM-Encrypt.json` | SP 800-38C 附录 C Example 1-3；同工作区的五个原语过程用 Example 1 参数逐块核对；`CCM_Decrypt` 按 §6.2 解回明文并验证篡改标签被拒绝 |
+| CMAC | `procedures/CMAC-AES.json` | RFC 4493 §4 AES-128（0/16/40/64 字节消息；同节子密钥 K1‖K2） |
+| XTS | `procedures/XTS-Encrypt.json` | SP 800-38E + IEEE 1619-2007；同工作区的 `xts_tweak_mul` 过程核对最高位进位路径 |
 | ASCON | `procedures/ASCON.json` · `procedures/ASCON-Extended.json` | 固定 AEAD / Hash / XOF 样例、空消息解密与错误标签/参数拒绝；非完整 1,089 项 AEAD KAT 或完整 Hash/XOF 套件 |
 
 ## Procedure 封装 Demo（PQC 数学基础 / 性质向量验证）

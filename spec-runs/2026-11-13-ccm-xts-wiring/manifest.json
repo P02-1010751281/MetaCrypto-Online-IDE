@@ -1,0 +1,85 @@
+{
+  "schema": "ciphercat.spec-run/v0",
+  "run_id": "2026-11-13-ccm-xts-wiring",
+  "created_at": "2026-11-13T21:34:00+08:00",
+  "inputs": [
+    {
+      "path": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+      "sha256": "fa850e54502d229a95266435fee3d6722a2ac5a327e5e89d687ca8ba370c1360",
+      "role": "standard-source"
+    },
+    {
+      "path": "docs/standards/sp800-38e-xts/00-Standard-Source.md",
+      "sha256": "8f3a9854ead4d97092237b569d031c9da680bf12376c5f7af3c75a2bcbc59464",
+      "role": "standard-source"
+    }
+  ],
+  "extractor": {
+    "tool": "pdftotext -layout",
+    "version": "沿用 2026-11-13-ccm-xts-extract 的文本层，本轮未重跑提取"
+  },
+  "model": {
+    "provider": "deepseek",
+    "id": "deepseek-v4.1-flash",
+    "version": "dsh agent 2026-11-13（提示词未归档，故不写 prompt_sha256）"
+  },
+  "outputs": [
+    {
+      "path": "demos/procedures/CCM-Encrypt.json"
+    },
+    {
+      "path": "demos/procedures/XTS-Encrypt.json"
+    }
+  ],
+  "shared": [
+    {
+      "path": "demos/tests.json"
+    },
+    {
+      "path": "demos/evidence.json"
+    },
+    {
+      "path": "docs/standards/CONFORMANCE-INVENTORY.md"
+    },
+    {
+      "path": "docs/demos/ENDPOINT-MATRIX.md"
+    },
+    {
+      "path": "docs/build/symmetric.md"
+    },
+    {
+      "path": "docs/build/symmetric.en.md"
+    },
+    {
+      "path": "demos/README.md"
+    },
+    {
+      "path": "demos/README.en.md"
+    },
+    {
+      "path": "docs/standards/sp800-38c-ccm/SPEC-CARD.json"
+    },
+    {
+      "path": "docs/standards/sp800-38e-xts/SPEC-CARD.json"
+    }
+  ],
+  "gates": [
+    {
+      "cmd": "npm run spec:validate",
+      "exit": 0,
+      "summary": "SPEC_CARD_SELFTEST controls=12 fired=12; SPEC_CARD_SUMMARY cards=3 anchors=11 entries=10 artifacts=3 errors=0"
+    },
+    {
+      "cmd": "npm run spec:plan",
+      "exit": 0,
+      "summary": "SPEC_PLAN_SUMMARY cards=3 gaps=0"
+    },
+    {
+      "cmd": "npm run verify:all",
+      "exit": 0,
+      "summary": "SPEC_CARD_SUMMARY cards=3 anchors=11 entries=10 artifacts=3 errors=0; BUILD_GUIDE_OK families=11 workspaces=60; DOC_LINK_SUMMARY files=440 broken=0; DEMO_SUMMARY total=60 pass=60 fail=0"
+    }
+  ],
+  "decision": "gated",
+  "notes": "把 2026-11-13-ccm-xts-extract 留下的 6 条 wire-vectors 缺口接上：复用 CCM-Encrypt.json 与 XTS-Encrypt.json 新增 6 个过程，不新增工作区（Demo 总数仍为 60）。CCM 五条原语按附录 C.1 Example 1 参数逐块核对；CBC-MAC 的 16 字节中间值附录未公布，期望值按 B0/AAD/明文与 AES-128 逐块算出。XTS 的 α 加倍用 T=0^120‖0x80 → 0x87‖0…0 核对最高位进位。没有把任何无本地来源的条目改成 wired 来消除缺口。"
+}

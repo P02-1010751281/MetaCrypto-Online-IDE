@@ -4,7 +4,7 @@
 > **原子块**（`src/blocks/` 注册的块）、**Demo**（`demos/` 预构建工作区）、**模板**（`src/blocks/procedure/blocks.ts` 的 `proc_*` 预填模板）、**搭建指南**（`standards/*/guides/`）。
 > 文档提取质量、原件可检索性和未完成项另见 [DOCUMENT-STATUS.md](./DOCUMENT-STATUS.md)，不要把本矩阵当作标准全文覆盖证明。
 > 函数/原语页的拆分规则和入口见 [FUNCTION-PRIMITIVE-INDEX.md](./FUNCTION-PRIMITIVE-INDEX.md)。
-> 对象总册（220 个活动块 + 1 个已登记兼容身份、29 个模板身份、59 个 Demo）见 [CONFORMANCE-INVENTORY.md](./CONFORMANCE-INVENTORY.md)；本矩阵是标准维度的聚合映射，不替代对象级测试证据。
+> 对象总册（221 个活动块 + 1 个已登记兼容身份、29 个模板身份、60 个 Demo）见 [CONFORMANCE-INVENTORY.md](./CONFORMANCE-INVENTORY.md)；本矩阵是标准维度的聚合映射，不替代对象级测试证据。
 >
 > 块与模板注册清单按 2026-09-29 核对；Demo 文件清单及测试分类见 [demos/README.md](../../demos/README.md) 和 [`demos/tests.json`](../../demos/tests.json)；搭建步骤教程见 [docs/demos/](../demos/) 与 [docs/guides/DEMO.md](../guides/DEMO.md)。`standards/papers/` 是研究材料索引，不计入下方算法标准目录。
 
@@ -31,7 +31,7 @@
 | McEliece（Goppa 码） | `mceliece-goppa/` | `gf2_poly_mul/div/mod/gcd` · `bin_mat_mul/inv` · `ham_weight` · `ham_dist` · `goppa_gen_poly` · `syndrome_calc` · `gf2m_mul/add/inv` · `gf2m_poly_add/mul/mod/xgcd/eval` · `goppa_decode` · `berlekamp_massey` · `arr_slice` | `demos/procedures/Code-Based-Math.json` · `GF2m-Poly.json` · `Goppa-Decode.json` · `PQC-Gaps.json` | — | — |
 | ECDSA | `fips186-5-ecdsa/` | `ecdsa_sign` · `ecdsa_verify` · `ecdsa_k_rfc6979`(RFC 6979) · `ecc_load_curve_params` · `ecc_load_point` · `ecc_add` · `ecc_point_double` · `ecc_multiply` | `demos/procedures/ECDSA.json` | — | — |
 | SP 800-38A 分组模式 | `sp800-38a-modes/` | `mode_ecb_encrypt/decrypt` · `mode_cbc_encrypt` · `mode_ctr_encrypt` · `pad_pkcs7` · `pad_zero` | `demos/procedures/Mode-ECB.json` · `Mode-CBC.json` · `Mode-CTR.json` | `proc_mode_ecb`（AES-128；key 留空）· `proc_mode_cbc`（AES-128；key/IV 留空）· `proc_mode_ctr`（AES-128；key/nonce 留空） | — |
-| CMAC | `sp800-38b-cmac/` | `cmac_double` · `cmac_subkeys` · `cmac_mac`(CIPHER 下拉：AES-128 / SM4) | — | — | — |
+| CMAC | `sp800-38b-cmac/` | `cmac_double` · `cmac_subkeys` · `cmac_mac`(CIPHER 下拉：AES-128 / SM4) | `demos/procedures/CMAC-AES.json` | — | — |
 | CCM | `sp800-38c-ccm/` | `ccm_b0` · `ccm_counter_block` · `ccm_cbc_mac` · `ccm_ctr` · `ccm_aad_len_prefix` · `ccm_encrypt` | `demos/procedures/CCM-Encrypt.json` | — | — |
 | GCM | `sp800-38d-gcm/` | `gcm_gf128_mul` · `gcm_ghash` · `gcm_gctr` · `gcm_inc32` · `gcm_j0` · `gcm_encrypt`（+ `mode_ctr_encrypt` 基础） | `demos/procedures/GCM-Encrypt.json`（GCM 规范 Test Case 2/13 编号体系 + NIST ACVP AES-GCM 官方用例 tagLen=128/96-bit IV 15 例；SP 800-38D 正文不含用例表） | `proc_mode_gcm`（仅 CTR 起始骨架，无 GHASH/tag，不构成 GCM 证据） | — |
 | XTS | `sp800-38e-xts/` | `xts_tweak_mul` · `xts_encrypt` | `demos/procedures/XTS-Encrypt.json` | — | — |
@@ -74,7 +74,7 @@ RSA 的 `rsa_keygen` 是项目自定义教学块，不属于 RFC 8017；FIPS 186
 - 覆盖矩阵目录映射：**40** 个标准与参考目录（不含下方单列的 `papers/`；含 `randomness-certification-sources/` 与 `rfc6979-ecdsa/`）
 - 研究材料目录：**1**（`standards/papers/`，不计入覆盖矩阵）
 - 有原子块覆盖：**35**（无覆盖 5：GB/T 36624 AEAD、GM/T 0005 随机性检测、GB/T 32915 二元序列随机性检测、中国抗量子密码进展追踪、`randomness-certification-sources/`；35 + 5 = 40，与 `directories=` 口径一致）
-- 有 Demo：**31**
+- 有 Demo：**32**
 - 有 `proc_*` 模板：**15**（另有 ML-DSA 复用 pq 模板）
 - 有搭建指南：**3**（ML-KEM、ML-DSA、ZUC）
 - 结构化拆分边界：25 个目录已有本地标准 source；其余 RFC、扫描件、历史/路线追踪目录仅保留实现映射或证据边界，不能据此宣称全部函数、原语、公式和表格均已拆分。

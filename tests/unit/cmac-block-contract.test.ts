@@ -37,6 +37,7 @@ function generate(
   language: 'javascript' | 'python',
   inputKey: number[],
   inputMessage: number[],
+  rawMessage?: string,
 ): string {
   const workspace = new Blockly.Workspace();
   try {
@@ -48,7 +49,9 @@ function generate(
     cmac.getInput('KEY')!.connection!.connect(keyBlock.outputConnection!);
 
     const messageBlock = workspace.newBlock('data_value');
-    messageBlock.setFieldValue(`[${inputMessage.join(', ')}]`, 'NUM');
+    // rawMessage 用于模拟 Bytes 类型的真实载体（JS Uint8Array / Python bytes），
+    // 而不是数组字面量；两者在生成器里走同一条代码路径，但运行时类型不同。
+    messageBlock.setFieldValue(rawMessage ?? `[${inputMessage.join(', ')}]`, 'NUM');
     cmac.getInput('MSG')!.connection!.connect(messageBlock.outputConnection!);
 
     const generator = language === 'javascript' ? javascriptGenerator : pythonGenerator;
@@ -88,6 +91,20 @@ describe('CMAC Blockly block contract', () => {
     const inputMessage = message.slice(0, length);
     expect(evaluateJavaScript(generate('javascript', key, inputMessage))).toBe(expected);
     expect(evaluatePython(generate('python', key, inputMessage))).toBe(expected);
+  });
+
+  it('handles Bytes-typed message carriers on the padding path in both languages', () => {
+    // 回归：JS 生成器曾对 msg.slice() 的结果直接调用 .push(0x80)，
+    // 而 Bytes 实际是 Uint8Array（没有 push），任何非整块消息都会在运行时抛错。
+    const msg40 = message.slice(0, 40);
+    const jsRaw = `Uint8Array.from([${msg40.join(', ')}])`;
+    const pyRaw = `bytes([${msg40.join(', ')}])`;
+    expect(evaluateJavaScript(generate('javascript', key, msg40, jsRaw))).toBe(
+      'dfa66747de9ae63030ca32611497c827',
+    );
+    expect(evaluatePython(generate('python', key, msg40, pyRaw))).toBe(
+      'dfa66747de9ae63030ca32611497c827',
+    );
   });
 
   it.each([15, 17])('rejects a %i-byte AES key in both languages', (length) => {

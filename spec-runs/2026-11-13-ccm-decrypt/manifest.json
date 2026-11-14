@@ -1,0 +1,110 @@
+{
+  "schema": "ciphercat.spec-run/v0",
+  "run_id": "2026-11-13-ccm-decrypt",
+  "created_at": "2026-11-13T23:15:00+08:00",
+  "inputs": [
+    {
+      "path": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+      "sha256": "fa850e54502d229a95266435fee3d6722a2ac5a327e5e89d687ca8ba370c1360",
+      "role": "standard-source"
+    },
+    {
+      "path": "docs/standards/sp800-38c-ccm/NIST.SP.800-38C.pdf",
+      "sha256": "16ec6f99424192757b5b9928a7dcf41817be3aaf85d48366740dfdf7c16db250",
+      "role": "standard-source"
+    }
+  ],
+  "extractor": {
+    "tool": "pdftotext -layout",
+    "version": "沿用 2026-11-13-ccm-xts-extract 的文本层，本轮未重跑提取"
+  },
+  "model": {
+    "provider": "deepseek",
+    "id": "deepseek-v4.1-flash",
+    "version": "dsh agent 2026-11-13（提示词未归档，故不写 prompt_sha256）"
+  },
+  "outputs": [
+    {
+      "path": "docs/standards/sp800-38c-ccm/SPEC-CARD.json"
+    },
+    {
+      "path": "demos/procedures/CCM-Encrypt.json"
+    }
+  ],
+  "shared": [
+    {
+      "path": "demos/tests.json"
+    },
+    {
+      "path": "demos/evidence.json"
+    },
+    {
+      "path": "docs/blocks/BLOCK-IO-CONTRACT.json"
+    },
+    {
+      "path": "docs/build/symmetric.md"
+    },
+    {
+      "path": "docs/build/symmetric.en.md"
+    },
+    {
+      "path": "docs/blocks/symmetric.md"
+    },
+    {
+      "path": "docs/blocks/symmetric.en.md"
+    },
+    {
+      "path": "docs/standards/CONFORMANCE-INVENTORY.md"
+    },
+    {
+      "path": "docs/standards/sp800-38c-ccm/01-CCM.md"
+    },
+    {
+      "path": "docs/standards/sp800-38c-ccm/README.md"
+    },
+    {
+      "path": "docs/demos/ENDPOINT-MATRIX.md"
+    },
+    {
+      "path": "docs/guides/SPEC-CARDS.md"
+    },
+    {
+      "path": "docs/guides/SPEC-CARDS.en.md"
+    },
+    {
+      "path": "src/blocks/ccm/blocks.ts"
+    },
+    {
+      "path": "src/generators/python/ccm/blocks.ts"
+    },
+    {
+      "path": "src/generators/javascript/ccm/blocks.ts"
+    },
+    {
+      "path": "tests/unit/ccm-decrypt-contract.test.ts"
+    }
+  ],
+  "gates": [
+    {
+      "cmd": "npm run verify:all",
+      "exit": 0,
+      "summary": "SPEC_CARD cards=3 anchors=12 entries=11 errors=0; DEMO_SUMMARY total=60 pass=60 fail=0; 模板 29/29 PASS"
+    },
+    {
+      "cmd": "npm run test:unit",
+      "exit": 0,
+      "summary": "Test Files 74 passed; Tests 897 passed | 1 skipped"
+    },
+    {
+      "cmd": "npm run type-check",
+      "exit": 0,
+      "summary": "vue-tsc --noEmit: 0 errors"
+    },
+    {
+      "cmd": "npm run lint:check",
+      "exit": 0,
+      "summary": "eslint . : 0 errors / 0 warnings"
+    }
+  ],
+  "decision": "gated"
+}

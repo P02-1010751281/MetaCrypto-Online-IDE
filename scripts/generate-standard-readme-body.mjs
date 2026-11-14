@@ -6,6 +6,13 @@
  *   - COVERAGE.md 的块 / Demo / 模板 / 指南映射
  *   - CONFORMANCE-INVENTORY.md 的规范语义范围与边界
  * 生成内容包在 <!-- standard-body:start --> 标记内，可重复运行。
+ *
+ * ⚠️ 引导工具，不是门禁：它未接入 `verify:all`，且已知会降级手写正文——
+ *   - CONFORMANCE-INVENTORY.md 里的合并行（如 `ccm_encrypt` · `ccm_b0` · …）按单块 id
+ *     解析，合并行中的块查不到，会被写成 `—`，覆盖掉手写的丰富证据单元格；
+ *   - `示例工作区` 会退化成纯文本路径，丢掉 README 里的相对链接与搭建指南链接。
+ * 因此默认不要跑 `--write`；手写正文（含 `<!-- standard-body -->` 区块）是权威版本。
+ * 需要批量补空正文时，先跑 `--check` 看清单、逐条 diff，再决定是否接受整体重写。
  */
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';

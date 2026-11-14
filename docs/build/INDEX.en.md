@@ -2,7 +2,7 @@
 
 Each algorithm family lists the assembly steps for its workspaces: which blocks are needed, how they connect, what result to expect, and which interfaces can only be called as a whole today.
 
-- [Symmetric ciphers and modes](./symmetric.en.md)（16）
+- [Symmetric ciphers and modes](./symmetric.en.md)（17）
 - [Hashing, XOF, and message authentication](./hash.en.md)（8）
 - [Key derivation and password processing](./kdf.en.md)（5）
 - [Random-bit generation](./rng.en.md)（2）

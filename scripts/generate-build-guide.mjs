@@ -49,6 +49,7 @@ const FAMILIES = [
       'procedures/Mode-CTR.json',
       'procedures/GCM-Encrypt.json',
       'procedures/CCM-Encrypt.json',
+      'procedures/CMAC-AES.json',
       'procedures/XTS-Encrypt.json',
       'procedures/ASCON.json',
       'procedures/ASCON-Extended.json',

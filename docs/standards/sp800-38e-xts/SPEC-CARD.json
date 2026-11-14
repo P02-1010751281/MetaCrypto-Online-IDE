@@ -1,0 +1,205 @@
+{
+  "schema": "ciphercat.spec-card/v0",
+  "id": "sp800-38e-xts",
+  "kind": "standard",
+  "standard": {
+    "name": "NIST SP 800-38E",
+    "version": "38E",
+    "source_url": "https://csrc.nist.gov/pubs/sp/800/38/e/final",
+    "dir": ".",
+    "artifacts": [
+      {
+        "path": "NIST.SP.800-38E.pdf",
+        "sha256": "b43ed11fd9f85bf06aa3a6e54206da361a3d02eb09da6974b80eb1b3e1803342"
+      }
+    ]
+  },
+  "anchors": [
+    {
+      "id": "A1-xex-and-stealing",
+      "source": "00-Standard-Source.md",
+      "line_range": [
+        187,
+        189
+      ],
+      "quote": "The XTS-AES mode is an instantiation of Rogaway’s XEX (XOR Encrypt XOR) tweakable block cipher [3], supplemented with a method called “ciphertext stealing” to extend the domain of possible input data strings. In particular, XEX can only encrypt sequences of complete",
+      "quote_sha256": "f7b8ddb1d708c713dcb04415b72c6bb99cdedf51eb98c5796ec4d1cbae826964",
+      "anchor_grade": "A",
+      "extractor": {
+        "tool": "pdftotext",
+        "version": "unknown (提取稿未记录 poppler 版本)",
+        "args": "-layout"
+      },
+      "known_defects": [
+        "上标与下标被拉平：XTS-AES 的写法保持，但 §3 后续的 2^20 等上标在文本层不可靠"
+      ],
+      "pdf_pages": [
+        9
+      ]
+    },
+    {
+      "id": "A2-data-unit-limit",
+      "source": "00-Standard-Source.md",
+      "line_range": [
+        227,
+        229
+      ],
+      "quote": "The length of the data unit for any instance of an implementation of XTS-AES shall not exceed 220 AES blocks. Note that Subclause 5.1 of Ref.[2] recommends this limit but does not require it.",
+      "quote_sha256": "e5458a5d1266ec8c9d3f79619463982e88acebe9aa5f56e723e98faf2829d157",
+      "anchor_grade": "A",
+      "extractor": {
+        "tool": "pdftotext",
+        "version": "unknown (提取稿未记录 poppler 版本)",
+        "args": "-layout"
+      },
+      "known_defects": [
+        "上标丢失：2^20 在文本层显示为 220（本行「shall not exceed 220 AES blocks」实为 2^20 个 AES 块）"
+      ],
+      "pdf_pages": [
+        10
+      ]
+    },
+    {
+      "id": "A3-ordering-convention",
+      "source": "00-Standard-Source.md",
+      "line_range": [
+        286,
+        289
+      ],
+      "quote": "Thus, if every external interface to the data retrieves the data in a manner that is consistent with the ordering specified in Ref [2], then the last block and the partial block may be stored in any convenient locations in the storage device. In other words, if necessary, a mechanism for swapping the last complete block and the partial block could be built into the interface.",
+      "quote_sha256": "4c2e0a36f415b69677f5b0e04e479d93ef2907fad977c1825cbaf6f18afded35",
+      "anchor_grade": "A",
+      "extractor": {
+        "tool": "pdftotext",
+        "version": "unknown (提取稿未记录 poppler 版本)",
+        "args": "-layout"
+      },
+      "known_defects": [
+        "无（该段为纯文本，上下标不涉及）"
+      ],
+      "pdf_pages": [
+        11
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "key": "xts-tweak-mul",
+      "type": "原语",
+      "io": {
+        "inputs": [
+          {
+            "name": "TWEAK",
+            "type": "IntList",
+            "note": "16 字节 tweak"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "T'",
+            "type": "IntList",
+            "length": "16 字节"
+          }
+        ]
+      },
+      "params": {
+        "field": "GF(2^128)，约简多项式 x^128 + x^7 + x^2 + x + 1（0x87）",
+        "byte_order": "低位字节在前（进位从字节 15 进位到字节 0，0x87 异或进字节 0）"
+      },
+      "normative_level": "n/a",
+      "level": "L1",
+      "pseudocode": {
+        "fidelity": "paraphrase",
+        "text": "T' = α·T：把 16 字节看成低位在前的 GF(2^128) 元素左移一位；若原最高位（字节 15 的 bit7）为 1，则结果再异或 0x87。SP 800-38E 未给出这一步的公式，它委托给 IEEE Std 1619-2007 §5；本条是项目实现摘要，不是标准逐字引文。"
+      },
+      "blocks": {
+        "existing": [
+          "xts_tweak_mul"
+        ],
+        "planned": []
+      },
+      "vectors": {
+        "status": "wired",
+        "detail": "demos/procedures/XTS-Encrypt.json 的 XTS_TWEAK_MUL 过程由 verify:demos 双语言执行最高位进位（T=0^120‖0x80 → 0x87‖0…0）；tests/unit/cmac-xts-primitives-contract.test.ts 另覆盖零值、低比特与高位进位三种输入"
+      }
+    },
+    {
+      "key": "xts-encrypt",
+      "type": "模式",
+      "io": {
+        "inputs": [
+          {
+            "name": "KEY",
+            "type": "Bytes",
+            "note": "32 字节 K1‖K2（AES-128 双半钥）"
+          },
+          {
+            "name": "TWEAK",
+            "type": "IntList",
+            "note": "16 字节数据单元号"
+          },
+          {
+            "name": "MSG",
+            "type": "Bytes",
+            "note": "数据单元，16 字节至 16 MiB"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "C",
+            "type": "Bytes",
+            "note": "与输入等长的密文"
+          }
+        ]
+      },
+      "params": {
+        "direction": "仅加密（XTS-AES-Enc）",
+        "key_size": "XTS-AES-128（2×128-bit）",
+        "max_data_unit_blocks": 1048576,
+        "ciphertext_stealing": "最后完整块与部分块按 Ref.[2] 排序（完整块在前，部分块在后）"
+      },
+      "normative_level": "n/a",
+      "level": "L3",
+      "pseudocode": {
+        "fidelity": "paraphrase",
+        "text": "T = AES_K2(tweak)；对每个完整块 i：C_i = AES_K1(P_i ⊕ T) ⊕ T，T ← α·T。若末尾有部分块 P_m（长度 s<16）：先对 P_{m-1} 做同样变换得到 C*，取 C* 前 s 字节作部分密文，再把 P_m ‖ C*[s:] 作为末块加密得到 C_{m-1}。算法本体在 IEEE Std 1619-2007 §5，SP 800-38E 只批准该模式并追加数据单元长度限制；本条是项目实现摘要。"
+      },
+      "composes": [
+        "xts-tweak-mul"
+      ],
+      "blocks": {
+        "existing": [
+          "xts_encrypt",
+          "xts_tweak_mul"
+        ],
+        "planned": []
+      },
+      "vectors": {
+        "status": "wired",
+        "detail": "demos/procedures/XTS-Encrypt.json 经 verify:demos 双语言执行 IEEE 1619-2007 XTS-AES-128 经典向量（64 字节数据单元）与 16/17/31/47 字节消息、相同半钥拒绝与短于一个分组的拒绝；该向量属项目固定回归（来源标准付费、未随仓库分发），不是官方向量，仓库内亦无第三方独立复算"
+      }
+    }
+  ],
+  "provenance": {
+    "extracted_by": {
+      "kind": "llm",
+      "name": "CipherCat SpecCard 第二、三张卡（同一快照）",
+      "model": "deepseek-v4.1-flash (dsh agent)"
+    },
+    "review": {
+      "status": "draft",
+      "note": "锚点、哈希与块名由 scripts/check-spec-cards.mjs 重算；算法语义（α 乘法字节序、密文窃取排序）没有本地标准原文可核，未由具名密码学审阅者签核；PDF 物理页与引文位置由 scripts/check-spec-anchors.mjs 逐页重抽取核对"
+    }
+  },
+  "limits": [
+    "SP 800-38E 本身不含 XTS-AES-Enc 的算法步骤：§3 把算法委托给 IEEE Std 1619-2007，仓库未分发该付费标准，因此两条目的 pseudocode 是项目实现摘要（fidelity=paraphrase），不是标准逐字锚点。",
+    "只覆盖加密方向与 XTS-AES-128（32 字节 K1‖K2）；不含解密、XTS-AES-256、密钥管理/XML 表示与侧信道。",
+    "§4 的数据单元上限（2^20 个 AES 块 = 16 MiB）只在块内做长度检查；固定回归最大只到 64 字节数据单元，未覆盖上限附近的行为。",
+    "§5 允许在物理存储上交换最后完整块与部分块；项目块固定输出 Ref.[2] 的排序，没有可配置的交换接口。"
+  ],
+  "open_questions": [
+    "IEEE 1619-2007 §5 的 XTS-AES-Enc 步骤与 GF(2^128) α 乘法的字节序没有本地可复核来源；本项目实现采用低位字节在前、0x87 进字节 0，与 CMAC 子密钥加倍的 big-endian 约定相反，需外部标准对照后才能声称一致。",
+    "仓库内没有第三方 XTS 实现复算，demo 属 fixed-regression；官方 KAT（IEEE 1619 或 ACVP）缺失。",
+    "文本层把 2^20 拉平成 220（见 A2 的 known_defects），逐字复核上限条款必须回看 PDF。"
+  ]
+}

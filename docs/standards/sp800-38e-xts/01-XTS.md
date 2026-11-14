@@ -8,7 +8,7 @@
 | 标准定位 | NIST SP 800-38E — XTS-AES 参考 |
 | 原文证据 | [source 提取稿](./00-Standard-Source.md)（本目录 PDF 清单见 source 页） |
 | 原文位置 | [提取稿 §3–§5，行 175–298](./00-Standard-Source.md#L175-L298)；PDF 物理页需结合同目录 PDF 核对 |
-| 项目状态 | 仅参考（未映射为块实现） |
+| 项目状态 | 已映射为 `xts_encrypt`（整块与末尾部分块 ciphertext stealing；不代表完整标准覆盖） |
 
 ## 原文定位与引用
 
@@ -38,4 +38,7 @@ T(i+1) = α · Ti  in GF(2^128)
 
 ## CipherCat 覆盖边界
 
-`xts_encrypt` 使用 AES-128 的双密钥输入、16 字节 tweak 和非空整块数据，返回密文；当前实现拒绝非 16 字节倍数数据，因此没有 ciphertext stealing 的部分块路径，也没有解密块。Demo：`demos/procedures/XTS-Encrypt.json`。
+`xts_encrypt` 使用 AES-128 的双密钥输入（`K1‖K2` 且两半必须不同）、16 字节 tweak 和数据单元
+（16 字节至 16 MiB），返回密文；末尾部分块走 ciphertext stealing，因此接受非 16 字节倍数数据
+（Demo 覆盖 16/17/31/47 字节）。没有解密块，也不做数据单元号管理、密钥轮换或存储协议约束。
+Demo：`demos/procedures/XTS-Encrypt.json`（`fixed-regression`，IEEE 1619-2007 经典向量不可离线核对）。

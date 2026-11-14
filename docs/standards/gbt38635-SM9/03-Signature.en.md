@@ -9,7 +9,7 @@
 | Source evidence | [Part 1 source](./00-Standard-Source.md#L313), [Part 1 PDF](./GBT+38635.1-2020.pdf); [Part 2 source](./00-Standard-Source.md#L2040), [Part 2 PDF](./GBT+38635.2-2020.pdf) |
 | Source location | Part 1 §5.5 [lines 313–322](./00-Standard-Source.md#L313), §7.2.7 [lines 457–472](./00-Standard-Source.md#L457), §7.2.9 [lines 509–545](./00-Standard-Source.md#L509); Part 2 §6.2 [lines 2040–2052](./00-Standard-Source.md#L2040), §6.4 [lines 2062–2076](./00-Standard-Source.md#L2062) |
 | Project mapping | `sm9_sign`, `sm9_verify`; [SM9 signature Demo](../../../demos/procedures/SM9-Sign.json) |
-| Project status | Implemented with limited regression evidence; this is not a complete conformance finding, third-party algorithm validation, or product certification |
+| Project status | Implemented with limited regression evidence; this is not a complete conformance finding, third-party algorithm validation, or product certification. The Appendix A example values are drawn as vector paths with no text layer in the local PDF (`pdftotext` yields no hexadecimal digits on those pages), so the registered vectors can only be checked by independent computation, not by literal comparison against the printed values |
 
 ## Source location and citation
 

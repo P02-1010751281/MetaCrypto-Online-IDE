@@ -238,8 +238,9 @@ npm run tauri:build  # Tauri 桌面打包
 npm run lint:check   # ESLint 检查（不改文件）
 npm run type-check   # vue-tsc 类型检查
 npm run test:unit    # Vitest unit tests
-npm run verify:all   # build verification output + 29 templates + 59 demos
+npm run verify:all   # build verification output + 29 templates + 60 demos
 npm run docs:check-links # 文档本地链接检查
+npm run docs:mermaid:check # Mermaid syntax check for docs (parse only, no rendering)
 npm run standards:check   # Standards metadata, PDF hash and errata checks
 npm run cycles:check      # TypeScript/Vue circular-dependency check
 ```
@@ -270,11 +271,12 @@ npm run build
 npm run build:check-bundle
 npm run verify:all
 npm run docs:check-links
+npm run docs:mermaid:check
 npm run standards:check
 npm run cycles:check
 ```
 
-`verify:all` loads all 29 function templates and executes the 59 demos registered in `demos/tests.json`, checking JavaScript and Python generation separately. Python subprocesses default to `python3` on Linux/macOS and `python` on Windows; set `CIPHER_CAT_PYTHON` when the interpreter has another name. Browser checks remain useful for UI interaction, but they cannot replace trusted backend assessment.
+`verify:all` loads all 29 function templates and executes the 60 demos registered in `demos/tests.json`, checking JavaScript and Python generation separately. Python subprocesses default to `python3` on Linux/macOS and `python` on Windows; set `CIPHER_CAT_PYTHON` when the interpreter has another name. Browser checks remain useful for UI interaction, but they cannot replace trusted backend assessment.
 
 Vitest currently covers `utils/markdown`, workspace migration, error handling and type compatibility. When stable public APIs are added under `utils/`, `composables/` or the generators, continue adding boundary and error cases. Randomness assessment belongs in the isolated `metacrypt_server` backend.
 

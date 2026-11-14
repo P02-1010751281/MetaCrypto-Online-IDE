@@ -8,7 +8,7 @@
 | 标准定位 | XTS — 数据单元与 ciphertext stealing 边界 |
 | 原文证据 | [source 提取稿](./00-Standard-Source.md)（本目录 PDF 清单见 source 页） |
 | 原文位置 | [提取稿 §5.1–§5.2，行 266–298](./00-Standard-Source.md#L266-L298)；PDF 物理页需结合同目录 PDF 核对 |
-| 项目状态 | 仅参考（未映射为块实现） |
+| 项目状态 | 已映射为 `xts_encrypt`（16 字节至 16 MiB，含 ciphertext stealing；无解密块） |
 
 ## 原文定位与引用
 
@@ -36,4 +36,6 @@ XTS 不提供认证，数据单元号/扇区号和密钥轮换由调用方管理
 
 ### 项目状态
 
-`xts_encrypt` 当前要求非空且 16-byte 对齐数据，返回加密结果；部分块 ciphertext stealing、解密、错误输入和存储协议约束仍缺。
+`xts_encrypt` 要求数据单元 16 字节至 16 MiB，并拒绝两半相同的 `K1‖K2`；末尾部分块由
+ciphertext stealing 处理，因此非 16 字节倍数（17/31/47 字节）是受支持输入而非拒绝输入。
+缺项是解密方向、tweak/数据单元号的管理与存储协议约束，以及其它数据单元长度的覆盖。

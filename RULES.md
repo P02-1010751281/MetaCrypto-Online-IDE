@@ -87,7 +87,7 @@ npm run cycles:check    # TypeScript/Vue 循环依赖检查
 **验证标准**：CI/PR 必须执行上述命令，任一失败则阻止合并。若配置本地 hook，必须与 CI 命令保持一致；当前仓库不假定存在未登记的 `simple-git-hooks` 配置。
 
 ### R-TEST-02 可执行回归与单元测试
-当前使用 `test:unit` 覆盖核心工具函数，使用 `verify:all` 覆盖 29 个函数模板和 `demos/tests.json` 注册的 59 个 demo，并分别执行 JavaScript/Python 生成结果。新增稳定公共 API 后，应为 `generators/`、`composables/` 和 `utils/` 补充边界与异常单元测试；覆盖率门槛待测试面稳定后再设定，目标为不低于 80%。
+当前使用 `test:unit` 覆盖核心工具函数，使用 `verify:all` 覆盖 29 个函数模板和 `demos/tests.json` 注册的 60 个 demo，并分别执行 JavaScript/Python 生成结果。新增稳定公共 API 后，应为 `generators/`、`composables/` 和 `utils/` 补充边界与异常单元测试；覆盖率门槛待测试面稳定后再设定，目标为不低于 80%。
 
 ### R-TEST-04 标准证据链
 标准相关目录必须记录精确版本/发布日期、官方来源 URL、向量来源、已知 errata、实现状态和安全边界。通过 demo 或选定向量只表示功能回归通过，不得表述为 CAVP/ACVTS、CMVP/FIPS 140-3、constant-time 或形式化验证通过。

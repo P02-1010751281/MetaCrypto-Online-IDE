@@ -36,6 +36,9 @@ fix_imports() {
     -e "s|@/blocks/procedure/blocks|@/features/blockly/core/blocks/procedure/blocks|g" \
     -e "s|@/blocks/procedure/toolbox-state|@/features/blockly/core/blocks/procedure/toolbox-state|g" \
     -e "s|@/utils/migration|@/features/blockly/core/utils/migration|g" \
+    -e "s|@/utils/project-context|@/features/blockly/core/utils/project-context|g" \
+    -e "s|@/generators/assignment-target|@/features/blockly/core/generators/assignment-target|g" \
+    -e "s|@/generators/python/safe-int|@/features/blockly/core/generators/python/safe-int|g" \
     -e "s|'\./bit'|'./bitwise'|g" \
     -e "s|'\./postquantum'|'./post-quantum'|g" \
     -e "s|'\.\./postquantum/|'../post-quantum/|g" \
@@ -51,6 +54,8 @@ fix_imports_blocks() {
     -e "s|@/constants/sbox-presets|@/features/blockly/core/constants/sbox-presets|g" \
     -e "s|@/blocks/procedure/blocks|@/features/blockly/core/blocks/procedure/blocks|g" \
     -e "s|@/utils/migration|@/features/blockly/core/utils/migration|g" \
+    -e "s|@/utils/project-context|@/features/blockly/core/utils/project-context|g" \
+    -e "s|@/generators/assignment-target|@/features/blockly/core/generators/assignment-target|g" \
     "$1"
 }
 
@@ -95,6 +100,18 @@ for gen in python javascript; do
   done)
 done
 
+# ─── 2.5 generators 根级共享文件（assignment-target.ts 等）───
+# 旧脚本只镜像 generators/{python,javascript}/，根级共享文件缺位会让
+# `@/generators/assignment-target` 这类导入在 metacrypt 侧解析到不存在的路径。
+echo "[2.5/4] generators 根级共享文件"
+for f in "$CIPHER"/src/generators/*.ts; do
+  [ -f "$f" ] || continue
+  base=$(basename "$f")
+  cp "$f" "$CORE/generators/$base"
+  fix_imports "$CORE/generators/$base"
+  echo "  CP generators/$base"
+done
+
 # ─── 3. constants/ 镜像（保留 metacrypt 专属 mcl-highlight.ts）───
 echo "[3/4] constants/"
 cp "$CIPHER/src/constants/block-types.ts" "$CORE/constants/block-types.ts"
@@ -111,7 +128,7 @@ sed -i 's|ciphercat_templates.json|function_templates.json|g' "$META/frontend/sr
 # ─── 4. 核对清单 ───
 echo "[4/4] 核对"
 echo ""
-echo "已同步（自动）：blocks/ 全部、generators/{python,javascript}/ 全部、constants/block-types.ts + sbox-presets.ts"
+echo "已同步（自动）：blocks/ 全部、generators/{python,javascript}/ 全部 + generators 根级 *.ts、constants/block-types.ts + sbox-presets.ts"
 echo ""
 
 # ─── 手工核对项（同步后需检查）───

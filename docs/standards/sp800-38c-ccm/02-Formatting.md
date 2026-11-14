@@ -8,7 +8,7 @@
 | 标准定位 | NIST SP 800-38C §6.1–§6.2 |
 | 原文证据 | [CCM 原文提取](./00-Standard-Source.md) · [PDF](./NIST.SP.800-38C.pdf) |
 | 原文位置 | PDF 物理第 15–16 页（标准页 9–10）；[提取稿 §6.1](./00-Standard-Source.md#L592) |
-| 项目状态 | 由 `ccm_encrypt` 内部实现 |
+| 项目状态 | 已映射为 `ccm_b0` / `ccm_aad_len_prefix` / `ccm_counter_block`（不代表完整标准覆盖） |
 
 ## 原文定位与引用
 
@@ -57,8 +57,9 @@ S_i = AES_K(Ctr(i))
 
 ## 项目映射
 
-编码由 `ccm_encrypt` 内部完成；CBC-MAC 和 CTR 的独立语义分别见 [03-CBC-MAC.md](./03-CBC-MAC.md)
-和 [04-CTR.md](./04-CTR.md)。
+编码不再是 `ccm_encrypt` 的独占内部步骤：`ccm_b0` 输出首块、`ccm_aad_len_prefix` 输出 AAD
+长度前缀、`ccm_counter_block` 输出计数器块 `A_i`，`ccm_encrypt` 消费同一组积木。CBC-MAC 和 CTR
+的独立语义分别见 [03-CBC-MAC.md](./03-CBC-MAC.md) 和 [04-CTR.md](./04-CTR.md)。
 
 ## 核验与缺项
 

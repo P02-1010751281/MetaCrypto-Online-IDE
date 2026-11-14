@@ -30,7 +30,7 @@ Block documentation follows one overview plus multiple details: start with the [
 | [SETUP.en.md](./guides/SETUP.en.md) | Developers | Local startup, production preview, desktop builds, and acceptance checks |
 | [DEVELOPMENT.en.md](./guides/DEVELOPMENT.en.md) | Developers | Environment setup, adding blocks, i18n, code style |
 | [TYPE-SYSTEM.en.md](./guides/TYPE-SYSTEM.en.md) | Developers | Blockly type declarations, connection checks, and explicit conversions |
-| [SPEC-CARDS.en.md](./guides/SPEC-CARDS.en.md) | Developers | SpecCard contract and gate: how anchors, artifact hashes and block mappings are recomputed |
+| [SPEC-CARDS.en.md](./guides/SPEC-CARDS.en.md) | Developers | SpecCard and run-manifest contracts and gates: how anchors, artifact hashes, input/output hashes and block mappings are recomputed |
 
 ### 📊 Status and audits
 
@@ -42,7 +42,7 @@ Block documentation follows one overview plus multiple details: start with the [
 
 ### 🔬 Algorithm specifications
 
-Coverage matrix (standard ↔ blocks ↔ demos ↔ templates ↔ guides): [standards/COVERAGE.en.md](./standards/COVERAGE.en.md). The relationship between the original-source extraction layer and the structured user-reference layer is documented in [standards/SOURCE-LAYERS.en.md](./audits/standards/SOURCE-LAYERS.en.md). Documentation i18n uses `.en.md` counterparts; when a standard page has no English translation, the English view keeps an explicit source-language fallback instead of pretending it is translated. The list below contains 40 standard and reference directories; `standards/papers/` is a literature index and is not counted as an algorithm directory:
+Coverage matrix (standard ↔ blocks ↔ demos ↔ templates ↔ guides): [standards/COVERAGE.en.md](./standards/COVERAGE.en.md). The relationship between the original-source extraction layer and the structured user-reference layer is documented in [standards/SOURCE-LAYERS.en.md](./audits/standards/SOURCE-LAYERS.en.md). Obligation-level cross-reference (which demo workspace or procedure executes each standard entry, and which entries are still unexecuted) is the generated [standards/SPEC-CARD-MATRIX.md](./standards/SPEC-CARD-MATRIX.md), checked by `npm run spec:matrix`; it is Chinese source with no English twin yet. Documentation i18n uses `.en.md` counterparts; when a standard page has no English translation, the English view keeps an explicit source-language fallback instead of pretending it is translated. The list below contains 40 standard and reference directories; `standards/papers/` is a literature index and is not counted as an algorithm directory:
 
 | Doc | Description |
 |------|------|
@@ -110,7 +110,7 @@ These pages record extraction, splitting, evidence ledgers, and certification pr
 | [STRUCTURED-ENTRY-SCHEMA.en.md](./standards/STRUCTURED-ENTRY-SCHEMA.en.md) | Common entry fields for functions, primitives, formulas, and algorithm stages |
 | [SOURCE-SPLIT-COVERAGE.en.md](./audits/standards/SOURCE-SPLIT-COVERAGE.en.md) | Source-to-entry split coverage and acceptance boundary |
 | [SOURCE-SPLIT-INVENTORY.en.md](./audits/standards/SOURCE-SPLIT-INVENTORY.en.md) | Entry-by-entry source links for 229 structured entries |
-| [CONFORMANCE-INVENTORY.md](./standards/CONFORMANCE-INVENTORY.md) | Verification objects and evidence scope for 220 active blocks (plus 1 compat identity), 29 procedure templates, and 59 demos (Chinese only) |
+| [CONFORMANCE-INVENTORY.md](./standards/CONFORMANCE-INVENTORY.md) | Verification objects and evidence scope for 221 active blocks (plus 1 compat identity), 29 procedure templates, and 60 demos (Chinese only) |
 | [ENDPOINT-MATRIX.md](./demos/ENDPOINT-MATRIX.md) | Block endpoint (public standard algorithm interface) matrix (Chinese only) |
 | [PRODUCT-CERTIFICATION-FEASIBILITY.en.md](./standards/PRODUCT-CERTIFICATION-FEASIBILITY.en.md) | Formal certification routes, candidate product boundary, gaps, and decision sequence |
 

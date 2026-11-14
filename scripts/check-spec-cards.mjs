@@ -24,6 +24,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import process from 'node:process';
+import { readJson, validateSchema } from './lib/json-schema-lite.mjs';
 
 const root = process.cwd();
 const schemaPath = resolve(root, 'scripts/spec-card.schema.json');
@@ -43,108 +44,6 @@ function normalizeWhitespace(value) {
 
 function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
-}
-
-function describeType(value) {
-  if (Array.isArray(value)) return 'array';
-  if (value === null) return 'null';
-  if (Number.isInteger(value)) return 'integer';
-  return typeof value;
-}
-
-function joinPath(base, key) {
-  return /^\d+$/.test(String(key)) ? `${base}[${key}]` : `${base}.${key}`;
-}
-
-/** 只实现本仓库 schema 用到的关键字；未支持的关键字直接报错，避免「看起来校验了」。 */
-function validateSchema(value, schema, path, defs, errors) {
-  let node = schema;
-  if (node && node.$ref) {
-    const match = /^#\/\$defs\/(.+)$/.exec(node.$ref);
-    if (!match) {
-      errors.push(`${path}: 不支持的 $ref ${node.$ref}`);
-      return;
-    }
-    node = defs[match[1]];
-    if (!node) {
-      errors.push(`${path}: $ref 指向不存在的定义 ${match[1]}`);
-      return;
-    }
-  }
-  if (!node || typeof node !== 'object') return;
-
-  if ('const' in node && value !== node.const) {
-    errors.push(`${path}: 必须等于 ${JSON.stringify(node.const)}`);
-  }
-  if (Array.isArray(node.enum) && !node.enum.includes(value)) {
-    errors.push(`${path}: 必须是 ${node.enum.map((item) => JSON.stringify(item)).join(' / ')} 之一，实际 ${JSON.stringify(value)}`);
-  }
-
-  if (node.type) {
-    const expected = Array.isArray(node.type) ? node.type : [node.type];
-    const actual = describeType(value);
-    const ok = expected.some((type) => type === actual || (type === 'number' && actual === 'integer'));
-    if (!ok) {
-      errors.push(`${path}: 类型应为 ${expected.join('|')}，实际 ${actual}`);
-      return;
-    }
-  }
-
-  if (typeof value === 'string') {
-    if (typeof node.minLength === 'number' && value.length < node.minLength) {
-      errors.push(`${path}: 长度至少 ${node.minLength}`);
-    }
-    if (node.pattern) {
-      let pattern = null;
-      try {
-        pattern = new RegExp(node.pattern, 'u');
-      } catch {
-        errors.push(`${path}: schema pattern 无法编译: ${node.pattern}`);
-      }
-      if (pattern && !pattern.test(value)) {
-        errors.push(`${path}: 不匹配 ${node.pattern}`);
-      }
-    }
-  }
-
-  if (typeof value === 'number') {
-    if (typeof node.minimum === 'number' && value < node.minimum) {
-      errors.push(`${path}: 必须 >= ${node.minimum}`);
-    }
-    if (typeof node.maximum === 'number' && value > node.maximum) {
-      errors.push(`${path}: 必须 <= ${node.maximum}`);
-    }
-  }
-
-  if (Array.isArray(value)) {
-    if (typeof node.minItems === 'number' && value.length < node.minItems) {
-      errors.push(`${path}: 至少 ${node.minItems} 项`);
-    }
-    if (typeof node.maxItems === 'number' && value.length > node.maxItems) {
-      errors.push(`${path}: 至多 ${node.maxItems} 项`);
-    }
-    if (node.items) {
-      value.forEach((item, index) => validateSchema(item, node.items, joinPath(path, index), defs, errors));
-    }
-  }
-
-  if (value && typeof value === 'object' && !Array.isArray(value)) {
-    const properties = node.properties || {};
-    for (const key of node.required || []) {
-      if (!(key in value)) errors.push(`${path}.${key}: 缺少必填字段`);
-    }
-    for (const [key, child] of Object.entries(value)) {
-      if (key in properties) {
-        validateSchema(child, properties[key], joinPath(path, key), defs, errors);
-      } else if (node.additionalProperties === false) {
-        errors.push(`${joinPath(path, key)}: 未定义的字段（schema 未声明，禁止自造键）`);
-      }
-    }
-  }
-}
-
-function readJson(file) {
-  return JSON.parse(readFileSync(file, 'utf8'));
 }
 
 function discoverCards() {
@@ -268,6 +167,49 @@ function checkCard(card, cardFile, context) {
     }
   }
 
+  // 拆解层级：composes 必须引用同卡条目、子级严格更低、整体无环（对应 §4.3.1 的粒度阶梯）。
+  const LEVEL_ORDER = ['L0', 'L1', 'L2', 'L3', 'L4'];
+  const entriesByKey = new Map(card.entries.map((entry) => [entry.key, entry]));
+  for (const entry of card.entries) {
+    const children = entry.composes || [];
+    if (!children.length) continue;
+    const label = `entries(${entry.key})`;
+    if (!entry.level) {
+      errors.push(`${label}: 声明 composes 必须同时声明 level，否则无法判定拆解到哪一级`);
+      continue;
+    }
+    for (const child of children) {
+      if (child === entry.key) {
+        errors.push(`${label}: composes 不能引用自身`);
+        continue;
+      }
+      const target = entriesByKey.get(child);
+      if (!target) {
+        errors.push(`${label}: composes 引用了本卡不存在的条目 ${child}`);
+        continue;
+      }
+      if (!target.level) {
+        errors.push(`${label}: 子条目 ${child} 未声明 level`);
+      } else if (LEVEL_ORDER.indexOf(target.level) >= LEVEL_ORDER.indexOf(entry.level)) {
+        errors.push(`${label}: 子条目 ${child} 的 level ${target.level} 必须严格低于 ${entry.level}`);
+      }
+    }
+  }
+  const visitState = new Map();
+  const visitComposes = (key, stack) => {
+    if (visitState.get(key) === 'done') return;
+    if (visitState.get(key) === 'visiting') {
+      errors.push(`entries: composes 出现环 ${[...stack, key].join(' → ')}`);
+      return;
+    }
+    visitState.set(key, 'visiting');
+    for (const child of entriesByKey.get(key)?.composes || []) {
+      if (entriesByKey.has(child)) visitComposes(child, [...stack, key]);
+    }
+    visitState.set(key, 'done');
+  };
+  for (const entry of card.entries) visitComposes(entry.key, []);
+
   if (card.provenance.extracted_by.kind === 'llm' && !card.provenance.extracted_by.model) {
     errors.push('provenance.extracted_by: kind=llm 必须写 model');
   }
@@ -313,6 +255,24 @@ const NEGATIVE_CONTROLS = [
   }],
   ['reviewed-without-reviewer', (card) => {
     card.provenance.review = { status: 'reviewed' };
+  }],
+  ['composes-missing-target', (card) => {
+    card.entries[0].composes = ['cmac_does_not_exist'];
+  }],
+  ['composes-self', (card) => {
+    card.entries[0].composes = [card.entries[0].key];
+    card.entries[0].level = 'L2';
+  }],
+  ['composes-level-not-lower', (card) => {
+    card.entries[0].level = 'L2';
+    card.entries[0].composes = [card.entries[1].key];
+    card.entries[1].level = 'L2';
+  }],
+  ['composes-cycle', (card) => {
+    card.entries[0].level = 'L3';
+    card.entries[1].level = 'L2';
+    card.entries[0].composes = [card.entries[1].key];
+    card.entries[1].composes = [card.entries[0].key];
   }],
 ];
 

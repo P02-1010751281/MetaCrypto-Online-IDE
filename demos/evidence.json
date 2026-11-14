@@ -28,13 +28,13 @@
   },
   "procedures/CCM-Encrypt.json": {
     "class": "official-vector",
-    "evidence": "SP 800-38C 附录 C Example 1、Example 2、Example 3",
-    "parameterSet": "AES-128 CCM：Example 1（N=7B、A=8B、P=4B、Tlen=4）、Example 2（N=8B、A=16B、P=16B、Tlen=6）、Example 3（N=12B、A=20B、P=24B、Tlen=8）",
+    "evidence": "SP 800-38C 附录 C Example 1、Example 2、Example 3；同工作区的 CCM_B0 / CCM_AAD_PREFIX / CCM_COUNTER_BLOCK / CCM_CBC_MAC / CCM_CTR 过程按 Example 1 参数逐块核对 B0、AAD 长度前缀、计数器块、CBC-MAC 中间值与密文段；CCM_Decrypt 按 §6.2 把 Example 1 的密文‖标签解回明文，并验证篡改标签被拒绝",
+    "parameterSet": "AES-128 CCM：Example 1（N=7B、A=8B、P=4B、Tlen=4）、Example 2（N=8B、A=16B、P=16B、Tlen=6）、Example 3（N=12B、A=20B、P=24B、Tlen=8）；原语过程用 Example 1 参数；解密过程用 Example 1 参数（Tlen=4），另由单测覆盖 Example 2 的 6 字节标签",
     "rechecked": "本轮用 cryptography AESCCM 复算 Example 1/2/3 的 C‖T 全部一致"
   },
   "procedures/XTS-Encrypt.json": {
     "class": "fixed-regression",
-    "evidence": "IEEE 1619-2007 XTS-AES-128 经典向量（key=00..1f、tweak=00000000000000000102030405060708、64 字节数据单元）；该标准为付费文档且未随仓库分发，仓库内无可离线核对的来源，故不登记为官方向量",
+    "evidence": "IEEE 1619-2007 XTS-AES-128 经典向量（key=00..1f、tweak=00000000000000000102030405060708、64 字节数据单元）；同工作区的 XTS_TWEAK_MUL 过程核对 GF(2^128) 最高位进位路径（T=0^120‖0x80 → 0x87‖0…0）；该标准为付费文档且未随仓库分发，仓库内无可离线核对的来源，故不登记为官方向量",
     "parameterSet": "AES-128 XTS（32B key 拆两半、16B tweak、支持密文窃取）"
   },
   "procedures/X25519.json": {
@@ -289,5 +289,10 @@
     "class": "official-vector",
     "evidence": "GB/T 32918.3-2016 附录 A.2 示例 1（B 侧共享密钥；未覆盖完整协议双方/确认流程）",
     "parameterSet": "SM2 推荐曲线（256-bit）+ SM3"
+  },
+  "procedures/CMAC-AES.json": {
+    "class": "official-vector",
+    "evidence": "RFC 4493 §4 Example vectors（AES-128 CMAC：0/16/40/64 字节消息；同节子密钥 L→K1→K2 的 K1‖K2 与 NIST SP 800-38B §6.1 对应）；与 NIST SP 800-38B §6.2 的 CMAC 语义对应",
+    "parameterSet": "AES-128（16 字节密钥，128-bit 标签；子密钥 K1‖K2）"
   }
 }

@@ -1,6 +1,6 @@
 # Standard Source-to-Entry Inventory
 
-Checked: 2026-11-11
+Checked: 2026-11-13
 
 > Generated from every structured entry metadata block. This is an evidence index, not a claim that every standard clause has been transcribed.
 
@@ -408,7 +408,7 @@ No structured entry pages.
 
 | Entry | Standard position | Source location | Evidence status |
 |---|---|---|---|
-| [sp800-38c-ccm/01-CCM.md](../../standards/sp800-38c-ccm/01-CCM.md) | NIST SP 800-38C — CCM 参考 | [提取稿 §6，行 580–715](../../standards/sp800-38c-ccm/00-Standard-Source.md#L580-L715)；PDF 物理页需结合同目录 PDF 核对 | `source line anchor` |
+| [sp800-38c-ccm/01-CCM.md](../../standards/sp800-38c-ccm/01-CCM.md) | NIST SP 800-38C — CCM 参考 | [提取稿 §6.1，行 580–644](../../standards/sp800-38c-ccm/00-Standard-Source.md#L580-L644) · [§6.2，行 645–695](../../standards/sp800-38c-ccm/00-Standard-Source.md#L645-L695)；PDF 物理页见 SPEC-CARD 锚点 | `source line anchor` |
 | [sp800-38c-ccm/02-Formatting.md](../../standards/sp800-38c-ccm/02-Formatting.md) | NIST SP 800-38C §6.1–§6.2 | PDF 物理第 15–16 页（标准页 9–10）；[提取稿 §6.1](../../standards/sp800-38c-ccm/00-Standard-Source.md#L592) | `source PDF page anchor` |
 | [sp800-38c-ccm/03-CBC-MAC.md](../../standards/sp800-38c-ccm/03-CBC-MAC.md) | NIST SP 800-38C §6.3 | PDF 物理第 15–17 页（标准页 9–11）；[提取稿 §6.1 步骤 1–4](../../standards/sp800-38c-ccm/00-Standard-Source.md#L592) | `source PDF page anchor` |
 | [sp800-38c-ccm/04-CTR.md](../../standards/sp800-38c-ccm/04-CTR.md) | CCM — CTR 加密原语 | [提取稿 §5.5、§6，行 554–715](../../standards/sp800-38c-ccm/00-Standard-Source.md#L554-L715)；PDF 物理页需结合同目录 PDF 核对 | `source line anchor` |

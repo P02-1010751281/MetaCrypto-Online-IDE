@@ -67,6 +67,7 @@ PKCS#7 requires an integer block size from 1 through 255; an already aligned inp
 | `xts_tweak_mul` | 1 | value(→) | IntList→IntList | XTS tweak ×α (SP 800-38E / IEEE 1619): little-endian one-bit shift, XOR 0x87 into byte 0 on byte-15 carry |
 | `ccm_aad_len_prefix` | 1 | value(→) | Number→IntList | CCM AAD length encoding (SP 800-38C §A.2.2): two big-endian bytes below 0xFF00, otherwise 0xFFFE ‖ four bytes |
 | `ccm_encrypt` | 1 | value(→) | Bytes&IntList&IntList&Bytes→Bytes | CCM encryption returns ciphertext concatenated with the authentication tag; tag length is selected in bytes (4–16). Current AES-128 regressions cover Appendix C Examples 1–3 only. |
+| `ccm_decrypt` | 1 | value(→) | Bytes&IntList&IntList&Bytes→Bytes | CCM decryption takes ciphertext concatenated with the tag and returns the payload after §6.2 verification; it decrypts with CTR, recomputes the tag over the recovered plaintext and throws instead of returning unauthenticated data when the tag differs. Appendix C Examples 1–2 and tampered-tag rejection pass in both languages. |
 
 ## Disk Encryption XTS (NIST SP 800-38E)
 

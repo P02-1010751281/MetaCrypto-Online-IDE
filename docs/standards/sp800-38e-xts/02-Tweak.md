@@ -8,7 +8,7 @@
 | 标准定位 | XTS — tweak 与有限域加倍原语 |
 | 原文证据 | [source 提取稿](./00-Standard-Source.md)（本目录 PDF 清单见 source 页） |
 | 原文位置 | [提取稿 §3、§4，行 187–227](./00-Standard-Source.md#L187-L227)；PDF 物理页需结合同目录 PDF 核对 |
-| 项目状态 | 仅参考（未映射为块实现） |
+| 项目状态 | 已映射为 `xts_tweak_mul`（GF(2¹²⁸) 乘 x） |
 
 ## 原文定位与引用
 
@@ -37,4 +37,7 @@ T(i+1) = α · Ti  in GF(2^128)
 
 ## CipherCat 映射
 
-`xts_encrypt` 内部完成 tweak 初始化和逐块更新；没有独立 tweak 块。
+`xts_tweak_mul` 单独承担 §3 的 `α·T` 加倍（最高位进位时按 XTS 字节序约化，与 CMAC 的 `Rb` 路径相反）；
+`xts_encrypt` 内部再用它推进 `T0→T1→…`。验证入口：`cmac-xts-primitives-contract.test.ts`
+双语言核对 0、低位 1 与最高位进位三种样例，`demos/procedures/XTS-Encrypt.json` 的
+`XTS_TWEAK_MUL` 过程在 `verify:demos` 中核对 `0^120‖0x80 → 0x87‖0…0`。

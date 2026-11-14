@@ -9,7 +9,7 @@
 | 原文证据 | [第 1 部分 source](./00-Standard-Source.md#L313)、[第 1 部分 PDF](./GBT+38635.1-2020.pdf)；[第 2 部分 source](./00-Standard-Source.md#L2040)、[第 2 部分 PDF](./GBT+38635.2-2020.pdf) |
 | 原文位置 | [第 1 部分 §5.5](./00-Standard-Source.md#L313)、[§7.2.7](./00-Standard-Source.md#L457)、[§7.2.9](./00-Standard-Source.md#L509)；[第 2 部分 §6.2](./00-Standard-Source.md#L2040)、[§6.4](./00-Standard-Source.md#L2062) |
 | 项目映射 | sm9_sign、sm9_verify；[SM9 签名 Demo](../../../demos/procedures/SM9-Sign.json) |
-| 项目状态 | 已有实现；下列测试覆盖不等同完整符合性结论、第三方算法验证或产品认证 |
+| 项目状态 | 已有实现；下列测试覆盖不等同完整符合性结论、第三方算法验证或产品认证。附录 A 的示例数值在本目录 PDF 中为矢量绘制、无文本层（`pdftotext` 逐页抽不到任何十六进制数），故登记向量只能靠独立计算核对，无法与印刷值做字面对照 |
 
 ## 原文定位与引用
 

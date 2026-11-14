@@ -4,12 +4,15 @@
  * - ccm_encrypt: CCM-Encrypt(key, nonce, aad, msg, tagLen) → Bytes（密文 ‖ 认证标签）
  *   CBC-MAC 认证（B0 ‖ 长度编码 AAD ‖ 明文，零填充）+ CTR 加密（flags ‖ nonce ‖ 计数器）。
  *   TAGLEN 下拉 4-16 字节（偶数），官方向量（附录 C Example 1-3）双语言通过。
+ * - ccm_decrypt: CCM-Decrypt(key, nonce, aad, ct‖tag, tagLen) → Bytes（明文，标签不符即抛错）
+ *   SP 800-38C §6.2 decryption-verification 路径：先 CTR 解出明文，再重算标签并逐字节比对。
  */
 import * as Blockly from 'blockly/core';
 import { TYPE_BYTES, TYPE_INT_LIST, TYPE_NUMBER } from '@/constants/block-types';
 
 export const CCM_BLOCK_TYPES = [
   'ccm_encrypt',
+  'ccm_decrypt',
   'ccm_b0',
   'ccm_counter_block',
   'ccm_cbc_mac',
@@ -49,8 +52,36 @@ Blockly.Blocks['ccm_encrypt'] = {
   },
 };
 
-/** CCM 内部算子（SP 800-38C §A.1–A.3）：B0、计数器块、CBC-MAC。 */
-Blockly.Blocks['ccm_b0'] = {
+Blockly.Blocks['ccm_decrypt'] = {
+  init: function () {
+    this.appendValueInput('KEY').setCheck(TYPE_BYTES).appendField('CCM-Decrypt(');
+    this.appendValueInput('NONCE').setCheck(TYPE_INT_LIST).appendField(' nonce:');
+    this.appendValueInput('AAD').setCheck(TYPE_INT_LIST).appendField(' aad:');
+    this.appendValueInput('CT').setCheck(TYPE_BYTES).appendField(' ct‖tag:');
+    const tagDropdown = new Blockly.FieldDropdown([
+      ['4', '4'],
+      ['6', '6'],
+      ['8', '8'],
+      ['10', '10'],
+      ['12', '12'],
+      ['14', '14'],
+      ['16', '16'],
+    ]);
+    tagDropdown.setValue('16');
+    this.appendDummyInput()
+      .appendField(tagDropdown, 'TAGLEN')
+      .appendField(' tagLen)');
+    this.setInputsInline(true);
+    this.setOutput(true, TYPE_BYTES);
+    this.setColour(190);
+    this.setTooltip(
+      'CCM 解密并验证 (NIST SP 800-38C §6.2)：输入 密文‖标签，先 CTR 解出明文，再重算 CBC-MAC 标签逐字节比对；标签不符直接抛错，不返回未认证明文。返回的明文只代表标签比对通过，不代表常量时间。',
+    );
+    this.setHelpUrl('https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-38C.pdf');
+  },
+};
+
+/** CCM 内部算子（SP 800-38C §A.1–A.3）：B0、计数器块、CBC-MAC。 */Blockly.Blocks['ccm_b0'] = {
   init: function () {
     this.appendValueInput('NONCE').setCheck(TYPE_INT_LIST).appendField('CCM-B0( nonce:');
     this.appendValueInput('MSGLEN').setCheck(TYPE_NUMBER).appendField(' msgLen:');

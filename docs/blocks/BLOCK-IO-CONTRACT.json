@@ -1392,6 +1392,84 @@
     "previousStatement": null,
     "nextStatement": null
   },
+  "ccm_decrypt": {
+    "inputs": [
+      {
+        "name": "KEY",
+        "type": 1,
+        "check": [
+          "Bytes"
+        ]
+      },
+      {
+        "name": "NONCE",
+        "type": 1,
+        "check": [
+          "IntList"
+        ]
+      },
+      {
+        "name": "AAD",
+        "type": 1,
+        "check": [
+          "IntList"
+        ]
+      },
+      {
+        "name": "CT",
+        "type": 1,
+        "check": [
+          "Bytes"
+        ]
+      },
+      {
+        "name": "",
+        "type": 5,
+        "check": null
+      }
+    ],
+    "fields": [
+      {
+        "name": "TAGLEN",
+        "fieldClass": "vd",
+        "options": [
+          [
+            "4",
+            "4"
+          ],
+          [
+            "6",
+            "6"
+          ],
+          [
+            "8",
+            "8"
+          ],
+          [
+            "10",
+            "10"
+          ],
+          [
+            "12",
+            "12"
+          ],
+          [
+            "14",
+            "14"
+          ],
+          [
+            "16",
+            "16"
+          ]
+        ]
+      }
+    ],
+    "outputCheck": [
+      "Bytes"
+    ],
+    "previousStatement": null,
+    "nextStatement": null
+  },
   "ccm_encrypt": {
     "inputs": [
       {

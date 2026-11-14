@@ -109,6 +109,33 @@ function registerCcmEncrypt(): string {
   ]);
 }
 
+/** 完整 CCM-Decrypt（SP 800-38C §6.2）：先 CTR 解出明文，再重算并比对标签；不符即抛错 */
+function registerCcmDecrypt(): string {
+  const cbcMac = registerCcmCbcMac();
+  const counterBlock = registerCcmCounterBlock();
+  const ctr = registerCcmCtr();
+  return pythonGenerator.provideFunction_('ccm_decrypt', [
+    'def ' + pythonGenerator.FUNCTION_NAME_PLACEHOLDER_ + '(key, nonce, aad, ct, tag_len):',
+    '    if len(key) != 16:',
+    '        raise ValueError("CCM key must be 16 bytes")',
+    '    if len(ct) <= tag_len:',
+    '        # SP 800-38C §6.2 步 1：Clen ≤ Tlen 直接 INVALID（空载荷不可解）',
+    '        raise ValueError("CCM ciphertext must be longer than tagLen (SP 800-38C 6.2 step 1)")',
+    '    body = list(ct[:len(ct) - tag_len])',
+    '    tag = list(ct[len(ct) - tag_len:])',
+    '    P = ' + ctr + '(key, nonce, body, tag_len)',
+    '    # §6.2 步 7-10：CBC-MAC 的输入是解出的明文 P，不是密文段',
+    '    X = bytearray(' + cbcMac + '(key, nonce, aad, P, tag_len))',
+    '    S0 = aes_encrypt_block(' + counterBlock + '(nonce, 0, tag_len), key)',
+    '    diff = 0',
+    '    for t in range(tag_len):',
+    '        diff |= X[t] ^ S0[t] ^ tag[t]',
+    '    if diff:',
+    '        raise ValueError("CCM tag mismatch: authentication failed")',
+    '    return P',
+  ]);
+}
+
 function ccmTagLen(block: Block): number {
   return Number(block.getFieldValue('TAGLEN')) || 16;
 }
@@ -122,6 +149,17 @@ pythonGenerator.forBlock['ccm_encrypt'] = function (block: Block): [string, numb
   registerAesEcb();
   const fn = registerCcmEncrypt();
   return ['bytes(' + fn + '(' + key + ', ' + nonce + ', ' + aad + ', ' + msg + ', ' + tagLen + '))', Order.ATOMIC];
+};
+
+pythonGenerator.forBlock['ccm_decrypt'] = function (block: Block): [string, number] {
+  const key = pythonGenerator.valueToCode(block, 'KEY', Order.ATOMIC) || '[]';
+  const nonce = pythonGenerator.valueToCode(block, 'NONCE', Order.ATOMIC) || '[]';
+  const aad = pythonGenerator.valueToCode(block, 'AAD', Order.ATOMIC) || '[]';
+  const ct = pythonGenerator.valueToCode(block, 'CT', Order.ATOMIC) || '[]';
+  const tagLen = Number(block.getFieldValue('TAGLEN')) || 16;
+  registerAesEcb();
+  const fn = registerCcmDecrypt();
+  return ['bytes(' + fn + '(' + key + ', ' + nonce + ', ' + aad + ', ' + ct + ', ' + tagLen + '))', Order.ATOMIC];
 };
 
 pythonGenerator.forBlock['ccm_b0'] = function (block: Block): [string, number] {

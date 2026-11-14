@@ -20,6 +20,13 @@ interface Expectation {
 }
 
 const EXPECTATIONS: Expectation[] = [
+  // RFC 4493 §4：AES-128 CMAC 在 0/16/40/64 字节消息上的四条向量
+  { demo: 'procedures/CMAC-AES.json', line: 0 },
+  { demo: 'procedures/CMAC-AES.json', line: 1 },
+  { demo: 'procedures/CMAC-AES.json', line: 2 },
+  { demo: 'procedures/CMAC-AES.json', line: 3 },
+  // RFC 4493 §4：子密钥 K1‖K2（由 AES-128(0¹²⁸) 的 L 两次加倍独立重算）
+  { demo: 'procedures/CMAC-AES.json', line: 4 },
   // SP 800-38C 附录 C：工作区函数为 Example 3，两条直接调用分别为 Example 1、Example 2
   { demo: 'procedures/CCM-Encrypt.json', line: 0 },
   { demo: 'procedures/CCM-Encrypt.json', line: 1 },
@@ -41,6 +48,28 @@ const EXPECTATIONS: Expectation[] = [
   { demo: 'procedures/ECDH.json', line: 1 },
 ];
 
+// 第二批：SM2 / ECDSA / ZUC 系列。探针脚本见 tests/unit/helpers/demo-vector-probe.py，
+// 输入直接取自 demos/ 的工作区与 driver，输出顺序必须与下面数组一致。
+// SM9 需要双线性配对运算，不在本批内（见 .review/demo-vector-audit-2026-11-13.md）。
+const SM2_GATE_CASES: Expectation[] = [
+  // GB/T 32918.2 附录 A.2：ZA、消息摘要 e、签名 r‖s
+  { demo: 'procedures/SM2-Sign.json', line: 0 },
+  { demo: 'procedures/SM2-Sign.json', line: 1 },
+  { demo: 'procedures/SM2-Sign.json', line: 2 },
+  // GB/T 32918.4 附录 A：C1‖C3‖C2
+  { demo: 'procedures/SM2-Encrypt.json', line: 0 },
+  // RFC 6979 §A.2.5：P-256 / SHA-256 在 "sample" 与 "test" 上的确定性签名
+  // （登记第 1 行是 "sample" 的重复，故 "test" 取第 2 行）
+  { demo: 'procedures/ECDSA.json', line: 0 },
+  { demo: 'procedures/ECDSA.json', line: 2 },
+  // GB/T 33133.2 附录 A.1：密文与密钥流前 24 字节
+  { demo: 'procedures/EEA3.json', line: 0 },
+  { demo: 'procedures/EEA3.json', line: 1 },
+  // GB/T 33133.3 附录 B 示例 1、2 的 MAC
+  { demo: 'procedures/EIA3.json', line: 0 },
+  { demo: 'procedures/EIA3.json', line: 1 },
+];
+
 // 独立复算脚本：只使用标准参数集，输出与 EXPECTATIONS 顺序一致的十六进制值。
 const PYTHON_PROBE = `
 import binascii, hashlib, hmac, json
@@ -48,6 +77,25 @@ import binascii, hashlib, hmac, json
 def aes_ccm(k, n, a, p, taglen):
     from cryptography.hazmat.primitives.ciphers.aead import AESCCM
     return AESCCM(k, tag_length=taglen).encrypt(n, p, a)
+
+def aes_cmac(k, m):
+    from cryptography.hazmat.primitives.cmac import CMAC
+    from cryptography.hazmat.primitives.ciphers import algorithms
+    c = CMAC(algorithms.AES(k))
+    c.update(m)
+    return c.finalize()
+
+def aes_subkeys(k):
+    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+    encryptor = Cipher(algorithms.AES(k), modes.ECB()).encryptor()
+    L = encryptor.update(bytes(16)) + encryptor.finalize()
+    def dbl(block):
+        value = int.from_bytes(block, "big") << 1
+        if block[0] & 0x80:
+            value ^= 0x87
+        return (value & ((1 << 128) - 1)).to_bytes(16, "big")
+    K1 = dbl(L)
+    return K1 + dbl(K1)
 
 def aes_gcm(k, iv, a, p):
     from cryptography.hazmat.primitives.ciphers.aead import AESGCM
@@ -88,6 +136,12 @@ tc13_plaintext = bytes.fromhex(
 )
 
 results = [
+    *[aes_cmac(
+        bytes.fromhex('2b7e151628aed2a6abf7158809cf4f3c'),
+        bytes.fromhex('6bc1bee22e409f96e93d7e117393172aae2d8a571e03ac9c9eb76fac45af8e51'
+                     '30c81c46a35ce411e5fbc1191a0a52eff69f2445df4f9b17ad2b417be66c3710')[:n],
+    ) for n in (0, 16, 40, 64)],
+    aes_subkeys(bytes.fromhex('2b7e151628aed2a6abf7158809cf4f3c')),
     aes_ccm(K, N12, A20, P24, 8),
     aes_ccm(K, N7, A8, P4, 4),
     aes_ccm(K, N8, A16, P16, 6),
@@ -125,6 +179,20 @@ function pythonAvailable(): boolean {
   }
 }
 
+/** 第二批探针只要 python3 + OpenSSL 的 SM3，不需要 cryptography。 */
+function sm3Available(): boolean {
+  try {
+    execFileSync(
+      process.platform === 'win32' ? 'python' : 'python3',
+      ['-c', "import hashlib; hashlib.new('sm3', b'abc')"],
+      { stdio: ['ignore', 'ignore', 'ignore'] },
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 describe('demo vector cross-check', () => {
   const registry = JSON.parse(readFileSync(resolve(process.cwd(), 'demos/tests.json'), 'utf8')) as Record<
     string,
@@ -140,6 +208,22 @@ describe('demo vector cross-check', () => {
     expect(recomputed).toHaveLength(EXPECTATIONS.length);
 
     EXPECTATIONS.forEach(({ demo, line }, index) => {
+      const expected = (registry[demo]?.py?.expect || '').split('\n')[line]?.trim();
+      expect(expected, `${demo} 缺少第 ${line} 行期望值`).toBeTruthy();
+      expect(recomputed[index], `${demo} 第 ${line} 行与独立复算不一致`).toBe(expected);
+    });
+  });
+
+  const probePath = resolve(process.cwd(), 'tests/unit/helpers/demo-vector-probe.py');
+  const python3 = process.platform === 'win32' ? 'python' : 'python3';
+
+  it.skipIf(!sm3Available())('recomputes SM2 / ECDSA / ZUC vectors with an independent implementation', () => {
+    const recomputed = JSON.parse(
+      execFileSync(python3, [probePath], { cwd: process.cwd(), encoding: 'utf8' }),
+    ) as string[];
+    expect(recomputed).toHaveLength(SM2_GATE_CASES.length);
+
+    SM2_GATE_CASES.forEach(({ demo, line }, index) => {
       const expected = (registry[demo]?.py?.expect || '').split('\n')[line]?.trim();
       expect(expected, `${demo} 缺少第 ${line} 行期望值`).toBeTruthy();
       expect(recomputed[index], `${demo} 第 ${line} 行与独立复算不一致`).toBe(expected);

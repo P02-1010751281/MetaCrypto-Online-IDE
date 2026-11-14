@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ciphercat/spec-run/v0",
+  "title": "CipherCat SpecCard 运行清单 v0",
+  "description": "记录一次「标准/论文/参考代码 → SpecCard → Blockly 候选」运行读了什么、产出了什么、门禁结果如何。契约只冻结**输入**（源 PDF/文本层必须逐字节不变，否则这次运行就失效）；产出与共享文件只列路径——SpecCard、Demo 工作区是会被后续评审改写的活文档，若把它们的哈希写进清单，每次正常修订都会把历史清单拖红，哈希也就退化成噪声。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "run_id",
+    "created_at",
+    "inputs",
+    "extractor",
+    "outputs",
+    "gates",
+    "decision"
+  ],
+  "properties": {
+    "schema": {
+      "const": "ciphercat.spec-run/v0"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-z0-9][a-z0-9-]*$",
+      "description": "必须与所在目录名一致，防止清单被复制到别的运行目录后继续冒充。"
+    },
+    "created_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[+-][0-9]{2}:[0-9]{2}$",
+      "description": "带时区偏移的 ISO-8601 时间，不写 UTC 猜测值。"
+    },
+    "inputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/input"
+      },
+      "description": "本次运行读取的源。必须写 SHA-256：源变了，这次运行的结论就不再成立。"
+    },
+    "extractor": {
+      "$ref": "#/$defs/extractor"
+    },
+    "model": {
+      "$ref": "#/$defs/model",
+      "description": "只有真的调用过模型时才出现；离线模板路径整段省略，不写 provider=offline 这类空壳。"
+    },
+    "outputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/output"
+      },
+      "description": "本次运行独占的产出（新卡、Demo 工作区、候选目录）。只列路径不存哈希；共享登记文件（demos/tests.json 等）放 shared。"
+    },
+    "shared": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/shared"
+      },
+      "description": "本次运行一并改动的共享文件。只列路径、不存哈希：它们的内部一致性由 spec:validate / verify:all 自己保证。"
+    },
+    "gates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/gate"
+      }
+    },
+    "decision": {
+      "enum": [
+        "gated",
+        "halted",
+        "rejected"
+      ]
+    },
+    "notes": {
+      "type": "string",
+      "minLength": 1,
+      "description": "清单表达不了的事实（例如外部标准的向量没有本地制品）。不写「一切正常」这类空话。"
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "description": "相对仓库根目录的路径，用 / 分隔。"
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "role"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "role": {
+          "enum": [
+            "standard-source",
+            "reference-code",
+            "paper"
+          ]
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/relativePath"
+        }
+      },
+      "description": "本次运行的产出。只列路径：活文档会被后续评审改写，冻结哈希会让正常修订把历史清单拖红。"
+    },
+    "shared": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/relativePath"
+        }
+      }
+    },
+    "extractor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool",
+        "version"
+      ],
+      "properties": {
+        "tool": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "id",
+        "version"
+      ],
+      "properties": {
+        "provider": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "prompt_sha256": {
+          "$ref": "#/$defs/sha256",
+          "description": "只记录规范化提示词的摘要；没有保存提示词就不要写这个字段。"
+        }
+      }
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cmd",
+        "exit",
+        "summary"
+      ],
+      "properties": {
+        "cmd": {
+          "type": "string",
+          "minLength": 1,
+          "description": "npm run <script>（必须真实存在于 package.json）或 node <已存在的脚本>。"
+        },
+        "exit": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "description": "该命令自己打印的机器摘要行，例如 DEMO_SUMMARY total=60 pass=60 fail=0。不写「通过」这类无出处的结论。"
+        }
+      }
+    }
+  }
+}

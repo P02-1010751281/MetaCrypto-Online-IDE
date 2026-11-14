@@ -51,6 +51,38 @@
             }
           }
         }
+      },
+      {
+        "type": "procedures_defreturn",
+        "id": "demo_xts_mul_def_2000",
+        "x": 100,
+        "y": 300,
+        "extraState": {
+          "params": [],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "XTS_TWEAK_MUL"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "xts_tweak_mul",
+              "id": "demo_xts_mul_2001",
+              "inputs": {
+                "TWEAK": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "demo_xts_mul_tweak_2002",
+                    "fields": {
+                      "NUM": "[0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x80]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     ]
   }

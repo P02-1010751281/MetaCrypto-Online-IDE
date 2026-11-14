@@ -11,9 +11,9 @@
         >
           <polyline points="15 18 9 12 15 6" />
         </svg>
-        {{ ui("back") }}
+        {{ ui('back') }}
       </button>
-      <h1 class="docs-title">{{ ui("docsTitle") }}</h1>
+      <h1 class="docs-title">{{ ui('docsTitle') }}</h1>
       <div class="header-spacer" />
       <button class="header-btn lang-btn" @click="toggleLocale">
         {{ blocklyLocale.getCurrentLocale() === 'zh-hans' ? 'EN' : '中文' }}
@@ -22,120 +22,49 @@
 
     <div class="docs-body">
       <!-- Sidebar navigation -->
-      <aside class="docs-sidebar">
-        <div class="sidebar-search">
-          <input
-            v-model="searchQuery"
-            type="text"
-            :placeholder="ui('docsSearch')"
-            class="search-input"
-          />
-        </div>
-        <nav class="sidebar-nav">
-          <div
-            v-for="cat in filteredCategories"
-            :key="cat.id"
-            class="nav-category"
-          >
-            <button class="nav-category-title" @click="toggleCategory(cat.id)">
-              <span
-                class="collapse-icon"
-                :class="{ collapsed: !expandedCategories.has(cat.id) }"
-                >▾</span
-              >
-              {{ getCategoryLabel(cat.id, currentLocale) }}
-              <span class="doc-count">{{ cat.files.length }}</span>
-            </button>
-            <div v-show="expandedCategories.has(cat.id)" class="nav-items">
-              <button
-                v-for="file in cat.files"
-                :key="file.path"
-                class="nav-item"
-                :class="{ active: activeDoc === file.path }"
-                @click="selectDoc(file.path)"
-              >
-                {{ file.title }}
-              </button>
-            </div>
-          </div>
-        </nav>
-      </aside>
+      <DocsSidebar
+        v-model:search-query="searchQuery"
+        :categories="filteredCategories"
+        :expanded-categories="expandedCategories"
+        :active-doc="activeDoc"
+        :current-locale="currentLocale"
+        @toggle-category="toggleCategory"
+        @select-doc="selectDoc"
+      />
 
       <!-- Content area -->
-      <main class="docs-content">
-        <!-- Loading state -->
-        <div v-if="loading" class="content-loading">
-          <div class="loading-spinner" />
-          <p>{{ ui("docsLoading") }}</p>
-        </div>
-
-        <!-- Error state -->
-        <div v-else-if="error" class="content-error">
-          <p>{{ error }}</p>
-        </div>
-
-        <!-- Doc content -->
-        <template v-else-if="renderedHtml">
-          <p v-if="isSourceLocaleFallback" class="locale-fallback">
-            {{ ui("docsSourceFallback") }}
-          </p>
-          <div class="content-markdown" v-html="renderedHtml" />
-        </template>
-
-        <!-- Welcome screen -->
-        <div v-else class="content-welcome">
-          <svg
-            class="welcome-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <path
-              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-            />
-            <polyline points="14 2 14 8 20 8" />
-            <line x1="16" y1="13" x2="8" y2="13" />
-            <line x1="16" y1="17" x2="8" y2="17" />
-            <polyline points="10 9 9 9 8 9" />
-          </svg>
-          <h2>{{ ui("docsWelcome") }}</h2>
-          <p>{{ ui("docsWelcomeDesc") }}</p>
-          <div class="welcome-links">
-            <button
-              v-for="cat in categories"
-              :key="cat.id"
-              class="welcome-link"
-              @click="selectDoc(cat.files[0]?.path || '')"
-            >
-              {{ getCategoryLabel(cat.id, currentLocale) }}
-            </button>
-          </div>
-        </div>
-      </main>
+      <DocsContent
+        :loading="loading"
+        :error="error"
+        :rendered-html="renderedHtml"
+        :is-source-locale-fallback="sourceLocaleFallback"
+        :categories="categories"
+        :current-locale="currentLocale"
+        @select-doc="selectDoc"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { ui, uiLocaleRef, useBlocklyLocale } from '@/composables/locale';
+import { useDocsCatalog } from '@/composables/useDocsCatalog';
 import {
-  renderMarkdown,
   getCategoryLabel,
-  getDocTitle,
-  getBlockDocCategories,
-  getGuideCategory,
-  getPlatformCategory,
-  getStandardDocCategory,
-  getStandardsIndexCategory,
-  getAuditCategory,
-  parseOrder,
-  type DocFile,
+  renderMarkdown,
   type DocCategory,
 } from '@/utils/markdown';
+import DocsSidebar from '@/components/docs/DocsSidebar.vue';
+import DocsContent from '@/components/docs/DocsContent.vue';
 
+const {
+  docLoaders,
+  buildCategories: buildDocCategories,
+  isSourceLocaleFallback,
+  localizedCounterpart,
+} = useDocsCatalog();
 const router = useRouter();
 const blocklyLocale = useBlocklyLocale();
 function toggleLocale() {
@@ -143,231 +72,9 @@ function toggleLocale() {
     blocklyLocale.getCurrentLocale() === 'zh-hans' ? 'en' : 'zh-hans',
   );
 }
-const currentLocale = computed(() =>
+const currentLocale = computed<'zh' | 'en'>(() =>
   uiLocaleRef.value === 'zh-hans' ? 'zh' : 'en',
 );
-
-// Lazy loader: returns a function that loads the markdown content
-const docLoaders = import.meta.glob('/docs/**/*.md', {
-  query: '?raw',
-  import: 'default',
-  eager: false,
-}) as Record<string, () => Promise<string>>;
-
-const legacyGuideLocalePairs: Record<string, string> = {
-  '/docs/standards/fips203-ML-KEM/guides/ML-KEM-768-Encaps-build-guide.md':
-    '/docs/standards/fips203-ML-KEM/guides/ML-KEM-768-Encaps-搭建指南.md',
-  '/docs/standards/fips203-ML-KEM/guides/ML-KEM-768-Encaps-搭建指南.md':
-    '/docs/standards/fips203-ML-KEM/guides/ML-KEM-768-Encaps-build-guide.md',
-  '/docs/standards/fips203-ML-KEM/guides/ML-KEM-768-Encaps-pure-basic.md':
-    '/docs/standards/fips203-ML-KEM/guides/ML-KEM-768-Encaps-纯基础块.md',
-  '/docs/standards/fips203-ML-KEM/guides/ML-KEM-768-Encaps-纯基础块.md':
-    '/docs/standards/fips203-ML-KEM/guides/ML-KEM-768-Encaps-pure-basic.md',
-};
-
-function localizedCounterpart(path: string): string {
-  if (path in legacyGuideLocalePairs) return legacyGuideLocalePairs[path];
-  return path.endsWith('.en.md')
-    ? `${path.slice(0, -'.en.md'.length)}.md`
-    : `${path.slice(0, -'.md'.length)}.en.md`;
-}
-
-function isEnglishPath(path: string): boolean {
-  return (
-    path.endsWith('.en.md') ||
-    path ===
-      '/docs/standards/fips203-ML-KEM/guides/ML-KEM-768-Encaps-build-guide.md' ||
-    path ===
-      '/docs/standards/fips203-ML-KEM/guides/ML-KEM-768-Encaps-pure-basic.md'
-  );
-}
-
-function shouldIncludeLocalePath(path: string, locale: string): boolean {
-  const isEnglish = isEnglishPath(path);
-  const counterpart = localizedCounterpart(path);
-  const hasCounterpart = counterpart in docLoaders;
-  // Prefer a translation when present; retain the only available language as
-  // an explicit fallback so a missing translation never hides a document.
-  return locale === 'en' ? isEnglish || !hasCounterpart : !isEnglish || !hasCounterpart;
-}
-
-const isSourceLocaleFallback = computed(() => {
-  const path = activeDoc.value;
-  if (!path) return false;
-  const isEnglish = isEnglishPath(path);
-  const expectsEnglish = currentLocale.value === 'en';
-  return isEnglish !== expectsEnglish && !(localizedCounterpart(path) in docLoaders);
-});
-
-// Parse modules into categories (from file paths only, no content loading)
-function buildCategories(): DocCategory[] {
-  const catMap = new Map<string, DocFile[]>();
-  const locale = currentLocale.value;
-
-  for (const path of Object.keys(docLoaders)) {
-    // path looks like: /docs/guides/ARCHITECTURE.md | /docs/standards/fips202-SHA3/01-Theta.md
-    const parts = path.replace(/^\/docs\//, '').split('/');
-    if (parts.length < 1) continue;
-
-    const top = parts[0];
-
-    // Root/index/research docs are valid entries too. Keep locale filtering
-    // consistent with the other top-level documentation groups.
-    if (parts.length === 1 || (top === 'research' && parts.length >= 2)) {
-      const filename = parts[parts.length - 1];
-      if (!shouldIncludeLocalePath(path, locale)) continue;
-
-      const category = parts.length === 1
-        ? getPlatformCategory(filename)
-        : 'research';
-      const file: DocFile = {
-        path,
-        category,
-        filename: parts.slice(1).join('/') || filename,
-        title: getDocTitle(path, locale),
-        order: parseOrder(filename),
-      };
-      if (!catMap.has(category)) catMap.set(category, []);
-      catMap.get(category)!.push(file);
-      continue;
-    }
-
-    if (top === 'standards' && parts.length === 2) {
-      const filename = parts[1];
-      if (!shouldIncludeLocalePath(path, locale)) continue;
-
-      const file: DocFile = {
-        path,
-        category: getStandardsIndexCategory(filename),
-        filename,
-        title: getDocTitle(path, locale),
-        order: parseOrder(filename),
-      };
-      if (!catMap.has(file.category)) catMap.set(file.category, []);
-      catMap.get(file.category)!.push(file);
-      continue;
-    }
-
-    // guides/、demos/、build/：核心文档平铺，按 locale 过滤中英版本
-    if ((top === 'guides' || top === 'demos' || top === 'build') && parts.length === 2) {
-      const filename = parts[1];
-      if (!shouldIncludeLocalePath(path, locale)) continue;
-
-      const category =
-        top === 'guides' ? getGuideCategory(filename) : top === 'demos' ? 'user-demos' : 'build-guides';
-      const file: DocFile = {
-        path,
-        category,
-        filename,
-        title: getDocTitle(path, locale),
-        order: parseOrder(filename),
-      };
-      if (!catMap.has(file.category)) catMap.set(file.category, []);
-      catMap.get(file.category)!.push(file);
-      continue;
-    }
-
-    // audits/：审计报告是一级主题，按来源分子目录（standards/、project/）。
-    // 与 standards/ 平级，不藏在 standards 内部；category 由来源目录决定。
-    if (top === 'audits' && parts.length >= 2) {
-      if (parts.length === 2) {
-        // audits/README.md 这类索引页归到平台入口
-        const filename = parts[1];
-        if (!shouldIncludeLocalePath(path, locale)) continue;
-        const file: DocFile = {
-          path,
-          category: 'platform',
-          filename,
-          title: getDocTitle(path, locale),
-          order: parseOrder(filename),
-        };
-        if (!catMap.has(file.category)) catMap.set(file.category, []);
-        catMap.get(file.category)!.push(file);
-        continue;
-      }
-      if (!shouldIncludeLocalePath(path, locale)) continue;
-      const basename = parts[parts.length - 1];
-      const file: DocFile = {
-        path,
-        category: getAuditCategory(parts[1]),
-        filename: parts.slice(2).join('/'),
-        title: getDocTitle(path, locale),
-        order: parseOrder(basename),
-      };
-      if (!catMap.has(file.category)) catMap.set(file.category, []);
-      catMap.get(file.category)!.push(file);
-      continue;
-    }
-
-    // blocks/：按算法家族拆开导航，同时保留总览和共享原语入口
-    if (top === 'blocks' && parts.length === 2) {      const filename = parts[1];
-      if (!shouldIncludeLocalePath(path, locale)) continue;
-
-      const file = {
-        path,
-        filename,
-        title: getDocTitle(path, locale),
-        order: parseOrder(filename),
-      };
-      for (const category of getBlockDocCategories(filename)) {
-        if (!catMap.has(category)) catMap.set(category, []);
-        catMap.get(category)!.push({ ...file, category });
-      }
-      continue;
-    }
-
-    // standards/：算法规范允许包含 guides/、papers/ 等子目录；category
-    // 仍取标准目录名，filename 使用相对路径以避免同名文件冲突。
-    if (top === 'standards' && parts.length >= 3) {
-      const category = getStandardDocCategory(parts[1]);
-      const filename = parts.slice(2).join('/');
-      const basename = parts[parts.length - 1];
-      if (!shouldIncludeLocalePath(path, currentLocale.value)) continue;
-      const file: DocFile = {
-        path,
-        category,
-        filename,
-        title: getDocTitle(path, locale),
-        order: parseOrder(basename),
-      };
-      if (!catMap.has(category)) catMap.set(category, []);
-      catMap.get(category)!.push(file);
-    }
-  }
-
-  // Sort files within each category by order
-  for (const [, files] of catMap) {
-    files.sort((a, b) => a.order - b.order);
-  }
-
-  // Define display order: user docs first, then development/audit/reference docs, then standards.
-  const pinned = [
-    'user-guides',
-    'build-guides',
-    'user-demos',
-    'user-reference',
-    'user-reference-foundations',
-    'development-guides',
-    'audit-reports',
-    'platform',
-    'research',
-    'standards-index',
-    'standards-tooling',
-    'rfc-references',
-  ];
-  const rest = [...catMap.keys()]
-    .filter((id) => !pinned.includes(id))
-    .sort((a, b) => a.localeCompare(b));
-  const categoryOrder = [...pinned, ...rest];
-
-  return categoryOrder
-    .filter((id) => catMap.has(id))
-    .map((id) => ({
-      id,
-      label: getCategoryLabel(id, currentLocale.value),
-      files: catMap.get(id)!,
-    }));
-}
 
 const categories = ref<DocCategory[]>([]);
 const activeDoc = ref<string>('');
@@ -377,6 +84,11 @@ const error = ref<string>('');
 const searchQuery = ref('');
 const expandedCategories = ref<Set<string>>(new Set());
 let docRequestId = 0;
+
+// 当前页面的语言与界面语言不一致、且没有对应译本时提示源语言回退。
+const sourceLocaleFallback = computed(() =>
+  isSourceLocaleFallback(activeDoc.value, currentLocale.value),
+);
 
 const filteredCategories = computed(() => {
   if (!searchQuery.value) return categories.value;
@@ -453,10 +165,8 @@ function goBack() {
   router.push('/');
 }
 
-// 语言切换统一走全局入口（右上角 locale 选择器）——uiLocaleRef 变化触发下方 watch 重建类目
-
 function rebuildCategories() {
-  categories.value = buildCategories();
+  categories.value = buildDocCategories(currentLocale.value);
   // Expand all categories by default
   for (const cat of categories.value) {
     expandedCategories.value.add(cat.id);
@@ -591,378 +301,5 @@ void setupDocLinks();
   display: flex;
   flex: 1;
   overflow: hidden;
-}
-
-/* Sidebar */
-.docs-sidebar {
-  width: 280px;
-  flex-shrink: 0;
-  background: var(--color-bg-card);
-  border-right: 1px solid var(--color-border);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.sidebar-search {
-  padding: 12px;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.search-input {
-  width: 100%;
-  height: 32px;
-  padding: 0 10px;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  font-size: 13px;
-  background: var(--color-bg);
-  color: var(--color-text);
-  outline: none;
-}
-
-.search-input:focus {
-  border-color: var(--color-primary);
-}
-
-.sidebar-nav {
-  flex: 1;
-  overflow-y: auto;
-  padding: 8px 0;
-}
-
-.nav-category {
-  margin-bottom: 4px;
-}
-
-.nav-category-title {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  width: 100%;
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-text);
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.12s;
-}
-
-.nav-category-title:hover {
-  background: var(--color-bg-hover, #f5f5f5);
-}
-
-.collapse-icon {
-  font-size: 10px;
-  transition: transform 0.15s;
-  width: 12px;
-  text-align: center;
-}
-
-.collapse-icon.collapsed {
-  transform: rotate(-90deg);
-}
-
-.doc-count {
-  margin-left: auto;
-  font-size: 11px;
-  color: var(--color-text-secondary);
-  font-weight: 400;
-}
-
-.nav-items {
-  overflow: hidden;
-}
-
-.nav-item {
-  display: block;
-  width: 100%;
-  padding: 6px 16px 6px 34px;
-  font-size: 13px;
-  color: var(--color-text-secondary);
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  transition: all 0.12s;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.nav-item:hover {
-  background: var(--color-bg-hover, #f5f5f5);
-  color: var(--color-text);
-}
-
-.nav-item.active {
-  color: var(--color-primary);
-  background: rgba(25, 118, 210, 0.08);
-  font-weight: 500;
-}
-
-/* Content area */
-.docs-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 32px 48px;
-  min-width: 0;
-}
-
-/* Loading */
-.content-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  gap: 16px;
-  color: var(--color-text-secondary);
-}
-
-.loading-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid var(--color-border);
-  border-top-color: var(--color-primary);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Error */
-.content-error {
-  padding: 24px;
-  color: var(--color-danger);
-  background: rgba(211, 47, 47, 0.05);
-  border-radius: 8px;
-  border: 1px solid rgba(211, 47, 47, 0.2);
-}
-
-.locale-fallback {
-  margin: 0 0 16px;
-  padding: 8px 12px;
-  color: var(--color-text-secondary);
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  font-size: 13px;
-}
-
-/* Welcome */
-.content-welcome {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 400px;
-  gap: 16px;
-  color: var(--color-text-secondary);
-  text-align: center;
-}
-
-.welcome-icon {
-  width: 64px;
-  height: 64px;
-  opacity: 0.3;
-}
-
-.content-welcome h2 {
-  font-size: 20px;
-  color: var(--color-text);
-  margin: 0;
-}
-
-.content-welcome p {
-  font-size: 14px;
-  margin: 0;
-  max-width: 400px;
-}
-
-.welcome-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 8px;
-  max-width: 100%;
-}
-
-.welcome-link {
-  padding: 8px 20px;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  background: var(--color-bg-card);
-  color: var(--color-primary);
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.12s;
-}
-
-.welcome-link:hover {
-  border-color: var(--color-primary);
-  background: rgba(25, 118, 210, 0.05);
-}
-
-/* Markdown content styling */
-.content-markdown {
-  max-width: 860px;
-  line-height: 1.7;
-  font-size: 15px;
-}
-
-.content-markdown :deep(h1) {
-  font-size: 26px;
-  font-weight: 700;
-  margin: 0 0 20px 0;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.content-markdown :deep(h2) {
-  font-size: 20px;
-  font-weight: 600;
-  margin: 28px 0 12px 0;
-}
-
-.content-markdown :deep(h3) {
-  font-size: 17px;
-  font-weight: 600;
-  margin: 20px 0 8px 0;
-}
-
-.content-markdown :deep(p) {
-  margin: 0 0 12px 0;
-}
-
-.content-markdown :deep(strong) {
-  font-weight: 600;
-}
-
-.content-markdown :deep(code) {
-  font-family: var(--font-family-mono);
-  font-size: 13px;
-  background: rgba(0, 0, 0, 0.06);
-  padding: 2px 6px;
-  border-radius: 3px;
-}
-
-.content-markdown :deep(pre) {
-  margin: 16px 0;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #282c34;
-}
-
-.content-markdown :deep(pre.doc-code) {
-  position: relative;
-  padding-top: 30px;
-}
-
-.content-markdown :deep(pre.doc-code::before) {
-  content: attr(data-language);
-  position: absolute;
-  inset: 0 0 auto;
-  height: 30px;
-  padding: 7px 14px 0;
-  box-sizing: border-box;
-  color: #abb2bf;
-  background: rgba(0, 0, 0, 0.18);
-  font-family: var(--font-family);
-  font-size: 11px;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-}
-
-.content-markdown :deep(pre code) {
-  display: block;
-  padding: 16px;
-  overflow-x: auto;
-  font-size: 13px;
-  line-height: 1.5;
-  background: none;
-  color: #abb2bf;
-}
-
-.content-markdown :deep(table) {
-  border-collapse: collapse;
-  margin: 16px 0;
-  width: 100%;
-  font-size: 14px;
-}
-
-.content-markdown :deep(th) {
-  background: var(--color-bg-hover, #f0f0f0);
-  font-weight: 600;
-  text-align: center;
-  padding: 8px 12px;
-  border: 1px solid var(--color-border);
-}
-
-.content-markdown :deep(td) {
-  padding: 8px 12px;
-  border: 1px solid var(--color-border);
-  text-align: center;
-}
-
-.content-markdown :deep(tr:nth-child(even)) {
-  background: rgba(0, 0, 0, 0.02);
-}
-
-.content-markdown :deep(ul),
-.content-markdown :deep(ol) {
-  margin: 8px 0;
-  padding-left: 24px;
-}
-
-.content-markdown :deep(li) {
-  margin: 4px 0;
-}
-
-.content-markdown :deep(blockquote) {
-  margin: 16px 0;
-  padding: 8px 16px;
-  border-left: 4px solid var(--color-primary);
-  background: rgba(25, 118, 210, 0.05);
-  border-radius: 0 4px 4px 0;
-}
-
-.content-markdown :deep(hr) {
-  margin: 24px 0;
-  border: none;
-  border-top: 1px solid var(--color-border);
-}
-
-.content-markdown :deep(a) {
-  color: var(--color-primary);
-  text-decoration: none;
-}
-
-.content-markdown :deep(a:hover) {
-  text-decoration: underline;
-}
-
-.content-markdown :deep(img) {
-  display: block;
-  max-width: 100%;
-  border-radius: 4px;
-  border: 1px solid var(--color-border);
-  background: #fff;
-  box-shadow: 0 3px 12px rgba(32, 36, 43, 0.08);
-  margin: 16px 0 8px;
-}
-
-.content-markdown :deep(p > em:only-child) {
-  display: block;
-  color: var(--color-text-secondary, #697586);
-  font-size: 0.9em;
-  margin-bottom: 16px;
 }
 </style>

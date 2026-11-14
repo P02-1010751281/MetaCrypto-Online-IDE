@@ -10,33 +10,33 @@
 
 | 对象 | 数量 | 权威身份来源 | 当前测试入口 |
 |---|---:|---|---|
-| 唯一自定义 Blockly 块（活动清单） | 220 | [`ALL_BLOCK_TYPES`](../../src/blocks/index.ts) 及各块族导出 | `npm run verify:demos`、`npm run verify:templates`、Vitest |
+| 唯一自定义 Blockly 块（活动清单） | 221 | [`ALL_BLOCK_TYPES`](../../src/blocks/index.ts) 及各块族导出 | `npm run verify:demos`、`npm run verify:templates`、Vitest |
 | 已废弃/兼容注册身份 | 1 | [`COMPAT_BLOCK_TYPES`](../../src/blocks/ctrl/index.ts) | `npm run verify:templates`（登记一致性）；详见下方兼容身份章节 |
 | Procedure 模板注册身份 | 29 | [`TEMPLATE_REGISTRY`](../../src/blocks/procedure/blocks.ts) | `scripts/verify-templates.ts` |
 | 与基础块同名的模板身份 | 3 | `crypto_encrypt_func`、`crypto_decrypt_func`、`crypto_hash_func` | 模板注入与生成测试；计数时不重复加入唯一块数 |
-| Demo 工作区 | 59 | [`demos/tests.json`](../../demos/tests.json) 的键与 `demos/**/*.json` 文件 | `scripts/verify-demos.mjs`；每项登记 Python、JavaScript 用例 |
+| Demo 工作区 | 60 | [`demos/tests.json`](../../demos/tests.json) 的键与 `demos/**/*.json` 文件 | `scripts/verify-demos.mjs`；每项登记 Python、JavaScript 用例 |
 
-因此当前对象总数为 **220 个活动块 + 1 个已登记的兼容身份 + 29 个模板身份 + 59 个 Demo**。模板身份是单独的产品对象，即使其中 3 项与基础块同名，也要分别核对其模板参数/预填行为。`verify:demos` 检查工作区文件与测试登记一致并执行双语言用例；它本身不判定测试期望值是否来自完整官方测试集。
+因此当前对象总数为 **221 个活动块 + 1 个已登记的兼容身份 + 29 个模板身份 + 60 个 Demo**。模板身份是单独的产品对象，即使其中 3 项与基础块同名，也要分别核对其模板参数/预填行为。`verify:demos` 检查工作区文件与测试登记一致并执行双语言用例；它本身不判定测试期望值是否来自完整官方测试集。
 
-按身份去重的口径：220 个活动块与 29 个模板身份有 3 项重合（`crypto_encrypt_func`、`crypto_decrypt_func`、`crypto_hash_func`），合并去重后共 **246 个** 类型；`npm run verify:templates` 会重算该数字并核对本行说明。
+按身份去重的口径：221 个活动块与 29 个模板身份有 3 项重合（`crypto_encrypt_func`、`crypto_decrypt_func`、`crypto_hash_func`），合并去重后共 **247 个** 类型；`npm run verify:templates` 会重算该数字并核对本行说明。
 
 ## 兼容与已废弃注册身份
 
-下表列出**不进入 220 项活动清单**、但代码中仍然注册的 Blockly 身份。它们仅为加载存量工作区而保留，不出现在工具箱，也不作为可认证或可独立测试的算法构件；每项必须同时具备 Blockly 定义与 JS/Python 生成器，否则应从仓库删除。门禁 `npm run verify:templates` 会枚举全部已注册类型：既不在 220 项活动清单、也不在本表的类型将直接导致失败，防止出现未登记的“影子身份”。
+下表列出**不进入 221 项活动清单**、但代码中仍然注册的 Blockly 身份。它们仅为加载存量工作区而保留，不出现在工具箱，也不作为可认证或可独立测试的算法构件；每项必须同时具备 Blockly 定义与 JS/Python 生成器，否则应从仓库删除。门禁 `npm run verify:templates` 会枚举全部已注册类型：既不在 221 项活动清单、也不在本表的类型将直接导致失败，防止出现未登记的“影子身份”。
 
 | 身份 | 关系/适用范围 |
 |---|---|
 | `ctrl_assign` | 已废弃赋值块；`src/blocks/ctrl/deprecated.ts` 保留定义，JS/Python 生成器保留以支持 `migration.ts` 对复杂左值的重建（见 `src/utils/migration.ts` 的 `ctrl_assign` 分支）；不进入 `ALL_BLOCK_TYPES`，不在工具箱出现，无独立规范依据 |
 
-`220` 的准确含义是“当前 `ALL_BLOCK_TYPES` 活动身份数”；加上兼容身份后，项目实际注册的自定义 Blockly 类型为 221 个。
+`221` 的准确含义是“当前 `ALL_BLOCK_TYPES` 活动身份数”；加上兼容身份后，项目实际注册的自定义 Blockly 类型为 222 个。
 
 ## Blockly 块清单与适用类别
 
-下表逐项列出当前 `ALL_BLOCK_TYPES` 中的 220 个唯一块类型。类别表示应采用的验证边界：规范算法端点按算法测试；标准内部原语按其规范语义、接口契约和父算法关系测试；通用构件测试接口与组合语义；研究数学块不冒称为标准化算法。规范目录和当前聚合映射见[标准覆盖矩阵](./COVERAGE.md)。矩阵列出资产不等于对应块已获得逐块测试证据。
+下表逐项列出当前 `ALL_BLOCK_TYPES` 中的 221 个唯一块类型。类别表示应采用的验证边界：规范算法端点按算法测试；标准内部原语按其规范语义、接口契约和父算法关系测试；通用构件测试接口与组合语义；研究数学块不冒称为标准化算法。规范目录和当前聚合映射见[标准覆盖矩阵](./COVERAGE.md)。矩阵列出资产不等于对应块已获得逐块测试证据。
 
-每个块的实际端口、字段、连接类型由 `src/blocks/` 中相应类型的 `Blockly.Blocks[type].init` 定义；Python 与 JavaScript 语义分别由 `src/generators/python/`、`src/generators/javascript/` 的同类型生成器定义。为让“输入输出契约”本身可机器复核，仓库从**真实 Blockly 块**生成 [`BLOCK-IO-CONTRACT.json`](../blocks/BLOCK-IO-CONTRACT.json)（220 个活动块的端口名/输入类型/连接检查/输出检查/字段签名），`npm run verify:all` 每次重算并与该文件逐字节比对——代码里的签名一改而契约未同步就会直接失败；有意变更后用 `npm run block-io:write` 重新生成并复核差异。下表保留精确类型 ID，不复制一份可能漂移的 I/O 规格。
+每个块的实际端口、字段、连接类型由 `src/blocks/` 中相应类型的 `Blockly.Blocks[type].init` 定义；Python 与 JavaScript 语义分别由 `src/generators/python/`、`src/generators/javascript/` 的同类型生成器定义。为让“输入输出契约”本身可机器复核，仓库从**真实 Blockly 块**生成 [`BLOCK-IO-CONTRACT.json`](../blocks/BLOCK-IO-CONTRACT.json)（221 个活动块的端口名/输入类型/连接检查/输出检查/字段签名），`npm run verify:all` 每次重算并与该文件逐字节比对——代码里的签名一改而契约未同步就会直接失败；有意变更后用 `npm run block-io:write` 重新生成并复核差异。下表保留精确类型 ID，不复制一份可能漂移的 I/O 规格。
 
-仍待逐项完成的是**规范语义级**比对：确认每个块的签名与其规范条款要求的接口/参数域一致（例如标准规定某参数为固定长度字节串，块是否以该类型/约束表达），而不仅是“有端口、有双语言生成器”。该工作按「已核对的逐块测试证据」的 109 行逐条推进，当前状态见每行的“未由这些测试证明”列；门禁已强制每行的“规范语义范围”**要么给出标准族依据（FIPS/SP 800/GB\/T/GM\/T/RFC/ISO\/IEC/IEEE），要么明确标注为通用/教学/研究/项目构件（无独立规范依据）**，两者皆无即失败（已用负向测试验证）。
+仍待逐项完成的是**规范语义级**比对：确认每个块的签名与其规范条款要求的接口/参数域一致（例如标准规定某参数为固定长度字节串，块是否以该类型/约束表达），而不仅是“有端口、有双语言生成器”。该工作按「已核对的逐块测试证据」的 110 行逐条推进，当前状态见每行的“未由这些测试证明”列；门禁已强制每行的“规范语义范围”**要么给出标准族依据（FIPS/SP 800/GB\/T/GM\/T/RFC/ISO\/IEC/IEEE），要么明确标注为通用/教学/研究/项目构件（无独立规范依据）**，两者皆无即失败（已用负向测试验证）。
 
 端点级的“测试来源 + 参数范围 + 缺口”汇总见自动生成的 [`ENDPOINT-MATRIX.md`](../demos/ENDPOINT-MATRIX.md)：它由本文件的 Demo↔块映射表与 `demos/evidence.json` 生成，`npm run verify:all` 逐字节比对（`npm run endpoint-matrix:write` 重新生成），因此不存在手写漂移。
 
@@ -60,7 +60,7 @@
 | `ECC_BLOCK_TYPES` | 曲线运算是 ECDSA、ECDH、SM2 等端点的前置原语；须按所选曲线及父算法规范验证 | `ecc_load_curve_params` · `ecc_load_point` · `ecc_point_double` · `ecc_add` · `ecc_multiply` |
 | `ZUC_BLOCK_TYPES` | GB/T 33133 / 对应 EEA3、EIA3 算法条款；内部步骤与端点分开核验 | `zuc_s0` · `zuc_s1` · `zuc_l1` · `zuc_l2` · `zuc_f` · `zuc_keystream` · `zuc_eia3` |
 | `CMAC_BLOCK_TYPES` | SP 800-38B；子密钥与端点分别核验，同时核验实际支持的 AES/SM4 变体，不从一个变体外推另一个 | `cmac_double` · `cmac_subkeys` · `cmac_mac` |
-| `CCM_BLOCK_TYPES` | SP 800-38C 参数、编码和 AEAD 行为；B0、计数器块与 CBC-MAC 逐项核验 | `ccm_b0` · `ccm_counter_block` · `ccm_cbc_mac` · `ccm_ctr` · `ccm_aad_len_prefix` · `ccm_encrypt` |
+| `CCM_BLOCK_TYPES` | SP 800-38C 参数、编码和 AEAD 行为；B0、计数器块与 CBC-MAC 逐项核验，解密方向按 §6.2 校验标签 | `ccm_b0` · `ccm_counter_block` · `ccm_cbc_mac` · `ccm_ctr` · `ccm_aad_len_prefix` · `ccm_encrypt` · `ccm_decrypt` |
 | `XTS_BLOCK_TYPES` | SP 800-38E / IEEE 1619 约定的 XTS 行为及输入限制；tweak 推进与端点分别核验 | `xts_tweak_mul` · `xts_encrypt` |
 | `X25519_BLOCK_TYPES` | RFC 7748 X25519 函数 | `x25519` |
 | `ASCON_BLOCK_TYPES` | SP 800-232 Ascon-AEAD128、Hash256、XOF128、CXOF128；各端点分别核验 | `ascon_encrypt` · `ascon_decrypt` · `ascon_hash256` · `ascon_xof128` · `ascon_cxof128` |
@@ -89,7 +89,7 @@
 
 ### 跨语言 `Bytes` 输出容器
 
-Blockly 输出检查为 `Bytes` 的运行结果约定为 JavaScript `Uint8Array`、Python `bytes`。`verify-demo.ts --exec` 会为 Demo 工作区中声明为 `Bytes` 的块加运行时断言；只有实际执行到的块输出会被检查。单独运行 `npm run verify:demos` 会先构建校验器，避免复用过期的 `dist-verify`。目前 59 个 Demo 均通过该门禁；它验证的是输出容器与登记的回归结果，不是完整官方测试集或认证证据。
+Blockly 输出检查为 `Bytes` 的运行结果约定为 JavaScript `Uint8Array`、Python `bytes`。`verify-demo.ts --exec` 会为 Demo 工作区中声明为 `Bytes` 的块加运行时断言；只有实际执行到的块输出会被检查。单独运行 `npm run verify:demos` 会先构建校验器，避免复用过期的 `dist-verify`。目前 60 个 Demo 均通过该门禁；它验证的是输出容器与登记的回归结果，不是完整官方测试集或认证证据。
 
 本轮修正的公开块出口包括 RSA 密钥生成/加密/解密/签名，ECDSA、EdDSA、SM2 签名与 SM2 解密，SM9 主密钥/用户密钥/签名，X25519、ML-DSA 签名，HMAC-DRBG、GM RNG、HKDF、PBKDF2，Ascon 加密/解密/哈希/XOF/CXOF，Argon2，ECB/CBC/CTR 模式，AES-GCM/CCM/XTS，以及 AES/SM4-CMAC。包装只在公开 Blockly 表达式边界完成；SM9 内部输入校验同时接受其公开块产生的 `Uint8Array`。[`symmetric-bytes-output-contract.test.ts`](../../tests/unit/symmetric-bytes-output-contract.test.ts)、[`pq-bytes-output-contract.test.ts`](../../tests/unit/pq-bytes-output-contract.test.ts)、[`hmac-block-contract.test.ts`](../../tests/unit/hmac-block-contract.test.ts) 与 Demo 门禁分别记录有限实测范围；未被这些测试或 Demo 实际执行覆盖的块不能据此推定容器契约已验证。
 
@@ -144,9 +144,9 @@ Blockly 输出检查为 `Bytes` 的运行结果约定为 JavaScript `Uint8Array`
 
 ## Demo 身份与关系
 
-Demo 身份以 [`demos/tests.json`](../../demos/tests.json) 的 59 个键为准，每个键都对应一个实际 JSON 工作区，并登记 `py`、`js` 两套驱动和期望输出。工作区 JSON 是“Demo 使用了哪些块”的事实来源；[`demos/README.md`](../../demos/README.md) 给出其标准向量、固定输入回归、性质断言或结构展示分组。不得只因某块出现在工作区中，就把 Demo 计作该块的规范语义覆盖。
+Demo 身份以 [`demos/tests.json`](../../demos/tests.json) 的 60 个键为准，每个键都对应一个实际 JSON 工作区，并登记 `py`、`js` 两套驱动和期望输出。工作区 JSON 是“Demo 使用了哪些块”的事实来源；[`demos/README.md`](../../demos/README.md) 给出其标准向量、固定输入回归、性质断言或结构展示分组。不得只因某块出现在工作区中，就把 Demo 计作该块的规范语义覆盖。
 
-当前 59 个登记身份（路径相对于 `demos/`）：
+当前 60 个登记身份（路径相对于 `demos/`）：
 
 ```text
 procedures/SM4-Sbox.json
@@ -154,6 +154,7 @@ procedures/SM3-Hash.json
 procedures/SM2-PointMul.json
 procedures/SM2-Sign.json
 procedures/ML-KEM-Encaps.json
+procedures/CMAC-AES.json
 procedures/CCM-Encrypt.json
 procedures/XTS-Encrypt.json
 procedures/X25519.json
@@ -219,8 +220,9 @@ procedures/SM2-KeyExchange.json
 | `procedures/SM2-PointMul.json` | `ecc_load_curve_params` · `ecc_load_point` · `ecc_multiply` |
 | `procedures/SM2-Sign.json` | `data_value` · `sm2_sign` |
 | `procedures/ML-KEM-Encaps.json` | `data_value` · `keccak_state_init` · `pq_byte_concat` · `pq_byte_decode` · `pq_byte_encode` · `pq_bytes_slice` · `pq_compress` · `pq_decompress` · `pq_intt` · `pq_ntt` · `pq_ntt_mul` · `pq_poly_add` · `pq_prf` · `pq_sample_ntt` · `pq_sample_poly_cbd` · `pq_seed_with_nonce` · `sponge_absorb` · `sponge_pad` · `sponge_squeeze` |
-| `procedures/CCM-Encrypt.json` | `ccm_encrypt` · `data_value` |
-| `procedures/XTS-Encrypt.json` | `data_value` · `xts_encrypt` |
+| `procedures/CCM-Encrypt.json` | `ccm_aad_len_prefix` · `ccm_b0` · `ccm_cbc_mac` · `ccm_counter_block` · `ccm_ctr` · `ccm_decrypt` · `ccm_encrypt` · `data_value` |
+| `procedures/CMAC-AES.json` | `cmac_mac` · `cmac_subkeys` |
+| `procedures/XTS-Encrypt.json` | `data_value` · `xts_encrypt` · `xts_tweak_mul` |
 | `procedures/X25519.json` | `data_value` · `x25519` |
 | `procedures/ASCON.json` | `ascon_encrypt` · `data_value` |
 | `procedures/ASCON-Extended.json` | `ascon_cxof128` · `ascon_decrypt` · `ascon_hash256` · `ascon_xof128` · `data_value` |
@@ -279,7 +281,7 @@ procedures/SM2-KeyExchange.json
 ## 当前映射边界与待补证据
 
 - [标准覆盖矩阵](./COVERAGE.md) 当前是标准目录维度的聚合映射。块名称存在缩写、参数化家族和跨标准复用，矩阵中“列出块/Demo”不能自动解释为完整、逐项且参数集准确的适用性证明。
-- 59 个 Demo 的证据类别与依据登记在 [`demos/evidence.json`](../../demos/evidence.json)：`official-vector`（31，期望值来自标准附录/示例/TC/官方 ACVP 用例，且必须给出条款或用例定位）、`property`（12，正文断言代数或结构性质）、`fixed-regression`（13，项目固定输入输出，明确非官方向量；ML-KEM Encaps 的 Demo 属于此类，其官方 ACVP 核对在单测中单独进行）、`cross-implementation`（3，与独立实现交叉：PBKDF2 的 SHA-256 变体与 SHA3-256）。`npm run verify:all` 会核对台账与登记 Demo 完全一致、类别受控、类别计数与本文一致，并要求 `official-vector` 条目同时标注标准来源、条款/示例定位与参数集/变体。台账记录的是“声明的证据基础”：散列族、HMAC、HKDF、PBKDF2、AES 模式与 P-256 ECDH 的期望值已用独立实现复算确认；参数集写明到实际覆盖范围（如 CCM 为 AES-128 的 Example 1-3 参数、GCM 为 96-bit IV 的 TC2/TC13、RSA 为项目教学用的 512-bit 模数而**不是**可用密钥长度）。XTS 因 IEEE 1619-2007 为付费且未随仓库分发、无离线可核来源，已从 `official-vector` 降级为 `fixed-regression`；SHA3-256 的 `abc` 示例值改记为 `cross-implementation`（FIPS 202 正文不含附录向量）。
+- 60 个 Demo 的证据类别与依据登记在 [`demos/evidence.json`](../../demos/evidence.json)：`official-vector`（32，期望值来自标准附录/示例/TC/官方 ACVP 用例，且必须给出条款或用例定位）、`property`（12，正文断言代数或结构性质）、`fixed-regression`（13，项目固定输入输出，明确非官方向量；ML-KEM Encaps 的 Demo 属于此类，其官方 ACVP 核对在单测中单独进行）、`cross-implementation`（3，与独立实现交叉：PBKDF2 的 SHA-256 变体与 SHA3-256）。`npm run verify:all` 会核对台账与登记 Demo 完全一致、类别受控、类别计数与本文一致，并要求 `official-vector` 条目同时标注标准来源、条款/示例定位与参数集/变体。台账记录的是“声明的证据基础”：散列族、HMAC、HKDF、PBKDF2、AES 模式与 P-256 ECDH 的期望值已用独立实现复算确认；参数集写明到实际覆盖范围（如 CCM 为 AES-128 的 Example 1-3 参数、GCM 为 96-bit IV 的 TC2/TC13、RSA 为项目教学用的 512-bit 模数而**不是**可用密钥长度）。XTS 因 IEEE 1619-2007 为付费且未随仓库分发、无离线可核来源，已从 `official-vector` 降级为 `fixed-regression`；SHA3-256 的 `abc` 示例值改记为 `cross-implementation`（FIPS 202 正文不含附录向量）。
 - **独立复算证据（2026-10-08 新增）**：[`demo-vector-crosscheck.test.ts`](../../tests/unit/demo-vector-crosscheck.test.ts) 用 Python 标准库与 `cryptography` 独立实现重算 14 组**已登记期望值**（含 `official-vector` 与 `cross-implementation` 两类，不等同于“官方向量”）并与 `demos/tests.json` 逐字节比较——SP 800-38C Example 1/2/3、SP 800-38D TC2 与 TC13、SHA-256/384/512、SHA3-256、HMAC-SHA256（RFC 4231 TC1）、HKDF-SHA256（RFC 5869 A.1）、PBKDF2-HMAC-SHA-256、RFC 5903 §8.1 P-256 ECDH 两方向——当前全部一致；环境缺少 `cryptography` 时整组跳过，不记为通过。
 - **本轮纠正的过度声称**：GCM 相关文档与**用户可见工具提示**原称“官方向量 SP 800-38D TC2/TC3/TC16 + pycryptodome 交叉验证通过”。逐组复算后确认：Demo 实际覆盖 **TC2 与 TC13**（空 AAD、64 字节明文），**TC3 从未覆盖**，且仓库任何位置都不存在 pycryptodome 依赖或调用。同一轮还清掉了同类残留：CMAC、CCM 的 README 也写了不存在的 pycryptodome 交叉（分别改为 SP 800-38B 向量测试与独立复算）；ECDH 原先无证据的“cryptography 交叉”已由上述独立复算真正兑现；XTS 与 RSA 没有可兑现的证据，分别改为“向量来源 + Demo 回归”和 `fixed-regression`（并写明仓库内无第三方交叉复算）。涉及文件：`demos/README.md`（中英）、`COVERAGE.md`（中英）、`docs/blocks/symmetric.md`、`docs/blocks/ecc-sbox.md`（中英）、`docs/standards/rfc5903-ecdh/*`、`docs/standards/sp800-38b-cmac/README.md`、`docs/standards/sp800-38c-ccm/README.md`、`docs/standards/rfc8017-pkcs1/README.md`，以及 GCM/ECDH 块与生成器注释和两者的工具提示。
 - `verify-templates.ts` 将 29 个测试身份与模板注册表作集合核对，并对每个模板调用实际 `onchange` 预填处理器，核对实际 RETURN 表达式链、BODY/RETURN 块集合、循环次数；对同一 handler 二次调用后比较完整 Blockly 序列化状态，确保工作区状态不变。ML-KEM 封装模板另用独立于生产状态配置的期望值，核对 28 条 BODY 赋值的顺序、变量名、每条语句的表达式根块类型及 `return ret`。检查在真实 Blockly 块/连接上运行，仅将 SVG 初始化/绘制方法替换为空操作；它没有逐一断言 ML-KEM 每个表达式内部的所有嵌套连接，也不等于鼠标拖放 UI 验收或完整算法符合性证明。
@@ -307,7 +309,7 @@ ITEM-2 要求“不能离线分发官方数据时，记录正式验证系统路�
 
 ### 尚未出现在 Demo 工作区的块
 
-静态比对 59 个工作区后，有 **96 个**注册块没有出现在任一 Demo 中。该结果只表示“没有 Demo 直接引用”，不能据此断言没有其他测试；后续须逐项查找单元/模板测试，或新增最小接口、边界、性质测试。当前集合如下：
+静态比对 60 个工作区后，有 **88 个**注册块没有出现在任一 Demo 中。该结果只表示“没有 Demo 直接引用”，不能据此断言没有其他测试；后续须逐项查找单元/模板测试，或新增最小接口、边界、性质测试。当前集合如下：
 
 ```text
 ctrl_iterate
@@ -357,7 +359,6 @@ zuc_s1
 zuc_l1
 zuc_l2
 zuc_f
-cmac_mac
 pq_bytes_to_bits
 pq_bits_to_bytes
 crypto_return
@@ -388,19 +389,12 @@ gcm_inc32
 gcm_j0
 hkdf_extract
 hkdf_expand
-ccm_b0
-ccm_counter_block
-ccm_cbc_mac
-ccm_ctr
 cmac_double
-cmac_subkeys
-xts_tweak_mul
 pbkdf2_f
 drbg_update
 ecdsa_k_rfc6979
 rsa_mgf1
 rsa_emsa_pkcs1_v15_encode
-ccm_aad_len_prefix
 sm2_kdf
 argon2_g
 slh_xmss_root
@@ -410,7 +404,7 @@ slh_sign
 
 ### 既无 Demo 也无单测字面量命中的块
 
-在上述 96 个无 Demo 直接引用的块中，进一步要求 `tests/unit/**/*.ts` 以字符串字面量引用块类型。两者都没有的共 **0 个**：
+在上述 88 个无 Demo 直接引用的块中，进一步要求 `tests/unit/**/*.ts` 以字符串字面量引用块类型。两者都没有的共 **0 个**：
 
 ```text
 ```
@@ -522,8 +516,8 @@ slh_sign
 | `sm4_round_func` | GB/T 32907-2016 轮函数 F（含 S 盒与线性变换 L） | `SM4-Atomic-Round.json`、`procedures/SM4-Round.json` 与 `Procedure-SM4-Round.json` 回归该标准附录 A 首轮输出 `27fad345`（`official-vector`）；`sm4-linear-transform.test.ts` 单独覆盖其中的线性变换 | 只覆盖首轮向量与线性变换；不证明密钥扩展、完整 SM4 或轮数之外的行为 |
 | `mode_ecb_encrypt` / `mode_cbc_encrypt` / `mode_ctr_encrypt` | AES-128 的 ECB / CBC / CTR 模式路径，分别对应 FIPS 197 附录 C.1、SP 800-38A F.2.1、SP 800-38A F.5.1 | `procedures/Mode-ECB.json`、`Mode-CBC.json`、`Mode-CTR.json` 回归上述向量（`official-vector`，参数集 AES-128）；`crypto-template-defaults.test.ts` 在模板链上核对 ECB 缺 key 时显式失败与 C.1 加解密；`symmetric-bytes-output-contract.test.ts` 核对 `Uint8Array`/`bytes` 输出容器 | 只覆盖所列单块向量；不覆盖多块填充策略、其它 IV/nonce 长度、padding 标准或侧信道；CTR 未覆盖计数器溢出 |
 | `gcm_encrypt` | SP 800-38D GCM（GHASH + GCTR），AES-128、96-bit IV | `procedures/GCM-Encrypt.json` 回归 TC2 与 TC13，并由 `demo-vector-crosscheck.test.ts` 用 `cryptography` 独立复算一致；`symmetric-bytes-output-contract.test.ts` 核对输出容器 | **TC3 未覆盖**；不覆盖其它 IV 长度、tag 长度族与 AD 处理全谱；Demo 第三条是项目自选变体而非标准 TC |
-| `ccm_encrypt` | SP 800-38C CCM（CBC-MAC + CTR），AES-128 | `procedures/CCM-Encrypt.json` 回归附录 C Example 1/2/3（tagLen 4/6/8），并由 `demo-vector-crosscheck.test.ts` 独立复算一致；输出容器由 `symmetric-bytes-output-contract.test.ts` 核对 | 只覆盖 Example 1-3 的参数组合；不覆盖全部 nonce/tag 长度组合 |
-| `xts_encrypt` | IEEE 1619-2007 / SP 800-38E XTS（AES-128，32 字节 key 拆成两个半钥、16 字节 tweak） | `procedures/XTS-Encrypt.json` 为 `fixed-regression`：使用 IEEE 1619-2007 的经典向量（来源文档付费且未随仓库分发，不可离线核对），并覆盖 17/31/47 字节消息的密文窃取路径、拒绝两半相同的 key 与短于一个分组的消息；输出容器由 `symmetric-bytes-output-contract.test.ts` 核对 | 不登记为官方向量；仓库内亦无第三方独立复算；不覆盖其它数据单元长度与侧信道 |
+| `ccm_encrypt` · `ccm_decrypt` · `ccm_b0` · `ccm_aad_len_prefix` · `ccm_counter_block` · `ccm_cbc_mac` · `ccm_ctr` | SP 800-38C CCM（CBC-MAC + CTR）与附录 A 的 B0/AAD 长度编码/计数器块格式化，AES-128；解密方向按 §6.2 重算标签并拒绝 INVALID | `procedures/CCM-Encrypt.json` 回归附录 C Example 1/2/3（tagLen 4/6/8），并由 `demo-vector-crosscheck.test.ts` 独立复算一致；同一工作区的五个原语过程按 Example 1 参数逐块核对 B0、AAD 长度前缀、计数器块、CBC-MAC 中间值与密文段；`CCM_Decrypt` 过程把 Example 1 的 密文‖标签 解回明文，并验证篡改标签被拒绝；输出容器由 `symmetric-bytes-output-contract.test.ts` 核对 | 只覆盖 Example 1-3 的参数组合与 Example 1 的原语中间值；解密只核对 §6.2 的验证结果与标签拒绝，不覆盖标签长度全集；不覆盖全部 nonce/tag 长度组合，B0 位域与计数器格式只由单测和该过程间接约束 |
+| `xts_encrypt` · `xts_tweak_mul` | IEEE 1619-2007 / SP 800-38E XTS（AES-128，32 字节 key 拆成两个半钥、16 字节 tweak）与 GF(2^128) tweak 加倍 | `procedures/XTS-Encrypt.json` 为 `fixed-regression`：使用 IEEE 1619-2007 的经典向量（来源文档付费且未随仓库分发，不可离线核对），并覆盖 17/31/47 字节消息的密文窃取路径、拒绝两半相同的 key 与短于一个分组的消息；同一工作区的 `XTS_TWEAK_MUL` 过程核对最高位进位（T=0^120‖0x80 → 0x87‖0…0）；输出容器由 `symmetric-bytes-output-contract.test.ts` 核对 | 不登记为官方向量；仓库内亦无第三方独立复算；tweak 加倍只覆盖三种单测样例与一个进位情形的过程，不覆盖其它数据单元长度与侧信道 |
 | `zuc_keystream` / `zuc_eia3` | GB/T 33133 ZUC 密钥流与 EIA3 MAC（EEA3 / EIA3 的构造基础） | `procedures/EEA3.json`（GB/T 33133.2 附录 A.1）与 `procedures/EIA3.json`（GB/T 33133.3-2021 附录 B 示例 1/2）登记为 `official-vector`；`zuc-primitives.test.ts` 另覆盖 S0/S1 全表与长度上限 | 不覆盖密钥流全长度范围、EIA3 全消息长度或 3GPP 完整测试集 |
 | `ascon_encrypt` · `ascon_decrypt` · `ascon_hash256` · `ascon_xof128` · `ascon_cxof128` | SP 800-232 Ascon-AEAD128 / Hash256 / XOF128 / CXOF128 端点 | `procedures/ASCON.json` 与 `ASCON-Extended.json` 覆盖固定样例、空消息与错误标签/参数拒绝；`generator-resource-limits.test.ts` 覆盖 `ascon_xof128` 的资源边界 | 登记为 `fixed-regression`：不是完整 1,089 项 AEAD KAT，也不覆盖完整 Hash/XOF 套件与流式 API |
 | `sponge_absorb` | FIPS 202 海绵吸收阶段（与 `sponge_squeeze`、`keccak_f` 组合） | `sponge-absorb-contract.test.ts` 通过真实 Blockly 双语言执行吸收阶段；`procedures/ML-KEM-Encaps.json` 在完整 Encaps 链中使用该块 | 只覆盖吸收阶段的接口与列明样例；不单独构成哈希/XOF 端点或 FIPS 202 全量测试 |
@@ -556,7 +550,7 @@ slh_sign
 
 SM2 验签定向回归最近一次为 1 个文件、13 项通过；SM9 四块定向回归最近一次为 4 个文件、61 项通过。逐块条款到测试来源的全量台账、标准版本/勘误盘点及其它对象仍在 ITEM-1/ITEM-2 中继续核对。
 
-**证据入口覆盖盘点（自动核对）**：220 个活动块**全部**在本表有逐块证据行（本轮补齐后为 **220 个**），其中相当一部分块的直接证据来自其登记的 Demo 而非独立单测；既无逐块证据行、也不被任何登记 Demo 执行的块为 **0 个**。`npm run verify:all` 会用同一口径重算并拒绝出现“零证据块”；该口径只证明“存在可追溯的证据入口”，不证明该证据已达到完整标准测试集，也不改变各行的“未由这些测试证明”边界。
+**证据入口覆盖盘点（自动核对）**：221 个活动块**全部**在本表有逐块证据行（本轮补齐后为 **221 个**），其中相当一部分块的直接证据来自其登记的 Demo 而非独立单测；既无逐块证据行、也不被任何登记 Demo 执行的块为 **0 个**。`npm run verify:all` 会用同一口径重算并拒绝出现“零证据块”；该口径只证明“存在可追溯的证据入口”，不证明该证据已达到完整标准测试集，也不改变各行的“未由这些测试证明”边界。
 | `gcm_gf128_mul` | SP 800-38D Algorithm 1（GF(2¹²⁸) 块乘法） | [`gcm-primitives-contract.test.ts`](../../tests/unit/gcm-primitives-contract.test.ts) 通过真实 Blockly 块在 JS/Python 执行 Test Case 3 派生乘法值 `5e2ec746…`，并核对两语言一致 | 只覆盖单块乘法与该派生向量；不覆盖多块 GHASH 全谱或其他域约定 |
 | `gcm_ghash` | SP 800-38D Algorithm 2（GHASH_H(A, C)） | [`gcm-primitives-contract.test.ts`](../../tests/unit/gcm-primitives-contract.test.ts) 双语言执行单块 GHASH，并与 Test Case 3 标签推导值 `f38cbb1a…` 比对 | 单块输入；不覆盖 AAD/密文长度组合全谱、标签截断或认证流程 |
 | `gcm_gctr` | SP 800-38D Algorithm 3（GCTR_K(ICB, X)） | [`gcm-primitives-contract.test.ts`](../../tests/unit/gcm-primitives-contract.test.ts) 双语言以 ICB = J0+1 复现 Test Case 3 密文块 `0388dace…`，且拒绝非 16 字节密钥 | 一个分组的 AES-128 路径；不覆盖其它密钥长度、调用上限或完整数据集 |
@@ -565,10 +559,11 @@ SM2 验签定向回归最近一次为 1 个文件、13 项通过；SM9 四块定
 | `hkdf_extract` | RFC 5869 §2.2（HKDF-Extract） | [`hkdf-primitives-contract.test.ts`](../../tests/unit/hkdf-primitives-contract.test.ts) 双语言执行附录 A.1 的 PRK `07770936…` | 只覆盖 HMAC-SHA-256 实例与空 salt 零兜底分支；不覆盖其他 Hash 或空 IKM 全谱 |
 | `ccm_b0` | SP 800-38C §A.2 首块 B0 | [`ccm-primitives-contract.test.ts`](../../tests/unit/ccm-primitives-contract.test.ts) 双语言核对附录 C.1 公布的 B 首块 `4f101112 13141516 00000000 00000004` | 一个参数组合；不覆盖 AAD 长度编码分支（≥0xFF00）或其它 Tlen/Nlen |
 | `ccm_counter_block` | SP 800-38C §A.3 计数器块 A_i | [`ccm-primitives-contract.test.ts`](../../tests/unit/ccm-primitives-contract.test.ts) 双语言核对 C.1 公布的 Ctr0 `07101112 13141516 00000000 00000000` 与 Ctr1 末位加一 | 两个计数器值；不覆盖计数器回绕或超长数据单元 |
-| `ccm_cbc_mac` | SP 800-38C §A.2 CBC-MAC | [`ccm-primitives-contract.test.ts`](../../tests/unit/ccm-primitives-contract.test.ts) 双语言一致性与 16 字节输出；该 helper 是附录 C.1–C.3 官方向量所走的同一条路径（由 ccm_encrypt 用例覆盖） | 标准未公布 CBC-MAC 中间值，本行不能替代 CCM 端点官方向量或完整符合性 |
+| `ccm_cbc_mac` | SP 800-38C §A.2 CBC-MAC | [`ccm-primitives-contract.test.ts`](../../tests/unit/ccm-primitives-contract.test.ts) 双语言一致性与 16 字节输出；该 helper 是附录 C.1–C.3 官方向量所走的同一条路径（由 ccm_encrypt 用例覆盖）；[`demos/procedures/CCM-Encrypt.json`](../../demos/procedures/CCM-Encrypt.json) 的 `CCM_CBC_MAC` 过程按 C.1 参数核对链中间值 `6084341b…` | 标准未公布 CBC-MAC 中间值，本行不能替代 CCM 端点官方向量或完整符合性 |
 | `ccm_ctr` | SP 800-38C §A.3 计数器模式 | [`ccm-primitives-contract.test.ts`](../../tests/unit/ccm-primitives-contract.test.ts) 双语言复现 C.1 公布密文段 `7162015b` | 单块明文、单一 Tlen/Nlen；不覆盖多块或部分块 |
+| `ccm_decrypt` | SP 800-38C §6.2 decryption-verification：Clen ≤ Tlen 返回 INVALID，CTR 解出 P 后对 (N, A, P) 重算标签并比对 | [`ccm-decrypt-contract.test.ts`](../../tests/unit/ccm-decrypt-contract.test.ts) 通过真实 Blockly 块双语言执行附录 C.1 Example 1 与 C.2 Example 2（6 字节标签、L=7），核对明文恢复、篡改标签/篡改 AAD/Clen≤Tlen 三类拒绝；[`demos/procedures/CCM-Encrypt.json`](../../demos/procedures/CCM-Encrypt.json) 的 `CCM_Decrypt` 过程另行回归 | 只覆盖两个附录示例与列明的三类拒绝；不覆盖全部 nonce/tag 长度组合、计数器回绕，抛出错误只保证调用方拿不到明文，不构成常量时间或认证安全的证明 |
 | `cmac_double` | SP 800-38B §6.1 子密钥加倍 | [`cmac-xts-primitives-contract.test.ts`](../../tests/unit/cmac-xts-primitives-contract.test.ts) 双语言执行 RFC 4493 §4 的 L→K1→K2 | 单次加倍链；不覆盖其它密钥或 SM4 分支 |
-| `cmac_subkeys` | SP 800-38B §6.1 子密钥生成（AES-128） | [`cmac-xts-primitives-contract.test.ts`](../../tests/unit/cmac-xts-primitives-contract.test.ts) 双语言复现 RFC 4493 §4 的 K1‖K2 | 仅 AES-128；SM4-CMAC 子密钥不在本块范围 |
+| `cmac_subkeys` | SP 800-38B §6.1 子密钥生成（AES-128） | [`cmac-xts-primitives-contract.test.ts`](../../tests/unit/cmac-xts-primitives-contract.test.ts) 双语言复现 RFC 4493 §4 的 K1‖K2；[`demos/procedures/CMAC-AES.json`](../../demos/procedures/CMAC-AES.json) 的 `CMAC_SUBKEYS` 过程由 `verify:demos` 双语言执行同一 K1‖K2 | 仅 AES-128；SM4-CMAC 子密钥不在本块范围 |
 | `xts_tweak_mul` | SP 800-38E / IEEE 1619 tweak ×α | [`cmac-xts-primitives-contract.test.ts`](../../tests/unit/cmac-xts-primitives-contract.test.ts) 双语言核对 0、低位 1 与最高位进位（0x87 约化）三个手算样例 | 三个样例的接口契约；不覆盖多块 tweak 序列或 XTS 端点到其它向量 |
 | `pbkdf2_f` | RFC 8018 §5.2 单块函数 F | [`pbkdf2-f-contract.test.ts`](../../tests/unit/pbkdf2-f-contract.test.ts) 双语言执行 RFC 7914 §11 向量的首块（c=1），并以 Python `hashlib.pbkdf2_hmac` 独立复算 c=4096、i=1 的结果 | 仅 HMAC-SHA256 与两档迭代数；不覆盖 SM3 变体、其它 i 或整条 DK 组合 |
 | `hkdf_expand` | RFC 5869 §2.3（HKDF-Expand） | [`hkdf-primitives-contract.test.ts`](../../tests/unit/hkdf-primitives-contract.test.ts) 双语言执行附录 A.1 的 OKM（L=42），并核对与 Extract 组合后的完整 HKDF 值、拒绝 L>8160 | 单实例、单 info 长度；不覆盖其它 Hash、任意 info 长度或正式算法验证 |

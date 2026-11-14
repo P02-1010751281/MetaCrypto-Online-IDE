@@ -11,6 +11,7 @@
 #   docs/research/（调研报告）
 #   paper/references/（调研报告引用的标准与论文 PDF）
 #   demos/（Blockly 工作区示例文件 + README，metacrypt 编辑器可直接导入）
+#   spec-runs/（规格卡运行清单；SPEC-CARD.json 随 docs/standards/ 整树同步）
 #
 # 不同步（平台专属）：USER-GUIDE / TUTORIALS / ARCHITECTURE / DEVELOPMENT（入口、路由及任务流程不同）
 # 链接约定：同步保持相对目录结构（guides/ + blocks/ + audits/ + standards/ + demos/ + research/），
@@ -87,6 +88,18 @@ for f in "${STANDARDS_MIGRATED[@]}"; do
     echo "  standards/$f removed (migrated out of standards/)"
   fi
 done
+
+echo "== 同步 spec-runs/ 规格卡运行清单 ========="
+# SPEC-CARD.json 已在 docs/standards/ 整树 copy 时一并过去；运行清单是仓库根产物目录，
+# 单独镜像，供 metacrypt 的 /spec-review（只读审核页）消费。目标端 .gitignore 的 /*
+# 已忽略该目录：它是产物、不入库，也不参与目标仓库的门禁。
+if [ -d "$CC_ROOT/spec-runs" ]; then
+  mkdir -p "$MC_ROOT/spec-runs"
+  rsync -a --delete "$CC_ROOT/spec-runs/" "$MC_ROOT/spec-runs/"
+  echo "  spec-runs/（$(find "$MC_ROOT/spec-runs" -name 'manifest.json' | wc -l) 份运行清单）"
+else
+  echo "  spec-runs/ 源端不存在，跳过"
+fi
 
 echo "== 同步 audits/ 审计报告 ================="
 # 审计报告是与 standards/ 平级的一级目录：standards/ 放标准文档审计，project/ 放
