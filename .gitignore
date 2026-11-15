@@ -84,3 +84,6 @@ experiments/**/runs/*/assembled.workspace.json
 
 # Pyodide 运行时（13MB，由 scripts/copy-pyodide.mjs 从 devDependency 重建）
 public/pyodide/
+
+# 本地验证脚本与门禁日志（临时产物，可随时重跑，不入库）
+.review/
