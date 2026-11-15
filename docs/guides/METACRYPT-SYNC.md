@@ -113,7 +113,7 @@ node -e 'const j=require("../metacrypt_server/frontend/public/pyodide/pyodide-lo
 | metacrypt 侧就位 | 已完成（未切引用） | `features/blockly/runtime/` 写入 4 个文件；该仓库 `vue-tsc --noEmit` 0 错误、eslint 0 问题 |
 | metacrypt 切引用 | 未执行（前置未清） | 镜像区仍有未提交改动，且是**静止堆积**而非当日新增：全 `features/blockly` 为 156 条目（含 22 个未跟踪条目，`git status -uall` 展开为 172 个文件）；已修改文件 mtime 集中在 2026-11-13（124 个）、11-14（6 个）、10-22（4 个） |
 | sync 守卫加固 | 已完成 | 守卫从只查 `core` + `components` 扩到四个写入根（加 `services/projects`、`runtime`），实测 146 处（旧口径 144）；新增配对映射断言：配对目标落在同步不会写入的子树时 exit 1——旧版把 ProjectStore 指到 `core/services/`，这一对的导出预检一直被静默跳过；配对总数 343 → 347，跳过 3。变异验证：旧映射被拒，新映射、未同步的新文件、runtime 契约三条均通过 |
-| 镜像区增量回填 | 待 owner | 导出预检查出 metacrypt 的 `core/constants/block-types.ts` 独有 `TYPE_MATRIX`/`TYPE_VECTOR`（CipherCat 全库无 Matrix/Vector 类型），下一次同步会删除这两个导出；按脚本给的三条路（上移 / 反向补齐 / 确认丢弃）择一 |
+| 镜像区增量回填 | 无需处置（已核实） | 导出预检报的 `TYPE_MATRIX`/`TYPE_VECTOR` 是 CipherCat 本批**主动删除**的旧导出（`block-types.ts` 改为用 int_list 形状 + 契约表达域类型），不是 metacrypt 私自新增；下次同步删掉它们正是预期结果。该预检分不清「上游删了」与「下游加了」，命中这类导出要回权威源比 diff 再判定 |
 | ProjectStore 去分叉 | 已完成 | 权威版已覆盖 metacrypt 副本，逐字节一致；`httpProjectStore.ts` 未改动 |
 | 瘦壳（CipherCat 侧） | 已完成 | `App.vue` 487 → 376 行，编排移入 `src/components/editor/` 的 `useEditorFileActions` / `useEditorPanels` / `useEditorWorkspaceActions`，壳只留绑定；新增 13 条单测锁住「切换文件前必须先回写」的顺序；真浏览器验过导入 6 块 → 新增空文件 → 切回仍是 6 块 → 删除 → 拒删最后一文件 → 刷新后仍在 |
 | 瘦壳（metacrypt 侧） | 未执行 | 与切引用同批，等其工作树清理 |
