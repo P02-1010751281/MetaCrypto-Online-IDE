@@ -1,0 +1,380 @@
+/* 编辑器侧栏样式：从 EditorSidebar.vue 拆出，保持单文件 ≤500 行。 */
+.editor-sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 248px;
+  flex: 0 0 248px;
+  min-height: 0;
+  background: var(--color-bg-card);
+  border-right: 1px solid var(--color-border);
+}
+
+.sidebar-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 10px 8px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.project-name {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  padding: 4px 6px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.project-name:hover,
+.project-name:focus {
+  border-color: var(--color-border);
+  background: var(--color-bg);
+  outline: none;
+}
+
+.save-state {
+  font-size: 12px;
+  line-height: 1;
+  color: var(--color-text-secondary);
+}
+
+.save-state.unsaved {
+  color: var(--color-warning);
+}
+
+.save-state.error {
+  color: var(--color-danger);
+}
+
+.sidebar-section {
+  padding: 10px 10px 6px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.section-title {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.section-hint {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.file-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.file-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 6px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.file-row:hover {
+  background: var(--color-bg);
+}
+
+.file-row.active {
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+
+.file-label {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+}
+
+.file-name {
+  min-width: 0;
+  font-size: 13px;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.entry-badge {
+  flex: none;
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  color: var(--color-primary);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 45%, transparent);
+}
+
+.file-actions {
+  /* opacity 而非 display:none：display:none 的按钮不可 Tab 聚焦，键盘用户够不到。 */
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.file-row:hover .file-actions,
+.file-row:focus-within .file-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.row-btn {
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.row-btn:hover {
+  background: var(--color-bg-card);
+  color: var(--color-text);
+}
+
+.row-btn.danger:hover {
+  color: var(--color-danger);
+}
+
+.row-btn.confirming {
+  color: var(--color-danger);
+  font-weight: 700;
+}
+
+.rename-input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 13px;
+  padding: 2px 4px;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+
+.ghost-btn,
+.icon-btn {
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.ghost-btn:hover,
+.icon-btn:hover {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.panel-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.panel-toggle.active {
+  border-color: color-mix(in srgb, var(--color-primary) 55%, var(--color-border));
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
+
+/* 开关指示：一个小方块，开启时填充主色——比箭头更不容易被误认为下拉选择器。 */
+.toggle-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  flex: none;
+  position: relative;
+}
+
+.toggle-indicator.on {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+}
+
+.toggle-indicator.on::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 1px;
+  width: 3px;
+  height: 6px;
+  border: solid #fff;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+}
+
+.sidebar-panels {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 窄屏：编辑器改为纵向堆叠。侧栏不竖着占 220px，而是收成一行紧凑横条：
+   项目名 · 横向文件列表 · 面板开关，把高度让给画布（模板面板此宽度下走浮层）。 */
+@media (max-width: 1200px) {
+  /* 窄屏横条只有 47px 高，常驻提示会把文件挤出行外；删最后一个文件时仍有 toast。 */
+  .section-hint {
+    display: none;
+  }
+
+  .editor-sidebar {
+    width: 100%;
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+    overflow-x: auto;
+  }
+
+  .sidebar-head {
+    flex: 0 0 auto;
+    width: 190px;
+    padding: 0;
+    border-bottom: none;
+  }
+
+  .sidebar-section {
+    padding: 0;
+    border-bottom: none;
+  }
+
+  .section-title {
+    display: none;
+  }
+
+  .files-section {
+    display: flex;
+    align-items: center;
+    flex: 0 1 auto;
+    min-width: 0;
+    gap: 6px;
+  }
+
+  .file-list {
+    flex-direction: row;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 2px;
+  }
+
+  .file-row {
+    flex: 0 0 auto;
+    max-width: 240px;
+  }
+
+  .panels-section {
+    flex: 0 0 auto;
+  }
+
+  .panel-toggle {
+    width: auto;
+    gap: 10px;
+    padding: 5px 10px;
+  }
+
+  /* 浮层面板不参与横条布局：给个零尺寸盒子，fixed 定位的浮层照常覆盖整屏。 */
+  .sidebar-panels {
+    flex: 0 0 0;
+    width: 0;
+    height: 0;
+    overflow: visible;
+  }
+}
+
+/* 480px 级窄屏：单行横条放不下「项目名 + 文件列表 + 面板开关」三组内容，
+   改为两行——文件列表独占一行可横向滚动，开关组靠右，不再把文件挤到视口外。 */
+@media (max-width: 560px) {
+  .editor-sidebar {
+    flex-wrap: wrap;
+    overflow-x: hidden;
+    row-gap: 2px;
+    padding: 4px 6px;
+  }
+
+  /* 两行布局：第一行「项目名 + 面板开关」，第二行文件列表独占整行。
+     DOM 顺序是 head → files → panels，用 order 把开关提到文件名右侧。 */
+  .sidebar-head {
+    order: 0;
+    width: auto;
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .panels-section {
+    order: 1;
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+
+  .files-section {
+    order: 2;
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .file-list {
+    width: 100%;
+  }
+
+  .file-row {
+    max-width: 150px;
+  }
+
+  .entry-badge {
+    padding: 0 3px;
+    font-size: 9px;
+  }
+
+  .panel-toggle {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+}

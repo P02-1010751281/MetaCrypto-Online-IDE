@@ -92,12 +92,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import {
-  getAllProjects,
-  saveProject,
-  deleteProject,
-  type ProjectRecord,
-} from '@/composables/useProjectDB';
+import { projectStore } from '@/services/projects';
+import type { ProjectRecord } from '@/services/projects';
 import {
   ui,
   useBlocklyLocale,
@@ -116,7 +112,7 @@ function toggleLocale() {
 
 async function loadProjects() {
   try {
-    const all = await getAllProjects();
+    const all = await projectStore.list();
     projects.value = all.sort(
       (a, b) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
@@ -136,7 +132,7 @@ async function createProject() {
     createdAt: now,
     updatedAt: now,
   };
-  const id = await saveProject(newProject);
+  const id = await projectStore.save(newProject);
   router.push(`/editor/${id}`);
 }
 
@@ -148,7 +144,7 @@ async function confirmDelete(id: number, name: string) {
   const confirmed = window.confirm(`${ui('deleteConfirm')}\n\n"${name}"`);
   if (!confirmed) return;
   try {
-    await deleteProject(id);
+    await projectStore.remove(id);
     projects.value = projects.value.filter((p) => p.id !== id);
   } catch (err) {
     console.error('Failed to delete project:', err);

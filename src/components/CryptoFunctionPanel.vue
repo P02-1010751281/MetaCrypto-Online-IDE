@@ -1,8 +1,8 @@
 <template>
   <Transition name="panel">
-    <div v-if="visible" class="cfp-overlay" @click.self="$emit('close')">
-      <div class="cfp-panel">
-        <div class="cfp-header">
+    <div v-if="visible" :class="docked ? 'cfp-dock' : 'cfp-overlay'" @click.self="onBackdrop">
+      <div class="cfp-panel" :class="{ 'cfp-panel-docked': docked }">
+        <div v-if="!docked" class="cfp-header">
           <h3>{{ msg.CRYPTO_FUNCTIONS_PANEL_TITLE || 'Crypto Functions' }}</h3>
           <button class="cfp-close" @click="$emit('close')">✕</button>
         </div>
@@ -18,13 +18,15 @@
             <div v-for="tpl in cat.templates" :key="tpl.type" class="cfp-item">
               <span class="cfp-name" :title="tpl.type">{{ tpl.label }}</span>
               <span class="cfp-param">{{ tpl.param }}</span>
-              <button
-                class="cfp-item-btn"
-                :class="isInToolbox(tpl.type) ? 'cfp-item-in-toolbox' : ''"
-                @click="toggleTpl(tpl.type)"
-                :title="isInToolbox(tpl.type) ? (msg.CRYPTO_FUNCTIONS_REMOVE_TIP || 'Remove from toolbox') : (msg.CRYPTO_FUNCTIONS_ADD_TIP || 'Add to toolbox')"
-              >{{ isInToolbox(tpl.type) ? '✕' : '＋📦' }}</button>
-              <button class="cfp-item-btn cfp-item-export" @click="exportTemplate(tpl.type)" :title="msg.CRYPTO_FUNCTIONS_EXPORT_TIP || 'Export'">📤</button>
+              <span class="cfp-item-actions">
+                <button
+                  class="cfp-item-btn"
+                  :class="isInToolbox(tpl.type) ? 'cfp-item-in-toolbox' : ''"
+                  @click="toggleTpl(tpl.type)"
+                  :title="isInToolbox(tpl.type) ? (msg.CRYPTO_FUNCTIONS_REMOVE_TIP || 'Remove from toolbox') : (msg.CRYPTO_FUNCTIONS_ADD_TIP || 'Add to toolbox')"
+                >{{ isInToolbox(tpl.type) ? '✕' : '＋📦' }}</button>
+                <button class="cfp-item-btn cfp-item-export" @click="exportTemplate(tpl.type)" :title="msg.CRYPTO_FUNCTIONS_EXPORT_TIP || 'Export'">📤</button>
+              </span>
             </div>
           </div>
           <!-- Workspace Functions -->
@@ -33,7 +35,9 @@
             <div v-for="fn in wsFuncs" :key="fn.id" class="cfp-item cfp-item-ws">
               <span class="cfp-name" :title="fn.type">{{ fn.name }}</span>
               <span class="cfp-param">{{ fn.type }}</span>
-              <button class="cfp-item-btn cfp-item-export" @click="exportWsBlock(fn.id)" :title="msg.CRYPTO_FUNCTIONS_EXPORT_TIP || 'Export'">📤</button>
+              <span class="cfp-item-actions">
+                <button class="cfp-item-btn cfp-item-export" @click="exportWsBlock(fn.id)" :title="msg.CRYPTO_FUNCTIONS_EXPORT_TIP || 'Export'">📤</button>
+              </span>
             </div>
           </div>
         </div>
@@ -50,7 +54,19 @@ import { TEMPLATE_REGISTRY } from '@/blocks/procedure/blocks';
 import { createToolboxConfig } from '@/utils/toolbox-config';
 
 const msg = Blockly.Msg as Record<string, string>;
-const props = defineProps<{ visible: boolean; workspace: Blockly.WorkspaceSvg | null }>();
+const props = defineProps<{
+  visible: boolean;
+  workspace: Blockly.WorkspaceSvg | null;
+  /** docked：停靠进左栏（不遮画布）；缺省仍是全屏遮罩弹窗。 */
+  docked?: boolean;
+}>();
+
+const emit = defineEmits<{ (e: 'close'): void }>();
+
+/** 遮罩点击关闭；停靠态没有遮罩，点击空白不做事。 */
+function onBackdrop(): void {
+  if (!props.docked) emit('close');
+}
 
 interface Template { type: string; label: string; param: string }
 interface SubCategory { key: string; label: string; templates: Template[] }
@@ -96,10 +112,14 @@ function buildCategories(): SubCategory[] {
   for (const [type, info] of Object.entries(TEMPLATE_REGISTRY)) {
     const group = categories.find((c) => c.key === info.category);
     if (!group) continue;
+    // 多参数模板（如 ML-KEM-Encaps：ek + m）显示完整参数表，单参数沿用 paramName/paramType
+    const paramsText = info.params && info.params.length > 1
+      ? info.params.length + ' params: ' + info.params.map((x) => x.name + ':' + x.type).join(', ')
+      : '1 param: ' + info.paramName + ':' + info.paramType;
     group.templates.push({
       type,
       label: L(type),
-      param: '1 param: ' + info.paramName + ':' + info.paramType,
+      param: paramsText,
     });
   }
   // base 类目额外项（非注册表模板，固定在前）
@@ -300,6 +320,9 @@ function download(content: string, filename: string) {
 <style scoped>
 .cfp-overlay { position: fixed; inset: 0; z-index: 1000; pointer-events: auto; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
 .cfp-panel { pointer-events: auto; width: min(400px, 90vw); max-height: min(85vh, 700px); background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.35); display: flex; flex-direction: column; overflow: hidden; }
+/* 停靠态：占满左栏剩余空间，不带遮罩、不带浮层装饰。 */
+.cfp-dock { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.cfp-panel-docked { width: 100%; max-height: none; height: 100%; border: none; border-radius: 0; box-shadow: none; }
 .cfp-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--color-border); }
 .cfp-header h3 { margin: 0; font-size: 14px; font-weight: 600; color: var(--color-text); }
 .cfp-close { background: none; border: none; color: var(--color-text-secondary); font-size: 16px; cursor: pointer; padding: 2px 6px; border-radius: 4px; }
@@ -312,10 +335,13 @@ function download(content: string, filename: string) {
 .cfp-list { flex: 1; overflow-y: auto; padding: 6px 0; }
 .cfp-category { margin-bottom: 2px; }
 .cfp-cat-header { padding: 6px 14px; font-size: 11px; font-weight: 700; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
-.cfp-item { display: flex; align-items: center; padding: 4px 14px; gap: 6px; }
+.cfp-item { display: flex; flex-wrap: wrap; align-items: center; padding: 5px 12px; gap: 2px 6px; }
 .cfp-item:hover { background: var(--color-bg-hover); }
-.cfp-name { flex: 0 0 auto; font-size: 12px; color: var(--color-text); font-family: ui-monospace, monospace; white-space: nowrap; }
-.cfp-param { flex: 1; font-size: 10px; color: var(--color-text-secondary); font-family: ui-monospace, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
+/* 名字与动作在首行；参数完整显示在第二行——248px 停靠时参数是区分同族模板的唯一信息，不能被省略号截断。 */
+.cfp-name { flex: 1 1 60%; min-width: 0; font-size: 12px; color: var(--color-text); font-family: ui-monospace, monospace; white-space: normal; overflow-wrap: anywhere; }
+.cfp-param { flex: 1 1 100%; order: 3; font-size: 10px; color: var(--color-text-secondary); font-family: ui-monospace, monospace; white-space: normal; overflow-wrap: anywhere; text-align: left; }
+/* 动作列固定宽度右对齐：名字长短不再推动按钮，三枚图标在列表里成一列。 */
+.cfp-item-actions { order: 2; flex: none; display: flex; gap: 2px; margin-left: auto; }
 .cfp-item-btn { background: none; border: 1px solid transparent; border-radius: 4px; font-size: 12px; cursor: pointer; padding: 2px 6px; color: var(--color-text-secondary); flex-shrink: 0; }
 .cfp-item-btn:hover { border-color: var(--color-border); background: var(--color-bg-hover); color: var(--color-text); }
 .cfp-item-in-toolbox { color: var(--color-success); border-color: var(--color-success); }

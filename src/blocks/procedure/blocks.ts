@@ -16,6 +16,7 @@ import {
 import { TYPE_BYTES, TYPE_NUMBER } from '@/constants/block-types';
 import {
   findProjectSymbol,
+  getActiveProjectFileId,
   getProjectSymbols,
   projectSymbolLabel,
 } from '@/utils/project-context';
@@ -538,7 +539,7 @@ function syncCallParams(block: AnyBlock, funcName: string) {
   block.paramTypes_ = types;
   block.argumentVarModels_ = [];
   args.forEach(function (name) {
-    const v = block.workspace.getVariableMap().getVariable(name, '') || block.workspace.createVariable(name, '');
+    const v = block.workspace.getVariableMap().getVariable(name, '') || block.workspace.getVariableMap().createVariable(name, '');
     block.argumentVarModels_.push(v);
   });
   block.updateShape_!();
@@ -664,7 +665,12 @@ function makeCallBlock(hasReturn: boolean): AnyBlock {
         const wsTemplateNames = ws.getAllBlocks(false)
           .filter((b: Blockly.Block) => b.getField('FUNC_NAME') !== null)
           .map((b: Blockly.Block) => (b.getFieldValue('FUNC_NAME') as string) || b.type);
-        const stillValid = defNames.includes(name) || wsTemplateNames.includes(name) || toolboxTemplates.value.includes(name);
+        // 跨文件函数也是有效定义：项目符号（其他 .block.json 里的 def）被删同名本地函数时不得清空调用
+        const stillValid = defNames.includes(name) || wsTemplateNames.includes(name)
+          || toolboxTemplates.value.includes(name)
+          || getProjectSymbols().some(
+            (symbol) => symbol.name === name && symbol.fileId !== getActiveProjectFileId(),
+          );
         if (!stillValid) {
           const nameField = this.getField('NAME') as unknown as {
             doValueUpdate_?: (v: string) => void; getOptions?: (u: boolean) => Array<[string, string]>;

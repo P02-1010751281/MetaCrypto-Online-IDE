@@ -28,6 +28,17 @@ export function getProjectSymbols(): ProjectFunctionSymbol[] {
   return symbols;
 }
 
+/** 当前正在编辑的文件 id（多文件编辑器设置；单文件/未知时为空串）。 */
+let activeFileId = '';
+
+export function setActiveProjectFileId(fileId: string): void {
+  activeFileId = fileId;
+}
+
+export function getActiveProjectFileId(): string {
+  return activeFileId;
+}
+
 export function findProjectSymbol(name: string): ProjectFunctionSymbol | undefined {
   return symbols.find((symbol) => symbol.name === name);
 }

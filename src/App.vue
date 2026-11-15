@@ -1,193 +1,71 @@
 <template>
   <div ref="editorViewRef" class="editor-view" :inert="navigationPending" @click="closeMenus">
+    <EditorSidebar
+      :project-name="projectName"
+      :save-status="saveStatus"
+      :files="projectFileList"
+      :active-file-id="activeProjectFileId"
+      :entry-file-id="entryProjectFileId"
+      :functions-open="showCryptoPanel"
+      :doc-search-open="showDocSearch"
+      @back="goBack"
+      @update:project-name="projectName = $event"
+      @select-file="onSelectProjectFile"
+      @add-file="onAddProjectFile"
+      @rename-file="onRenameProjectFile"
+      @delete-file="onDeleteProjectFile"
+      @set-entry="onSetEntryFile"
+      @toggle-functions="toggleFunctionsPanel"
+      @toggle-doc-search="toggleDocSearch"
+    >
+      <CryptoFunctionPanel
+        :visible="showCryptoPanel"
+        :workspace="currentWorkspace"
+        :docked="!isNarrowViewport"
+        @close="closeFunctionsPanel"
+      />
+      <!-- 查文档结果要展示完整路径与摘录，侧栏 250px 装不下：固定用浮层。 -->
+      <DocSearchPanel
+        :visible="showDocSearch"
+        @close="closeDocSearch"
+        @open="onOpenDocHit"
+      />
+    </EditorSidebar>
     <div class="view-left" :style="editorStyle">
-      <div class="toolbar">
-        <div class="toolbar-section">
-          <button
-            class="toolbar-btn icon-only"
-            @click="goBack"
-            :title="ui('back')"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
-          <input
-            v-model="projectName"
-            @blur="onNameBlur"
-            class="name-input"
-            :placeholder="ui('projectName')"
-          />
-          <div class="toolbar-divider" />
-          <button
-            class="toolbar-btn"
-            :disabled="saving"
-            @click="onManualSave"
-            :title="ui('save')"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
-              />
-              <polyline points="17 21 17 13 7 13 7 21" />
-              <polyline points="7 3 7 8 15 8" />
-            </svg>
-            <span>{{ ui("save") }}</span>
-          </button>
-          <label class="auto-toggle">
-            <input type="checkbox" v-model="autoSaveEnabled" />
-            <span>{{ ui("autoSave") }}</span>
-          </label>
-          <span
-            v-if="saveStatus === 'saved' && lastSaveTime"
-            class="save-status ok"
-            >{{ ui("saved") }} {{ lastSaveTime }}</span
-          >
-          <span v-if="saveStatus === 'unsaved'" class="save-status warn">{{
-            ui("unsaved")
-          }}</span>
-          <span v-if="saveStatus === 'error'" class="save-status error">{{
-            ui("saveError") || ""
-          }}</span>
-        </div>
-
-        <div class="toolbar-section">
-          <div class="toolbar-divider" />
-
-          <button class="toolbar-btn" @click="showCryptoPanel = !showCryptoPanel">
-            <span>🧩</span>
-          </button>
-          <div class="toolbar-divider" />
-
-          <button class="toolbar-btn lang-btn" @click="toggleBlocklyLocale">
-            {{ blocklyLocale.getCurrentLocale() === 'zh-hans' ? 'EN' : '中文' }}
-          </button>
-
-          <div class="toolbar-divider" />
-
-          <div class="menu-group">
-            <button
-              class="toolbar-btn"
-              :class="{ active: openMenu === 'workspace' }"
-              @click.stop="toggleMenu('workspace')"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <circle cx="12" cy="12" r="1" />
-                <circle cx="12" cy="5" r="1" />
-                <circle cx="12" cy="19" r="1" />
-              </svg>
-              <span>{{ ui("more") }}</span>
-            </button>
-            <Transition name="dropdown">
-              <div v-if="openMenu === 'workspace'" class="dropdown-menu">
-                <button class="dropdown-item" @click="handleExport">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
-                  <span>{{ ui("exportWorkspace") }}</span>
-                  <select
-                    v-model="exportFormat"
-                    class="inline-select"
-                    @click.stop
-                  >
-                    <option value="json">JSON</option>
-                    <option value="xml">XML</option>
-                  </select>
-                </button>
-                <button class="dropdown-item" @click.stop="triggerImport">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="17 8 12 3 7 8" />
-                    <line x1="12" y1="3" x2="12" y2="15" />
-                  </svg>
-                  <span>{{ ui("importWorkspace") }}</span>
-                  <select
-                    v-model="importFormat"
-                    class="inline-select"
-                    @click.stop
-                  >
-                    <option value="auto">{{ ui("autoDetect") }}</option>
-                    <option value="json">JSON</option>
-                    <option value="xml">XML</option>
-                  </select>
-                </button>
-                <input
-                  ref="importInputRef"
-                  type="file"
-                  :accept="
-                    importFormat === 'json'
-                      ? '.json'
-                      : importFormat === 'xml'
-                        ? '.xml'
-                        : '.xml,.json'
-                  "
-                  @change="onImportFile($event)"
-                  class="sr-only-input"
-                />
-                <div class="dropdown-divider" />
-                <button class="dropdown-item" @click="handleNewWorkspace">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
-                  <span>{{ ui("newWorkspace") }}</span>
-                </button>
-                <div class="dropdown-divider" />
-                <button class="dropdown-item danger" @click="handleClear">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <polyline points="3 6 5 6 21 6" />
-                    <path
-                      d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                    />
-                  </svg>
-                  <span>{{ ui("clearWorkspace") }}</span>
-                </button>
-              </div>
-            </Transition>
-          </div>
-        </div>
-      </div>
+      <EditorBreadcrumb
+        :project-name="projectName"
+        :file-name="activeProjectFile?.name"
+        :is-entry="activeProjectFileId === entryProjectFileId"
+      />
+      <EditorToolbar
+        :saving="saving"
+        :save-status="saveStatus"
+        :last-save-time="lastSaveTime"
+        :auto-save-enabled="autoSaveEnabled"
+        :locale-label="localeLabel"
+        :open-menu="openMenu"
+        :export-format="exportFormat"
+        :import-format="importFormat"
+        @save="onManualSave"
+        @update:auto-save-enabled="autoSaveEnabled = $event"
+        @toggle-locale="toggleBlocklyLocale"
+        @toggle-menu="toggleMenu"
+        @update:export-format="exportFormat = $event"
+        @update:import-format="importFormat = $event"
+        @export="handleExport"
+        @import-file="onImportFile"
+        @new-workspace="handleNewWorkspace"
+        @clear="handleClear"
+      />
       <BlocklyEditor
         ref="blocklyEditor"
         :read-only="navigationPending"
         @change="onWorkspaceChanged"
+      />
+      <EditorStatusBar
+        :block-count="blockCount"
+        :file-count="projectFileList.length"
+        :language-label="languageLabel"
       />
     </div>
 
@@ -195,70 +73,39 @@
       <div class="split-line" />
     </div>
 
-    <div class="view-right" :style="codeStyle">
-      <div class="code-toolbar">
-        <div class="code-toolbar-left">
-          <select v-model="selectedLanguage" class="toolbar-select lang-select">
-            <option
-              v-for="(label, value) in LANGUAGE_LABELS"
-              :key="value"
-              :value="value"
-            >
-              {{ label }}
-            </option>
-          </select>
-          <span class="toolbar-sep">&middot;</span>
-        </div>
-        <button class="toolbar-btn primary" @click="generateCode">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <polyline points="16 18 22 12 16 6" />
-            <polyline points="8 6 2 12 8 18" />
-          </svg>
-          <span>{{ ui("generateCode") }}</span>
-        </button>
-        <button class="toolbar-btn copy-btn" @click="copyCode">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-          </svg>
-          <span>{{ ui("copyCode") }}</span>
-        </button>
-      </div>
-      <CodePreviewer
-        ref="codePreviewer"
-        :workspace="currentWorkspace"
-        :language="selectedLanguage"
-      />
-    </div>
-
-    <CryptoFunctionPanel
-      :visible="showCryptoPanel"
+    <CodePanel
+      ref="codePanel"
       :workspace="currentWorkspace"
-      @close="showCryptoPanel = false"
+      :language="selectedLanguage"
+      :files="projectFileList"
+      :entry-file-id="entryProjectFileId"
+      :panel-style="codeStyle"
+      :active-file-name="activeProjectFile?.name"
+      :entry-badge="activeProjectFileId === entryProjectFileId"
+      @update:language="selectedLanguage = $event"
+      @generate="generateCode"
     />
 
-    <Transition name="toast">
-      <div v-if="toastVisible" class="toast">{{ toastMessage }}</div>
-    </Transition>
+    <EditorToast :visible="toastVisible" :message="toastMessage" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, onUnmounted } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import BlocklyEditor from '@/components/BlocklyEditor.vue';
-import CodePreviewer from '@/components/CodePreviewer.vue';
 import CryptoFunctionPanel from '@/components/CryptoFunctionPanel.vue';
+import DocSearchPanel from '@/components/ai-helper/DocSearchPanel.vue';
+import EditorSidebar from '@/components/editor/EditorSidebar.vue';
+import EditorToast from '@/components/editor/EditorToast.vue';
+import EditorBreadcrumb from '@/components/editor/EditorBreadcrumb.vue';
+import EditorStatusBar from '@/components/editor/EditorStatusBar.vue';
+import EditorToolbar from '@/components/editor/EditorToolbar.vue';
+import CodePanel from '@/components/editor/CodePanel.vue';
+import { useEditorSplit } from '@/components/editor/useEditorSplit';
+import { useEditorFileActions } from '@/components/editor/useEditorFileActions';
+import { useEditorPanels } from '@/components/editor/useEditorPanels';
+import { useEditorWorkspaceActions } from '@/components/editor/useEditorWorkspaceActions';
 // 编辑器专属注册只在 /editor 路由加载，避免污染项目列表首屏。
 import '@/blocks';
 import '@/generators/javascript';
@@ -268,14 +115,36 @@ import {
   LANGUAGE_LABELS,
   type CodeLanguage,
 } from '@/constants/code-languages';
-import {
-  useBlocklyLocale,
-  ui,
-} from '@/composables/locale';
+import { useBlocklyLocale, ui } from '@/composables/locale';
 import { useEditorProject } from '@/composables/useEditorProject';
-import { errorHandler } from '@/utils/errorHandler';
+import { useEditorToast } from '@/composables/useEditorToast';
+
+/**
+ * /editor 的壳：只做绑定与装配，编排在 src/components/editor/useEditor* 里。
+ * - useEditorFileActions：多文件切换 / 新建 / 删除 / 入口（含回写顺序）
+ * - useEditorPanels：函数模板与文档检索面板、窄屏判定
+ * - useEditorWorkspaceActions：菜单、导入导出、清空、生成
+ * 壳里保留的是三者共享的引用（编辑器与代码面板实例）和路由级动作。
+ */
 
 const blocklyLocale = useBlocklyLocale();
+blocklyLocale.initLocale();
+
+const blocklyEditor = ref<InstanceType<typeof BlocklyEditor> | null>(null);
+const codePanel = ref<InstanceType<typeof CodePanel> | null>(null);
+const selectedLanguage = ref<CodeLanguage>(CODE_LANGUAGES.PYTHON);
+const exportFormat = ref<'json' | 'xml'>('json');
+const importFormat = ref<'auto' | 'json' | 'xml'>('auto');
+const blockCount = ref(0);
+const router = useRouter();
+
+// Toast 先建立：面板与文件操作都靠它回执（保存提示、入口提示、删除拒绝）。
+const {
+  visible: toastVisible,
+  message: toastMessage,
+  show: showToast,
+  showLater,
+} = useEditorToast();
 
 const toggleBlocklyLocale = (): void => {
   blocklyLocale.setLocale(
@@ -283,29 +152,53 @@ const toggleBlocklyLocale = (): void => {
   );
   blocklyEditor.value?.updateToolbox();
   blocklyEditor.value?.refreshBlocks();
-  // 显示切换提示（延迟到中文覆盖生效后；外层定时器纳入 toastTimer 统一清理）
-  toastTimer = window.setTimeout(() => {
-    toastMessage.value = ui('localeChanged');
-    toastVisible.value = true;
-    if (toastTimer) clearTimeout(toastTimer);
-    toastTimer = window.setTimeout(() => {
-      toastVisible.value = false;
-    }, 2000);
-  }, 50);
+  // 延迟到语言覆盖生效后再提示，避免文案比界面先切。
+  showLater(ui('localeChanged'), 50, 2000);
 };
 
-blocklyLocale.initLocale();
+const {
+  showCryptoPanel,
+  showDocSearch,
+  isNarrowViewport,
+  toggleFunctionsPanel,
+  closeFunctionsPanel,
+  toggleDocSearch,
+  closeDocSearch,
+  onOpenDocHit,
+} = useEditorPanels({ notify: showToast });
 
-const showCryptoPanel = ref(false);
+// 文件操作要置「有未保存改动」，而脏标记由保存层（useEditorProject）提供；
+// 保存层反过来又要用文件操作落库。用一次性回填打破这个循环——markFilesChanged
+// 只在用户事件里调用，setup 结束时已回填。
+const saveHooks: { markFilesChanged: (() => void) | null } = {
+  markFilesChanged: null,
+};
 
-const router = useRouter();
-const blocklyEditor = ref<InstanceType<typeof BlocklyEditor> | null>(null);
-const codePreviewer = ref<InstanceType<typeof CodePreviewer> | null>(null);
-const selectedLanguage = ref<CodeLanguage>(CODE_LANGUAGES.PYTHON);
-const exportFormat = ref<'json' | 'xml'>('json');
-const importFormat = ref<'auto' | 'json' | 'xml'>('auto');
+const {
+  files: projectFileList,
+  activeFileId: activeProjectFileId,
+  entryFileId: entryProjectFileId,
+  activeFile: activeProjectFile,
+  syncActiveFile,
+  onSelectProjectFile,
+  onAddProjectFile,
+  onRenameProjectFile,
+  onDeleteProjectFile,
+  onSetEntryFile,
+  applyProject: applyProjectFiles,
+  getFiles,
+  getEntryFileId,
+  getEntryWorkspace,
+} = useEditorFileActions({
+  editor: blocklyEditor,
+  markFilesChanged: () => saveHooks.markFilesChanged?.(),
+  notify: showToast,
+  afterWorkspaceSwitch: () => refreshBlockCount(),
+});
 
-// ---- 项目管理 ----
+/** 工作区 change 事件的处理函数，由 BlocklyEditor 在 change 时先请一次。 */
+let cleanupWorkspaceHandler: (() => void) | null = null;
+
 const {
   projectName,
   autoSaveEnabled,
@@ -315,16 +208,13 @@ const {
   navigationPending,
   doSave,
   handleNewWorkspace,
+  markFilesChanged,
 } = useEditorProject({
-  getWorkspaceXml: () => {
-    return blocklyEditor.value?.exportWorkspace('xml') || '';
-  },
+  getWorkspaceXml: () => blocklyEditor.value?.exportWorkspace('xml') || '',
   language: selectedLanguage,
-  loadWorkspaceXml: (xml: string) => {
-    return blocklyEditor.value?.loadWorkspace(xml, 'xml') || false;
-  },
+  loadWorkspaceXml: (xml: string) =>
+    blocklyEditor.value?.loadWorkspace(xml, 'xml') || false,
   onWorkspaceChange: (handler: () => void) => {
-    // Return cleanup fn - the BlocklyEditor emits 'change' so we listen via template
     cleanupWorkspaceHandler = handler;
     return () => {
       cleanupWorkspaceHandler = null;
@@ -332,274 +222,70 @@ const {
   },
   clearWorkspace: () => {
     blocklyEditor.value?.clearWorkspace();
-    codePreviewer.value?.clearCode();
+    codePanel.value?.clearCode();
   },
+  // 多文件钩子：载入时初始化文件清单并返回入口文件负载
+  applyProject: (record) => applyProjectFiles(record),
+  getFiles: () => getFiles(),
+  getEntryFileId: () => getEntryFileId(),
+  getEntryWorkspace: () => getEntryWorkspace(),
 });
-let cleanupWorkspaceHandler: (() => void) | null = null;
+saveHooks.markFilesChanged = markFilesChanged;
 
-function onWorkspaceChanged() {
+const {
+  openMenu,
+  toggleMenu,
+  closeMenus,
+  onImportFile,
+  handleExport,
+  handleClear,
+  generateCode,
+} = useEditorWorkspaceActions({
+  editor: blocklyEditor,
+  codePanel,
+  syncActiveFile,
+  exportFormat,
+  notify: showToast,
+  afterWorkspaceReplaced: onWorkspaceChanged,
+});
+
+const currentWorkspace = computed(() => blocklyEditor.value?.workspaceRef || null);
+
+const localeLabel = computed(() =>
+  blocklyLocale.getCurrentLocale() === 'zh-hans' ? 'EN' : '中文',
+);
+
+/** 状态栏显示的语言名（与代码栏下拉一致的标签）。 */
+const languageLabel = computed(
+  () => LANGUAGE_LABELS[selectedLanguage.value] ?? selectedLanguage.value,
+);
+
+/** 只刷新底部积木数（切换文件 / 新建文件这类「画布被换掉」的场景）。 */
+function refreshBlockCount(): void {
+  blockCount.value = currentWorkspace.value?.getAllBlocks(false).length ?? 0;
+}
+
+/** 用户真的改了画布：刷新积木数并交给保存层置脏。 */
+function onWorkspaceChanged(): void {
+  refreshBlockCount();
   if (cleanupWorkspaceHandler) cleanupWorkspaceHandler();
 }
 
-function onNameBlur() {
-  // Auto-save name change on blur
-  if (autoSaveEnabled.value) doSave();
-}
-
-async function onManualSave() {
+async function onManualSave(): Promise<void> {
   if (!(await doSave())) return;
-  toastMessage.value = ui('saved');
-  toastVisible.value = true;
-  if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => {
-    toastVisible.value = false;
-  }, 1500);
+  showToast(ui('saved'));
 }
 
-function goBack() {
-  router.push('/');
-}
-
-// ---- Toast 提示 ----
-const toastVisible = ref(false);
-const toastMessage = ref('');
-let toastTimer: number | undefined;
-
-const removeWorkspaceErrorListener = errorHandler.addListener((error) => {
-  if (error.type !== 'WORKSPACE_ERROR') return;
-  toastMessage.value = error.message;
-  toastVisible.value = true;
-  if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => {
-    toastVisible.value = false;
-  }, 6000);
-});
-
-const currentWorkspace = computed(() => {
-  return blocklyEditor.value?.workspaceRef || null;
-});
-
-// ---- 下拉菜单 ----
-const openMenu = ref<string>('');
-const importInputRef = ref<HTMLInputElement | null>(null);
-
-function toggleMenu(menu: string) {
-  openMenu.value = openMenu.value === menu ? '' : menu;
-}
-
-function closeMenus() {
-  openMenu.value = '';
-}
-
-// ---- 操作 ----
-const generateCode = (): void => {
-  codePreviewer.value?.generateCode();
-};
-
-const copyCode = async (): Promise<void> => {
-  const code = codePreviewer.value?.code as string | undefined;
-  if (!code) return;
-  try {
-    await navigator.clipboard.writeText(code);
-  } catch (err) {
-    console.error(ui('copyFailed'), err);
-  }
-};
-
-const triggerImport = (): void => {
-  importInputRef.value?.click();
-};
-
-const onImportFile = (event: Event): void => {
-  const target = event.target as HTMLInputElement;
-  const file = target.files?.[0];
-  if (file && blocklyEditor.value) {
-    blocklyEditor.value
-      .handleFileUpload(file)
-      .then((success: boolean) => {
-        if (!success) console.error('文件导入失败:', file.name);
-      })
-      .catch((error: Error) => {
-        console.error('文件导入错误:', error);
-      });
-  }
-  target.value = '';
-};
-
-async function handleExport() {
-  openMenu.value = '';
-  if (blocklyEditor.value) {
-    const filename =
-      exportFormat.value === 'xml'
-        ? 'blockly_workspace.xml'
-        : 'blockly_workspace.json';
-    try {
-      const savedTo = await blocklyEditor.value.downloadWorkspace(filename);
-      if (!savedTo) return;
-      toastMessage.value = `${ui('exported') || 'Exported'}: ${savedTo}`;
-      toastVisible.value = true;
-      if (toastTimer) clearTimeout(toastTimer);
-      toastTimer = window.setTimeout(() => {
-        toastVisible.value = false;
-      }, 4000);
-    } catch (error) {
-      const detail = error instanceof Error ? error.message : String(error);
-      toastMessage.value = `${ui('exportError') || 'Export failed'}: ${detail}`;
-      toastVisible.value = true;
-      if (toastTimer) clearTimeout(toastTimer);
-      toastTimer = window.setTimeout(() => {
-        toastVisible.value = false;
-      }, 6000);
-    }
-  }
-}
-
-function handleClear() {
-  openMenu.value = '';
-  if (blocklyEditor.value) {
-    blocklyEditor.value.clearWorkspace();
-    codePreviewer.value?.clearCode();
-  }
+function goBack(): void {
+  // `/` 现在会直接回到编辑器（开屏不再停留在列表），返回键必须显式去项目列表。
+  router.push('/projects');
 }
 
 // ---- 拖拽分割条 ----
-const editorViewRef = ref<HTMLElement | null>(null);
-const rightWidth = ref<number | undefined>(undefined);
-const topHeight = ref<number | undefined>(undefined);
-const MIN_RIGHT = 320;
-const MIN_TOP = 160;
-const MAX_RIGHT_RATIO = 0.55;
-
-let splitDragging = false;
-let rafId = 0;
-let dragRect: { top: number; right: number; width: number; height: number } | null = null;
-let dragPos: { x: number; y: number } | null = null;
-const narrowMedia = window.matchMedia('(max-width: 1200px)');
-
-function isNarrowLayout() {
-  return narrowMedia.matches;
-}
-
-const codeStyle = computed(() => {
-  // NOTE: 必须在所有分支之前读取 topHeight/rightWidth，确保 Vue 正确追踪依赖
-  // 否则从宽屏切到窄屏时，computed 依赖链断裂，永远返回 {}
-  const _th = topHeight.value;
-  const _rw = rightWidth.value;
-  if (isNarrowLayout()) {
-    if (_th !== undefined) {
-      return {
-        height: `calc(100% - ${_th}px - 6px)`,
-        flex: 'none',
-        width: '100%',
-      };
-    }
-    return { flex: '1', width: '100%' };
-  }
-  if (_rw !== undefined) {
-    return { width: `${_rw}px`, flex: 'none' };
-  }
-  return {};
-});
-
-const editorStyle = computed(() => {
-  // NOTE: 必须在所有分支之前读取 topHeight/rightWidth，确保 Vue 正确追踪依赖
-  const _th = topHeight.value;
-  const _rw = rightWidth.value;
-  const narrow = isNarrowLayout();
-  if (narrow) {
-    if (_th !== undefined) {
-      return { height: `${_th}px`, flex: 'none', width: '100%' };
-    }
-    return { flex: '1', width: '100%' };
-  }
-  if (_rw !== undefined) {
-    return { width: `calc(100% - ${_rw}px - 6px)`, flex: 'none' };
-  }
-  return {};
-});
-
-function onSplitDragStart(e: MouseEvent) {
-  e.preventDefault();
-  splitDragging = true;
-  // 拖拽起点缓存容器 rect（期间不变），避免每次 mousemove 强制回流
-  dragRect = editorViewRef.value?.getBoundingClientRect() ?? null;
-  window.addEventListener('mousemove', onSplitDragMove, { capture: true });
-  window.addEventListener('mouseup', onSplitDragEnd, { capture: true });
-  document.body.style.cursor = isNarrowLayout() ? 'row-resize' : 'col-resize';
-  document.body.style.userSelect = 'none';
-}
-
-function applySplitDrag() {
-  const pos = dragPos;
-  const rect = dragRect;
-  if (!pos || !rect) return;
-  if (isNarrowLayout()) {
-    const fromTop = pos.y - rect.top;
-    const maxTop = rect.height * 0.7;
-    topHeight.value = Math.max(MIN_TOP, Math.min(fromTop, maxTop));
-  } else {
-    const fromRight = rect.right - pos.x;
-    const maxRight = rect.width * MAX_RIGHT_RATIO;
-    rightWidth.value = Math.max(MIN_RIGHT, Math.min(fromRight, maxRight));
-  }
-  blocklyEditor.value?.resizeWorkspace();
-}
-
-function onSplitDragMove(e: MouseEvent) {
-  if (!splitDragging) return;
-  e.preventDefault();
-  // 记录最新位置，整个 handler 体 rAF 节流（每帧最多应用一次）
-  dragPos = { x: e.clientX, y: e.clientY };
-  if (!rafId) {
-    rafId = requestAnimationFrame(() => {
-      rafId = 0;
-      applySplitDrag();
-    });
-  }
-}
-
-function onSplitDragEnd() {
-  splitDragging = false;
-  window.removeEventListener('mousemove', onSplitDragMove, { capture: true });
-  window.removeEventListener('mouseup', onSplitDragEnd, { capture: true });
-  document.body.style.cursor = '';
-  document.body.style.userSelect = '';
-  if (rafId) {
-    cancelAnimationFrame(rafId);
-    rafId = 0;
-  }
-  applySplitDrag();
-  dragRect = null;
-  dragPos = null;
-}
-
-onUnmounted(() => {
-  removeWorkspaceErrorListener();
-  if (toastTimer) clearTimeout(toastTimer);
-  if (splitDragging) {
-    window.removeEventListener('mousemove', onSplitDragMove, { capture: true });
-    window.removeEventListener('mouseup', onSplitDragEnd, { capture: true });
-    document.body.style.cursor = '';
-    document.body.style.userSelect = '';
-  }
-  if (rafId) {
-    cancelAnimationFrame(rafId);
-  }
-});
-
-// 响应式布局切换时重置尺寸（nextTick 等 DOM 更新完）
-const onBreakpointChange = () => {
-  if (narrowMedia.matches) {
-    rightWidth.value = undefined;
-  } else {
-    topHeight.value = undefined;
-  }
-  nextTick(() => blocklyEditor.value?.resizeWorkspace());
-};
-narrowMedia.addEventListener('change', onBreakpointChange);
-onUnmounted(() => {
-  narrowMedia.removeEventListener('change', onBreakpointChange);
-});
+const { editorViewRef, codeStyle, editorStyle, onSplitDragStart } =
+  useEditorSplit({
+    onResize: () => blocklyEditor.value?.resizeWorkspace(),
+  });
 </script>
 
 <style scoped>
@@ -612,279 +298,6 @@ onUnmounted(() => {
   overflow: hidden;
   background: var(--color-bg-main);
   color: var(--color-text);
-}
-
-/* ---- 工具栏 ---- */
-.toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  padding: 8px 12px;
-  background: var(--color-bg-card);
-  border-bottom: 1px solid var(--color-border);
-  flex-shrink: 0;
-  gap: 8px 12px;
-  overflow: visible;
-}
-
-.toolbar-section {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-
-.section-icon {
-  width: 16px;
-  height: 16px;
-  color: var(--color-primary);
-  flex-shrink: 0;
-}
-
-.toolbar-title {
-  font-size: 13px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.toolbar-divider {
-  width: 1px;
-  height: 24px;
-  background: var(--color-border);
-  flex-shrink: 0;
-}
-
-.toolbar-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 32px;
-  padding: 0 10px;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  background: var(--color-bg-card);
-  color: var(--color-text);
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.15s;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.toolbar-btn svg {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-}
-
-.toolbar-btn:hover {
-  background: var(--color-bg-hover);
-  border-color: var(--color-border-hover);
-}
-
-.toolbar-btn.active {
-  background: var(--color-primary-light);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-}
-
-.toolbar-btn.primary {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #fff;
-}
-
-.toolbar-btn.primary:hover {
-  opacity: 0.9;
-}
-
-.toolbar-btn.icon-only {
-  padding: 0 8px;
-  min-width: 32px;
-  justify-content: center;
-}
-
-.name-input {
-  max-width: 180px;
-  min-width: 100px;
-  flex: 1 1 auto;
-  height: 32px;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  padding: 0 10px;
-  background: var(--color-bg-card);
-  color: var(--color-text);
-  font-size: 12px;
-  transition: border-color 0.2s;
-}
-
-.name-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-}
-
-.auto-toggle {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.auto-toggle input {
-  margin: 0;
-}
-
-.save-status {
-  font-size: 12px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.save-status.ok {
-  color: var(--color-success, #67c23a);
-}
-
-.save-status.warn {
-  color: var(--color-warning, #e6a23c);
-}
-
-.save-status.error {
-  color: var(--color-danger, #f56c6c);
-}
-
-.toolbar-select {
-  height: 32px;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  padding: 0 22px 0 8px;
-  font-size: 12px;
-  background: var(--color-bg-card)
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%23909399' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")
-    no-repeat right 6px center;
-  color: var(--color-text);
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  outline: none;
-  transition: border-color 0.15s;
-}
-
-.toolbar-select:focus {
-  border-color: var(--color-primary);
-}
-
-/* ---- 下拉菜单 ---- */
-.menu-group {
-  position: relative;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  min-width: 220px;
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
-  padding: 6px;
-  z-index: 300;
-  margin-top: 2px;
-}
-
-.dropdown-enter-active {
-  transition: all 0.15s ease-out;
-}
-
-.dropdown-leave-active {
-  transition: all 0.1s ease-in;
-}
-
-.dropdown-enter-from,
-.dropdown-leave-to {
-  opacity: 0;
-  transform: translateY(-4px);
-}
-
-.dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 8px 10px;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--color-text);
-  font-size: 13px;
-  text-align: left;
-  cursor: pointer;
-  transition: background 0.12s;
-}
-
-.dropdown-item svg {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-  opacity: 0.6;
-}
-
-.dropdown-item:hover {
-  background: var(--color-bg-hover);
-}
-
-.dropdown-item:hover svg {
-  opacity: 1;
-}
-
-.dropdown-item.danger {
-  color: #f56c6c;
-}
-
-.dropdown-item.danger:hover {
-  background: rgba(245, 108, 108, 0.08);
-}
-
-.inline-select {
-  margin-left: auto;
-  height: 26px;
-  min-width: 60px;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  padding: 0 20px 0 6px;
-  font-size: 11px;
-  background: var(--color-bg-card)
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%23909399' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")
-    no-repeat right 5px center;
-  color: var(--color-text);
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  outline: none;
-  transition: border-color 0.12s;
-  flex-shrink: 0;
-}
-
-.sr-only-input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-.dropdown-divider {
-  height: 1px;
-  background: var(--color-border);
-  margin: 4px 0;
 }
 
 /* ---- 左侧区 ---- */
@@ -919,107 +332,32 @@ onUnmounted(() => {
   background: var(--color-primary-light);
 }
 
+/* 通高分隔线：三栏边界必须在正文里一直可见，不能只靠拖拽时的那一小段抓手。 */
 .split-line {
-  width: 2px;
-  height: 40px;
-  border-radius: 1px;
+  width: 1px;
+  height: 100%;
+  border-radius: 0;
   background: var(--color-border);
-  transition: background 0.15s;
+  transition: background 0.15s, width 0.15s;
 }
 
 .split-handle:hover .split-line {
   background: var(--color-primary);
 }
 
-/* ---- 右侧代码区 ---- */
-.view-right {
-  width: 380px;
-  min-width: 320px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-  border-left: 1px solid var(--color-border);
-  background: var(--color-bg-card);
-}
-
-.code-toolbar {
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  background: var(--color-bg-card);
-  border-bottom: 1px solid var(--color-border);
-  flex-shrink: 0;
-  gap: 8px;
-  overflow: hidden;
-}
-
-.code-toolbar-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-
-.copy-btn {
-  margin-left: auto;
-}
-
-.toolbar-sep {
-  color: var(--color-border-hover);
-  font-size: 14px;
-  flex-shrink: 0;
-}
-
-.lang-select {
-  min-width: 64px;
-}
-
 /* ---- Toast 提示 ---- */
-.toast {
-  position: fixed;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 8px 20px;
-  background: var(--color-primary);
-  color: #fff;
-  border-radius: 6px;
-  font-size: 13px;
-  z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  pointer-events: none;
-}
-
-.toast-enter-active {
-  transition: all 0.25s ease-out;
-}
-
-.toast-leave-active {
-  transition: all 0.2s ease-in;
-}
-
-.toast-enter-from {
-  opacity: 0;
-  transform: translateX(-50%) translateY(-8px);
-}
-
-.toast-leave-to {
-  opacity: 0;
-  transform: translateX(-50%) translateY(-4px);
-}
-
 /* ---- 响应式 ---- */
 @media (max-width: 1200px) {
   .editor-view {
     flex-direction: column;
   }
 
+  /* 窄屏按 2:1 分配高度：积木分类有 17 组，画布太矮会直接丢掉分类。 */
   .view-left {
     width: 100% !important;
-    flex: 1;
+    flex: 2;
     height: auto;
+    min-height: 0;
   }
 
   .split-handle {
@@ -1033,15 +371,6 @@ onUnmounted(() => {
   .split-line {
     width: 40px;
     height: 2px;
-  }
-
-  .view-right {
-    width: 100% !important;
-    flex: 1;
-    min-width: 0;
-    min-height: 0;
-    border-left: none;
-    border-top: 1px solid var(--color-border);
   }
 }
 </style>

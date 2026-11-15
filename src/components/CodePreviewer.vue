@@ -12,6 +12,8 @@ import javascript from 'highlight.js/lib/languages/javascript';
 import python from 'highlight.js/lib/languages/python';
 import { type CodeLanguage } from '@/constants/code-languages';
 import { generateCode as generateCodeFromWorkspace } from '@/composables/generator';
+import { generateProjectBundle } from '@/utils/projectCodegen';
+import type { ProjectFileRecord } from '@/services/projects/ProjectStore';
 import { ui } from '@/composables/locale';
 
 hljs.registerLanguage('javascript', javascript);
@@ -20,6 +22,9 @@ hljs.registerLanguage('python', python);
 const props = defineProps<{
   workspace: Blockly.WorkspaceSvg | null;
   language: CodeLanguage;
+  /** 多文件项目：传入文件清单时按项目级拼装生成；单文件仍走工作区直连生成。 */
+  files?: ProjectFileRecord[];
+  entryFileId?: string;
 }>();
 
 const code = ref<string>('');
@@ -33,6 +38,17 @@ const highlightedCode = computed(() => {
 });
 
 const generateCode = (): void => {
+  const files = props.files ?? [];
+  if (files.length > 1) {
+    const bundle = generateProjectBundle(files, props.entryFileId || '', '');
+    const body = props.language === 'python' ? bundle.python : bundle.javascript;
+    // 跨文件重名、工作区解析失败等以注释形式写在代码最前面：预览区是用户唯一能看到的输出面。
+    const prefix = bundle.errors.length > 0
+      ? bundle.errors.map((item) => `${props.language === 'python' ? '#' : '//'} ${item}`).join('\n') + '\n\n'
+      : '';
+    code.value = prefix + body;
+    return;
+  }
   if (props.workspace) {
     code.value = generateCodeFromWorkspace(props.workspace, props.language);
   }
@@ -50,8 +66,14 @@ watch(() => props.language, () => {
   generateCode();
 });
 
+/** 占位文案（清空后/未搭块）不是代码，运行前必须能区分，否则注释会被当 Python 执行。 */
+const hasRunnableCode = computed(
+  () => Boolean(code.value) && code.value !== ui('workspaceCleared'),
+);
+
 defineExpose({
   code,
+  hasRunnableCode,
   generateCode,
   clearCode,
 });
@@ -76,8 +98,10 @@ defineExpose({
   font-size: 13px;
   line-height: 1.6;
   color: var(--color-text);
-  white-space: pre-wrap;
-  word-break: break-word;
+  /* 代码不折行：380px 栏宽下 pre-wrap + break-word 会把 0x01 拆成 0x0 / 1，
+     把十六进制常量和长标识符切碎；改为横向滚动，保持每个 token 完整。 */
+  white-space: pre;
+  overflow-x: auto;
 }
 
 .code-content code {
