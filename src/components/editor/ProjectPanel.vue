@@ -1,6 +1,11 @@
 <template>
   <!-- 窄屏浮层：点卡片外部关闭；卡片在遮罩上层，点卡片本身不会冒到遮罩。 -->
-  <div v-if="overlay" class="panel-backdrop" @click.self="emit('close')"></div>
+  <div
+    v-if="overlay"
+    class="panel-backdrop"
+    :style="{ top: `${popoverTop - 4}px` }"
+    @click.self="emit('close')"
+  ></div>
   <section
     class="project-panel"
     :class="{ 'project-panel--popover': overlay }"
@@ -269,6 +274,8 @@ onUnmounted(() => {
   /* 窄屏把「项目」做成下拉浮层而不是铺进横条：铺进横条时横条会随项目数变高
      （实测 11 个项目 421px），开合面板还会让画布重排。浮层用 fixed 脱离布局，
      横条恒为一行，画布不动。 */
+  /* 遮罩从横条下沿开始：横条里的活动条必须仍可点，否则开面板时点「函数」会被
+     遮罩吞掉，只剩「回到文件面板」这一个结果。 */
   .panel-backdrop {
     position: fixed;
     inset: 0;
