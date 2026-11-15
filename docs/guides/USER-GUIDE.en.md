@@ -16,7 +16,9 @@ CipherCat is a Blockly frontend for cryptographic algorithm structure and code g
 
 ### 2.1 Open the editor
 
-CipherCat's home page links to the project list and documentation center and provides a language selector. Click **New Project** to create a local Blockly workspace. Projects and workspaces are stored in browser IndexedDB; the editor route is `/editor/<project-id>`.
+CipherCat opens directly in the editor instead of stopping at the project list: it reopens the last project you used, falls back to the most recently modified project, and only creates a new one when no project exists. Projects and workspaces are stored in browser IndexedDB; the editor route is `/editor/<project-id>`.
+
+The back button (`←`) at the top of the editor sidebar opens the project list at `/projects`, where you can create or delete projects, switch language, and enter the documentation center at `/docs`.
 
 This project-list entry applies only to CipherCat: Metacrypto opens the editor through **Open Composer** on its home page and manages platform projects under Resources. The two project lists are not interchangeable.
 
@@ -38,14 +40,17 @@ _Figure: The import entry is located in the editor's More menu._
 
 ### 2.3 Edit, generate, and save
 
-The left side of the editor is the Blockly workspace and the right side is the code preview:
+The editor has three columns: the project and file list on the far left, the Blockly workspace in the middle, and the code preview on the right:
 
 1. Drag blocks from the toolbox and connect them by type.
 2. Select Python or JavaScript in the code panel.
 3. Click **Generate Code** and use **Copy Code** when needed.
-4. Save manually or enable auto-save.
+4. Click **Run** to see the effect immediately: the code executes in a separate browser thread, Python through Pyodide and JavaScript through a dedicated Worker, and the output appears in the run-output area under the code panel.
+5. Save manually or enable auto-save.
 
-The frontend generators support Python and JavaScript. Generated code can be copied into a runtime or test script; the frontend does not turn arbitrary generated code into a platform-side backend assessment result.
+The code panel header shows the active file name and language, with an entry badge when that file is the project entry; the breadcrumb above the workspace shows project / file / entry, and the status bar at the bottom shows block count, file count, and the current language. In a multi-file project, check the header to see which file the code belongs to, then read the `# file:` comments for the concatenation order.
+
+**Run** is self-testing only: a single run is limited to 10 seconds and 64KB of output, and a timeout or over-limit run is terminated with a message. It does not check algorithm correctness and produces no verification result. The first Python run downloads about 12MB of runtime from the same origin (usually a few seconds) and shows the download progress in the run-output area; later runs reuse the loaded runtime. The frontend generators support Python and JavaScript; generated code can still be copied into a runtime or test script, and the frontend does not turn arbitrary generated code into a platform-side backend assessment result.
 
 ![Editor after generating Python code](/docs-assets/tutorials/05-generated-python.png)
 
@@ -57,6 +62,19 @@ Menu operations:
 - `More → Import Workspace`: import JSON/XML;
 - `More → New Workspace`: start a new canvas;
 - `More → Clear Workspace`: remove the current blocks.
+
+### 2.4 Multi-file projects
+
+A project can hold several block files, managed in the left-hand file list:
+
+- `+` creates a file; hovering a row shows inline actions, and `✎` renames it (duplicates get a numeric suffix);
+- clicking a file switches the canvas, and the current canvas is written back to its file first;
+- `◎` marks a file as the **entry file**, shown with an "Entry" badge;
+- `✕` deletes a file and needs a second click to confirm; the last remaining file cannot be deleted.
+
+When code is generated, every file is concatenated in name order with the entry file last, and each file's code is preceded by a `# file: <name>` comment. Functions defined in any file appear in the call dropdown of every other file, so calls can cross files; if two files define a function with the same name, the generated result reports the duplicate.
+
+Saving writes all files together with the project; `More → Export/Clear` still applies only to the canvas of the **current** file.
 
 ## 3. Block layers and types
 
@@ -153,7 +171,7 @@ The project uses four verification layers:
 |---|---|---|---|
 | Workspace/generator | CipherCat | JSON/XML loading, block connections, Python/JavaScript generation | editor and code panel |
 | Demos and vectors | CipherCat demo workspaces | whether registered inputs match standard vectors (or an independent implementation) | demo index and coverage matrix |
-| User code trial | user’s Python/JavaScript runtime | behavior of modified code for specified inputs | code, test script, input/output |
+| User code trial | user’s Python/JavaScript runtime, or the editor’s built-in in-browser trial run (Pyodide / Worker) | behavior of modified code for specified inputs | code, test script, input/output, run-output area |
 | Platform-side backend randomness assessment | the platform backend generates samples and runs tests; the platform frontend displays reports | sample generation, isolation, statistical tests, rule decisions, and reports | the report, parameters, and detector details shown on the task page |
 
 A block without a registered demo must not be marked “verified” merely because it generates code. A demo pass is not a certification result.
