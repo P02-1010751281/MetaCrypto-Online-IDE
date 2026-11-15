@@ -21,6 +21,7 @@ const isReadyRef = ref(false);
 const workspaceApi = Workspace();
 
 let cleanupResizeListener: (() => void) | null = null;
+let cleanupContainerObserver: (() => void) | null = null;
 
 onMounted(() => {
   if (!blocklyDiv.value) {
@@ -40,6 +41,25 @@ onMounted(() => {
   workspaceApi.resizeWorkspace();
 
   cleanupResizeListener = workspaceApi.setupResizeListener();
+
+  // 容器自身变化不会触发 window resize：窄屏侧栏开合、项目列表异步加载后把顶部横条
+  // 撑高，画布都会停在旧尺寸（实测容器 204.5px 而 SVG 仍为 236px，多出的部分被裁掉）。
+  // 盯容器、尺寸真的变了才重绘；比较宽高可避免与 svgResize 自身形成回环。
+  const ResizeObs = window.ResizeObserver;
+  if (ResizeObs) {
+    let lastW = 0;
+    let lastH = 0;
+    const observer = new ResizeObs((entries) => {
+      const box = entries[0]?.contentRect;
+      if (!box) return;
+      if (Math.abs(box.width - lastW) < 1 && Math.abs(box.height - lastH) < 1) return;
+      lastW = box.width;
+      lastH = box.height;
+      workspaceApi.resizeWorkspace();
+    });
+    observer.observe(blocklyDiv.value);
+    cleanupContainerObserver = () => observer.disconnect();
+  }
 
   if (workspaceRef.value) {
     const changeListener = (event: Blockly.Events.Abstract) => {
@@ -61,6 +81,10 @@ onUnmounted(() => {
   if (cleanupResizeListener) {
     cleanupResizeListener();
     cleanupResizeListener = null;
+  }
+  if (cleanupContainerObserver) {
+    cleanupContainerObserver();
+    cleanupContainerObserver = null;
   }
 
   closeAllSboxPopups();
