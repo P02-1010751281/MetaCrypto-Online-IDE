@@ -7,7 +7,7 @@
 1. **两仓编辑器壳不是同一套结构。** CipherCat 的壳根是 `src/App.vue`（路由 `/editor/:id` 直接挂载），编排与组件放在 `src/components/editor/` 与 `src/composables/`；metacrypt_server 的壳根是 `frontend/src/features/blockly/views/EditorView.vue`，编排已拆成 `views/editor/` 下的 7 个模块与 5 个 CSS 分片（共 12 个文件）。
 2. **因此没有可逐字节镜像的壳文件。** 两侧同名文件实测均不一致（见第 3 节 A 类）。
 3. **可对齐的是运行链，且必须适配移植。** 四项差异见第 3 节 B 类；它们跨目录、跨别名，不能 `cp`。
-4. **`scripts/sync-to-metacrypt.sh` 的范围是 Blockly 核心**（`blocks/`、`generators/`、`constants/`），编辑器壳不在其中，也不应直接并入——两侧壳的宿主依赖不同。
+4. **`scripts/sync-to-metacrypt.sh` 的范围是 Blockly 核心**（`blocks/`、`generators/`、`constants/`）**加可整目录镜像的共享层**（`components/CryptoFunctionPanel.vue`、`services/projects/ProjectStore.ts`、`runtime/`，以及 2026-11-15 起纳入的 `composables/locale/`、`utils/migration/`），编辑器壳不在其中，也不应直接并入——两侧壳的宿主依赖不同。
 
 ## 2. 两侧结构对照
 
@@ -98,7 +98,7 @@ node -e 'const j=require("../metacrypt_server/frontend/public/pyodide/pyodide-lo
 
 ## 6. 未纳入本页范围
 
-- metacrypt 专属目录（`features/blockly/algorithms/`、`generators/mcl/`、`utils/locale.ts`）不在镜像范围，本页不作判定。
+- metacrypt 专属目录（`features/blockly/algorithms/`、`generators/mcl/`、`utils/workspace/`）不在镜像范围，本页不作判定；`utils/locale/` 与 `utils/migration/` 自 2026-11-15 起已改为镜像，不再属于此列。
 - 两仓的项目存储模型差异（IndexedDB 与后端 API）属于架构差异，不通过文件同步解决。
 - 本页不构成移植计划或排期，仅记录对齐判定的依据。
 
@@ -114,6 +114,7 @@ node -e 'const j=require("../metacrypt_server/frontend/public/pyodide/pyodide-lo
 | metacrypt 切引用 | 未执行（前置未清） | 镜像区仍有未提交改动，且是**静止堆积**而非当日新增：全 `features/blockly` 为 156 条目（含 22 个未跟踪条目，`git status -uall` 展开为 172 个文件）；已修改文件 mtime 集中在 2026-11-13（124 个）、11-14（6 个）、10-22（4 个） |
 | sync 守卫加固 | 已完成 | 守卫从只查 `core` + `components` 扩到四个写入根（加 `services/projects`、`runtime`），实测 146 处（旧口径 144）；新增配对映射断言：配对目标落在同步不会写入的子树时 exit 1——旧版把 ProjectStore 指到 `core/services/`，这一对的导出预检一直被静默跳过；配对总数 343 → 347，跳过 3。变异验证：旧映射被拒，新映射、未同步的新文件、runtime 契约三条均通过 |
 | 镜像区增量回填 | 无需处置（已核实） | 导出预检报的 `TYPE_MATRIX`/`TYPE_VECTOR` 是 CipherCat 本批**主动删除**的旧导出（`block-types.ts` 改为用 int_list 形状 + 契约表达域类型），不是 metacrypt 私自新增；下次同步删掉它们正是预期结果。该预检分不清「上游删了」与「下游加了」，命中这类导出要回权威源比 diff 再判定 |
+| locale/migration 回填权威源 | 已完成 | CipherCat 侧 926 行的 `composables/locale.ts` 与 835 行的 `utils/migration.ts` 按行区间原样切片拆成各 8 个模块，拆分前后行为快照逐字节一致（206×2 条消息、46 条映射、101 个 UI 键、XML/JSON 迁移输出）；sync 新增 `[3.8]` 段按文件 1:1 镜像到 `core/utils/{locale,migration}/` 并删除旧平板文件，同时补齐 `constants/{grid-shape,list-bridge}.ts` 与 3 条别名映射，新增「镜像区不得残留裸别名」断言。metacrypt `vue-tsc` 0 错误、`eslint` 0 问题、`build:prod` 通过 |
 | ProjectStore 去分叉 | 已完成 | 权威版已覆盖 metacrypt 副本，逐字节一致；`httpProjectStore.ts` 未改动 |
 | 瘦壳（CipherCat 侧） | 已完成 | `App.vue` 487 → 376 行，编排移入 `src/components/editor/` 的 `useEditorFileActions` / `useEditorPanels` / `useEditorWorkspaceActions`，壳只留绑定；新增 13 条单测锁住「切换文件前必须先回写」的顺序；真浏览器验过导入 6 块 → 新增空文件 → 切回仍是 6 块 → 删除 → 拒删最后一文件 → 刷新后仍在 |
 | 瘦壳（metacrypt 侧） | 未执行 | 与切引用同批，等其工作树清理 |

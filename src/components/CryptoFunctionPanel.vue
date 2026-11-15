@@ -22,10 +22,10 @@
                 <button
                   class="cfp-item-btn"
                   :class="isInToolbox(tpl.type) ? 'cfp-item-in-toolbox' : ''"
-                  @click="toggleTpl(tpl.type)"
                   :title="isInToolbox(tpl.type) ? (msg.CRYPTO_FUNCTIONS_REMOVE_TIP || 'Remove from toolbox') : (msg.CRYPTO_FUNCTIONS_ADD_TIP || 'Add to toolbox')"
+                  @click="toggleTpl(tpl.type)"
                 >{{ isInToolbox(tpl.type) ? '✕' : '＋📦' }}</button>
-                <button class="cfp-item-btn cfp-item-export" @click="exportTemplate(tpl.type)" :title="msg.CRYPTO_FUNCTIONS_EXPORT_TIP || 'Export'">📤</button>
+                <button class="cfp-item-btn cfp-item-export" :title="msg.CRYPTO_FUNCTIONS_EXPORT_TIP || 'Export'" @click="exportTemplate(tpl.type)">📤</button>
               </span>
             </div>
           </div>
@@ -36,7 +36,7 @@
               <span class="cfp-name" :title="fn.type">{{ fn.name }}</span>
               <span class="cfp-param">{{ fn.type }}</span>
               <span class="cfp-item-actions">
-                <button class="cfp-item-btn cfp-item-export" @click="exportWsBlock(fn.id)" :title="msg.CRYPTO_FUNCTIONS_EXPORT_TIP || 'Export'">📤</button>
+                <button class="cfp-item-btn cfp-item-export" :title="msg.CRYPTO_FUNCTIONS_EXPORT_TIP || 'Export'" @click="exportWsBlock(fn.id)">📤</button>
               </span>
             </div>
           </div>

@@ -19,8 +19,9 @@
 #   @/utils/migration                → @/features/blockly/core/utils/migration
 # 注意：镜像后 metacrypt 的 blocks/index.ts 会被 CipherCat 版本覆盖（含 REMAINING_BLOCK_TYPES
 # 合并进 ALL_BLOCK_TYPES，这是期望行为——metacrypt 旧 index 漏了 remaining）。
-# metacrypt 专属文件（generators/mcl/、utils/locale.ts、blockly-patches.ts、generator/、
-# constants/mcl-highlight.ts）不在镜像范围，保留。
+# metacrypt 专属文件（generators/mcl/、utils/workspace/、blockly-patches.ts、generator/、
+# constants/mcl-highlight.ts）不在镜像范围，保留。utils/locale/ 与 utils/migration/ 自
+# 2026-11-15 起改为镜像（见 [3.8]），不再是 metacrypt 专属。
 
 set -e
 
@@ -34,6 +35,9 @@ fix_imports() {
   sed -i \
     -e "s|@/constants/block-types|@/features/blockly/core/constants/block-types|g" \
     -e "s|@/constants/sbox-presets|@/features/blockly/core/constants/sbox-presets|g" \
+    -e "s|@/constants/grid-shape|@/features/blockly/core/constants/grid-shape|g" \
+    -e "s|@/constants/list-bridge|@/features/blockly/core/constants/list-bridge|g" \
+    -e "s|@/blocks/grid/grid-editor|@/features/blockly/core/blocks/grid/grid-editor|g" \
     -e "s|@/blocks/procedure/blocks|@/features/blockly/core/blocks/procedure/blocks|g" \
     -e "s|@/blocks/procedure/toolbox-state|@/features/blockly/core/blocks/procedure/toolbox-state|g" \
     -e "s|@/utils/migration|@/features/blockly/core/utils/migration|g" \
@@ -54,6 +58,9 @@ fix_imports_blocks() {
   sed -i \
     -e "s|@/constants/block-types|@/features/blockly/core/constants/block-types|g" \
     -e "s|@/constants/sbox-presets|@/features/blockly/core/constants/sbox-presets|g" \
+    -e "s|@/constants/grid-shape|@/features/blockly/core/constants/grid-shape|g" \
+    -e "s|@/constants/list-bridge|@/features/blockly/core/constants/list-bridge|g" \
+    -e "s|@/blocks/grid/grid-editor|@/features/blockly/core/blocks/grid/grid-editor|g" \
     -e "s|@/blocks/procedure/blocks|@/features/blockly/core/blocks/procedure/blocks|g" \
     -e "s|@/utils/migration|@/features/blockly/core/utils/migration|g" \
     -e "s|@/utils/project-context|@/features/blockly/core/utils/project-context|g" \
@@ -132,6 +139,16 @@ mirror_pairs() {
     [ -f "$f" ] || continue
     printf '%s\t%s\n' "$f" "$META/frontend/src/features/blockly/runtime/contracts/$(basename "$f")"
   done
+  # 界面文案与块迁移器：源目录与镜像目录不同名（composables/locale → core/utils/locale），
+  # 按文件 1:1 映射，目录内部的相对导入在两侧结构一致，不需要改写。
+  for f in "$CIPHER"/src/composables/locale/*.ts; do
+    [ -f "$f" ] || continue
+    printf '%s\t%s\n' "$f" "$CORE/utils/locale/$(basename "$f")"
+  done
+  for f in "$CIPHER"/src/utils/migration/*.ts; do
+    [ -f "$f" ] || continue
+    printf '%s\t%s\n' "$f" "$CORE/utils/migration/$(basename "$f")"
+  done
 }
 
 CIPHER="/run/media/user/6b058d20-a617-484d-b7c6-cd7146baf77c/Projects/CipherCat"
@@ -140,13 +157,14 @@ CORE="$META/frontend/src/features/blockly/core"
 # 同步会写入的四个根。守卫与写入段必须一一对应，新增写入段时要同步加进来：
 #   [1][2][2.5][3] → CORE      [3.5] → COMPONENTS
 #   [3.6] → PROJECT_PORT       [3.7] → RUNTIME（含 runtime/contracts/）
+#   [3.8] → CORE/utils/{locale,migration}（两族各有独立写入根，见下）
 COMPONENTS="$META/frontend/src/features/blockly/components"
 PROJECT_PORT="$META/frontend/src/features/blockly/services/projects"
 RUNTIME="$META/frontend/src/features/blockly/runtime"
 SYNC_TARGETS=("$CORE" "$COMPONENTS" "$PROJECT_PORT" "$RUNTIME")
 # 同步真正会写到的子树（blocks/ 与 generators/ 会按源目录 mkdir -p，新增子目录属正常情况）。
 # 配对目标的路径必须落在这几个前缀内，否则这段映射一定指错了地方。
-SYNC_WRITE_PREFIXES=("$CORE/blocks" "$CORE/generators" "$CORE/constants" "$COMPONENTS" "$PROJECT_PORT" "$RUNTIME")
+SYNC_WRITE_PREFIXES=("$CORE/blocks" "$CORE/generators" "$CORE/constants" "$COMPONENTS" "$PROJECT_PORT" "$RUNTIME" "$CORE/utils/locale" "$CORE/utils/migration")
 
 # ─── 0. 预检：镜像区未提交改动（防静默覆盖）───
 # 全量镜像会用 CipherCat 版本覆盖上述目录，metacrypt 侧任何未提交的本地修改会静默丢失。
@@ -326,6 +344,11 @@ cp "$CIPHER/src/constants/block-types.ts" "$CORE/constants/block-types.ts"
 fix_imports_blocks "$CORE/constants/block-types.ts"
 cp "$CIPHER/src/constants/sbox-presets.ts" "$CORE/constants/sbox-presets.ts"
 fix_imports_blocks "$CORE/constants/sbox-presets.ts"
+# IntList / grid 编辑弹层引进的两个常量表：块与生成器都直接 import，缺一个就整包解析失败
+cp "$CIPHER/src/constants/grid-shape.ts" "$CORE/constants/grid-shape.ts"
+fix_imports_blocks "$CORE/constants/grid-shape.ts"
+cp "$CIPHER/src/constants/list-bridge.ts" "$CORE/constants/list-bridge.ts"
+fix_imports_blocks "$CORE/constants/list-bridge.ts"
 
 # ─── 3.5 Function Manager 面板（CipherCat 单源 → metacrypt features/blockly/components）───
 echo "[3.5/4] Function Manager 面板（CryptoFunctionPanel.vue）"
@@ -382,6 +405,53 @@ else
   echo "  OK runtime/ 别名已全部转换"
 fi
 
+# ─── 3.8 界面文案 locale/ 与块迁移器 migration/ —— 权威源在 CipherCat ───
+# 这两族此前只存在于 metacrypt 的镜像区（那里自行拆了文件），CipherCat 侧一直是
+# 926 / 835 行的单文件。2026-11-15 把拆分搬回权威源后，两族按文件 1:1 镜像：
+#   src/composables/locale/*.ts → core/utils/locale/*.ts
+#   src/utils/migration/*.ts    → core/utils/migration/*.ts
+# 目标不取 core/composables/locale 是刻意的：metacrypt 的界面代码一直从
+# `@/features/blockly/core/utils/locale` 取 ui / uiLocaleRef，保持路径才能零改动切换。
+echo "[3.8/4] 界面文案 locale/ 与块迁移器 migration/"
+sync_family() {
+  src_dir="$1"; dst_dir="$2"; label="$3"
+  mkdir -p "$dst_dir"
+  for f in "$src_dir"/*.ts; do
+    [ -f "$f" ] || continue
+    cp "$f" "$dst_dir/$(basename "$f")"
+  done
+  # 权威源已删除的文件在镜像里也要删：残留模块没有任何引用，却仍会被构建打进去
+  for f in "$dst_dir"/*.ts; do
+    [ -f "$f" ] || continue
+    base=$(basename "$f")
+    [ -f "$src_dir/$base" ] || { echo "  DEL $label/$base"; rm "$f"; }
+  done
+  echo "  OK $label/（$(ls -1 "$dst_dir"/*.ts 2>/dev/null | wc -l) 个文件）"
+}
+
+sync_family "$CIPHER/src/composables/locale" "$CORE/utils/locale" "utils/locale"
+sync_family "$CIPHER/src/utils/migration" "$CORE/utils/migration" "utils/migration"
+
+# 旧平板文件必须删：core/utils/locale.ts 会遮蔽 core/utils/locale/index.ts，
+# 让 `@/features/blockly/core/utils/locale` 仍解析回旧内容——同步看着成功，实际没生效。
+for f in "$CORE"/utils/locale*.ts "$CORE"/utils/migration*.ts; do
+  [ -f "$f" ] || continue
+  echo "  DEL utils/$(basename "$f")（被目录版取代）"
+  rm "$f"
+done
+
+# 别名回归：镜像区不允许残留 CipherCat 侧的裸别名。
+# fix_imports 的映射表是手工枚举的，新增块若引用了新的 @/blocks/* 、@/constants/* 条目
+# 而这里没跟上，同步本身不会报错，只会让 metacrypt 的 type-check / 打包在别人机器上炸
+# （2026-11-15 的 grid-shape、list-bridge、grid-editor 就是这么漏的）。宁可在同步时红。
+BARE_ALIAS=$(grep -rnE "from '@/(blocks|constants|generators|utils|runtime)/" "$CORE" --include='*.ts' 2>/dev/null || true)
+if [ -n "$BARE_ALIAS" ]; then
+  echo "  FAIL 镜像区仍有未转换的裸别名（fix_imports 漏配，需补映射）："
+  printf '%s\n' "$BARE_ALIAS" | sed "s|$CORE/|    |" | head -10
+else
+  echo "  OK 镜像区别名已全部转换"
+fi
+
 # ─── 4. 核对清单 ───
 echo "[4/4] 核对"
 echo ""
@@ -397,8 +467,8 @@ echo ""
 echo " 2. $CORE/utils/toolbox-config.ts"
 echo "    → metacrypt 有 MCL 专属类目，全量镜像未覆盖 utils/；确认块类目仍完整"
 echo ""
-echo " 3. $CORE/utils/workspace/*.ts、$CORE/utils/migration.ts"
-echo "    → metacrypt 专属逻辑（blockly-patches.ts、locale.ts、generator/）保留"
+echo " 3. $CORE/utils/workspace/*.ts（blockly-patches.ts 等）"
+echo "    → metacrypt 专属逻辑保留；utils/locale、utils/migration 已改为镜像（见 [3.8]）"
 echo ""
 echo " 4. metacrypt 侧 demos/（如有）引用已删块（pq_*_vec、gf_mul）需清理"
 echo ""
