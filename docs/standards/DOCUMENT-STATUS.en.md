@@ -42,7 +42,7 @@ Screenshots explain real interface operations only; they do not replace normativ
 |---|---:|---|
 | [USER-GUIDE.en.md](../guides/USER-GUIDE.en.md) | 2 | Workspace import and generated code |
 | [BLOCKLY-GUIDE.en.md](../guides/BLOCKLY-GUIDE.en.md) | 3 | Editor layout, function definition, and code panel |
-| [TUTORIALS.en.md](../guides/TUTORIALS.en.md) | 9 image references to 7 distinct images | Project list, import, code generation, and function Demo |
+| [TUTORIALS.en.md](../guides/TUTORIALS.en.md) | 9 image references to 9 distinct images | Sidebar projects panel, import, code generation, and function Demo |
 | [SETUP.en.md](../guides/SETUP.en.md) | 2 | Documentation groups and development-mode acceptance |
 | [DEMO.en.md](../guides/DEMO.en.md) | 3 | Import entry, workspace, and generated code |
 

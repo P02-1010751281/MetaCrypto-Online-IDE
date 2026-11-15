@@ -6,7 +6,7 @@
 flowchart TB
     TAURI["Tauri 桌面壳层"]
     subgraph VUE["Vue 3 前端应用"]
-        PL["ProjectList (项目管理)"]
+        SB["EditorSidebar (侧栏：项目 / 文件 / 函数 / 查文档 / 查块)"]
         ED["Editor (编辑器)"]
         VA["Views / App.vue"]
         subgraph COMP["Components"]
@@ -30,13 +30,13 @@ flowchart TB
             BKS["Blocks (积木块) · 11 个定义目录"]
             GNS["Generators · JavaScript / Python"]
         end
-        PL --> CMPO
+        SB --> CMPO
         ED --> CMPO
         VA --> CMPO
-        PL --> COMP
+        SB --> COMP
         ED --> COMP
         VA --> COMP
-        PL --> UTL
+        SB --> UTL
         ED --> UTL
         VA --> UTL
         CMPO --> BLK
@@ -288,10 +288,14 @@ interface ProjectRecord {
 ```typescript
 // src/router/index.ts
 const routes = [
-  { path: '/',             name: 'ProjectList', component: ProjectList },
-  { path: '/editor/:id',   name: 'Editor',      component: App.vue     },
+  { path: '/',            name: 'Home',   component: HomeView },
+  { path: '/editor/:id',  name: 'Editor', component: App.vue  },
+  { path: '/docs',        name: 'Docs',   component: DocsView },
 ];
 ```
 
-- `/` — 项目管理页：新建、打开、删除项目
-- `/editor/:id` — 编辑器主界面：Blockly 工作区 + 代码预览面板
+- `/` — 开屏跳转：按「上次项目 → 最近修改 → 新建一个」决定去处，不停留在列表
+- `/editor/:id` — 编辑器主界面：侧栏面板（项目 / 文件 / 函数 / 查文档 / 查块）+ Blockly 工作区 + 代码预览面板
+- `/docs` — 文档中心
+
+项目列表不是独立路由：它和文件树、函数管理、两个检索面板一样，是编辑器侧栏里的互斥面板，由侧栏活动条切换（`EditorSidebar.vue` 的 `activePanel`）。

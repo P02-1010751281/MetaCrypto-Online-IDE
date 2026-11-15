@@ -18,9 +18,9 @@ CipherCat is a Blockly frontend for cryptographic algorithm structure and code g
 
 CipherCat opens directly in the editor instead of stopping at the project list: it reopens the last project you used, falls back to the most recently modified project, and only creates a new one when no project exists. Projects and workspaces are stored in browser IndexedDB; the editor route is `/editor/<project-id>`.
 
-The back button (`←`) at the top of the editor sidebar opens the project list at `/projects`, where you can create or delete projects, switch language, and enter the documentation center at `/docs`.
+The project list lives in the editor sidebar rather than on its own page: click the top **Projects** icon in the sidebar activity bar, or the back button (`←`) at the left of the **Files** panel header, and the sidebar opens the projects panel. The panel has a search box and a **+** button for new projects; each row shows the project name and modification time, `✕` deletes it, and clicking a row switches to that project. Click the **Files** icon to return to the current project's file tree. The project name is editable in place in the editor breadcrumb; language switching is in the toolbar, and the documentation center is `/docs`.
 
-This project-list entry applies only to CipherCat: Metacrypto opens the editor through **Open Composer** on its home page and manages platform projects under Resources. The two project lists are not interchangeable.
+The sidebar hosts mutually exclusive panels: Projects, Files, Functions, Docs and Blocks — only one is expanded at a time, and switching never stacks an overlay. Both platforms expose the same shape (a projects panel in the editor sidebar) but keep separate data: CipherCat stores projects in this browser's IndexedDB, while Metacrypto projects are managed by the platform backend, so the two lists are not interchangeable.
 
 ### 2.2 Import a workspace
 

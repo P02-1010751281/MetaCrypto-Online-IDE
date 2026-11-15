@@ -87,3 +87,7 @@ public/pyodide/
 
 # 本地验证脚本与门禁日志（临时产物，可随时重跑，不入库）
 .review/
+
+# Python 字节码缓存（scripts/tools 下的本地脚本会生成，不入库）
+__pycache__/
+*.pyc

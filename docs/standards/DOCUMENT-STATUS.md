@@ -54,7 +54,7 @@
 |---|---:|---|
 | [USER-GUIDE.md](../guides/USER-GUIDE.md) | 2 | 导入工作区、生成代码 |
 | [BLOCKLY-GUIDE.md](../guides/BLOCKLY-GUIDE.md) | 3 | 编辑器布局、函数定义、代码面板 |
-| [TUTORIALS.md](../guides/TUTORIALS.md) | 9 个图片引用，使用 7 张不同图片 | 覆盖项目列表、导入、生成代码和函数 Demo |
+| [TUTORIALS.md](../guides/TUTORIALS.md) | 9 个图片引用，使用 9 张不同图片 | 覆盖侧栏项目面板、导入、生成代码和函数 Demo |
 | [SETUP.md](../guides/SETUP.md) | 2 | 文档分组和开发模式验收 |
 | [DEMO.md](../guides/DEMO.md) | 3 | 导入入口、工作区和生成代码 |
 

@@ -6,17 +6,17 @@ Treat procedure templates and demos as **convenience starting points** (they sav
 
 ## 1. Open the editor and recognise the four areas
 
-**Do**: on the project list, click "New project".
+**Do**: click the **Projects** icon in the editor sidebar's activity bar, then the **+** button on the right of the panel header; to reopen an existing project, click its row. The splash screen already lands in the editor (last project → most recently modified → new one), so creating a project by hand is often unnecessary.
 
-**Observe**: the editor opens with four areas — the toolbox on the left (blocks grouped by category), the workspace in the middle, the language selector (JavaScript / Python) at the top right, and the code panel on the right.
+**Observe**: the editor opens with four areas — the sidebar on the far left (the activity bar switches Projects / Files / Functions / Docs / Blocks), the toolbox next to it (blocks grouped by category), the workspace in the middle, and the code panel on the right (its toolbar holds the JavaScript / Python language selector).
 
 **If it looks wrong**: refresh if the page is blank and confirm the frontend is reachable; if only the toolbox shows, check the browser console for Blockly initialisation errors.
 
-![Project list and the new-project entry](/docs-assets/tutorials/01-project-list.png)
+![Sidebar projects panel and the new-project entry](/docs-assets/tutorials/01-project-list.png)
 
-![Empty editor: toolbox, workspace, language selector, code panel](/docs-assets/tutorials/02-editor-empty.png)
+![Empty editor: sidebar, toolbox, workspace, code panel](/docs-assets/tutorials/02-editor-empty.png)
 
-_Figure 1: project entry and empty editor._
+_Figure 1: the sidebar projects panel and an empty editor._
 
 ## 2. Drag the first block out of the toolbox
 

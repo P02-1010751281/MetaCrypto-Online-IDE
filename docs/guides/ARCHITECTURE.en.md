@@ -7,7 +7,7 @@
 flowchart TB
     TAURI["Tauri Desktop Shell"]
     subgraph VUE["Vue 3 Frontend"]
-        PL["ProjectList (Project Management)"]
+        SB["EditorSidebar (panels: Projects / Files / Functions / Docs / Blocks)"]
         ED["Editor"]
         VA["Views / App.vue"]
         subgraph COMP["Components"]
@@ -31,13 +31,13 @@ flowchart TB
             BKS["Blocks · 11 definition directories"]
             GNS["Generators · JavaScript / Python"]
         end
-        PL --> CMPO
+        SB --> CMPO
         ED --> CMPO
         VA --> CMPO
-        PL --> COMP
+        SB --> COMP
         ED --> COMP
         VA --> COMP
-        PL --> UTL
+        SB --> UTL
         ED --> UTL
         VA --> UTL
         CMPO --> BLK
@@ -289,10 +289,14 @@ The current codebase switches file read/write strategies at runtime by detecting
 ```typescript
 // src/router/index.ts
 const routes = [
-  { path: '/',             name: 'ProjectList', component: ProjectList },
-  { path: '/editor/:id',   name: 'Editor',      component: App.vue     },
+  { path: '/',            name: 'Home',   component: HomeView },
+  { path: '/editor/:id',  name: 'Editor', component: App.vue  },
+  { path: '/docs',        name: 'Docs',   component: DocsView },
 ];
 ```
 
-- `/` — Project management page: create, open, delete projects
-- `/editor/:id` — Editor main view: Blockly workspace + code preview panel
+- `/` — Splash routing: picks where to go by “last project → most recently modified → create one” and never stops at a list
+- `/editor/:id` — Editor main view: sidebar panels (Projects / Files / Functions / Docs / Blocks) + Blockly workspace + code preview panel
+- `/docs` — Documentation center
+
+The project list is not a standalone route: like the file tree, function manager and the two search panels, it is one of the mutually exclusive panels in the editor sidebar, switched from the sidebar activity bar (`activePanel` in `EditorSidebar.vue`).
