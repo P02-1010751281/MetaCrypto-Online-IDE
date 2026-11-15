@@ -1,5 +1,11 @@
 <template>
-  <section class="project-panel">
+  <!-- 窄屏浮层：点卡片外部关闭；卡片在遮罩上层，点卡片本身不会冒到遮罩。 -->
+  <div v-if="overlay" class="panel-backdrop" @click.self="emit('close')"></div>
+  <section
+    class="project-panel"
+    :class="{ 'project-panel--popover': overlay }"
+    :style="overlay ? { top: `${popoverTop}px` } : undefined"
+  >
     <div class="section-head">
       <span class="section-title">{{ ui('projects') }}</span>
       <button class="ghost-btn" :title="ui('newProject')" @click="createProject">＋</button>
@@ -37,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { ui } from '@/composables/locale';
@@ -45,7 +51,25 @@ import { projectStore } from '@/services/projects';
 import type { ProjectRecord } from '@/services/projects';
 import { useProjectList } from './useProjectList';
 
-const props = defineProps<{ currentId: number | null }>();
+const props = defineProps<{ currentId: number | null; overlay?: boolean }>();
+const emit = defineEmits<{ (_e: 'close'): void }>();
+
+/**
+ * 窄屏浮层的纵向位置：横条高度随断点变（≤1200px 单行 43px，≤560px 折成两行），
+ * 写死像素会在折行时压住横条第二行，所以按侧栏实际底边算，并在窗口尺寸变化时重算。
+ */
+const popoverTop = ref(47);
+function syncPopoverTop(): void {
+  const bar = document.querySelector('.editor-sidebar');
+  popoverTop.value = bar ? Math.round(bar.getBoundingClientRect().bottom + 4) : 47;
+}
+function onWindowResize(): void {
+  if (props.overlay) syncPopoverTop();
+}
+// 只用得到 key，写成结构类型：KeyboardEvent 没进仓库 eslint 的 globals 白名单。
+function onKeydown(event: { key: string }): void {
+  if (props.overlay && event.key === 'Escape') emit('close');
+}
 
 const router = useRouter();
 // 列表来自模块级单例：改名/新建后由保存层调 refresh/patch，这里跟着重渲染。
@@ -78,11 +102,13 @@ async function createProject(): Promise<void> {
   // 否则新建的项目在面板里看不到，用户会以为没建成功。
   await refresh();
   void router.push(`/editor/${id}`);
+  if (props.overlay) emit('close');
 }
 
 function openProject(id: number): void {
-  if (id === props.currentId) return;
-  void router.push(`/editor/${id}`);
+  if (id !== props.currentId) void router.push(`/editor/${id}`);
+  // 浮层盖在画布上，选完就收起；宽屏是常驻面板，保持展开。
+  if (props.overlay) emit('close');
 }
 
 async function confirmDelete(id: number, name: string): Promise<void> {
@@ -102,7 +128,17 @@ function formatDate(iso: string): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-onMounted(refresh);
+onMounted(() => {
+  syncPopoverTop();
+  window.addEventListener('resize', onWindowResize);
+  window.addEventListener('keydown', onKeydown);
+  void refresh();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', onWindowResize);
+  window.removeEventListener('keydown', onKeydown);
+});
 </script>
 
 <style scoped>
@@ -226,30 +262,31 @@ onMounted(refresh);
   color: var(--color-text-secondary);
 }
 
-/* 窄屏把侧栏折成顶部横条，两行行高会把横条顶高：那里只留名称。 */
+/* 窄屏（≤1200px）把项目面板改成下拉浮层；宽屏仍是常驻面板。 */
 @media (max-width: 1200px) {
-  /* 横条里面板没有高度约束，面板高度会跟着项目数长（实测 11 个项目把顶部横条撑到
-     412px，约占视口 2/3），编辑器只剩一条缝。封顶到视口 24%，超出的行在面板内滚；
-     1 个项目的自然高度（约 142px）低于此上限，不受影响。
-     这条规则必须写在组件自身：面板是 App 传进 EditorSidebar 的 slot 内容，
+  /* 这些规则必须写在组件自身：面板是 App 传进 EditorSidebar 的 slot 内容，
      拿不到侧栏的 scoped 哈希，写在 editor-sidebar.css 里匹配不到。 */
-  .project-panel {
-    padding: 0;
-    /* 横条是给「当前面板」留的整行空间：面板按内容收缩会只剩 172px，
-       项目名 156px 就开始省略，右边空掉一大片。让它吃掉横条剩余宽度。 */
-    flex: 1 1 auto;
-    min-width: 0;
-    max-height: 24vh;
+  /* 窄屏把「项目」做成下拉浮层而不是铺进横条：铺进横条时横条会随项目数变高
+     （实测 11 个项目 421px），开合面板还会让画布重排。浮层用 fixed 脱离布局，
+     横条恒为一行，画布不动。 */
+  .panel-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 400;
+  }
+
+  .project-panel--popover {
+    position: fixed;
+    left: 8px;
+    width: min(360px, calc(100vw - 16px));
+    max-height: 60vh;
     overflow-y: auto;
-  }
-
-  .project-row {
-    min-height: var(--row-h);
-    padding: 0 8px;
-  }
-
-  .project-row-meta {
-    display: none;
+    padding: 0 var(--panel-pad-x) 6px;
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 12px 28px rgb(0 0 0 / 18%);
+    z-index: 401;
   }
 }
 </style>

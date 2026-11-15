@@ -17,7 +17,12 @@
       @toggle-panel="togglePanel"
     >
       <!-- 互斥面板：同一时刻只渲染一个，与 activity bar 的选中项一一对应。 -->
-      <ProjectPanel v-if="activePanel === 'projects'" :current-id="currentProjectId" />
+      <ProjectPanel
+        v-if="activePanel === 'projects'"
+        :current-id="currentProjectId"
+        :overlay="isNarrowViewport"
+        @close="closePanel"
+      />
       <CryptoFunctionPanel
         v-else-if="activePanel === 'functions'"
         :visible="true"
