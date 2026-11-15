@@ -1168,3 +1168,92 @@ vitest               83 files / 970 passed / 1 skipped
 ```
 
 `docs:index:check` 单跑 1.6 s（含一次 vite 打包脚本），作为门禁成本可接受。
+
+## 22. D 线结项（2026-11-15 晚）
+
+### 22.1 三条线的最终判据（本次实跑，非引用旧记录）
+
+| 线 | 评测集 | 题数 | recall@5 |
+|---|---|---|---|
+| 查块 | `blocksearch-queries.json` | 30 | **100%（30/30）** |
+| 查块·困难集 | `blocksearch-queries-hard.json` | 30 | **100%（30/30）** |
+| 查文档 | `docsearch-eval.json` | 30 | **100%（30/30）** |
+| 查文档·留出集 | `docsearch-holdout.json` | 20 | **90%（18/20）** |
+| 查文献 | `literature-eval.json` | 16 | **100%（16/16）** |
+
+三条线均超过计划书目标（文档 ≥80%、查块 ≥80%，实测 100% / 100%）；文献线与 §19.3 记录一致。
+
+块索引现状：**222 块**，中英显示文本各 222/222，带下拉选项 58 块 / 284 条，tooltip 222 块，
+中英标签不同 32 个。Markdown 索引：437 篇 / 4007 分节 / 57516 词 / 374083 postings / 3.92 MB。
+
+### 22.2 留出集两条未命中（如实记录，不调参）
+
+| # | 查询 | 实际 top1 | 期望 | 性质 |
+|---|---|---|---|---|
+| 10 | 后量子积木块有哪些 | `docs/standards/china-pqc-tracking/README.md` | `docs/blocks/post-quantum.md` | 排序：标准追踪页的「后量子」密度更高，缺「块文档优先」信号 |
+| 20 | 端点矩阵是什么 | `docs/standards/SPEC-CARD-MATRIX.md` | `docs/demos/ENDPOINT-MATRIX.md` | 别名：两页都含「矩阵」，缺页面级权威度区分 |
+
+**这两条本轮不修，是刻意选择。** 留出集的价值在于「出题后一次跑、未调参」；为把它推到
+100% 而调权，等于把泛化度量降级成第二个调参集，之后这个数字就不能再当泛化证据用。
+两条缺陷已可枚举（一条排序信号、一条页面别名），留待**新一轮新题**验证时一并看，
+而不是在旧留出集上刷分。
+
+### 22.3 复跑命令与三个易踩点
+
+```bash
+# 查块（隔离构建只打一个入口，更快；verify:build 产物同样可用，见坑 3）
+AIVERIFY_ENTRY=scripts/ai-helper-blocksearch.ts AIVERIFY_OUTDIR=dist-verify/track-blocksearch \
+  npx vite build --config vite.verify.config.ts
+node dist-verify/track-blocksearch/ai-helper-blocksearch.js index
+node dist-verify/track-blocksearch/ai-helper-blocksearch.js eval        # 100%
+node dist-verify/track-blocksearch/ai-helper-blocksearch.js eval-hard   # 100%
+
+# 查文档
+npx tsx scripts/ai-helper-docindex.ts eval experiments/ai-helper-2026-11-14/docsearch-eval.json
+npx tsx scripts/ai-helper-docindex.ts eval experiments/ai-helper-2026-11-14/docsearch-holdout.json
+
+# 查文献（两步都要，缺一不可）
+npx tsx scripts/ai-helper-docindex.ts index:lit    # 需要 pdftotext，19 篇 / 4190 分节 / 2.92 MB
+npx tsx scripts/ai-helper-docindex.ts eval experiments/ai-helper-2026-11-14/literature-eval.json --lit
+```
+
+三个坑（本轮实际踩到前两个）：
+
+1. **文献 eval 必须带 `--lit`**。不带时 `loadIndex` 加载的是 Markdown 索引，去向 46 MB 的英文
+   论文要中文页，结果稳定是 `0.0% (0/16)`——看上去像回归，其实是命令用错。判别方法：看
+   miss 行里 top1 是不是 `docs/**.md`；是就说明索引选错了。
+2. **文献索引路径是 `experiments/ai-helper-2026-11-14/out/lit-index.json`**
+   （`scripts/ai-helper-docindex.ts:27` 的 `LIT_INDEX_PATH`），不在 `src/services/ai-helper/` 下
+   ——那里是 `block-index.json`（块）、`doc-index.json`（Markdown）、`doc-index-pdf.json` 三份对外
+   索引。所以 `index:lit` 与 `eval --lit` 必须成对跑，换机器/清理 `out/` 后要重建。
+3. **查块 eval 需要先 `index`**，且 `index` 要起 jsdom + 真 Blockly 取显示文本。
+   隔离构建**不是必需**：`npm run verify:build` 的全量入口里就含 `ai-helper-blocksearch`
+   （`vite.verify.config.ts:39`），实测 `node dist-verify/ai-helper-blocksearch.js index`
+   同样得到 222 块 / 中英 222/222 / 58 块 284 条。脚本头注释建议隔离构建只是为了只打
+   一个入口（更快），不是产物有缺陷——本条初稿写成「verify:build 产物缺注册链」，
+   经复核指出并被实测推翻，已按实测结论改写。
+
+### 22.4 结项
+
+D 线的三块内核、界面、门禁与判据全部完成：
+
+- 功能面：三个面板都已挂进编辑器侧栏，与 metacrypt 的侧栏模型一致——左侧 activity bar
+  （项目 / 文件 / 函数 / 查文档 / 查块）互斥切换，点哪个在侧栏展开哪个，不再混用「一个嵌入 +
+  两个浮层」；检索面板聚焦时左栏自动展宽到 400px（可手动拖到 560px，手动拖过后不再自动），
+  读得下路径与摘录；右栏代码栏可折叠（栏头 `»` 与工具栏 `<>` 双向开关）。`/projects` 独立页
+  已删，项目列表收进侧栏「项目」面板（搜索 / 新建 / 打开 / 删除），HomeView 存储失败时停在
+  开屏并提示原因，而不是跳去一个已经不存在的页面。
+- 门禁面：`docs:index:check` 已进 `verify:all`，`doc-search.test.ts` / `block-search.test.ts` /
+  `ai-helper-typecheck.test.ts` 三个文件共 **36 用例全过**；索引新鲜度用 `corpus.hash` + mtime
+  双档判据，阴性对照见 §21.1（本轮未复跑，沿用该节记录）。布局改动后 `verify:all` 仍 **RC=0**
+  （模板 29/29、Demo 60/60、死链 0），`type-check` / `eslint` 0 问题，`editor-project` 等
+  相关单测 47 用例通过。
+- 判据面：见 22.1；已知缺陷 2 条见 22.2，登记为下一轮验证项，不在本轮返工。
+
+真浏览器验证（CDP + Chromium 1248，1440×760）：activity bar 5 个图标、互斥切换、项目面板、
+查块 docked（`insideSidebar=true`）且筛选默认折叠、左右拖拽条存在、右栏折叠/恢复、保存状态
+「已保存 20:50」、控制台 **0 错误**。
+
+后续按价值排序有两件：**(a)** 出一轮全新留出集重新测泛化（不是修 22.2 那两条）；
+**(b)** 扩大文献语料（当前只 19 篇 `paper/references`，且因版权与体积按研究侧 CLI 定位，
+不进发布产物）。
