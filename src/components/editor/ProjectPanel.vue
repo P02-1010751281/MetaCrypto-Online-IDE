@@ -152,12 +152,14 @@ onMounted(refresh);
   flex-direction: column;
   gap: 2px;
 }
+/* 项目行是两行（名称 + 修改时间）：用单行 --row-h(28px) 装两行文字会把时间
+   溢出到行外（实测内容 32.5px > 28px，时间压到下一行上），改用两行行高 token。 */
 .project-row {
   display: flex;
   align-items: center;
   gap: 6px;
-  height: var(--row-h);
-  padding: 0 8px;
+  min-height: var(--row-h-2l);
+  padding: 3px 8px;
   border-radius: var(--radius-control);
   cursor: pointer;
 }
@@ -177,6 +179,8 @@ onMounted(refresh);
 }
 .project-row-name {
   font-size: 13px;
+  /* 显式行高：不给的话浏览器按「正常」算出 19.5px，两行合计会超出行高。 */
+  line-height: 18px;
   color: var(--color-text);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -184,7 +188,7 @@ onMounted(refresh);
 }
 .project-row-meta {
   font-size: 10px;
-  line-height: 1.2;
+  line-height: 14px;
   color: var(--color-text-tertiary);
 }
 .row-btn {
@@ -220,5 +224,17 @@ onMounted(refresh);
   font-size: 11px;
   line-height: 1.5;
   color: var(--color-text-secondary);
+}
+
+/* 窄屏把侧栏折成顶部横条，两行行高会把横条顶高：那里只留名称。 */
+@media (max-width: 1200px) {
+  .project-row {
+    min-height: var(--row-h);
+    padding: 0 8px;
+  }
+
+  .project-row-meta {
+    display: none;
+  }
 }
 </style>
