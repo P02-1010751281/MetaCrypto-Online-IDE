@@ -370,9 +370,9 @@
     max-width: 240px;
   }
 
-  .project-panel {
-    padding: 0;
-  }
+  /* 注意：项目面板是 App 传进 slot 的内容，拿不到本组件的 scoped 哈希，
+     所以任何 .project-panel 规则写在这里都是死规则（实测 computed max-height 仍为 none）。
+     面板自身的窄屏样式写在 ProjectPanel.vue 的 scoped 块里。 */
 }
 
 /* 560px 级窄屏：一行放不下「活动条 + 项目名 + 文件列表」，改两行——

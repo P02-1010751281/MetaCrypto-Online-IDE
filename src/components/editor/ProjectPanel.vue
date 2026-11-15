@@ -228,6 +228,21 @@ onMounted(refresh);
 
 /* 窄屏把侧栏折成顶部横条，两行行高会把横条顶高：那里只留名称。 */
 @media (max-width: 1200px) {
+  /* 横条里面板没有高度约束，面板高度会跟着项目数长（实测 11 个项目把顶部横条撑到
+     412px，约占视口 2/3），编辑器只剩一条缝。封顶到视口 24%，超出的行在面板内滚；
+     1 个项目的自然高度（约 142px）低于此上限，不受影响。
+     这条规则必须写在组件自身：面板是 App 传进 EditorSidebar 的 slot 内容，
+     拿不到侧栏的 scoped 哈希，写在 editor-sidebar.css 里匹配不到。 */
+  .project-panel {
+    padding: 0;
+    /* 横条是给「当前面板」留的整行空间：面板按内容收缩会只剩 172px，
+       项目名 156px 就开始省略，右边空掉一大片。让它吃掉横条剩余宽度。 */
+    flex: 1 1 auto;
+    min-width: 0;
+    max-height: 24vh;
+    overflow-y: auto;
+  }
+
   .project-row {
     min-height: var(--row-h);
     padding: 0 8px;
