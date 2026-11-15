@@ -5,15 +5,10 @@ const DB_NAME = 'blockly-crypto-editor';
 const DB_VERSION = 1;
 const STORE_NAME = 'projects';
 
-export interface ProjectRecord {
-  id?: number;
-  name: string;
-  workspace: string;
-  format: 'json' | 'xml';
-  language: string;
-  createdAt: string;
-  updatedAt: string;
-}
+// 记录形状由 ProjectStore 端口定义（单一权威源），此处仅转出以兼容既有导入。
+import type { ProjectRecord } from '@/services/projects/ProjectStore';
+
+export type { ProjectRecord };
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
