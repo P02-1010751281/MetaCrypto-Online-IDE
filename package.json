@@ -22,7 +22,10 @@
     "url": "https://github.com/P02-1010751281/CipherCat"
   },
   "scripts": {
+    "pyodide:copy": "node scripts/copy-pyodide.mjs",
+    "predev": "npm run pyodide:copy",
     "dev": "vite",
+    "prebuild": "npm run pyodide:copy && npm run docs:index",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "type-check": "vue-tsc --noEmit",
@@ -52,7 +55,7 @@
     "verify:build": "vite build --config vite.verify.config.ts",
     "verify:templates": "npm run verify:build && node dist-verify/verify-templates.js",
     "verify:demos": "npm run verify:build && node scripts/verify-demos.mjs",
-    "verify:all": "npm run standards:check && npm run standards:split-check && npm run standards:formula-check && npm run coverage:check && npm run standards:inventory && npm run spec:validate && npm run spec:anchors && npm run spec:runs && npm run spec:candidates && npm run spec:matrix && npm run contract:check && npm run docs:titles:check && npm run build-guide:check && npm run docs:check-links && npm run docs:mermaid:check && npm run verify:build && node dist-verify/verify-templates.js && node scripts/verify-demos.mjs",
+    "verify:all": "npm run standards:check && npm run standards:split-check && npm run standards:formula-check && npm run coverage:check && npm run standards:inventory && npm run spec:validate && npm run spec:anchors && npm run spec:runs && npm run spec:candidates && node scripts/spec-scaffold.mjs --selftest && npm run spec:matrix && npm run contract:check && npm run docs:titles:check && npm run build-guide:check && npm run docs:check-links && npm run docs:mermaid:check && npm run docs:index:check && npm run verify:build && node dist-verify/verify-templates.js && node scripts/verify-demos.mjs",
     "tauri": "tauri",
     "tauri:dev": "WEBKIT_DISABLE_COMPOSITING_MODE=1 tauri dev",
     "tauri:build": "tauri build",
@@ -63,7 +66,11 @@
     "docs:titles:check": "node scripts/generate-doc-titles.mjs",
     "build-guide": "node scripts/generate-build-guide.mjs",
     "build-guide:check": "node scripts/generate-build-guide.mjs --check",
-    "coverage:check": "node scripts/check-coverage-counts.mjs"
+    "coverage:check": "node scripts/check-coverage-counts.mjs",
+    "docs:index": "AIVERIFY_ENTRY=scripts/ai-helper-docindex.ts AIVERIFY_OUTDIR=dist-verify/track-docindex vite build --config vite.verify.config.ts && node dist-verify/track-docindex/ai-helper-docindex.js index",
+    "docs:index:pdf": "AIVERIFY_ENTRY=scripts/ai-helper-docindex.ts AIVERIFY_OUTDIR=dist-verify/track-docindex vite build --config vite.verify.config.ts && node dist-verify/track-docindex/ai-helper-docindex.js index:pdf",
+    "docs:index:lit": "AIVERIFY_ENTRY=scripts/ai-helper-docindex.ts AIVERIFY_OUTDIR=dist-verify/track-docindex vite build --config vite.verify.config.ts && node dist-verify/track-docindex/ai-helper-docindex.js index:lit",
+    "docs:index:check": "AIVERIFY_ENTRY=scripts/ai-helper-docindex.ts AIVERIFY_OUTDIR=dist-verify/track-docindex vite build --config vite.verify.config.ts && node dist-verify/track-docindex/ai-helper-docindex.js check"
   },
   "dependencies": {
     "@tauri-apps/plugin-dialog": "^2.8.1",
@@ -89,6 +96,7 @@
     "eslint": "^10.0.0",
     "eslint-plugin-vue": "^10.0.0",
     "jsdom": "^29.1.1",
+    "pyodide": "^0.25.1",
     "terser": "^5.46.1",
     "typescript": "^6.0.0",
     "typescript-eslint": "^8.58.0",

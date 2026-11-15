@@ -16,6 +16,8 @@ export default [
       '**/.cargo/**',
       // 规格卡候选产物（spec:scaffold 生成，含 TODO 骨架）：是产物不是源码，不纳入 lint
       '**/spec-runs/**',
+      // Pyodide 运行时（scripts/copy-pyodide.mjs 从 node_modules 复制，已在 .gitignore）：是第三方产物
+      '**/public/pyodide/**',
       'src/blocks/procedure/encaps-prefill.ts',
     ],
   },
@@ -60,6 +62,7 @@ export default [
         HTMLInputElement: 'readonly',
         HTMLAnchorElement: 'readonly',
         __dirname: 'readonly',
+        process: 'readonly',
       },
     },
     rules: {
