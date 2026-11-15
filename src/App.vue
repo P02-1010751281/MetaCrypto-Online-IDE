@@ -1,15 +1,14 @@
 <template>
   <div ref="editorViewRef" class="editor-view" :inert="navigationPending" @click="closeMenus">
+    <!-- 窄屏侧栏被折成顶部横条：leftStyle 里的 `flex: 0 0 400px` 在纵向布局里
+         会变成「高度 400px」，一开检索面板顶栏就长成一大块，所以只在宽屏钉宽度。 -->
     <EditorSidebar
-      :style="leftStyle"
-      :project-name="projectName"
-      :save-status="saveStatus"
+      :style="isNarrowViewport ? undefined : leftStyle"
       :files="projectFileList"
       :active-file-id="activeProjectFileId"
       :entry-file-id="entryProjectFileId"
       :active-panel="activePanel"
       @back="goBack"
-      @update:project-name="projectName = $event"
       @select-file="onSelectProjectFile"
       @add-file="onAddProjectFile"
       @rename-file="onRenameProjectFile"
@@ -51,6 +50,7 @@
         :project-name="projectName"
         :file-name="activeProjectFile?.name"
         :is-entry="activeProjectFileId === entryProjectFileId"
+        @update:project-name="projectName = $event"
       />
       <EditorToolbar
         :saving="saving"
@@ -138,6 +138,7 @@ import {
 } from '@/constants/code-languages';
 import { useBlocklyLocale, ui } from '@/composables/locale';
 import { useEditorProject } from '@/composables/useEditorProject';
+import { patchProjectEntry, refreshProjectList } from '@/components/editor/useProjectList';
 import { useEditorToast } from '@/composables/useEditorToast';
 
 /**
@@ -258,6 +259,21 @@ const {
   getEntryWorkspace: () => getEntryWorkspace(),
 });
 saveHooks.markFilesChanged = markFilesChanged;
+
+// 侧栏「项目」面板是常驻组件：保存/切换不通知它，列表就会停在旧快照
+// （典型症状：改了项目名，项目面板里还是旧名）。
+watch(saveStatus, (status) => {
+  if (status !== 'saved') return;
+  patchProjectEntry(currentProjectId.value, {
+    name: projectName.value || undefined,
+    updatedAt: new Date().toISOString(),
+  });
+  void refreshProjectList();
+});
+
+watch(currentProjectId, () => {
+  void refreshProjectList();
+});
 
 const {
   openMenu,
@@ -398,6 +414,11 @@ const { editorViewRef, codeStyle, editorStyle, leftStyle, setLeftWidth, codePane
   .split-line {
     width: 40px;
     height: 2px;
+  }
+
+  /* 窄屏侧栏是顶部横条，没有左右分栏，左侧拖拽条既没意义还会在顶栏残留一截短线。 */
+  .split-handle-left {
+    display: none;
   }
 }
 </style>

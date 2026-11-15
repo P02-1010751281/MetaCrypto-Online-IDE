@@ -191,7 +191,8 @@ defineExpose({
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
+  height: var(--editor-bar-h);
+  padding: 0 var(--bar-pad-x);
   border-bottom: 1px solid var(--color-border);
   background: var(--color-bg-hover);
   font-size: 12px;

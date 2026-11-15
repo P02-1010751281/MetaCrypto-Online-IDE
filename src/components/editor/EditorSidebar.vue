@@ -1,89 +1,80 @@
 <template>
   <aside class="editor-sidebar">
-    <header class="sidebar-head">
-      <button class="icon-btn" :title="ui('back')" @click="$emit('back')">←</button>
-      <input
-        class="project-name"
-        :value="projectName"
-        :placeholder="ui('projectName')"
-        @input="$emit('update:projectName', ($event.target as HTMLInputElement).value)"
-      />
-      <span class="save-state" :class="saveStatus" :title="saveStateLabel">{{ saveStateDot }}</span>
-    </header>
+    <!-- activity bar 贴左满高（VS Code 模型）：图标从顶行开始，
+         项目名这类「当前对象」信息留在右侧面板列，不再横跨整个侧栏。 -->
+    <nav class="activity-bar" :aria-label="ui('panels')">
+    <button
+        class="activity-btn"
+        :class="{ active: activePanel === 'projects' }"
+        :title="ui('projects')"
+        :aria-pressed="activePanel === 'projects'"
+        @click="$emit('toggle-panel', 'projects')"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="4" y="4" width="6" height="6" rx="1" />
+          <rect x="14" y="4" width="6" height="6" rx="1" />
+          <rect x="4" y="14" width="6" height="6" rx="1" />
+          <rect x="14" y="14" width="6" height="6" rx="1" />
+        </svg>
+      </button>
+      <button
+        class="activity-btn"
+        :class="{ active: activePanel === 'files' }"
+        :title="ui('files')"
+        :aria-pressed="activePanel === 'files'"
+        @click="$emit('toggle-panel', 'files')"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+          <polyline points="14 3 14 9 20 9" />
+        </svg>
+      </button>
+      <button
+        class="activity-btn"
+        :class="{ active: activePanel === 'functions' }"
+        :title="ui('functionsPanel')"
+        :aria-pressed="activePanel === 'functions'"
+        @click="$emit('toggle-panel', 'functions')"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <polyline points="16 18 22 12 16 6" />
+          <polyline points="8 6 2 12 8 18" />
+        </svg>
+      </button>
+      <button
+        class="activity-btn"
+        :class="{ active: activePanel === 'docSearch' }"
+        :title="ui('docSearch')"
+        :aria-pressed="activePanel === 'docSearch'"
+        @click="$emit('toggle-panel', 'docSearch')"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M5 4h9l4 4v12H5z" />
+          <path d="M14 4v4h4" />
+          <circle cx="16.5" cy="16.5" r="2.5" />
+          <path d="M18.5 18.5 21 21" />
+        </svg>
+      </button>
+      <button
+        class="activity-btn"
+        :class="{ active: activePanel === 'blockSearch' }"
+        :title="ui('blockSearch')"
+        :aria-pressed="activePanel === 'blockSearch'"
+        @click="$emit('toggle-panel', 'blockSearch')"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="3" y="5" width="10" height="8" rx="2" />
+          <circle cx="16.5" cy="16.5" r="2.5" />
+          <path d="M18.5 18.5 21 21" />
+        </svg>
+      </button>
+    </nav>
 
-    <div class="sidebar-body">
-      <!-- activity bar：与 metacrypt 一致，点哪个在右侧展开哪个面板，互斥。 -->
-      <nav class="activity-bar" :aria-label="ui('panels')">
-        <button
-          class="activity-btn"
-          :class="{ active: activePanel === 'projects' }"
-          :title="ui('projects')"
-          :aria-pressed="activePanel === 'projects'"
-          @click="$emit('toggle-panel', 'projects')"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <rect x="4" y="4" width="6" height="6" rx="1" />
-            <rect x="14" y="4" width="6" height="6" rx="1" />
-            <rect x="4" y="14" width="6" height="6" rx="1" />
-            <rect x="14" y="14" width="6" height="6" rx="1" />
-          </svg>
-        </button>
-        <button
-          class="activity-btn"
-          :class="{ active: activePanel === 'files' }"
-          :title="ui('files')"
-          :aria-pressed="activePanel === 'files'"
-          @click="$emit('toggle-panel', 'files')"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
-            <polyline points="14 3 14 9 20 9" />
-          </svg>
-        </button>
-        <button
-          class="activity-btn"
-          :class="{ active: activePanel === 'functions' }"
-          :title="ui('functionsPanel')"
-          :aria-pressed="activePanel === 'functions'"
-          @click="$emit('toggle-panel', 'functions')"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <polyline points="16 18 22 12 16 6" />
-            <polyline points="8 6 2 12 8 18" />
-          </svg>
-        </button>
-        <button
-          class="activity-btn"
-          :class="{ active: activePanel === 'docSearch' }"
-          :title="ui('docSearch')"
-          :aria-pressed="activePanel === 'docSearch'"
-          @click="$emit('toggle-panel', 'docSearch')"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M5 4h9l4 4v12H5z" />
-            <path d="M14 4v4h4" />
-            <circle cx="16.5" cy="16.5" r="2.5" />
-            <path d="M18.5 18.5 21 21" />
-          </svg>
-        </button>
-        <button
-          class="activity-btn"
-          :class="{ active: activePanel === 'blockSearch' }"
-          :title="ui('blockSearch')"
-          :aria-pressed="activePanel === 'blockSearch'"
-          @click="$emit('toggle-panel', 'blockSearch')"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <rect x="3" y="5" width="10" height="8" rx="2" />
-            <circle cx="16.5" cy="16.5" r="2.5" />
-            <path d="M18.5 18.5 21 21" />
-          </svg>
-        </button>
-      </nav>
-
+    <div class="sidebar-main">
       <div class="side-panel">
         <section v-if="activePanel === 'files'" class="files-section">
           <div class="section-head">
+            <button class="ghost-btn" :title="ui('back')" @click="$emit('back')">←</button>
             <span class="section-title">{{ ui('files') }}</span>
             <button class="ghost-btn" :title="ui('newFile')" @click="$emit('add-file')">＋</button>
           </div>
@@ -144,8 +135,6 @@ import { ui } from '@/composables/locale';
 import type { EditorPanel } from './useEditorPanels';
 
 const props = defineProps<{
-  projectName: string;
-  saveStatus: 'saved' | 'unsaved' | 'error';
   files: ProjectFileRecord[];
   activeFileId: string;
   entryFileId: string;
@@ -154,7 +143,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'back'): void;
-  (e: 'update:projectName', value: string): void;
   (e: 'select-file', fileId: string): void;
   (e: 'add-file'): void;
   (e: 'rename-file', fileId: string, name: string): void;
@@ -163,16 +151,6 @@ const emit = defineEmits<{
   (e: 'toggle-panel', panel: EditorPanel): void;
 }>();
 
-const saveStateDot = computed(() =>
-  props.saveStatus === 'saved' ? '●' : props.saveStatus === 'error' ? '!' : '○',
-);
-const saveStateLabel = computed(() =>
-  props.saveStatus === 'saved'
-    ? ui('saved')
-    : props.saveStatus === 'error'
-      ? ui('saveError')
-      : ui('unsaved'),
-);
 const fileCountHint = computed(() =>
   props.files.length <= 1 ? ui('keepOneFile') : '',
 );

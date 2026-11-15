@@ -150,7 +150,7 @@ defineExpose({
 }
 
 :deep(.blocklyFlyoutBackground) {
-  fill: var(--el-fill-color-light, #f7f8fa) !important;
+  fill: var(--color-bg-hover) !important;
   fill-opacity: 0.97 !important;
 }
 
@@ -171,7 +171,7 @@ defineExpose({
 }
 
 :deep(.blocklyScrollbarHandle) {
-  fill: var(--el-border-color-hover, #c0c4cc) !important;
+  fill: var(--color-border-hover) !important;
   rx: 4 !important;
   ry: 4 !important;
 }

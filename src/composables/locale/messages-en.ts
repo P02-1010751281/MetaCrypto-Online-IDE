@@ -259,7 +259,7 @@ export const MESSAGES_EN: Record<string, string> = {
   CRYPTO_CLOSE: 'Close',
   CRYPTO_BLOCK_SEARCH_TITLE: 'Blocks',
   CRYPTO_BLOCK_SEARCH_PLACEHOLDER:
-    'Describe what you need, e.g. "compute a MAC with a 16-byte key" or "S-box"',
+    'Describe the task, e.g. "MAC with a 16-byte key"',
   CRYPTO_BLOCK_SEARCH_IN: 'Input type',
   CRYPTO_BLOCK_SEARCH_OUT: 'Output type',
   CRYPTO_BLOCK_SEARCH_ANY_IN: 'Any input',

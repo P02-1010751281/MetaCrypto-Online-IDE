@@ -203,7 +203,7 @@ function open(hit: DocHit): void {
   overflow: hidden;
   border: 1px solid var(--color-border, #d0d3d9);
   border-radius: 8px;
-  background: var(--el-bg-color-overlay, #fff);
+  background: var(--color-bg-elevated);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
   font-size: 13px;
 }
@@ -215,6 +215,18 @@ function open(hit: DocHit): void {
   border-radius: 0;
   box-shadow: none;
 }
+/* 同 BlockSearchPanel：内层 .dsp 默认悬浮宽度 min(760px, 94vw)，
+ * 停靠时必须下传栏宽，否则内容被栏的 overflow 裁掉右半边。 */
+.dsp-docked > .dsp {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  flex: 1;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
 .dsp-host.dsp-docked {
   height: 100%;
 }
@@ -222,8 +234,9 @@ function open(hit: DocHit): void {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--color-border, #d0d3d9);
+  height: var(--panel-head-h);
+  padding: 0 var(--panel-pad-x);
+  border-bottom: 1px solid var(--color-border);
 }
 .dsp-title {
   font-weight: 600;
@@ -237,7 +250,7 @@ function open(hit: DocHit): void {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: var(--el-text-color-regular, #606266);
+  color: var(--color-text);
   cursor: pointer;
 }
 .dsp-close {
@@ -246,25 +259,26 @@ function open(hit: DocHit): void {
   font-size: 18px;
   line-height: 1;
   cursor: pointer;
-  color: var(--el-text-color-secondary, #909399);
+  color: var(--color-text-secondary);
 }
 .dsp-query {
-  padding: 8px 12px;
+  padding: 6px var(--panel-pad-x);
   border-bottom: 1px solid var(--color-border, #d0d3d9);
 }
 .dsp-input {
   width: 100%;
-  padding: 6px 8px;
+  height: var(--control-h);
+  padding: 0 8px;
   border: 1px solid var(--color-border, #d0d3d9);
-  border-radius: 6px;
-  background: var(--el-bg-color, #fff);
-  color: var(--el-text-color-primary, #303133);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-card);
+  color: var(--color-text);
   font: inherit;
 }
 .dsp-hint {
   margin: 0;
-  padding: 16px 12px;
-  color: var(--el-text-color-secondary, #909399);
+  padding: 14px var(--panel-pad-x);
+  color: var(--color-text-secondary);
 }
 .dsp-results {
   margin: 0;
@@ -274,11 +288,11 @@ function open(hit: DocHit): void {
 }
 .dsp-item {
   padding: 8px 12px;
-  border-bottom: 1px solid var(--el-border-color-lighter, #ebeef5);
+  border-bottom: 1px solid var(--color-border);
   cursor: pointer;
 }
 .dsp-item-active {
-  background: var(--el-fill-color-light, #f5f7fa);
+  background: var(--color-bg-hover);
 }
 .dsp-item-head {
   display: flex;
@@ -295,27 +309,27 @@ function open(hit: DocHit): void {
   color: #fff;
 }
 .dsp-kind-md {
-  background: var(--el-color-primary, #409eff);
+  background: var(--color-primary);
 }
 .dsp-kind-pdf {
-  background: var(--el-color-warning, #e6a23c);
+  background: var(--color-warning);
 }
 .dsp-item-title {
   font-weight: 600;
 }
 .dsp-item-heading {
-  color: var(--el-text-color-regular, #606266);
+  color: var(--color-text);
 }
 .dsp-item-loc {
   margin-top: 2px;
   font-family: monospace;
   font-size: 12px;
-  color: var(--el-text-color-secondary, #909399);
+  color: var(--color-text-secondary);
   word-break: break-all;
 }
 .dsp-item-excerpt {
   margin-top: 4px;
-  color: var(--el-text-color-regular, #606266);
+  color: var(--color-text);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -326,6 +340,6 @@ function open(hit: DocHit): void {
   padding: 6px 12px;
   border-top: 1px solid var(--color-border, #d0d3d9);
   font-size: 12px;
-  color: var(--el-text-color-secondary, #909399);
+  color: var(--color-text-secondary);
 }
 </style>

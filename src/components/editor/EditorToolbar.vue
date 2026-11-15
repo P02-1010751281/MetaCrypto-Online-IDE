@@ -247,7 +247,8 @@ function onImportFile(event: Event): void {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  padding: 8px 12px;
+  min-height: var(--editor-bar-h);
+  padding: 2px var(--bar-pad-x);
   background: var(--color-bg-card);
   border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;

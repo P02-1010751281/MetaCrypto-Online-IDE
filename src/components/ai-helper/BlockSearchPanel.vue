@@ -12,7 +12,7 @@
           v-model="query"
           class="bsp-input"
           type="text"
-          :placeholder="t('CRYPTO_BLOCK_SEARCH_PLACEHOLDER', '描述你要做的事，例如「16 字节密钥算 MAC」或「S 盒」')"
+          :placeholder="t('CRYPTO_BLOCK_SEARCH_PLACEHOLDER', '描述要做的事，例如「16 字节密钥算 MAC」')"
           @keydown.down.prevent="move(1)"
           @keydown.up.prevent="move(-1)"
           @keydown.enter.prevent="pickSelected"
@@ -192,7 +192,7 @@ watch(hits, () => {
   overflow: hidden;
   border: 1px solid var(--color-border, #d0d3d9);
   border-radius: 8px;
-  background: var(--el-bg-color-overlay, #fff);
+  background: var(--color-bg-elevated);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
   font-size: 13px;
 }
@@ -204,12 +204,26 @@ watch(hits, () => {
   border-radius: 0;
   box-shadow: none;
 }
+/* 停靠态外层是「栏容器」，内层 .bsp 才是有边框的面板。内层默认是悬浮宽度
+ * min(560px, 92vw)，不显式下传就会被 355px 宽的栏 overflow 裁掉右半边
+ * （表现为占位文案、输入框、结果行被切）。 */
+.bsp-docked > .bsp {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  flex: 1;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
 .bsp-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--color-border, #d0d3d9);
+  height: var(--panel-head-h);
+  padding: 0 var(--panel-pad-x);
+  border-bottom: 1px solid var(--color-border);
 }
 .bsp-title {
   font-weight: 600;
@@ -225,36 +239,37 @@ watch(hits, () => {
 .bsp-query {
   display: flex;
   gap: 6px;
-  padding: 8px 12px;
+  padding: 6px var(--panel-pad-x);
   border-bottom: 1px solid var(--color-border, #d0d3d9);
 }
 .bsp-input {
   flex: 1;
   min-width: 0;
-  padding: 5px 8px;
+  height: var(--control-h);
+  padding: 0 8px;
   border: 1px solid var(--color-border, #d0d3d9);
-  border-radius: 4px;
-  background: var(--el-fill-color-blank, #fff);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-card);
   color: inherit;
   font: inherit;
 }
 .bsp-filters {
-  padding: 0 12px 6px;
+  padding: 0 var(--panel-pad-x) 6px;
   border-bottom: 1px solid var(--color-border, #d0d3d9);
 }
 .bsp-filters-summary {
   cursor: pointer;
   padding: 4px 0;
   font-size: 11px;
-  color: var(--el-text-color-secondary, #888);
+  color: var(--color-text-secondary);
   user-select: none;
 }
 .bsp-filters-tag {
   margin-left: 6px;
   padding: 0 4px;
   border-radius: 3px;
-  background: var(--el-fill-color, rgba(0, 0, 0, 0.06));
-  font-family: var(--font-mono, monospace);
+  background: var(--color-bg-hover);
+  font-family: var(--font-family-mono);
 }
 .bsp-filter-row {
   display: flex;
@@ -264,15 +279,15 @@ watch(hits, () => {
 .bsp-select {
   max-width: 108px;
   border: 1px solid var(--color-border, #d0d3d9);
-  border-radius: 4px;
-  background: var(--el-fill-color-blank, #fff);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-card);
   color: inherit;
   font: inherit;
 }
 .bsp-hint {
   margin: 0;
   padding: 14px 12px;
-  color: var(--el-text-color-secondary, #888);
+  color: var(--color-text-secondary);
   line-height: 1.5;
 }
 .bsp-results {
@@ -288,8 +303,8 @@ watch(hits, () => {
   cursor: pointer;
 }
 .bsp-item-active {
-  border-left-color: var(--el-color-primary, #4a90d9);
-  background: var(--el-fill-color-light, #f2f6fc);
+  border-left-color: var(--color-primary);
+  background: var(--color-bg-hover);
 }
 .bsp-item-head {
   display: flex;
@@ -302,7 +317,7 @@ watch(hits, () => {
   white-space: nowrap;
 }
 .bsp-item-type {
-  color: var(--el-text-color-secondary, #888);
+  color: var(--color-text-secondary);
   font-size: 11px;
 }
 .bsp-item-meta {
@@ -310,11 +325,11 @@ watch(hits, () => {
   flex-wrap: wrap;
   gap: 4px 8px;
   margin-top: 2px;
-  color: var(--el-text-color-secondary, #888);
+  color: var(--color-text-secondary);
   font-size: 11px;
 }
 .bsp-tag-out {
-  color: var(--el-color-success, #2e7d32);
+  color: var(--color-success);
 }
 .bsp-reason {
   overflow: hidden;
@@ -326,7 +341,7 @@ watch(hits, () => {
   margin: 0;
   padding: 6px 12px;
   border-top: 1px solid var(--color-border, #d0d3d9);
-  color: var(--el-text-color-secondary, #888);
+  color: var(--color-text-secondary);
   font-size: 11px;
 }
 </style>

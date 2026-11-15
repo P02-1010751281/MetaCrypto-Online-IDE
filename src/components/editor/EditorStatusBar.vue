@@ -31,7 +31,7 @@ defineProps<{
   align-items: center;
   gap: 14px;
   flex-shrink: 0;
-  padding: 3px 12px;
+  padding: 3px var(--bar-pad-x);
   border-top: 1px solid var(--color-border);
   background: var(--color-bg-card);
   font-size: 11px;
