@@ -55,7 +55,7 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-// 与 src/blocks/procedure/blocks.ts TEMPLATE_PREFILL 对齐（29 模板）
+// 与 src/blocks/procedure/blocks/template-prefill.ts TEMPLATE_PREFILL 对齐（29 模板）
 // returnChain 顺序：叶子 → 根（buildReturnChain 语义）
 const TEMPLATES: TemplateCase[] = [
   { name: 'crypto_hash_func', paramName: 'message', paramType: 'message', returnChain: ['variables_get', 'hash_sha256_pad'] },
