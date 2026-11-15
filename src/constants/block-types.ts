@@ -22,12 +22,6 @@ export const TYPE_SBOX = 'SBox';
 /** 比特数组 — {0,1} 序列，严格区别于 IntList */
 export const TYPE_BITS = 'Bits';
 
-/** 矩阵标签 — 二维 IntList，密码学矩阵非通用线性代数 */
-export const TYPE_MATRIX = 'Matrix';
-
-/** 向量标签 — 一维 IntList */
-export const TYPE_VECTOR = 'Vector';
-
 /** Blockly 原生数字类型（用于标量常数） */
 export const TYPE_NUMBER = 'Number';
 
@@ -38,7 +32,13 @@ export const TYPE_STRING = 'String';
 /** Blockly 原生布尔类型 */
 export const TYPE_BOOLEAN = 'Boolean';
 
-/** Blockly 原生数组类型 */
+/**
+ * Blockly 原生数组类型。
+ *
+ * 保留它是因为 Blockly 原生列表块（`lists_create_with` / `lists_repeat` …）的输出标签就是
+ * `'Array'`；`src/blocks/list-bridge.ts` 把这一族桥接进密码槽位时必须以它作为可接受标签之一，
+ * 否则就只能在各处写裸字符串。它**不是**密码学领域类型，不出现在契约里。
+ */
 export const TYPE_ARRAY = 'Array';
 
 /**
@@ -113,20 +113,6 @@ export const TYPE_MAP: Record<string, TypeMapping> = {
     pythonHint: 'list[int]',
     javascript: 'number[]',
     mcl: 'BITS',
-  },
-  [TYPE_MATRIX]: {
-    blockly: TYPE_MATRIX,
-    python: 'list[list[int]]',
-    pythonHint: 'list[list[int]]',
-    javascript: 'number[][]',
-    mcl: 'MATRIX',
-  },
-  [TYPE_VECTOR]: {
-    blockly: TYPE_VECTOR,
-    python: 'list[int]',
-    pythonHint: 'list[int]',
-    javascript: 'number[]',
-    mcl: 'VECTOR',
   },
 };
 

@@ -36,6 +36,14 @@ import { Block } from 'blockly/core';
 import { javascriptGenerator, Order } from 'blockly/javascript';
 import { getMigrationMap } from '@/utils/migration';
 
+javascriptGenerator.forBlock['data_int_list'] = function (
+  block: Block,
+): [string, Order] {
+  // 单元格扁平存储，形状只是展示与校验元数据：生成代码始终是一维列表字面量。
+  const values = (block as unknown as { values?: string[] }).values ?? [];
+  return [`[${values.join(', ')}]`, Order.ATOMIC];
+};
+
 javascriptGenerator.forBlock['data_value'] = function (
   block: Block,
 ): [string, Order] {

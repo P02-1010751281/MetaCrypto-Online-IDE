@@ -31,6 +31,7 @@
 | [DEVELOPMENT.md](./guides/DEVELOPMENT.md) | 开发者 | 环境搭建、添加积木块步骤、i18n、代码风格 |
 | [TYPE-SYSTEM.md](./guides/TYPE-SYSTEM.md) | 开发者 | Blockly 类型声明、实际连接检查规则与显式转换 |
 | [SPEC-CARDS.md](./guides/SPEC-CARDS.md) | 开发者 | 规格卡（SpecCard）与运行清单契约及门禁：原文锚点、制品哈希、输入/产出哈希与块映射如何被脚本重算 |
+| [METACRYPT-SYNC.md](./guides/METACRYPT-SYNC.md) | 开发者 | 两仓编辑器壳与运行链的对齐判定：可镜像、需适配、必须排除三类，附复跑命令 |
 
 ### 📊 状态与审计
 
@@ -109,7 +110,7 @@
 | [STRUCTURED-ENTRY-SCHEMA.md](./standards/STRUCTURED-ENTRY-SCHEMA.md) | 函数、原语、公式和算法阶段的统一条目字段 |
 | [SOURCE-SPLIT-COVERAGE.md](./audits/standards/SOURCE-SPLIT-COVERAGE.md) | source 原文到结构化条目的覆盖审计与验收标准 |
 | [SOURCE-SPLIT-INVENTORY.md](./audits/standards/SOURCE-SPLIT-INVENTORY.md) | 229 个结构化条目的逐项 source 回链清单 |
-| [CONFORMANCE-INVENTORY.md](./standards/CONFORMANCE-INVENTORY.md) | 221 个活动块（另 1 个兼容身份）、29 个 Procedure 模板和 60 个 Demo 的验证对象与证据范围 |
+| [CONFORMANCE-INVENTORY.md](./standards/CONFORMANCE-INVENTORY.md) | 222 个活动块（另 1 个兼容身份）、29 个 Procedure 模板和 60 个 Demo 的验证对象与证据范围 |
 | [ENDPOINT-MATRIX.md](./demos/ENDPOINT-MATRIX.md) | 块端点（标准公开算法接口）对照表 |
 | [PRODUCT-CERTIFICATION-FEASIBILITY.md](./standards/PRODUCT-CERTIFICATION-FEASIBILITY.md) | 正式认证路径、候选产品边界、当前缺口与决策顺序 |
 

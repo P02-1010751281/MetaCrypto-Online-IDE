@@ -12,22 +12,22 @@
             {
               "name": "state_0",
               "id": "param_state_0",
-              "type": "int"
+              "type": "int_list"
             },
             {
               "name": "state_1",
               "id": "param_state_1",
-              "type": "int"
+              "type": "int_list"
             },
             {
               "name": "state_2",
               "id": "param_state_2",
-              "type": "int"
+              "type": "int_list"
             },
             {
               "name": "state_3",
               "id": "param_state_3",
-              "type": "int"
+              "type": "int_list"
             },
             {
               "name": "rk",

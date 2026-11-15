@@ -83,7 +83,7 @@ Blockly.Blocks['ccm_decrypt'] = {
 
 /** CCM 内部算子（SP 800-38C §A.1–A.3）：B0、计数器块、CBC-MAC。 */Blockly.Blocks['ccm_b0'] = {
   init: function () {
-    this.appendValueInput('NONCE').setCheck(TYPE_INT_LIST).appendField('CCM-B0( nonce:');
+    this.appendValueInput('NONCE').setCheck(TYPE_INT_LIST).appendField('CCM-B0 首个计数器块( nonce:');
     this.appendValueInput('MSGLEN').setCheck(TYPE_NUMBER).appendField(' msgLen:');
     this.appendValueInput('AADLEN').setCheck(TYPE_NUMBER).appendField(' aadLen:');
     this.appendDummyInput()

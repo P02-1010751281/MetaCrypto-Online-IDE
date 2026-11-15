@@ -2042,6 +2042,26 @@
     "previousStatement": null,
     "nextStatement": null
   },
+  "data_int_list": {
+    "inputs": [
+      {
+        "name": "",
+        "type": 5,
+        "check": null
+      }
+    ],
+    "fields": [
+      {
+        "name": "SHAPE",
+        "fieldClass": ""
+      }
+    ],
+    "outputCheck": [
+      "IntList"
+    ],
+    "previousStatement": null,
+    "nextStatement": null
+  },
   "data_value": {
     "inputs": [
       {

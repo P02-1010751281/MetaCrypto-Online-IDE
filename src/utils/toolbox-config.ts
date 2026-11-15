@@ -49,6 +49,7 @@ export function createToolboxConfig() {
     'data_convert_bits_to_bytes',
     'data_convert_bytes_to_bits',
     'data_value',
+    'data_int_list',
     'seed_bytes',
     'seed_hex',
     'cipher_key_from_seed',

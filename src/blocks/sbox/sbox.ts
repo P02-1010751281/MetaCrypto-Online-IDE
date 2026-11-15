@@ -1,6 +1,16 @@
 import * as Blockly from 'blockly/core';
 import { TYPE_SBOX } from '@/constants/block-types';
 import { SBOX_PRESETS } from '@/constants/sbox-presets';
+import {
+  GRID_ICONS,
+  downloadCsv,
+  openGridPopup,
+  parseCsv,
+  pickCsvFile,
+  type GridHost,
+  svgRoot,
+  type GridPopupHandle,
+} from '@/blocks/grid/grid-editor';
 
 export const SBOX_BLOCK_TYPES = ['sbox', 'sbox_sub'] as const;
 
@@ -9,10 +19,11 @@ export type SBoxBlockType = (typeof SBOX_BLOCK_TYPES)[number];
 interface SBoxBlock extends Blockly.Block {
   gridData: string[];
   settingsPopup: HTMLDivElement | null;
-  settingsPopupClickHandler: ((_e: MouseEvent) => void) | null;
+  popupHandle: GridPopupHandle | null;
   exportToCsv: () => void;
   openCsvImportDialog: () => void;
   loadCsvData: (_file: File) => void;
+  applyCsvText: (text: string, size: number) => void;
   updateShape: () => void;
   toggleSboxTable: () => void;
 }
@@ -22,14 +33,9 @@ const openPopupBlocks = new Set<SBoxBlock>();
 
 export function closeAllSboxPopups(): void {
   for (const block of openPopupBlocks) {
-    if (block.settingsPopup) {
-      block.settingsPopup.remove();
-      block.settingsPopup = null;
-    }
-    if (block.settingsPopupClickHandler) {
-      document.removeEventListener('click', block.settingsPopupClickHandler);
-      block.settingsPopupClickHandler = null;
-    }
+    block.popupHandle?.close();
+    block.popupHandle = null;
+    block.settingsPopup = null;
   }
   openPopupBlocks.clear();
 }
@@ -53,13 +59,6 @@ function getSboxRowCol(this: SBoxBlock) {
   const maxCol = Math.min(col, 32);
   return { maxRow, maxCol };
 }
-
-const iconLoad =
-  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2Ij48cmVjdCB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM0NDQiIHJ4PSIyIi8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTcgM2gydjRINGEyVjNoM3YySDl2NGgtMlY1SDRWM2gzeiIvPjwvc3ZnPg==';
-const iconSave =
-  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2Ij48cmVjdCB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiMyYTliZCIgcng9IjIiLz48cGF0aCBmaWxsPSIjZmZmIiBkPSJNOCAydjZINmwzIDMgMy0zaC0yVjJ6TTIgMTJoMTJ2MkgyeiIvPjwvc3ZnPg==';
-const iconTable =
-  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2Ij48cmVjdCB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIGZpbGw9IiM2YTYiIHJ4PSIyIi8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTIgMmgxMnYxMkgyVjJ6bTEgMXY0aDRWM0gzem01IDB2NGg0VjNIOHpNMyA4djRoNFY4SDN6bTUgMHY0aDRWOEg4eiIvPjwvc3ZnPg==';
 
 Blockly.Blocks['sbox'] = {
    
@@ -103,17 +102,17 @@ Blockly.Blocks['sbox'] = {
       .appendField(Blockly.Msg.CRYPTO_SBOX_PRESET || 'Preset')
       .appendField(presetDropdown, 'PRESET')
       .appendField(
-        new Blockly.FieldImage(iconLoad, 16, 16, '导入CSV', () => {
+        new Blockly.FieldImage(GRID_ICONS.load, 16, 16, '导入CSV', () => {
           this.openCsvImportDialog();
         }),
       )
       .appendField(
-        new Blockly.FieldImage(iconSave, 16, 16, '导出CSV', () => {
+        new Blockly.FieldImage(GRID_ICONS.save, 16, 16, '导出CSV', () => {
           this.exportToCsv();
         }),
       )
       .appendField(
-        new Blockly.FieldImage(iconTable, 16, 16, '查看表格', () => {
+        new Blockly.FieldImage(GRID_ICONS.table, 16, 16, '查看表格', () => {
           this.toggleSboxTable();
         }),
       );
@@ -143,12 +142,9 @@ Blockly.Blocks['sbox'] = {
       } else if (event.type === Blockly.Events.BLOCK_DELETE) {
         const e = event as Blockly.Events.BlockDelete;
         if (e.blockId === this.id) {
-          if (this.settingsPopupClickHandler && this.settingsPopup) {
-            document.removeEventListener('click', this.settingsPopupClickHandler);
-            this.settingsPopup.remove();
-            this.settingsPopup = null;
-            this.settingsPopupClickHandler = null;
-          }
+          this.popupHandle?.close();
+          this.popupHandle = null;
+          this.settingsPopup = null;
         }
       }
     });
@@ -272,163 +268,83 @@ Blockly.Blocks['sbox'] = {
 
    
   toggleSboxTable: function (this: SBoxBlock) {
-    if (this.settingsPopup) {
-      this.settingsPopup.remove();
-      this.settingsPopup = null;
-      if (this.settingsPopupClickHandler) {
-        document.removeEventListener('click', this.settingsPopupClickHandler);
-        this.settingsPopupClickHandler = null;
-      }
-      openPopupBlocks.delete(this);
+    if (this.popupHandle) {
+      this.popupHandle.close();
       return;
     }
-
-    const { maxRow, maxCol } = getSboxRowCol.call(this);
-    const popup = document.createElement('div');
-    popup.style.cssText =
-      'position:fixed;z-index:10000;background:var(--el-bg-color-overlay,#fff);' +
-      'border:2px solid var(--el-color-primary,#4a90d9);border-radius:8px;padding:12px;' +
-      'color:var(--el-text-color-primary,#333);' +
-      'max-width:min(90vw,720px);' +
-      'box-shadow:0 4px 20px rgba(0,0,0,0.25);' +
-      'font-family:monospace;max-height:420px;overflow:auto;';
-
-    const title = document.createElement('div');
-    title.style.cssText =
-      'font-size:14px;font-weight:bold;margin-bottom:8px;color:var(--el-text-color-primary,#333);';
-    title.textContent = 'S-box ' + maxRow + 'x' + maxCol;
-    popup.appendChild(title);
-
-    const table = document.createElement('table');
-    table.style.cssText = 'border-collapse:collapse;';
-    const tr = document.createElement('tr');
-    const empty = document.createElement('th');
-    empty.style.cssText =
-      'border:1px solid var(--el-border-color,#bbb);padding:3px 6px;background:var(--el-fill-color-light,#e8f4fd);text-align:center;min-width:28px;';
-    tr.appendChild(empty);
-    for (let c = 0; c < maxCol; c++) {
-      const th = document.createElement('th');
-      th.style.cssText =
-        'border:1px solid var(--el-border-color,#bbb);padding:3px 6px;background:var(--el-fill-color-light,#e8f4fd);text-align:center;font-weight:bold;';
-      th.textContent = 'x' + c.toString(16).toUpperCase();
-      tr.appendChild(th);
-    }
-    table.appendChild(tr);
-    for (let r = 0; r < maxRow; r++) {
-      const tr2 = document.createElement('tr');
-      const rh = document.createElement('td');
-      rh.style.cssText =
-        'border:1px solid var(--el-border-color,#bbb);padding:3px 6px;background:var(--el-fill-color-light,#e8f4fd);text-align:center;font-weight:bold;';
-      rh.textContent = r.toString(16).toUpperCase();
-      tr2.appendChild(rh);
-      for (let c = 0; c < maxCol; c++) {
-        const td = document.createElement('td');
-        td.style.cssText =
-          'border:1px solid var(--el-border-color,#bbb);padding:3px 6px;text-align:center;font-family:monospace;';
-        td.textContent =
-          this.gridData && r * maxCol + c < this.gridData.length
-            ? this.gridData[r * maxCol + c]
-            : '00';
-        tr2.appendChild(td);
-      }
-      table.appendChild(tr2);
-    }
-    popup.appendChild(table);
-    document.body.appendChild(popup);
-
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const el = (this as any).getSvgRoot();
-      const bbox = el.getBoundingClientRect();
-      let x = bbox.right + 8,
-        y = bbox.top;
-      const pw = popup.offsetWidth || 200,
-        ph = popup.offsetHeight || 300;
-      x = Math.max(8, Math.min(x, window.innerWidth - pw - 8));
-      y = Math.max(8, Math.min(y, window.innerHeight - ph - 8));
-      popup.style.left = x + 'px';
-      popup.style.top = y + 'px';
-    } catch (error) {
-      // 定位失败时退回左上角固定位置，避免弹窗跑到屏幕外；记录原因便于排查。
-      console.warn('sbox: popup positioning failed', error);
-      popup.style.left = '80px';
-      popup.style.top = '80px';
-    }
-
-    this.settingsPopup = popup;
-    const handler = (e: MouseEvent) => {
-      if (popup && !popup.contains(e.target as Node)) this.toggleSboxTable();
+    const host: GridHost = {
+      getCells: () => this.gridData ?? [],
+      setCells: (cells) => {
+        this.gridData = cells;
+      },
+      getShape: () => {
+        const { maxRow, maxCol } = getSboxRowCol.call(this);
+        return [maxRow, maxCol];
+      },
+      normalize: hexValidator,
+      getAnchor: () => svgRoot(this),
+      warn: (message) => this.setWarningText(message),
     };
-    setTimeout(() => document.addEventListener('click', handler));
-    this.settingsPopupClickHandler = handler;
+    this.popupHandle = openGridPopup(host, {
+      title: 'S-box',
+      onClose: () => {
+        this.popupHandle = null;
+        this.settingsPopup = null;
+        openPopupBlocks.delete(this);
+      },
+    });
+    this.settingsPopup = this.popupHandle.element;
     openPopupBlocks.add(this);
   },
 
   loadCsvData: function (this: SBoxBlock, file: File) {
-    void this;
     const { maxRow, maxCol } = getSboxRowCol.call(this);
     const size = maxRow * maxCol;
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = e.target?.result as string;
-      try {
-        const vals = text
-          .split(',')
-          .map((v) => v.trim())
-          .filter((v) => v.length > 0);
-        if (vals.length !== size)
-          throw new Error('CSV: ' + vals.length + ' values, need ' + size);
-        const validated: string[] = [];
-        vals.forEach((v, i) => {
-          const vv = hexValidator(v);
-          if (vv === null)
-            throw new Error('CSV row ' + (i + 1) + ' invalid: ' + v);
-          validated.push(vv.padStart(2, '0'));
-        });
-        this.gridData = validated;
-        this.setWarningText(null);
-      } catch (err) {
-        this.setWarningText((err as Error).message);
-        this.gridData = Array.from({ length: size }, () => '00');
-      }
+    reader.onload = (event) => {
+      this.applyCsvText(String(event.target?.result ?? ''), size);
     };
-    reader.onerror = () => {
-      this.setWarningText('CSV read failed');
-      this.gridData = Array.from({ length: size }, () => '00');
-    };
+    reader.onerror = () => this.setWarningText('CSV 读取失败');
     reader.readAsText(file);
   },
 
-   
-  openCsvImportDialog: function (this: SBoxBlock) {
-    void this;
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.csv,.txt';
-    input.style.display = 'none';
-    input.onchange = () => {
-      const file = (input as HTMLInputElement).files?.[0];
-      if (file) this.loadCsvData(file);
-      document.body.removeChild(input);
-    };
-    document.body.appendChild(input);
-    input.click();
+  /** 校验并写入 CSV 文本；长度或取值不合法时清空为默认值并给出警告。 */
+  applyCsvText: function (this: SBoxBlock, text: string, size: number) {
+    const values = parseCsv(text);
+    if (values.length !== size) {
+      this.setWarningText(`CSV: ${values.length} 个值，需要 ${size}`);
+      this.gridData = Array.from({ length: size }, () => '00');
+      return;
+    }
+    const validated: string[] = [];
+    for (const [index, value] of values.entries()) {
+      const normalized = hexValidator(value);
+      if (normalized === null) {
+        this.setWarningText(`CSV 第 ${index + 1} 个值非法：${value}`);
+        this.gridData = Array.from({ length: size }, () => '00');
+        return;
+      }
+      validated.push(normalized.padStart(2, '0'));
+    }
+    this.gridData = validated;
+    this.setWarningText(null);
   },
 
-   
+  openCsvImportDialog: function (this: SBoxBlock) {
+    const { maxRow, maxCol } = getSboxRowCol.call(this);
+    const size = maxRow * maxCol;
+    pickCsvFile(
+      (text) => this.applyCsvText(text, size),
+      (message) => this.setWarningText(message),
+    );
+  },
+
   exportToCsv: function (this: SBoxBlock) {
     const { maxRow, maxCol } = getSboxRowCol.call(this);
-    const csv = this.gridData.slice(0, maxRow * maxCol).join(',');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'sbox_' + maxRow + 'x' + maxCol + '.csv';
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    downloadCsv(
+      `sbox_${maxRow}x${maxCol}.csv`,
+      this.gridData.slice(0, maxRow * maxCol),
+    );
   },
 };
 

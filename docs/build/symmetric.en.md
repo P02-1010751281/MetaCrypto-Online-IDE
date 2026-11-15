@@ -170,7 +170,7 @@ Block ciphers, modes, and authenticated encryption: assemble round/mode chains f
 
 #### Assembly steps
 
-**Return value of `SM4_Round(state_0: int, state_1: int, state_2: int, state_3: int, rk: int)`**
+**Return value of `SM4_Round(state_0: int_list, state_1: int_list, state_2: int_list, state_3: int_list, rk: int)`**
 
 - `sm4_round_func` (round function F(X0,X1,X2,X3,rk))
   - `X0` ←
@@ -196,7 +196,7 @@ Block ciphers, modes, and authenticated encryption: assemble round/mode chains f
 
 #### Assembly steps
 
-**Return value of `SM4_Round(state_0: int, state_1: int, state_2: int, state_3: int, rk: int)`**
+**Return value of `SM4_Round(state_0: int_list, state_1: int_list, state_2: int_list, state_3: int_list, rk: int)`**
 
 - `sm4_round_func` (round function F(X0,X1,X2,X3,rk))
   - `X0` ←

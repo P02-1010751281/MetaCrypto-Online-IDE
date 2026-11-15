@@ -6,6 +6,7 @@
 | Block | Layer | Connection | Input→Output |
 |----|----|------|----------|
 | `data_value` | 1 | value(→) | —→null |
+| `data_int_list` | 1 | value(→) | —→IntList |
 | `seed_bytes` | 1 | value(→) | —→Bytes |
 | `seed_hex` | 1 | value(→) | —→null |
 | `cipher_key_from_seed` | 1 | value(→) | —→IntList |

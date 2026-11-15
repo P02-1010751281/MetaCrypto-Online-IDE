@@ -31,6 +31,7 @@ Block documentation follows one overview plus multiple details: start with the [
 | [DEVELOPMENT.en.md](./guides/DEVELOPMENT.en.md) | Developers | Environment setup, adding blocks, i18n, code style |
 | [TYPE-SYSTEM.en.md](./guides/TYPE-SYSTEM.en.md) | Developers | Blockly type declarations, connection checks, and explicit conversions |
 | [SPEC-CARDS.en.md](./guides/SPEC-CARDS.en.md) | Developers | SpecCard and run-manifest contracts and gates: how anchors, artifact hashes, input/output hashes and block mappings are recomputed |
+| [METACRYPT-SYNC.en.md](./guides/METACRYPT-SYNC.en.md) | Developers | Alignment verdict for the editor shell and run chain across both repositories: mirrorable, needing adaptation, and excluded, with re-runnable checks |
 
 ### 📊 Status and audits
 
@@ -110,7 +111,7 @@ These pages record extraction, splitting, evidence ledgers, and certification pr
 | [STRUCTURED-ENTRY-SCHEMA.en.md](./standards/STRUCTURED-ENTRY-SCHEMA.en.md) | Common entry fields for functions, primitives, formulas, and algorithm stages |
 | [SOURCE-SPLIT-COVERAGE.en.md](./audits/standards/SOURCE-SPLIT-COVERAGE.en.md) | Source-to-entry split coverage and acceptance boundary |
 | [SOURCE-SPLIT-INVENTORY.en.md](./audits/standards/SOURCE-SPLIT-INVENTORY.en.md) | Entry-by-entry source links for 229 structured entries |
-| [CONFORMANCE-INVENTORY.md](./standards/CONFORMANCE-INVENTORY.md) | Verification objects and evidence scope for 221 active blocks (plus 1 compat identity), 29 procedure templates, and 60 demos (Chinese only) |
+| [CONFORMANCE-INVENTORY.md](./standards/CONFORMANCE-INVENTORY.md) | Verification objects and evidence scope for 222 active blocks (plus 1 compat identity), 29 procedure templates, and 60 demos (Chinese only) |
 | [ENDPOINT-MATRIX.md](./demos/ENDPOINT-MATRIX.md) | Block endpoint (public standard algorithm interface) matrix (Chinese only) |
 | [PRODUCT-CERTIFICATION-FEASIBILITY.en.md](./standards/PRODUCT-CERTIFICATION-FEASIBILITY.en.md) | Formal certification routes, candidate product boundary, gaps, and decision sequence |
 
