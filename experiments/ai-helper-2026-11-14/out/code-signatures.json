@@ -1,0 +1,3923 @@
+{
+  "generatedAt": "2026-11-14T09:00:58.915Z",
+  "stats": {
+    "total": 221,
+    "pythonOk": 219,
+    "javascriptOk": 219,
+    "leafPython": 8,
+    "withDefinitionsPython": 121,
+    "withDefinitionsJavascript": 111,
+    "errors": 2
+  },
+  "collisions": [],
+  "signatures": [
+    {
+      "type": "aes_add_round_key",
+      "python": {
+        "template": "aes_add_round_key(zzsigv_STATE, zzsigv_ROUND_KEY)",
+        "order": null,
+        "definitions": [
+          "aes_add_round_key"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "aesAddRoundKey(zzsigv_STATE, zzsigv_ROUND_KEY)",
+        "order": null,
+        "definitions": [
+          "aesAddRoundKey"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "aes_mix_columns",
+      "python": {
+        "template": "aes_mix_columns(zzsigv_STATE)",
+        "order": null,
+        "definitions": [
+          "aes_mix_columns"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "aesMixColumns(zzsigv_STATE)",
+        "order": null,
+        "definitions": [
+          "aesMixColumns"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "aes_shift_rows",
+      "python": {
+        "template": "aes_shift_rows(zzsigv_STATE)",
+        "order": null,
+        "definitions": [
+          "aes_shift_rows"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "aesShiftRows(zzsigv_STATE)",
+        "order": null,
+        "definitions": [
+          "aesShiftRows"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "aes_sub_bytes",
+      "python": {
+        "template": "aes_sub_bytes(zzsigv_STATE)",
+        "order": null,
+        "definitions": [
+          "aes_sbox",
+          "aes_sub_bytes"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "aesSubBytes(zzsigv_STATE)",
+        "order": null,
+        "definitions": [
+          "aes_sbox",
+          "aesSubBytes"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "argon2_g",
+      "python": {
+        "template": "bytes(argon2_g(zzsigv_X, zzsigv_Y))",
+        "order": null,
+        "definitions": [
+          "argon2_g"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(argon2G(zzsigv_X, zzsigv_Y))",
+        "order": null,
+        "definitions": [
+          "argon2G"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "argon2_hash",
+      "python": {
+        "template": "bytes(argon2_hash(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_SECRET, zzsigv_AD, zzsigv_M_COST, zzsigv_T_COST, zzsigv_LANES, zzsigv_TAGLEN, 0))",
+        "order": null,
+        "definitions": [
+          "argon2_hash"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(argon2Hash(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_SECRET, zzsigv_AD, zzsigv_M_COST, zzsigv_T_COST, zzsigv_LANES, zzsigv_TAGLEN, 0))",
+        "order": null,
+        "definitions": [
+          "argon2Hash"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "arr_partition_to_array",
+      "python": {
+        "template": "zzsigv_TARGET = crypto_partition_array(zzsigv_SRC, zzsigv_COUNT, \"BYTES\")\n",
+        "order": null,
+        "definitions": [
+          "crypto_partition_array"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "zzsigv_TARGET = cryptoPartitionArray(zzsigv_SRC, zzsigv_COUNT, \"BYTES\");\n",
+        "order": null,
+        "definitions": [
+          "cryptoPartitionArray"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "arr_slice",
+      "python": {
+        "template": "crypto_array_slice(zzsigv_LIST, zzsigv_START, zzsigv_LENGTH)",
+        "order": null,
+        "definitions": [
+          "crypto_array_slice"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "cryptoArraySlice(zzsigv_LIST, zzsigv_START, zzsigv_LENGTH)",
+        "order": null,
+        "definitions": [
+          "cryptoArraySlice"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "ascon_cxof128",
+      "python": {
+        "template": "bytes(ascon_hash_xof(zzsigv_MSG, zzsigv_LEN, zzsigv_CUSTOM, 0x0000080000CC0004))",
+        "order": null,
+        "definitions": [
+          "ascon_permute",
+          "ascon_hash_xof"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(asconHashXof(zzsigv_MSG, zzsigv_LEN, zzsigv_CUSTOM, 0x0000080000cc0004n))",
+        "order": null,
+        "definitions": [
+          "asconPermute",
+          "asconHashXof"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "ascon_decrypt",
+      "python": {
+        "template": "bytes(ascon_decrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AD, zzsigv_CT))",
+        "order": null,
+        "definitions": [
+          "ascon_decrypt"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(asconDecrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AD, zzsigv_CT))",
+        "order": null,
+        "definitions": [
+          "asconDecrypt"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "ascon_encrypt",
+      "python": {
+        "template": "bytes(ascon_encrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AD, zzsigv_MSG))",
+        "order": null,
+        "definitions": [
+          "ascon_encrypt"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(asconEncrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AD, zzsigv_MSG))",
+        "order": null,
+        "definitions": [
+          "asconEncrypt"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "ascon_hash256",
+      "python": {
+        "template": "bytes(ascon_hash_xof(zzsigv_MSG, 32, None, 0x0000080100CC0002))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(asconHashXof(zzsigv_MSG, 32, null, 0x0000080100cc0002n))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "ascon_xof128",
+      "python": {
+        "template": "bytes(ascon_hash_xof(zzsigv_MSG, zzsigv_LEN, None, 0x0000080000CC0003))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(asconHashXof(zzsigv_MSG, zzsigv_LEN, null, 0x0000080000cc0003n))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "base64_decode",
+      "python": {
+        "template": "__import__(\"base64\").b64decode(zzsigv_INPUT, validate=True)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "(function(value){if(!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(value))throw new TypeError(\"invalid Base64\");return Uint8Array.from(atob(value),c=>c.charCodeAt(0));})(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "base64_encode",
+      "python": {
+        "template": "__import__(\"base64\").b64encode(zzsigv_INPUT).decode()",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "(function(bytes){const chunks=[];for(let i=0;i<bytes.length;i+=0x8000)chunks.push(String.fromCharCode(...bytes.subarray(i,i+0x8000)));return btoa(chunks.join(\"\"));})(new Uint8Array(zzsigv_INPUT))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "berlekamp_massey",
+      "python": {
+        "template": "code_based()[\"bm_shiftreg\"](zzsigv_SEQ)",
+        "order": null,
+        "definitions": [
+          "code_based"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "codeBased().bmShiftreg(zzsigv_SEQ)",
+        "order": null,
+        "definitions": [
+          "codeBased"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "bin_mat_inv",
+      "python": {
+        "template": "code_based()[\"mat_inv\"](zzsigv_A, zzsigv_N)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "codeBased().matInv(zzsigv_A, zzsigv_N)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "bin_mat_mul",
+      "python": {
+        "template": "code_based()[\"mat_mul\"](zzsigv_A, zzsigv_B, zzsigv_N)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "codeBased().matMul(zzsigv_A, zzsigv_B, zzsigv_N)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "bit_byte_substitute",
+      "python": {
+        "template": "\n_byte_substitute_index = zzsigv_INPUT\nif isinstance(_byte_substitute_index, bool) or not isinstance(_byte_substitute_index, (int, float)) or not 0 <= _byte_substitute_index <= 255 or int(_byte_substitute_index) != _byte_substitute_index:\n    raise ValueError(\"S-box input must be a byte\")\nif not isinstance(sbox, list) or len(sbox) < 256:\n    raise TypeError(\"sbox must contain at least 256 entries\")\n_byte_substitute_value = sbox[int(_byte_substitute_index)]\nif isinstance(_byte_substitute_value, bool) or not isinstance(_byte_substitute_value, (int, float)) or not 0 <= _byte_substitute_value <= 255 or int(_byte_substitute_value) != _byte_substitute_value:\n    raise ValueError(\"S-box output must be a byte\")\nzzsigv_OUTPUT = int(_byte_substitute_value)\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "\nvar _byteSubstituteIndex = zzsigv_INPUT;\nif (!Number.isInteger(_byteSubstituteIndex) || _byteSubstituteIndex < 0 || _byteSubstituteIndex > 255) throw new RangeError(\"S-box input must be a byte\");\nif (!Array.isArray(sbox) || sbox.length < 256) throw new TypeError(\"sbox must contain at least 256 entries\");\nvar _byteSubstituteValue = sbox[_byteSubstituteIndex];\nif (!Number.isInteger(_byteSubstituteValue) || _byteSubstituteValue < 0 || _byteSubstituteValue > 255) throw new RangeError(\"S-box output must be a byte\");\nvar zzsigv_OUTPUT = _byteSubstituteValue;\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "bit_expr_infix",
+      "python": {
+        "template": "crypto_to_uint32(zzsigv_A) ^ crypto_to_uint32(zzsigv_B)",
+        "order": null,
+        "definitions": [
+          "crypto_to_uint32"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "((zzsigv_A ^ zzsigv_B) >>> 0)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "bit_not32",
+      "python": {
+        "template": "(~crypto_to_uint32(zzsigv_A)) & 0xFFFFFFFF",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "((~zzsigv_A) >>> 0)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "bit_operation",
+      "python": {
+        "template": "crypto_to_uint32(zzsigv_A) & crypto_to_uint32(zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "((zzsigv_A & zzsigv_B) >>> 0)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "bit_rotate_left",
+      "python": {
+        "template": "zzsigv_Output = ((crypto_to_uint32(zzsigv_Input) << 0) | (crypto_to_uint32(zzsigv_Input) >> (32 - 0))) & 0xFFFFFFFF\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "zzsigv_Output = ((zzsigv_Input << 0) | (zzsigv_Input >>> (32 - 0))) >>> 0;\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "bit_rotate_left_op",
+      "python": {
+        "template": "zzsigv_Output = (crypto_to_uint32(zzsigv_Input) ^ ((crypto_to_uint32(zzsigv_Input) << 0) | (crypto_to_uint32(zzsigv_Input) >> (32 - 0)))) & 0xFFFFFFFF\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "zzsigv_Output = (zzsigv_Input ^ ((zzsigv_Input << 0) | (zzsigv_Input >>> (32 - 0)))) >>> 0;\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "bit_rotate_right",
+      "python": {
+        "template": "zzsigv_Output = ((crypto_to_uint32(zzsigv_Input) >> 0) | (crypto_to_uint32(zzsigv_Input) << (32 - 0))) & 0xFFFFFFFF\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "zzsigv_Output = ((zzsigv_Input >>> 0) | (zzsigv_Input << (32 - 0))) >>> 0;\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "bit_rotate_right_op",
+      "python": {
+        "template": "zzsigv_Output = (crypto_to_uint32(zzsigv_Input) ^ ((crypto_to_uint32(zzsigv_Input) >> 0) | (crypto_to_uint32(zzsigv_Input) << (32 - 0)))) & 0xFFFFFFFF\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "zzsigv_Output = (zzsigv_Input ^ ((zzsigv_Input >>> 0) | (zzsigv_Input << (32 - 0)))) >>> 0;\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "bn_add",
+      "python": {
+        "template": "bn_from_int((bn_to_int(zzsigv_A) + bn_to_int(zzsigv_B)))",
+        "order": null,
+        "definitions": [
+          "bn_to_int",
+          "bn_from_int"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "bnFromBigInt(bnToBigInt(zzsigv_A)+bnToBigInt(zzsigv_B))",
+        "order": null,
+        "definitions": [
+          "bnToBigInt",
+          "bnFromBigInt"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "bn_div",
+      "python": {
+        "template": "bn_from_int((bn_to_int(zzsigv_A) // bn_to_int(zzsigv_B)))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "bnFromBigInt(bnToBigInt(zzsigv_A)/bnToBigInt(zzsigv_B))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "bn_mul",
+      "python": {
+        "template": "bn_from_int((bn_to_int(zzsigv_A) * bn_to_int(zzsigv_B)))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "bnFromBigInt(bnToBigInt(zzsigv_A)*bnToBigInt(zzsigv_B))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "bn_sub",
+      "python": {
+        "template": "bn_subtract(bn_to_int(zzsigv_A), bn_to_int(zzsigv_B))",
+        "order": null,
+        "definitions": [
+          "bn_subtract"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "(function(a,b){a=bnToBigInt(a);b=bnToBigInt(b);if(a<b)throw new RangeError(\"unsigned big-number underflow\");return bnFromBigInt(a-b);})(zzsigv_A,zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "bytes_to_hex",
+      "python": {
+        "template": "(zzsigv_INPUT).hex()",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "Array.from(zzsigv_INPUT,b=>b.toString(16).padStart(2,\"0\")).join(\"\")",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "ccm_aad_len_prefix",
+      "python": {
+        "template": "ccm_aad_len_prefix(zzsigv_AADLEN)",
+        "order": null,
+        "definitions": [
+          "ccm_aad_len_prefix"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "ccmAadLenPrefix(zzsigv_AADLEN)",
+        "order": null,
+        "definitions": [
+          "ccmAadLenPrefix"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "ccm_b0",
+      "python": {
+        "template": "ccm_b0(zzsigv_NONCE, zzsigv_MSGLEN, zzsigv_AADLEN, 4)",
+        "order": null,
+        "definitions": [
+          "ccm_b0"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "ccmB0(zzsigv_NONCE, zzsigv_MSGLEN, zzsigv_AADLEN, 4)",
+        "order": null,
+        "definitions": [
+          "ccmB0"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "ccm_cbc_mac",
+      "python": {
+        "template": "bytes(ccm_cbc_mac(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 4))",
+        "order": null,
+        "definitions": [
+          "aes_encrypt_block",
+          "aes_ecb_encrypt",
+          "ccm_formatted",
+          "ccm_cbc_mac"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(ccmCbcMac(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 4))",
+        "order": null,
+        "definitions": [
+          "aesEncryptBlock",
+          "aesEcbEncrypt",
+          "ccmFormatted",
+          "ccmCbcMac"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "ccm_counter_block",
+      "python": {
+        "template": "ccm_counter_block(zzsigv_NONCE, zzsigv_I, 4)",
+        "order": null,
+        "definitions": [
+          "ccm_counter_block"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "ccmCounterBlock(zzsigv_NONCE, zzsigv_I, 4)",
+        "order": null,
+        "definitions": [
+          "ccmCtrBlock",
+          "ccmCounterBlock"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "ccm_ctr",
+      "python": {
+        "template": "bytes(ccm_ctr(zzsigv_KEY, zzsigv_NONCE, zzsigv_MSG, 4))",
+        "order": null,
+        "definitions": [
+          "ccm_ctr"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(ccmCtr(zzsigv_KEY, zzsigv_NONCE, zzsigv_MSG, 4))",
+        "order": null,
+        "definitions": [
+          "ccmCtr"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "ccm_decrypt",
+      "python": {
+        "template": "bytes(ccm_decrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_CT, 16))",
+        "order": null,
+        "definitions": [
+          "ccm_decrypt"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(ccmDecrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_CT, 16))",
+        "order": null,
+        "definitions": [
+          "ccmDecrypt"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "ccm_encrypt",
+      "python": {
+        "template": "bytes(ccm_encrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 16))",
+        "order": null,
+        "definitions": [
+          "ccm_encrypt"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(ccmEncrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 16))",
+        "order": null,
+        "definitions": [
+          "ccmEncrypt"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "cipher_key_from_seed",
+      "python": {
+        "template": "crypto_cipher_key_from_seed(data)",
+        "order": null,
+        "definitions": [
+          "crypto_cipher_key_from_seed"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "cryptoCipherKeyFromSeed(data)",
+        "order": null,
+        "definitions": [
+          "cryptoCipherKeyFromSeed"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "cmac_double",
+      "python": {
+        "template": "cmac_double(zzsigv_X)",
+        "order": null,
+        "definitions": [
+          "cmac_double"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "cmacDouble(zzsigv_X)",
+        "order": null,
+        "definitions": [
+          "cmacDouble"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "cmac_mac",
+      "python": {
+        "template": "bytes(cmac_cbc(zzsigv_MSG, zzsigv_KEY, aes_encrypt_block, cmac_double))",
+        "order": null,
+        "definitions": [
+          "cmac_subkeys",
+          "cmac_cbc"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(cmacAesMac(zzsigv_KEY, zzsigv_MSG))",
+        "order": null,
+        "definitions": [
+          "cmacSubkeys",
+          "cmacAesMac"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "cmac_subkeys",
+      "python": {
+        "template": "bytes(cmac_subkeys_aes(zzsigv_KEY))",
+        "order": null,
+        "definitions": [
+          "cmac_subkeys_aes"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(cmacSubkeysAes(zzsigv_KEY))",
+        "order": null,
+        "definitions": [
+          "cmacSubkeysAes"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "comb",
+      "python": {
+        "template": "multivariate()[\"comb\"](zzsigv_N, zzsigv_K)",
+        "order": null,
+        "definitions": [
+          "multivariate"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "multivariate().comb(zzsigv_N, zzsigv_K)",
+        "order": null,
+        "definitions": [
+          "multivariate"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "crypto_decrypt_func",
+      "python": {
+        "template": "\ndef crypto_decrypt_func(ciphertext: bytes) -> bytes:\n    \"\"\"\n    Crypto function: crypto_decrypt_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "/**\n * Crypto function: crypto_decrypt_func\n * @param {Uint8Array} ciphertext — message 类型参数\n * @returns {Uint8Array} 算法输出\n */\nfunction crypto_decrypt_func(ciphertext) {\nzzsigs_BODY\n  return zzsigv_RETURN;\n}\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "crypto_encrypt_func",
+      "python": {
+        "template": "\ndef crypto_encrypt_func(message: bytes) -> bytes:\n    \"\"\"\n    Crypto function: crypto_encrypt_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "/**\n * Crypto function: crypto_encrypt_func\n * @param {Uint8Array} message — message 类型参数\n * @returns {Uint8Array} 算法输出\n */\nfunction crypto_encrypt_func(message) {\nzzsigs_BODY\n  return zzsigv_RETURN;\n}\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "crypto_hash_func",
+      "python": {
+        "template": "\ndef crypto_hash_func(message: bytes) -> bytes:\n    \"\"\"\n    Crypto function: crypto_hash_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "/**\n * Crypto function: crypto_hash_func\n * @param {Uint8Array} message — message 类型参数\n * @returns {Uint8Array} 算法输出\n */\nfunction crypto_hash_func(message) {\nzzsigs_BODY\n  return zzsigv_RETURN;\n}\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "crypto_return",
+      "python": {
+        "template": "return zzsigv_VALUE\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "return zzsigv_VALUE;\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "ctrl_iterate",
+      "python": {
+        "template": "for i in range(32):\n    zzsigs_DO",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "// 迭代循环\nfor (let i = 0; i < 32; i++) {\nzzsigs_DO}\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "data_bit_length",
+      "python": {
+        "template": "(lambda value: len(value.encode('utf-8')) * 8 if isinstance(value, str) else len(value) * 8 if isinstance(value, (bytes, list)) else 32 if isinstance(value, (int, float)) and not isinstance(value, bool) else 0)(zzsigv_X)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "(function(__crypto_temp_var__) {\n    if (typeof __crypto_temp_var__ === 'string') return new TextEncoder().encode(__crypto_temp_var__).length * 8;\n    if (__crypto_temp_var__ instanceof Uint8Array || Array.isArray(__crypto_temp_var__)) return __crypto_temp_var__.length * 8;\n    if (__crypto_temp_var__ instanceof ArrayBuffer) return __crypto_temp_var__.byteLength * 8;\n    if (typeof __crypto_temp_var__ === 'number') return 32;\n    return 0;\n  })(zzsigv_X)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "data_byte_length",
+      "python": {
+        "template": "(lambda value: len(value.encode('utf-8')) if isinstance(value, str) else len(value) if isinstance(value, (bytes, list)) else 4 if isinstance(value, (int, float)) and not isinstance(value, bool) else 0)(zzsigv_X)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "(function(__crypto_temp_var__) {\n    if (typeof __crypto_temp_var__ === 'string') return new TextEncoder().encode(__crypto_temp_var__).length;\n    if (__crypto_temp_var__ instanceof Uint8Array || Array.isArray(__crypto_temp_var__)) return __crypto_temp_var__.length;\n    if (__crypto_temp_var__ instanceof ArrayBuffer) return __crypto_temp_var__.byteLength;\n    if (typeof __crypto_temp_var__ === 'number') return 4;\n    return 0;\n  })(zzsigv_X)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "data_convert_bits_to_bytes",
+      "python": {
+        "template": "zzsigv_BYTES = crypto_bits_to_bytes(zzsigv_BITS)\n",
+        "order": null,
+        "definitions": [
+          "crypto_bits_to_bytes"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "zzsigv_BYTES = cryptoBitsToBytes(zzsigv_BITS);\n",
+        "order": null,
+        "definitions": [
+          "cryptoBitsToBytes"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "data_convert_bytes_to_bits",
+      "python": {
+        "template": "zzsigv_BITS = crypto_bytes_to_bits(zzsigv_BYTES)\n",
+        "order": null,
+        "definitions": [
+          "crypto_bytes_to_bits"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "zzsigv_BITS = cryptoBytesToBits(zzsigv_BYTES);\n",
+        "order": null,
+        "definitions": [
+          "cryptoBytesToBits"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "data_convert_to_int",
+      "python": {
+        "template": "zzsigv_VAR = crypto_convert_to_int(zzsigv_VAR)\n",
+        "order": null,
+        "definitions": [
+          "crypto_convert_to_int"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "zzsigv_VAR = cryptoConvertToInt(zzsigv_VAR);\n",
+        "order": null,
+        "definitions": [
+          "cryptoConvertToInt"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "data_value",
+      "python": {
+        "template": "0",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "0",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "drbg_generate",
+      "python": {
+        "template": "bytes(drbg_generate_all(zzsigv_ENTROPY, zzsigv_NONCE, zzsigv_PERSO, zzsigv_BITS))",
+        "order": null,
+        "definitions": [
+          "drbg_update",
+          "drbg_instantiate",
+          "drbg_reseed",
+          "drbg_generate",
+          "drbg_generate_all"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(drbgGenerateAll(zzsigv_ENTROPY, zzsigv_NONCE, zzsigv_PERSO, zzsigv_BITS))",
+        "order": null,
+        "definitions": [
+          "sha256Hash",
+          "hmacSha256",
+          "drbgInstantiate",
+          "drbgUpdate",
+          "drbgReseed",
+          "drbgGenerate",
+          "drbgGenerateAll"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "drbg_update",
+      "python": {
+        "template": "bytes(drbg_update_raw(zzsigv_STATE, zzsigv_PROVIDED))",
+        "order": null,
+        "definitions": [
+          "drbg_update_raw"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(drbgUpdateRaw(zzsigv_STATE, zzsigv_PROVIDED))",
+        "order": null,
+        "definitions": [
+          "drbgUpdateRaw"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "ecc_add",
+      "python": {
+        "template": "\n# 点加法运算\necc_validate_curve_point(zzsigv_value1, curve)\necc_validate_curve_point(zzsigv_value2, curve)\nif zzsigv_value1.get(\"infinity\", False):\n    zzsigv_value3 = zzsigv_value2\nelif zzsigv_value2.get(\"infinity\", False):\n    zzsigv_value3 = zzsigv_value1\nelif zzsigv_value1[\"x\"] == zzsigv_value2[\"x\"] and (zzsigv_value1[\"y\"] + zzsigv_value2[\"y\"]) % curve[\"p\"] == 0:\n    zzsigv_value3 = {\"infinity\": True}\nelif zzsigv_value1[\"x\"] == zzsigv_value2[\"x\"] and zzsigv_value1[\"y\"] == zzsigv_value2[\"y\"]:\n    # 点相同，调用倍点公式\n    lambda_val = (3 * zzsigv_value1[\"x\"] * zzsigv_value1[\"x\"] + curve[\"a\"]) * pow(2 * zzsigv_value1[\"y\"], -1, curve[\"p\"]) % curve[\"p\"]\n    zzsigv_value3 = {\n        \"x\": (lambda_val * lambda_val - 2 * zzsigv_value1[\"x\"]) % curve[\"p\"],\n        \"y\": (lambda_val * (zzsigv_value1[\"x\"] - ((lambda_val * lambda_val - 2 * zzsigv_value1[\"x\"]) % curve[\"p\"])) - zzsigv_value1[\"y\"]) % curve[\"p\"]\n    }\nelif zzsigv_value1[\"x\"] == zzsigv_value2[\"x\"]:\n    raise ValueError(\"points with equal x must be equal or inverses\")\nelse:\n    # 点不同，使用加法公式\n    lambda_val = (zzsigv_value2[\"y\"] - zzsigv_value1[\"y\"]) * pow(zzsigv_value2[\"x\"] - zzsigv_value1[\"x\"], -1, curve[\"p\"]) % curve[\"p\"]\n    zzsigv_value3 = {\n        \"x\": (lambda_val * lambda_val - zzsigv_value1[\"x\"] - zzsigv_value2[\"x\"]) % curve[\"p\"],\n        \"y\": (lambda_val * (zzsigv_value1[\"x\"] - ((lambda_val * lambda_val - zzsigv_value1[\"x\"] - zzsigv_value2[\"x\"]) % curve[\"p\"])) - zzsigv_value1[\"y\"]) % curve[\"p\"]\n    }\nif not zzsigv_value3.get(\"infinity\", False):\n    if zzsigv_value3[\"x\"] < 0:\n        zzsigv_value3[\"x\"] += curve[\"p\"]\n    if zzsigv_value3[\"y\"] < 0:\n        zzsigv_value3[\"y\"] += curve[\"p\"]\n",
+        "order": null,
+        "definitions": [
+          "ecc_validate_curve_point"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "\n// 点加法运算\neccValidateCurvePoint(zzsigv_value1, curve);\neccValidateCurvePoint(zzsigv_value2, curve);\nif (zzsigv_value1.infinity) {\n  zzsigv_value3 = zzsigv_value2;\n} else if (zzsigv_value2.infinity) {\n  zzsigv_value3 = zzsigv_value1;\n} else if (zzsigv_value1.x === zzsigv_value2.x && (zzsigv_value1.y + zzsigv_value2.y) % curve.p === 0n) {\n  zzsigv_value3 = { infinity: true };\n} else if (zzsigv_value1.x === zzsigv_value2.x && zzsigv_value1.y === zzsigv_value2.y) {\n  var lambda = (3n * zzsigv_value1.x * zzsigv_value1.x + curve.a) * eccModInverse(2n * zzsigv_value1.y, curve.p) % curve.p;\n  zzsigv_value3 = {\n    x: (lambda * lambda - 2n * zzsigv_value1.x) % curve.p,\n    y: (lambda * (zzsigv_value1.x - ((lambda * lambda - 2n * zzsigv_value1.x) % curve.p)) - zzsigv_value1.y) % curve.p\n  };\n} else if (zzsigv_value1.x === zzsigv_value2.x) {\n  throw new Error(\"points with equal x must be equal or inverses\");\n} else {\n  var lambda = (zzsigv_value2.y - zzsigv_value1.y) * eccModInverse(zzsigv_value2.x - zzsigv_value1.x, curve.p) % curve.p;\n  zzsigv_value3 = {\n    x: (lambda * lambda - zzsigv_value1.x - zzsigv_value2.x) % curve.p,\n    y: (lambda * (zzsigv_value1.x - ((lambda * lambda - zzsigv_value1.x - zzsigv_value2.x) % curve.p)) - zzsigv_value1.y) % curve.p\n  };\n}\nif (zzsigv_value3.x < 0n) zzsigv_value3.x += curve.p;\nif (zzsigv_value3.y < 0n) zzsigv_value3.y += curve.p;\n",
+        "order": null,
+        "definitions": [
+          "eccValidateCurvePoint",
+          "eccModInverse"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "ecc_load_curve_params",
+      "python": {
+        "template": "curve = {\"a\": 0, \"b\": 0, \"p\": 0}\necc_validate_curve_point({\"infinity\": True}, curve)\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "var curve = { a: 0n, b: 0n, p: 0n };\neccValidateCurvePoint({ infinity: true }, curve);\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "ecc_load_point",
+      "python": {
+        "template": "zzsigv_point = {\"x\": 0, \"y\": 0}\necc_validate_curve_point(zzsigv_point, curve)\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "var zzsigv_point = { x: 0n, y: 0n };\neccValidateCurvePoint(zzsigv_point, curve);\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "ecc_multiply",
+      "python": {
+        "template": "\n# 点乘法运算 - 使用倍加算法\necc_validate_curve_point(zzsigv_value1, curve)\nk = 0\nif type(k) is not int or k < 0:\n    raise ValueError(\"scalar must be a non-negative integer\")\nP_temp = zzsigv_value1.copy()\nresult = {\"infinity\": True}\n\nwhile k > 0:\n    if k & 1:\n        # 如果结果点为无穷远点，则直接赋值为当前点\n        if not P_temp.get(\"infinity\", False) and result[\"infinity\"]:\n            result = {\"x\": P_temp[\"x\"], \"y\": P_temp[\"y\"], \"infinity\": False}\n        elif not P_temp.get(\"infinity\", False) and result[\"x\"] == P_temp[\"x\"] and (result[\"y\"] + P_temp[\"y\"]) % curve[\"p\"] == 0:\n            result = {\"infinity\": True}\n        elif not P_temp.get(\"infinity\", False) and result[\"x\"] == P_temp[\"x\"] and result[\"y\"] == P_temp[\"y\"]:\n            lambda_val = (3 * P_temp[\"x\"] * P_temp[\"x\"] + curve[\"a\"]) * pow(2 * P_temp[\"y\"], -1, curve[\"p\"]) % curve[\"p\"]\n            x = (lambda_val * lambda_val - 2 * P_temp[\"x\"]) % curve[\"p\"]\n            y = (lambda_val * (P_temp[\"x\"] - x) - P_temp[\"y\"]) % curve[\"p\"]\n            result = {\"x\": x, \"y\": y, \"infinity\": False}\n        elif not P_temp.get(\"infinity\", False):\n            # 点加运算\n            lambda_val = (result[\"y\"] - P_temp[\"y\"]) * pow(result[\"x\"] - P_temp[\"x\"], -1, curve[\"p\"]) % curve[\"p\"]\n            x = (lambda_val * lambda_val - result[\"x\"] - P_temp[\"x\"]) % curve[\"p\"]\n            y = (lambda_val * (result[\"x\"] - x) - result[\"y\"]) % curve[\"p\"]\n            result = {\"x\": x, \"y\": y, \"infinity\": False}\n\n    # 倍点运算\n    if P_temp.get(\"infinity\", False) or P_temp[\"y\"] % curve[\"p\"] == 0:\n        P_temp = {\"infinity\": True}\n    else:\n        lambda_val = (3 * P_temp[\"x\"] * P_temp[\"x\"] + curve[\"a\"]) * pow(2 * P_temp[\"y\"], -1, curve[\"p\"]) % curve[\"p\"]\n        x = (lambda_val * lambda_val - 2 * P_temp[\"x\"]) % curve[\"p\"]\n        y = (lambda_val * (P_temp[\"x\"] - x) - P_temp[\"y\"]) % curve[\"p\"]\n        P_temp = {\"x\": x, \"y\": y}\n\n    k = k >> 1\n\n    if not result[\"infinity\"]:\n        if result[\"x\"] < 0:\n            result[\"x\"] += curve[\"p\"]\n        if result[\"y\"] < 0:\n            result[\"y\"] += curve[\"p\"]\n    if not P_temp.get(\"infinity\", False):\n        if P_temp[\"x\"] < 0:\n            P_temp[\"x\"] += curve[\"p\"]\n        if P_temp[\"y\"] < 0:\n            P_temp[\"y\"] += curve[\"p\"]\n\nzzsigv_value2 = {\"infinity\": True} if result[\"infinity\"] else {\"x\": result[\"x\"], \"y\": result[\"y\"]}\n\n# Python中使用内置的pow(a, -1, m)来计算模逆\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "\n// 点乘法运算 - 使用倍加算法\neccValidateCurvePoint(zzsigv_value1, curve);\nvar k = 0n;\nif (k < 0n) throw new Error(\"scalar must be non-negative\");\nvar P = zzsigv_value1;\nvar result = { infinity: true };\n\nwhile (k > 0n) {\n  if (k & 1n) {\n    if (!P.infinity && result.infinity) {\n      result = { x: P.x, y: P.y, infinity: false };\n    } else if (!P.infinity && result.x === P.x && (result.y + P.y) % curve.p === 0n) {\n      result = { infinity: true };\n    } else if (!P.infinity && result.x === P.x && result.y === P.y) {\n      var lambda = (3n * P.x * P.x + curve.a) * eccModInverse(2n * P.y, curve.p) % curve.p;\n      var x = (lambda * lambda - 2n * P.x) % curve.p;\n      var y = (lambda * (P.x - x) - P.y) % curve.p;\n      result = { x, y, infinity: false };\n    } else if (!P.infinity) {\n      var lambda = (result.y - P.y) * eccModInverse(result.x - P.x, curve.p) % curve.p;\n      var x = (lambda * lambda - result.x - P.x) % curve.p;\n      var y = (lambda * (result.x - x) - result.y) % curve.p;\n      result = { x: x, y: y, infinity: false };\n    }\n  }\n\n  if (P.infinity || P.y % curve.p === 0n) {\n    P = { infinity: true };\n  } else {\n    var lambda = (3n * P.x * P.x + curve.a) * eccModInverse(2n * P.y, curve.p) % curve.p;\n    var x = (lambda * lambda - 2n * P.x) % curve.p;\n    var y = (lambda * (P.x - x) - P.y) % curve.p;\n    P = { x: x, y: y };\n  }\n\n  k = k >> 1n;\n\n  if (!result.infinity) {\n    if (result.x < 0n) result.x += curve.p;\n    if (result.y < 0n) result.y += curve.p;\n  }\n  if (!P.infinity) {\n    if (P.x < 0n) P.x += curve.p;\n    if (P.y < 0n) P.y += curve.p;\n  }\n}\n\nzzsigv_value2 = result.infinity ? { infinity: true } : { x: result.x, y: result.y };\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "ecc_point_double",
+      "python": {
+        "template": "\n# 点倍点运算\necc_validate_curve_point(zzsigv_value1, curve)\nif zzsigv_value1.get(\"infinity\", False) or zzsigv_value1[\"y\"] % curve[\"p\"] == 0:\n    zzsigv_value2 = {\"infinity\": True}\nelse:\n    lambda_val = (3 * zzsigv_value1[\"x\"] * zzsigv_value1[\"x\"] + curve[\"a\"]) * pow(2 * zzsigv_value1[\"y\"], -1, curve[\"p\"]) % curve[\"p\"]\n    zzsigv_value2 = {\n        \"x\": (lambda_val * lambda_val - 2 * zzsigv_value1[\"x\"]) % curve[\"p\"],\n        \"y\": (lambda_val * (zzsigv_value1[\"x\"] - ((lambda_val * lambda_val - 2 * zzsigv_value1[\"x\"]) % curve[\"p\"])) - zzsigv_value1[\"y\"]) % curve[\"p\"]\n    }\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "\n// 点倍点运算\neccValidateCurvePoint(zzsigv_value1, curve);\nif (zzsigv_value1.infinity || zzsigv_value1.y % curve.p === 0n) {\n  zzsigv_value2 = { infinity: true };\n} else {\nvar lambda = (3n * zzsigv_value1.x * zzsigv_value1.x + curve.a) * eccModInverse(2n * zzsigv_value1.y, curve.p) % curve.p;\nzzsigv_value2 = {\n  x: (lambda * lambda - 2n * zzsigv_value1.x) % curve.p,\n  y: (lambda * (zzsigv_value1.x - ((lambda * lambda - 2n * zzsigv_value1.x) % curve.p)) - zzsigv_value1.y) % curve.p\n};\nif (zzsigv_value2.x < 0n) zzsigv_value2.x += curve.p;\nif (zzsigv_value2.y < 0n) zzsigv_value2.y += curve.p;\n}\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "ecdh_shared_secret",
+      "python": {
+        "template": "ecdh_shared_secret(zzsigv_D, zzsigv_QX, zzsigv_QY)",
+        "order": null,
+        "definitions": [
+          "ecdh_point_add",
+          "ecdh_point_mul",
+          "ecdh_shared_secret"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "ecdhSharedSecret(zzsigv_D, zzsigv_QX, zzsigv_QY)",
+        "order": null,
+        "definitions": [
+          "modInverse",
+          "ecdhToBig",
+          "ecdhPointAdd",
+          "ecdhPointMul",
+          "ecdhSharedSecret"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "ecdsa_k_rfc6979",
+      "python": {
+        "template": "bytes(ecdsa_k_rfc6979(zzsigv_PRIV, zzsigv_HASH))",
+        "order": null,
+        "definitions": [
+          "ecdsa_k_rfc6979"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(ecdsaKRfc6979(Array.from(zzsigv_PRIV), Array.from(zzsigv_HASH)))",
+        "order": null,
+        "definitions": [
+          "ecdsaKRfc6979"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "ecdsa_sign",
+      "python": {
+        "template": "bytes(ecdsa_sign(zzsigv_PRIV, zzsigv_MSG))",
+        "order": null,
+        "definitions": [
+          "hmac_sha256",
+          "ecdsa_point_add",
+          "ecdsa_point_mul",
+          "ecdsa_sign"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(ecdsaSign(zzsigv_PRIV, zzsigv_MSG))",
+        "order": null,
+        "definitions": [
+          "ecdsaPointAdd",
+          "ecdsaPointMul",
+          "ecdsaSign"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "ecdsa_verify",
+      "python": {
+        "template": "ecdsa_verify(zzsigv_MSG, zzsigv_PUB, zzsigv_SIG)",
+        "order": null,
+        "definitions": [
+          "ecdsa_verify"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "ecdsaVerify(zzsigv_MSG, zzsigv_PUB, zzsigv_SIG)",
+        "order": null,
+        "definitions": [
+          "ecdsaBeInt",
+          "ecdsaVerify"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "eddsa_sign",
+      "python": {
+        "template": "bytes(eddsa_sign(zzsigv_SECRET, zzsigv_MSG))",
+        "order": null,
+        "definitions": [
+          "sha512_hash",
+          "eddsa_ctx",
+          "eddsa_recover_x",
+          "eddsa_point_add",
+          "eddsa_point_mul",
+          "eddsa_point_compress",
+          "eddsa_point_decompress",
+          "eddsa_point_equal",
+          "eddsa_sha512_modq",
+          "eddsa_base_point",
+          "eddsa_sign"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(eddsaSign(zzsigv_SECRET, zzsigv_MSG))",
+        "order": null,
+        "definitions": [
+          "sha512Hash",
+          "eddsaSign"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "eddsa_verify",
+      "python": {
+        "template": "eddsa_verify(zzsigv_PUBLIC, zzsigv_MSG, zzsigv_SIGNATURE)",
+        "order": null,
+        "definitions": [
+          "eddsa_verify"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "eddsaVerify(zzsigv_PUBLIC, zzsigv_MSG, zzsigv_SIGNATURE)",
+        "order": null,
+        "definitions": [
+          "eddsaVerify"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "endian_swap",
+      "python": {
+        "template": "list(reversed(zzsigv_INPUT))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "zzsigv_INPUT.slice().reverse()",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "fors_leaf_index",
+      "python": {
+        "template": "hash_based()[\"fors_leaf_index\"](zzsigv_M, zzsigv_I)",
+        "order": null,
+        "definitions": [
+          "hash_based"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "hashBased().forsLeafIndex(zzsigv_M, zzsigv_I)",
+        "order": null,
+        "definitions": [
+          "keccakF",
+          "keccakF1600",
+          "shakeXOF",
+          "hashBased"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "fors_pk_from_sk",
+      "python": {
+        "template": "fors_core()[\"fors_pk\"](zzsigv_SK_SEED)",
+        "order": null,
+        "definitions": [
+          "fors_core"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "forsCore().forsPk(zzsigv_SK_SEED)",
+        "order": null,
+        "definitions": [
+          "forsCore"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "fors_root",
+      "python": {
+        "template": "hash_based()[\"fors_root\"](zzsigv_ROOTS, zzsigv_ADRS)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "hashBased().forsRoot(zzsigv_ROOTS, zzsigv_ADRS)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "fors_sign",
+      "python": {
+        "template": "fors_core()[\"fors_sign\"](zzsigv_SK_SEED, zzsigv_MESSAGE)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "forsCore().forsSign(zzsigv_SK_SEED, zzsigv_MESSAGE)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "fors_verify",
+      "python": {
+        "template": "fors_core()[\"fors_verify\"](zzsigv_PUBLIC_KEY, zzsigv_MESSAGE, zzsigv_SIGNATURE)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "forsCore().forsVerify(zzsigv_PUBLIC_KEY, zzsigv_MESSAGE, zzsigv_SIGNATURE)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "gauss_elim",
+      "python": {
+        "template": "multivariate()[\"gauss_elim\"](zzsigv_AUG, zzsigv_N)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "multivariate().gaussElim(zzsigv_AUG, zzsigv_N)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "gauss_pmf",
+      "python": {
+        "template": "multivariate()[\"gauss_pmf\"](zzsigv_X, zzsigv_SIGMA)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "multivariate().gaussPmf(zzsigv_X, zzsigv_SIGMA)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "gcm_encrypt",
+      "python": {
+        "template": "bytes(gcm_encrypt(zzsigv_KEY, zzsigv_IV, zzsigv_AAD, zzsigv_MSG))",
+        "order": null,
+        "definitions": [
+          "gcm_mul",
+          "gcm_ghash",
+          "gcm_j0",
+          "gcm_inc32",
+          "gcm_gctr",
+          "gcm_encrypt"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(gcmEncrypt(zzsigv_KEY, zzsigv_IV, zzsigv_AAD, zzsigv_MSG))",
+        "order": null,
+        "definitions": [
+          "gcmMul",
+          "gcmGhash",
+          "gcmJ0",
+          "gcmInc32",
+          "gcmGctr",
+          "gcmEncrypt"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "gcm_gctr",
+      "python": {
+        "template": "bytes(gcm_gctr(zzsigv_KEY, zzsigv_ICB, zzsigv_X))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(gcmGctr(zzsigv_KEY, zzsigv_ICB, zzsigv_X))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "gcm_gf128_mul",
+      "python": {
+        "template": "gcm_mul(zzsigv_X, zzsigv_Y)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "gcmMul(zzsigv_X, zzsigv_Y)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "gcm_ghash",
+      "python": {
+        "template": "gcm_ghash(zzsigv_H, zzsigv_A, zzsigv_C)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "gcmGhash(zzsigv_H, zzsigv_A, zzsigv_C)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "gcm_inc32",
+      "python": {
+        "template": "gcm_inc32(zzsigv_X)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "gcmInc32(zzsigv_X)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "gcm_j0",
+      "python": {
+        "template": "gcm_j0(zzsigv_H, zzsigv_IV)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "gcmJ0(zzsigv_H, zzsigv_IV)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "gf2_poly_div",
+      "python": {
+        "template": "code_based()[\"poly_div\"](zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "codeBased().polyDiv(zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "gf2_poly_gcd",
+      "python": {
+        "template": "code_based()[\"poly_gcd\"](zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "codeBased().polyGcd(zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "gf2_poly_mod",
+      "python": {
+        "template": "code_based()[\"poly_mod\"](zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "codeBased().polyMod(zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "gf2_poly_mul",
+      "python": {
+        "template": "code_based()[\"poly_mul\"](zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "codeBased().polyMul(zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "gf2m_add",
+      "python": {
+        "template": "[zzsigv_A[0] ^ zzsigv_B[0]]",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "[(zzsigv_A[0] ^ zzsigv_B[0])]",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "gf2m_inv",
+      "python": {
+        "template": "[gf2m_inv_aes(zzsigv_A[0])]",
+        "order": null,
+        "definitions": [
+          "gf2m_inv_aes"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "[gf2mInvAES(zzsigv_A[0])]",
+        "order": null,
+        "definitions": [
+          "gf2mInvAES"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "gf2m_mul",
+      "python": {
+        "template": "[gf2m_mul_aes(zzsigv_A[0],zzsigv_B[0])]",
+        "order": null,
+        "definitions": [
+          "gf2m_mul_aes"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "[gf2mMulAES(zzsigv_A[0],zzsigv_B[0])]",
+        "order": null,
+        "definitions": [
+          "gf2mMulAES"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "gf2m_poly_add",
+      "python": {
+        "template": "gf2m_poly()[\"poly_add\"](zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [
+          "gf2m_poly"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "gf2mPoly().polyAdd(zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [
+          "gf2mPoly"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "gf2m_poly_eval",
+      "python": {
+        "template": "gf2m_poly()[\"poly_eval\"](zzsigv_P, zzsigv_X)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "gf2mPoly().polyEval(zzsigv_P, zzsigv_X)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "gf2m_poly_mod",
+      "python": {
+        "template": "gf2m_poly()[\"poly_mod\"](zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "gf2mPoly().polyMod(zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "gf2m_poly_mul",
+      "python": {
+        "template": "gf2m_poly()[\"poly_mul\"](zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "gf2mPoly().polyMul(zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "gf2m_poly_xgcd",
+      "python": {
+        "template": "gf2m_poly()[\"poly_xgcd\"](zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "gf2mPoly().polyXgcd(zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "gm_rng",
+      "python": {
+        "template": "bytes(gm_drbg(zzsigv_ENTROPY, zzsigv_NONCE, zzsigv_PERSO, zzsigv_LEN))",
+        "order": null,
+        "definitions": [
+          "sm3_hmac",
+          "gm_drbg"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(gmDrbg(zzsigv_ENTROPY, zzsigv_NONCE, zzsigv_PERSO, zzsigv_LEN))",
+        "order": null,
+        "definitions": [
+          "sm3Hmac",
+          "gmDrbg"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "goppa_decode",
+      "python": {
+        "template": "goppa_core()[\"goppa_decode\"](zzsigv_Y, zzsigv_G, zzsigv_L)",
+        "order": null,
+        "definitions": [
+          "goppa_core"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "goppaCore().goppaDecode(zzsigv_Y, zzsigv_G, zzsigv_L)",
+        "order": null,
+        "definitions": [
+          "goppaCore"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "goppa_gen_poly",
+      "python": {
+        "template": "code_based()[\"goppa_gen_poly\"](zzsigv_ALPHA)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "codeBased().goppaGenPoly(zzsigv_ALPHA)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "ham_dist",
+      "python": {
+        "template": "code_based()[\"ham_dist\"](zzsigv_X, zzsigv_Y)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "codeBased().hamDist(zzsigv_X, zzsigv_Y)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "ham_weight",
+      "python": {
+        "template": "code_based()[\"ham_weight\"](zzsigv_X)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "codeBased().hamWeight(zzsigv_X)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "hash_chain",
+      "python": {
+        "template": "hash_based()[\"hash_chain\"](zzsigv_INPUT, zzsigv_ITERATIONS)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "hashBased().hashChain(zzsigv_INPUT, zzsigv_ITERATIONS)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "hash_hmac",
+      "python": {
+        "template": "hmac_sha256(zzsigv_KEY,zzsigv_MSG)",
+        "order": null,
+        "definitions": [
+          "hmac_input_bytes"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(hmacSha256(hmacInputBytes(zzsigv_KEY),hmacInputBytes(zzsigv_MSG)))",
+        "order": null,
+        "definitions": [
+          "utf8ToBytes",
+          "hmacInputBytes"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "hash_sha224_hash",
+      "python": {
+        "template": "sha224_hash(zzsigv_MSG)",
+        "order": null,
+        "definitions": [
+          "sha256_pad",
+          "sha256_compress",
+          "sha224_hash"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "sha224Hash(zzsigv_MSG)",
+        "order": null,
+        "definitions": [
+          "sha256Pad",
+          "sha256Compress",
+          "sha224Hash"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "hash_sha256_compress",
+      "python": {
+        "template": "sha256_compress(zzsigv_V, zzsigv_W)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "sha256Compress(zzsigv_V, zzsigv_W)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "hash_sha256_pad",
+      "python": {
+        "template": "sha256_pad(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "sha256Pad(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "hash_sha256_pad_hex",
+      "python": {
+        "template": "sha256_pad(decodeHexBytes(zzsigv_INPUT))",
+        "order": null,
+        "definitions": [
+          "decodeHexBytes"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "sha256Pad(hexToBytes(zzsigv_INPUT))",
+        "order": null,
+        "definitions": [
+          "hexToBytes"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "hash_sha256_pad_text",
+      "python": {
+        "template": "sha256_pad_text(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "sha256_pad_text"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "sha256Pad(utf8ToBytes(zzsigv_INPUT))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "hash_sha3_pad_hex",
+      "python": {
+        "template": "sha3_pad(decodeHexBytes(zzsigv_INPUT), rate_bytes=136, suffix=0x06)",
+        "order": null,
+        "definitions": [
+          "sha3_pad"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "sha3Pad(hexToBytes(zzsigv_INPUT), 136, 0x06)",
+        "order": null,
+        "definitions": [
+          "sha3Pad"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "hash_sha3_pad_text",
+      "python": {
+        "template": "sha3_pad_text(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "sha3_pad_text"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "sha3Pad(utf8ToBytes(zzsigv_INPUT), 136, 0x06)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "hash_sha512_compress",
+      "python": {
+        "template": "sha512_compress(zzsigv_V, zzsigv_W)",
+        "order": null,
+        "definitions": [
+          "sha512_compress"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "sha512Compress(zzsigv_V, zzsigv_W)",
+        "order": null,
+        "definitions": [
+          "sha512_compress"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "hash_sha512_hash",
+      "python": {
+        "template": "sha512_hash(zzsigv_MSG, 384)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "sha512Hash(zzsigv_MSG, 384)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "hash_sha512_pad",
+      "python": {
+        "template": "sha512_pad(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "sha512Pad(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "hash_sm3_compress",
+      "python": {
+        "template": "sm3_compress(zzsigv_V, zzsigv_W)",
+        "order": null,
+        "definitions": [
+          "sm3_compress"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "sm3Compress(zzsigv_V, zzsigv_W)",
+        "order": null,
+        "definitions": [
+          "sm3Compress"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "hash_sm3_pad",
+      "python": {
+        "template": "sm3_pad(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "sm3_length_field",
+          "sm3_pad"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "sm3Pad(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "sm3LengthField",
+          "sm3Pad"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "hash_sm3_pad_hex",
+      "python": {
+        "template": "sm3_pad(decodeHexBytes(zzsigv_INPUT))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "sm3Pad(hexToBytes(zzsigv_INPUT))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "hash_sm3_pad_text",
+      "python": {
+        "template": "sm3_pad_text(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "sm3_pad_text"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "sm3PadText(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "sm3PadText"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "hex_to_bytes",
+      "python": {
+        "template": "hex_to_bytes(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "hex_to_bytes"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "(function(value){if(typeof value!==\"string\"||value.length%2!==0||!/^[0-9a-fA-F]*$/.test(value))throw new TypeError(\"expected an even-length hexadecimal string\");return Uint8Array.from(value.match(/.{2}/g)||[],h=>parseInt(h,16));})(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "hkdf",
+      "python": {
+        "template": "bytes(hkdf(zzsigv_SALT, zzsigv_IKM, zzsigv_INFO, zzsigv_LEN))",
+        "order": null,
+        "definitions": [
+          "hkdf_extract",
+          "hkdf_expand",
+          "hkdf"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(hkdf(zzsigv_SALT, zzsigv_IKM, zzsigv_INFO, zzsigv_LEN))",
+        "order": null,
+        "definitions": [
+          "hkdfExtract",
+          "hkdfExpand",
+          "hkdf"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "hkdf_expand",
+      "python": {
+        "template": "bytes(hkdf_expand(zzsigv_PRK, zzsigv_INFO, zzsigv_LEN))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(hkdfExpand(zzsigv_PRK, zzsigv_INFO, zzsigv_LEN))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "hkdf_extract",
+      "python": {
+        "template": "bytes(hkdf_extract(zzsigv_SALT, zzsigv_IKM))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(hkdfExtract(zzsigv_SALT, zzsigv_IKM))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "keccak_f",
+      "python": {
+        "template": "keccak_f(zzsigv_STATE, 200)",
+        "order": null,
+        "definitions": [
+          "keccak_f"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "keccakF(zzsigv_STATE, 200)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "keccak_state_init",
+      "python": {
+        "template": "[0] * 25",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "new Array(25).fill(0n)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "lgc_compound",
+      "python": {
+        "template": "zzsigv_C = ((zzsigv_A ^ zzsigv_B) ^ zzsigv_B) & 0xFFFFFFFF\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "zzsigv_C = ((zzsigv_A ^ zzsigv_B) ^ zzsigv_B) >>> 0;\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "lgc_not",
+      "python": {
+        "template": "zzsigv_VALUE2 = (~zzsigv_VALUE1) & 0xFFFFFFFF\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "zzsigv_VALUE2 = (~zzsigv_VALUE1) >>> 0;\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "lgc_operation",
+      "python": {
+        "template": "zzsigv_C = (zzsigv_A ^ zzsigv_B) & 0xFFFFFFFF\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "zzsigv_C = (zzsigv_A ^ zzsigv_B) >>> 0;\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "lll_reduce",
+      "python": {
+        "template": "multivariate()[\"lll_reduce\"](zzsigv_BASIS, zzsigv_ROWS, zzsigv_COLS)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "multivariate().lllReduce(zzsigv_BASIS, zzsigv_ROWS, zzsigv_COLS)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "merkle_auth_path",
+      "python": {
+        "template": "hash_based()[\"merkle_auth_path\"](zzsigv_LEAVES, zzsigv_LEAF_LEN, zzsigv_ADRS, zzsigv_INDEX)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "hashBased().merkleAuthPath(zzsigv_LEAVES, zzsigv_LEAF_LEN, zzsigv_ADRS, zzsigv_INDEX)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "merkle_leaf",
+      "python": {
+        "template": "hash_based()[\"merkle_leaf\"](zzsigv_MSG, zzsigv_ADRS)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "hashBased().merkleLeaf(zzsigv_MSG, zzsigv_ADRS)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "merkle_node",
+      "python": {
+        "template": "hash_based()[\"merkle_node\"](zzsigv_LEFT, zzsigv_RIGHT, zzsigv_ADRS)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "hashBased().merkleNode(zzsigv_LEFT, zzsigv_RIGHT, zzsigv_ADRS)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "merkle_root",
+      "python": {
+        "template": "hash_based()[\"merkle_root\"](zzsigv_LEAVES, zzsigv_LEAF_LEN, zzsigv_ADRS)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "hashBased().merkleRoot(zzsigv_LEAVES, zzsigv_LEAF_LEN, zzsigv_ADRS)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "mldsa_sign",
+      "python": {
+        "template": "bytes(ml_dsa_sign(zzsigv_SECRET_KEY, zzsigv_MESSAGE))",
+        "order": null,
+        "definitions": [
+          "ml_dsa_core",
+          "ml_dsa_sign_internal",
+          "ml_dsa_verify_internal",
+          "ml_dsa_pk_from_sk",
+          "ml_dsa_sign"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(mlDsaSign(zzsigv_SECRET_KEY, zzsigv_MESSAGE))",
+        "order": null,
+        "definitions": [
+          "mlDsaCore",
+          "mlDsaSignInternal",
+          "mlDsaVerifyInternal",
+          "mlDsaPkFromSk",
+          "mlDsaSign"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "mldsa_verify",
+      "python": {
+        "template": "ml_dsa_verify(zzsigv_PUBLIC_KEY, zzsigv_MESSAGE, zzsigv_SIGNATURE)",
+        "order": null,
+        "definitions": [
+          "ml_dsa_verify"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "mlDsaVerify(zzsigv_PUBLIC_KEY, zzsigv_MESSAGE, zzsigv_SIGNATURE)",
+        "order": null,
+        "definitions": [
+          "mlDsaVerify"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "mode_cbc_encrypt",
+      "python": {
+        "template": "bytes(aes_cbc_encrypt(zzsigv_DATA, zzsigv_KEY, zzsigv_IV))",
+        "order": null,
+        "definitions": [
+          "aes_cbc_encrypt"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(aesCbcEncrypt(zzsigv_DATA, zzsigv_KEY, zzsigv_IV))",
+        "order": null,
+        "definitions": [
+          "aesCbcEncrypt"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "mode_ctr_encrypt",
+      "python": {
+        "template": "bytes(aes_ctr_encrypt(zzsigv_DATA, zzsigv_KEY, zzsigv_NONCE))",
+        "order": null,
+        "definitions": [
+          "aes_ctr_encrypt"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(aesCtrEncrypt(zzsigv_DATA, zzsigv_KEY, zzsigv_NONCE))",
+        "order": null,
+        "definitions": [
+          "aesCtrEncrypt"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "mode_ecb_decrypt",
+      "python": {
+        "template": "bytes(aes_ecb_decrypt(zzsigv_DATA, zzsigv_KEY))",
+        "order": null,
+        "definitions": [
+          "aes_decrypt_block",
+          "aes_ecb_decrypt"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(aesEcbDecrypt(zzsigv_DATA, zzsigv_KEY))",
+        "order": null,
+        "definitions": [
+          "aesDecryptBlock",
+          "aesEcbDecrypt"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "mode_ecb_encrypt",
+      "python": {
+        "template": "bytes(aes_ecb_encrypt(zzsigv_DATA, zzsigv_KEY))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(aesEcbEncrypt(zzsigv_DATA, zzsigv_KEY))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "mv_quad_eval",
+      "python": {
+        "template": "multivariate()[\"mv_quad_eval\"](zzsigv_COEFFS, zzsigv_X)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "multivariate().mvQuadEval(zzsigv_COEFFS, zzsigv_X)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "nt_div_rem",
+      "python": {
+        "template": "safe_divmod(zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [
+          "safe_divmod"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "safeDivmod(zzsigv_A,zzsigv_B)",
+        "order": null,
+        "definitions": [
+          "safeDivmod"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "nt_field_add",
+      "python": {
+        "template": "field_operation(zzsigv_A, zzsigv_B, zzsigv_P, \"ADD\")",
+        "order": null,
+        "definitions": [
+          "field_operation"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "fieldOperation(zzsigv_A, zzsigv_B, zzsigv_P, \"ADD\")",
+        "order": null,
+        "definitions": [
+          "fieldOperation"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "nt_mod",
+      "python": {
+        "template": "positive_mod(zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [
+          "positive_mod"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "(function(a,n){if(!Number.isSafeInteger(a)||!Number.isSafeInteger(n))throw new RangeError(\"modular arithmetic requires safe integers\");if(n<=0)throw new RangeError(\"modulus must be positive\");return ((a%n)+n)%n;})(zzsigv_A,zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "nt_mod_inverse",
+      "python": {
+        "template": "\n# 扩展欧几里得算法求模逆元\ndef extended_gcd(a, b):\n    if a == 0:\n        return b, 0, 1\n    else:\n        g, y, x = extended_gcd(b % a, a)\n        return g, x - (b // a) * y, y\n\ndef mod_inverse(a, m):\n    values = (a, m)\n    if any(isinstance(value, bool) or not isinstance(value, (int, float)) or not -9007199254740991 <= value <= 9007199254740991 or int(value) != value for value in values):\n        raise ValueError('modular inverse inputs must be safe integers')\n    a, m = (int(value) for value in values)\n    if m <= 0:\n        raise ValueError('modulus must be positive')\n    a %= m\n    g, x, y = extended_gcd(a, m)\n    if g != 1:\n        raise Exception('modular inverse does not exist')\n    return x % m\n\nzzsigv_D = mod_inverse(zzsigv_E, zzsigv_PHI)\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "zzsigv_D = modInverseBig(zzsigv_E, zzsigv_PHI);\n",
+        "order": null,
+        "definitions": [
+          "modInverseBig"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "nt_mod_pow",
+      "python": {
+        "template": "pow_mod(zzsigv_A, zzsigv_B, 3329)",
+        "order": null,
+        "definitions": [
+          "pow_mod"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "powMod(zzsigv_A,zzsigv_B,3329)",
+        "order": null,
+        "definitions": [
+          "powMod"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pad_pkcs7",
+      "python": {
+        "template": "pad_pkcs7(zzsigv_DATA, zzsigv_BLOCK_SIZE)",
+        "order": null,
+        "definitions": [
+          "pad_pkcs7"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "padPkcs7(zzsigv_DATA, zzsigv_BLOCK_SIZE)",
+        "order": null,
+        "definitions": [
+          "padPkcs7"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pad_zero",
+      "python": {
+        "template": "pad_zero(zzsigv_DATA, zzsigv_BLOCK_SIZE)",
+        "order": null,
+        "definitions": [
+          "pad_zero"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "padZero(zzsigv_DATA, zzsigv_BLOCK_SIZE)",
+        "order": null,
+        "definitions": [
+          "padZero"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pbkdf2",
+      "python": {
+        "template": "bytes(pbkdf2(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_ITER, zzsigv_KEYLEN, pbkdf2_hmac_sha256))",
+        "order": null,
+        "definitions": [
+          "pbkdf2",
+          "pbkdf2_hmac_sha256"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(pbkdf2(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_ITER, zzsigv_KEYLEN, hmacSha256))",
+        "order": null,
+        "definitions": [
+          "pbkdf2"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pbkdf2_f",
+      "python": {
+        "template": "bytes(pbkdf2_f(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_ITER, zzsigv_INDEX, pbkdf2_hmac_sha256))",
+        "order": null,
+        "definitions": [
+          "pbkdf2_f"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(pbkdf2F(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_ITER, zzsigv_INDEX, hmacSha256))",
+        "order": null,
+        "definitions": [
+          "pbkdf2F"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "poly_scale",
+      "python": {
+        "template": "multivariate()[\"poly_scale\"](zzsigv_P, zzsigv_K)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "multivariate().polyScale(zzsigv_P, zzsigv_K)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_bits_to_bytes",
+      "python": {
+        "template": "bits_to_bytes(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "bits_to_bytes"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "bitsToBytes(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "bitsToBytes"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_byte_concat",
+      "python": {
+        "template": "bytes_concat(zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [
+          "bytes_concat"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "bytesConcat(zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [
+          "bytesConcat"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_byte_decode",
+      "python": {
+        "template": "byte_decode_d12(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "byte_decode_d12"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "byteDecode12(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "byteDecode12"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_byte_encode",
+      "python": {
+        "template": "byte_encode_d12(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "byte_encode_d12"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "byteEncode12(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "byteEncode12"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_bytes_slice",
+      "python": {
+        "template": "bytes_slice(zzsigv_INPUT, zzsigv_START, zzsigv_END)",
+        "order": null,
+        "definitions": [
+          "bytes_slice"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "bytesSlice(zzsigv_INPUT, zzsigv_START, zzsigv_END)",
+        "order": null,
+        "definitions": [
+          "bytesSlice"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_bytes_to_bits",
+      "python": {
+        "template": "bytes_to_bits(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "bytes_to_bits"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "bytesToBits(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "bytesToBits"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_compress",
+      "python": {
+        "template": "compress_d11(zzsigv_INPUT, q=3329)",
+        "order": null,
+        "definitions": [
+          "compress_d11"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "compressD11(zzsigv_INPUT, 3329)",
+        "order": null,
+        "definitions": [
+          "compressD11"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_decompose",
+      "python": {
+        "template": "ml_dsa_primitives()[\"decompose\"](zzsigv_INPUT, 0)",
+        "order": null,
+        "definitions": [
+          "ml_dsa_primitives"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "mlDsaPrimitives().decompose(zzsigv_INPUT, 0)",
+        "order": null,
+        "definitions": [
+          "mlDsaPrimitives"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_decompress",
+      "python": {
+        "template": "decompress_d11(zzsigv_INPUT, q=3329)",
+        "order": null,
+        "definitions": [
+          "decompress_d11"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "decompressD11(zzsigv_INPUT, 3329)",
+        "order": null,
+        "definitions": [
+          "decompressD11"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_intt",
+      "python": {
+        "template": "intt(zzsigv_INPUT, q=3329, n=256)",
+        "order": null,
+        "definitions": [
+          "require_safe_integers",
+          "intt"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "intt(zzsigv_INPUT, 3329, 256)",
+        "order": null,
+        "definitions": [
+          "bitRev8",
+          "intt"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_make_hint",
+      "python": {
+        "template": "ml_dsa_primitives()[\"make_hint\"](zzsigv_Z, zzsigv_R)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "mlDsaPrimitives().makeHint(zzsigv_Z, zzsigv_R)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_mat_vec_mul",
+      "python": {
+        "template": "mat_vec_mul(zzsigv_MATRIX, zzsigv_VEC, q=3329)",
+        "order": null,
+        "definitions": [
+          "mat_vec_mul"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "matVecMulQ(zzsigv_MATRIX, zzsigv_VEC, 3329)",
+        "order": null,
+        "definitions": [
+          "matVecMulQ"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_ntt",
+      "python": {
+        "template": "ntt(zzsigv_INPUT, q=3329, n=256)",
+        "order": null,
+        "definitions": [
+          "ntt"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "ntt(zzsigv_INPUT, 3329, 256)",
+        "order": null,
+        "definitions": [
+          "ntt"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_ntt_butterfly",
+      "python": {
+        "template": "ntt_butterfly(zzsigv_A, zzsigv_B, zzsigv_ZETA, 3329, \"ct\")",
+        "order": null,
+        "definitions": [
+          "ntt_butterfly"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "nttButterfly(zzsigv_A, zzsigv_B, zzsigv_ZETA, 3329, \"ct\")",
+        "order": null,
+        "definitions": [
+          "nttButterfly"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_ntt_mul",
+      "python": {
+        "template": "ntt_mul(zzsigv_A, zzsigv_B, q=3329)",
+        "order": null,
+        "definitions": [
+          "ntt_mul"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "nttMul(zzsigv_A, zzsigv_B, 3329)",
+        "order": null,
+        "definitions": [
+          "nttMul"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_poly_add",
+      "python": {
+        "template": "poly_add_mod(zzsigv_A, zzsigv_B, q=3329)",
+        "order": null,
+        "definitions": [
+          "poly_add_mod"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "polyAddModQ(zzsigv_A, zzsigv_B, 3329)",
+        "order": null,
+        "definitions": [
+          "polyAddModQ"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_poly_mul",
+      "python": {
+        "template": "pq_poly_mul(zzsigv_A, zzsigv_B, 0)",
+        "order": null,
+        "definitions": [
+          "pq_poly_mul"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "pqPolyMul(zzsigv_A, zzsigv_B, 0)",
+        "order": null,
+        "definitions": [
+          "pqPolyMul"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_poly_sub",
+      "python": {
+        "template": "poly_sub_mod(zzsigv_A, zzsigv_B, q=3329)",
+        "order": null,
+        "definitions": [
+          "poly_sub_mod"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "polySubModQ(zzsigv_A, zzsigv_B, 3329)",
+        "order": null,
+        "definitions": [
+          "polySubModQ"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_power2round",
+      "python": {
+        "template": "ml_dsa_primitives()[\"power2round\"](zzsigv_INPUT, 0)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "mlDsaPrimitives().power2round(zzsigv_INPUT, 0)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_prf",
+      "python": {
+        "template": "prf_shake256(zzsigv_SEED, zzsigv_NONCE, out_len=zzsigv_OUTLEN)",
+        "order": null,
+        "definitions": [
+          "shake_input_bytes",
+          "prf_shake256"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "prf_shake(zzsigv_SEED, zzsigv_NONCE, zzsigv_OUTLEN, 136)",
+        "order": null,
+        "definitions": [
+          "shakeInputBytes",
+          "prf_shake"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_rej_sample",
+      "python": {
+        "template": "((zzsigv_X) if (zzsigv_X) < (zzsigv_BOUND) else -1)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "(zzsigv_X < zzsigv_BOUND ? zzsigv_X : -1)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_sample_in_ball",
+      "python": {
+        "template": "ml_dsa_primitives()[\"sample_in_ball\"](zzsigv_SEED)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "mlDsaPrimitives().sampleInBall(zzsigv_SEED)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_sample_ntt",
+      "python": {
+        "template": "sample_ntt(zzsigv_SEED, q=3329)",
+        "order": null,
+        "definitions": [
+          "sample_ntt"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "sampleNtt(zzsigv_SEED, 3329)",
+        "order": null,
+        "definitions": [
+          "shake128once",
+          "sampleNtt"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_sample_poly_cbd",
+      "python": {
+        "template": "sample_poly_cbd_eta3(zzsigv_SEED, q=3329)",
+        "order": null,
+        "definitions": [
+          "sample_poly_cbd_eta3"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "sampleCbdEta3(zzsigv_SEED, 3329)",
+        "order": null,
+        "definitions": [
+          "sampleCbdEta3"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_seed_with_nonce",
+      "python": {
+        "template": "seed_with_nonce(zzsigv_SEED, zzsigv_NONCE)",
+        "order": null,
+        "definitions": [
+          "seed_with_nonce"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "seedWithNonce(zzsigv_SEED, zzsigv_NONCE)",
+        "order": null,
+        "definitions": [
+          "seedWithNonce"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_use_hint",
+      "python": {
+        "template": "ml_dsa_primitives()[\"use_hint\"](zzsigv_H, zzsigv_R)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "mlDsaPrimitives().useHint(zzsigv_H, zzsigv_R)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "pq_xof",
+      "python": {
+        "template": "xof_shake128(zzsigv_SEED, out_len=zzsigv_OUTLEN)",
+        "order": null,
+        "definitions": [
+          "xof_shake128"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "shakeXOF(zzsigv_SEED, zzsigv_OUTLEN, 168)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "primitive_def",
+      "python": {
+        "template": "\ndef primitive(n_bytes: int = zzsigv_NBYTES, seed: bytes = zzsigv_SEED) -> bytes:\n    \"\"\"随机性测评入口：返回至少 n_bytes 字节。\"\"\"\n    seed = bytes(seed or b\"\")\n    data = seed\n  zzsigs_BODY    return zzsigv_RETURN\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "function primitive(n_bytes = zzsigv_NBYTES, seed = zzsigv_SEED) {\n  const data = seed;\nzzsigs_BODY  return zzsigv_RETURN;\n}\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "rsa_decrypt",
+      "python": {
+        "template": "bytes(rsa_decrypt(zzsigv_KEY, zzsigv_CT))",
+        "order": null,
+        "definitions": [
+          "rsa_parse_key",
+          "rsa_decrypt"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(rsaDecrypt(zzsigv_KEY, zzsigv_CT))",
+        "order": null,
+        "definitions": [
+          "rsaModPow",
+          "rsaIntBytes",
+          "rsaParseKey",
+          "rsaToMsg",
+          "rsaDecrypt"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "rsa_emsa_pkcs1_v15_encode",
+      "python": {
+        "template": "bytes(rsa_emsa_pkcs1_v15(zzsigv_MSG, zzsigv_EMLEN))",
+        "order": null,
+        "definitions": [
+          "rsa_emsa_pkcs1_v15"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(rsaEmsaPkcs1V15(zzsigv_MSG, zzsigv_EMLEN))",
+        "order": null,
+        "definitions": [
+          "rsaEmsaPkcs1V15"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "rsa_encrypt",
+      "python": {
+        "template": "bytes(rsa_encrypt(zzsigv_KEY, zzsigv_MSG))",
+        "order": null,
+        "definitions": [
+          "rsa_encrypt"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(rsaEncrypt(zzsigv_KEY, zzsigv_MSG))",
+        "order": null,
+        "definitions": [
+          "rsaEncrypt"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "rsa_keygen",
+      "python": {
+        "template": "bytes(rsa_keygen(512))",
+        "order": null,
+        "definitions": [
+          "rsa_is_prime",
+          "rsa_rand_prime",
+          "rsa_keygen"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(rsaKeygen(512))",
+        "order": null,
+        "definitions": [
+          "rsaModInverse",
+          "rsaGcd",
+          "rsaRandBelow",
+          "rsaRandBits",
+          "rsaIsPrime",
+          "rsaGenPrime",
+          "rsaKeygen"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "rsa_mgf1",
+      "python": {
+        "template": "bytes(rsa_mgf1(zzsigv_SEED, zzsigv_LEN))",
+        "order": null,
+        "definitions": [
+          "rsa_mgf1"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(rsaMgf1(zzsigv_SEED, zzsigv_LEN))",
+        "order": null,
+        "definitions": [
+          "rsaMgf1"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "rsa_sign",
+      "python": {
+        "template": "bytes(rsa_sign(zzsigv_KEY, zzsigv_MSG))",
+        "order": null,
+        "definitions": [
+          "rsa_sign"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(rsaSign(zzsigv_KEY, zzsigv_MSG))",
+        "order": null,
+        "definitions": [
+          "rsaSign"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "rsa_verify",
+      "python": {
+        "template": "rsa_verify(zzsigv_KEY, zzsigv_MSG, zzsigv_SIG)",
+        "order": null,
+        "definitions": [
+          "rsa_verify"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "rsaVerify(zzsigv_KEY, zzsigv_MSG, zzsigv_SIG)",
+        "order": null,
+        "definitions": [
+          "rsaVerify"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "sbox",
+      "python": {
+        "template": "[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "sbox_sub",
+      "python": {
+        "template": "\n# Apply S-box substitution byte-wise using the user-defined 'sbox'\ntry:\n    _sbox_ref = zzsigv_SBOX_VAR\nexcept NameError:\n    raise NameError(\"Variable 'zzsigv_SBOX_VAR' is not defined. Please define it first using an S-box definition block.\")\nif isinstance(_sbox_ref, list) and len(_sbox_ref) > 0 and isinstance(_sbox_ref[0], list):\n    _sbox_ref = [item for row in _sbox_ref for item in row]\nif not isinstance(_sbox_ref, list) or len(_sbox_ref) < 256:\n    raise ValueError(\"S-box must contain at least 256 entries\")\nfor _sbox_index in range(256):\n    _sbox_entry = _sbox_ref[_sbox_index]\n    if isinstance(_sbox_entry, bool) or not isinstance(_sbox_entry, (int, float)) or not 0 <= _sbox_entry <= 255 or int(_sbox_entry) != _sbox_entry:\n        raise ValueError(\"S-box entries must be bytes\")\n_sbox_ref = [int(value) for value in _sbox_ref[:256]]\n\n_input_val = zzsigv_INPUT_VAR\nif _input_val is None:\n    _input_val = 0\nif isinstance(_input_val, bool) or not isinstance(_input_val, (int, float)) or not 0 <= _input_val <= 0xFFFFFFFF or int(_input_val) != _input_val:\n    raise ValueError(\"S-box input must be an unsigned 32-bit word\")\n_input_val = int(_input_val)\n_b0 = (_input_val >> 24) & 0xFF\n_b1 = (_input_val >> 16) & 0xFF\n_b2 = (_input_val >> 8) & 0xFF\n_b3 = _input_val & 0xFF\n\n_s_b0 = _sbox_ref[_b0]\n_s_b1 = _sbox_ref[_b1]\n_s_b2 = _sbox_ref[_b2]\n_s_b3 = _sbox_ref[_b3]\n\nzzsigv_OUTPUT_VAR = ((_s_b0 << 24) | (_s_b1 << 16) | (_s_b2 << 8) | _s_b3) & 0xFFFFFFFF\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "\nif (typeof zzsigv_SBOX_VAR === 'undefined') {\n  throw new Error(\"Global variable 'zzsigv_SBOX_VAR' is not defined. Please define it first using an S-box definition block.\");\n}\nvar _sboxRef = zzsigv_SBOX_VAR;\nif (Array.isArray(_sboxRef) && _sboxRef.length > 0 && Array.isArray(_sboxRef[0])) {\n  _sboxRef = _sboxRef.flat();\n}\nif (!Array.isArray(_sboxRef) || _sboxRef.length < 256) {\n  throw new TypeError(\"S-box must contain at least 256 entries\");\n}\n\nvar _input_val = zzsigv_INPUT_VAR;\nif (_input_val === null || _input_val === undefined) _input_val = 0;\nif (!Number.isSafeInteger(_input_val) || _input_val < 0 || _input_val > 0xffffffff) {\n  throw new RangeError(\"S-box input must be an unsigned 32-bit word\");\n}\nfor (var _sboxIndex = 0; _sboxIndex < 256; _sboxIndex++) {\n  var _sboxEntry = _sboxRef[_sboxIndex];\n  if (!Number.isInteger(_sboxEntry) || _sboxEntry < 0 || _sboxEntry > 255) {\n    throw new RangeError(\"S-box entries must be bytes\");\n  }\n}\nvar _b0 = (_input_val >>> 24) & 0xFF;\nvar _b1 = (_input_val >>> 16) & 0xFF;\nvar _b2 = (_input_val >>> 8) & 0xFF;\nvar _b3 = _input_val & 0xFF;\n\nvar _s_b0 = _sboxRef[_b0];\nvar _s_b1 = _sboxRef[_b1];\nvar _s_b2 = _sboxRef[_b2];\nvar _s_b3 = _sboxRef[_b3];\n\nzzsigv_OUTPUT_VAR = ((_s_b0 << 24) | (_s_b1 << 16) | (_s_b2 << 8) | _s_b3) >>> 0;\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "sbox_variables_get",
+      "python": {
+        "template": null,
+        "order": null,
+        "definitions": [],
+        "error": "Cannot read properties of null (reading 'toLowerCase')"
+      },
+      "javascript": {
+        "template": null,
+        "order": null,
+        "definitions": [],
+        "error": "Cannot read properties of null (reading 'toLowerCase')"
+      }
+    },
+    {
+      "type": "sbox_variables_set",
+      "python": {
+        "template": null,
+        "order": null,
+        "definitions": [],
+        "error": "Cannot read properties of null (reading 'toLowerCase')"
+      },
+      "javascript": {
+        "template": null,
+        "order": null,
+        "definitions": [],
+        "error": "Cannot read properties of null (reading 'toLowerCase')"
+      }
+    },
+    {
+      "type": "seed_bytes",
+      "python": {
+        "template": "data",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "data",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "seed_hex",
+      "python": {
+        "template": "data.hex()",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "Array.from(data, b => b.toString(16).padStart(2, \"0\")).join(\"\")",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "sha3_hash",
+      "python": {
+        "template": "sha3_hash(zzsigv_MSG, 224, 144)",
+        "order": null,
+        "definitions": [
+          "sha3_absorb",
+          "sha3_squeeze",
+          "sha3_hash"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "sha3Hash(zzsigv_MSG, 224, 144)",
+        "order": null,
+        "definitions": [
+          "sha3Absorb",
+          "sha3Squeeze",
+          "sha3Hash"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "slh_addr",
+      "python": {
+        "template": "hash_based()[\"slh_addr\"](zzsigv_LAYER, zzsigv_TREE, zzsigv_LEAF, 0)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "hashBased().slhAddr(zzsigv_LAYER, zzsigv_TREE, zzsigv_LEAF, 0)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "slh_adrs_full",
+      "python": {
+        "template": "slh_adrs_full(zzsigv_LAYER, zzsigv_TREE, 0, zzsigv_KEYPAIR, zzsigv_HEIGHT, zzsigv_INDEX)",
+        "order": null,
+        "definitions": [
+          "slh_adrs_full"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "slhAdrsFull(zzsigv_LAYER, zzsigv_TREE, 0, zzsigv_KEYPAIR, zzsigv_HEIGHT, zzsigv_INDEX)",
+        "order": null,
+        "definitions": [
+          "slhAdrsFull"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "slh_msg_randomness",
+      "python": {
+        "template": "bytes(slh_msg_randomness(zzsigv_SK_PRF, zzsigv_OPT_RAND, zzsigv_MESSAGE, zzsigv_CONTEXT))",
+        "order": null,
+        "definitions": [
+          "slh_msg_randomness"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(slhMsgRandomness(zzsigv_SK_PRF, zzsigv_OPT_RAND, zzsigv_MESSAGE, zzsigv_CONTEXT))",
+        "order": null,
+        "definitions": [
+          "slhMsgRandomness"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "slh_sign",
+      "python": {
+        "template": "bytes(slh_sign(zzsigv_SK, zzsigv_MESSAGE, zzsigv_CONTEXT, \"SLH-DSA-SHAKE-128f\"))",
+        "order": null,
+        "definitions": [
+          "slh_sign"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(slhSign(zzsigv_SK, zzsigv_MESSAGE, zzsigv_CONTEXT, \"SLH-DSA-SHAKE-128f\"))",
+        "order": null,
+        "definitions": [
+          "slhSign"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "slh_xmss_root",
+      "python": {
+        "template": "bytes(slh_xmss_root(zzsigv_SK_SEED, zzsigv_PK_SEED, zzsigv_H_PRIME, zzsigv_LAYER, zzsigv_TREE))",
+        "order": null,
+        "definitions": [
+          "slh_xmss_root"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(slhXmssRoot(zzsigv_SK_SEED, zzsigv_PK_SEED, zzsigv_H_PRIME, zzsigv_LAYER, zzsigv_TREE))",
+        "order": null,
+        "definitions": [
+          "slhXmssRoot"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "sm2_decrypt",
+      "python": {
+        "template": "bytes(sm2_decrypt(zzsigv_CT, zzsigv_DA))",
+        "order": null,
+        "definitions": [
+          "sm2_encrypt"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(sm2Decrypt(zzsigv_CT, zzsigv_DA))",
+        "order": null,
+        "definitions": [
+          "sm2Encrypt"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "sm2_encrypt",
+      "python": {
+        "template": "sm2_encrypt(zzsigv_MSG, zzsigv_PX, zzsigv_PY, zzsigv_K)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "sm2Encrypt(zzsigv_MSG, zzsigv_PX, zzsigv_PY, zzsigv_K)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "sm2_kdf",
+      "python": {
+        "template": "bytes(sm2_kdf_derive(zzsigv_Z, zzsigv_KLEN))",
+        "order": null,
+        "definitions": [
+          "sm3_hash",
+          "sm2_kdf_derive"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(sm2KdfDerive(zzsigv_Z, zzsigv_KLEN))",
+        "order": null,
+        "definitions": [
+          "sm3Hash",
+          "sm2KdfDerive"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "sm2_key_exchange",
+      "python": {
+        "template": "sm2_key_exchange(zzsigv_DB, zzsigv_RBVAL, zzsigv_PAX, zzsigv_PAY, zzsigv_RA, zzsigv_RBP, zzsigv_ZA, zzsigv_ZB, zzsigv_WLEN)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "sm2KeyExchange(zzsigv_DB, zzsigv_RBVAL, zzsigv_PAX, zzsigv_PAY, zzsigv_RA, zzsigv_RBP, zzsigv_ZA, zzsigv_ZB, zzsigv_WLEN)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "sm2_sign",
+      "python": {
+        "template": "bytes(sm2_sign(zzsigv_DA, zzsigv_IDA, zzsigv_MSG, zzsigv_K))",
+        "order": null,
+        "definitions": [
+          "sm2_sign"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(sm2Sign(zzsigv_DA, zzsigv_IDA, zzsigv_MSG, zzsigv_K))",
+        "order": null,
+        "definitions": [
+          "sm2Sign"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "sm2_verify",
+      "python": {
+        "template": "sm2_verify(zzsigv_PAX, zzsigv_PAY, zzsigv_IDA, zzsigv_MSG, zzsigv_R, zzsigv_S)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "sm2Verify(zzsigv_PAX, zzsigv_PAY, zzsigv_IDA, zzsigv_MSG, zzsigv_R, zzsigv_S)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "sm4_linear_transform",
+      "python": {
+        "template": "sm4_linear_transform(zzsigv_B)",
+        "order": null,
+        "definitions": [
+          "sm4_linear_transform"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "sm4LinearTransform(zzsigv_B)",
+        "order": null,
+        "definitions": [
+          "sm4LinearTransform"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "sm4_round_func",
+      "python": {
+        "template": "sm4_round_func(zzsigv_X0, zzsigv_X1, zzsigv_X2, zzsigv_X3, zzsigv_RK)",
+        "order": null,
+        "definitions": [
+          "sm4_sbox",
+          "sm4_round_func"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "sm4RoundFunc(zzsigv_X0, zzsigv_X1, zzsigv_X2, zzsigv_X3, zzsigv_RK)",
+        "order": null,
+        "definitions": [
+          "sm4_sbox",
+          "sm4RoundFunc"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "sm4_sbox",
+      "python": {
+        "template": "sm4_sbox_lookup(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "sm4_sbox_lookup"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "sm4SboxLookup(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "sm4SboxLookup"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "sm9_master_key",
+      "python": {
+        "template": "bytes(sm9_master_key(zzsigv_KS))",
+        "order": null,
+        "definitions": [
+          "sm9_sign"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(sm9MasterKey(zzsigv_KS))",
+        "order": null,
+        "definitions": [
+          "sm9Sign"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "sm9_sign",
+      "python": {
+        "template": "bytes(sm9_sign(zzsigv_MSG, zzsigv_DS, zzsigv_PPUB, zzsigv_R, True))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(sm9Sign(zzsigv_MSG, zzsigv_DS, zzsigv_PPUB, zzsigv_R, true))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "sm9_user_key",
+      "python": {
+        "template": "bytes(sm9_user_key(zzsigv_KS, zzsigv_ID, 1))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(sm9UserKey(zzsigv_KS, zzsigv_ID, 1))",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "sm9_verify",
+      "python": {
+        "template": "sm9_verify(zzsigv_MSG, zzsigv_ID, zzsigv_H, zzsigv_S, zzsigv_PPUB, 1)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "sm9Verify(zzsigv_MSG, zzsigv_ID, zzsigv_H, zzsigv_S, zzsigv_PPUB, 1)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "sponge_absorb",
+      "python": {
+        "template": "sha3_absorb(zzsigv_STATE, zzsigv_BLOCK, rate_bytes=136)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "sha3Absorb(zzsigv_STATE, zzsigv_BLOCK, 136)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "sponge_pad",
+      "python": {
+        "template": "sha3_pad(zzsigv_INPUT, rate_bytes=136, suffix=0x06)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "sha3Pad(zzsigv_INPUT, 136, 0x06)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "sponge_squeeze",
+      "python": {
+        "template": "sha3_squeeze(zzsigv_STATE, zzsigv_OUTLEN, rate_bytes=136)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "sha3Squeeze(zzsigv_STATE, zzsigv_OUTLEN, 136)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "syndrome_calc",
+      "python": {
+        "template": "code_based()[\"syndrome_calc\"](zzsigv_H, zzsigv_Y, zzsigv_ROWS, zzsigv_COLS)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "codeBased().syndromeCalc(zzsigv_H, zzsigv_Y, zzsigv_ROWS, zzsigv_COLS)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "vec_dot",
+      "python": {
+        "template": "multivariate()[\"vec_dot\"](zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "multivariate().vecDot(zzsigv_A, zzsigv_B)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "wots_checksum",
+      "python": {
+        "template": "wots_checksum(zzsigv_M)",
+        "order": null,
+        "definitions": [
+          "wots_checksum"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "wotsChecksum(zzsigv_M)",
+        "order": null,
+        "definitions": [
+          "wotsChecksum"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "x25519",
+      "python": {
+        "template": "bytes(x25519(zzsigv_SCALAR, zzsigv_U))",
+        "order": null,
+        "definitions": [
+          "x25519"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(x25519(zzsigv_SCALAR, zzsigv_U))",
+        "order": null,
+        "definitions": [
+          "x25519"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "xts_encrypt",
+      "python": {
+        "template": "bytes(xts_encrypt(zzsigv_KEY, zzsigv_TWEAK, zzsigv_MSG))",
+        "order": null,
+        "definitions": [
+          "xts_tweak_mul",
+          "xts_encrypt"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "Uint8Array.from(xtsEncrypt(zzsigv_KEY, zzsigv_TWEAK, zzsigv_MSG))",
+        "order": null,
+        "definitions": [
+          "xtsTweakMul",
+          "xtsEncrypt"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "xts_tweak_mul",
+      "python": {
+        "template": "xts_tweak_mul(zzsigv_TWEAK)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "xtsTweakMul(zzsigv_TWEAK)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "zuc_eia3",
+      "python": {
+        "template": "zuc_eia3(zzsigv_KEY, zzsigv_COUNT, zzsigv_BEARER, zzsigv_DIRECTION, zzsigv_MESSAGE, zzsigv_LENGTH)",
+        "order": null,
+        "definitions": [
+          "zuc_rotl",
+          "zuc_s0",
+          "zuc_s0_lookup",
+          "zuc_s1",
+          "zuc_s1_lookup",
+          "zuc_s32",
+          "zuc_keystream",
+          "zuc_eia3"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "zucEia3(zzsigv_KEY, zzsigv_COUNT, zzsigv_BEARER, zzsigv_DIRECTION, zzsigv_MESSAGE, zzsigv_LENGTH)",
+        "order": null,
+        "definitions": [
+          "zucRotl",
+          "zuc_s0",
+          "zucS0Lookup",
+          "zuc_s1",
+          "zucS1Lookup",
+          "zucS32",
+          "zucF",
+          "zucKeystream",
+          "zucEia3"
+        ],
+        "error": null
+      }
+    },
+    {
+      "type": "zuc_f",
+      "python": {
+        "template": "zuc_f(zzsigv_X0, zzsigv_X1, zzsigv_X2, zzsigv_R1, zzsigv_R2)[0]",
+        "order": null,
+        "definitions": [
+          "zuc_f"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "zucF(zzsigv_X0, zzsigv_X1, zzsigv_X2, zzsigv_R1, zzsigv_R2).W",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "zuc_keystream",
+      "python": {
+        "template": "zuc_keystream(zzsigv_KEY, zzsigv_IV, zzsigv_LEN)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "zucKeystream(zzsigv_KEY, zzsigv_IV, zzsigv_LEN)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "zuc_l1",
+      "python": {
+        "template": "zuc_l1(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "zuc_l1"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "(function(x){if(!Number.isInteger(x)||x<0||x>0xFFFFFFFF)throw new RangeError(\"ZUC L1 input must be a 32-bit unsigned integer\");return (x ^ zucRotl(x, 2) ^ zucRotl(x, 10) ^ zucRotl(x, 18) ^ zucRotl(x, 24))>>>0;})(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "zuc_l2",
+      "python": {
+        "template": "zuc_l2(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [
+          "zuc_l2"
+        ],
+        "error": null
+      },
+      "javascript": {
+        "template": "(function(x){if(!Number.isInteger(x)||x<0||x>0xFFFFFFFF)throw new RangeError(\"ZUC L2 input must be a 32-bit unsigned integer\");return (x ^ zucRotl(x, 8) ^ zucRotl(x, 14) ^ zucRotl(x, 22) ^ zucRotl(x, 30))>>>0;})(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "zuc_s0",
+      "python": {
+        "template": "zuc_s0_lookup(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "zucS0Lookup(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "zuc_s1",
+      "python": {
+        "template": "zuc_s1_lookup(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "zucS1Lookup(zzsigv_INPUT)",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+ "mounted": true,
+ "placeholder": "描述你要做的事，例如「16 字节密钥算 MAC」或「S 盒」",
+ "query1": {
+  "text": "S 盒",
+  "hits": 8,
+  "firstLabel": "S-box 替换 输入变量 S-box 输出变量",
+  "firstType": "sbox_sub",
+  "firstReason": "label.zh 含 \"s-box\""
+ },
+ "inserted": {
+  "count": 1,
+  "type": "sbox_sub"
+ },
+ "closeEvents": 1,
+ "query2": {
+  "text": "按位与",
+  "hits": 12,
+  "firstType": "bit_operation"
+ },
+ "query2FirstLabel": "按位与(&)",
+ "outFilterIntList": {
+  "hits": 12,
+  "firstType": "aes_add_round_key"
+ },
+ "emptyState": {
+  "hits": 0,
+  "hint": "没有匹配的块。换个说法，或去掉输入/输出限制。"
+ },
+ "pageErrors": [],
+ "blockly": "13.2.0"
+}

@@ -1,0 +1,2313 @@
+{
+  "schemaVersion": 1,
+  "index": {
+    "path": "experiments/ai-helper-2026-11-14/out/block-index.json",
+    "blockTypes": 221,
+    "labelCoverage": {
+      "en": {
+        "labeled": 221,
+        "total": 221
+      },
+      "zh": {
+        "labeled": 221,
+        "total": 221
+      }
+    },
+    "localizedZh": 32
+  },
+  "target": 0.8,
+  "pass": false,
+  "recallAt5": 0.7,
+  "meanExpectedRecall": 0.7,
+  "queries": [
+    {
+      "id": "t01",
+      "query": "计算默克尔树的叶子节点哈希",
+      "in": [],
+      "out": [],
+      "expected": [
+        "merkle_leaf"
+      ],
+      "top5": [
+        {
+          "blockType": "merkle_auth_path",
+          "score": 41.52,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "merkle",
+              "evidence": "label.zh 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "label.en",
+              "term": "merkle",
+              "evidence": "label.en 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "merkle",
+              "evidence": "tooltip.zh 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "叶子",
+              "evidence": "tooltip.zh 含 \"叶子\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "节点",
+              "evidence": "tooltip.zh 含 \"节点\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "merkle",
+              "evidence": "tooltip.en 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "叶子",
+              "evidence": "tooltip.en 含 \"叶子\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "节点",
+              "evidence": "tooltip.en 含 \"节点\""
+            }
+          ]
+        },
+        {
+          "blockType": "merkle_root",
+          "score": 39.6,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "merkle",
+              "evidence": "label.zh 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "label.en",
+              "term": "merkle",
+              "evidence": "label.en 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "merkle",
+              "evidence": "tooltip.zh 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "节点",
+              "evidence": "tooltip.zh 含 \"节点\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "merkle",
+              "evidence": "tooltip.en 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "节点",
+              "evidence": "tooltip.en 含 \"节点\""
+            },
+            {
+              "source": "blockType",
+              "term": "merkle",
+              "evidence": "blockType 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "python",
+              "term": "hash",
+              "evidence": "python 含 \"hash\"（术语「哈希」⇒ hash）"
+            }
+          ]
+        },
+        {
+          "blockType": "hash_sha224_hash",
+          "score": 33.74,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "hash",
+              "evidence": "label.zh 含 \"hash\"（术语「哈希」⇒ hash）"
+            },
+            {
+              "source": "label.en",
+              "term": "hash",
+              "evidence": "label.en 含 \"hash\"（术语「哈希」⇒ hash）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "hash",
+              "evidence": "tooltip.zh 含 \"hash\"（术语「哈希」⇒ hash）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "hash",
+              "evidence": "tooltip.en 含 \"hash\"（术语「哈希」⇒ hash）"
+            },
+            {
+              "source": "blockType",
+              "term": "hash",
+              "evidence": "blockType 含 \"hash\"（术语「哈希」⇒ hash）"
+            },
+            {
+              "source": "definition",
+              "term": "hash",
+              "evidence": "definition 含 \"hash\"（术语「哈希」⇒ hash）"
+            },
+            {
+              "source": "python",
+              "term": "hash",
+              "evidence": "python 含 \"hash\"（术语「哈希」⇒ hash）"
+            }
+          ]
+        },
+        {
+          "blockType": "sha3_hash",
+          "score": 33.74,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "hash",
+              "evidence": "label.zh 含 \"hash\"（术语「哈希」⇒ hash）"
+            },
+            {
+              "source": "label.en",
+              "term": "hash",
+              "evidence": "label.en 含 \"hash\"（术语「哈希」⇒ hash）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "hash",
+              "evidence": "tooltip.zh 含 \"hash\"（术语「哈希」⇒ hash）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "hash",
+              "evidence": "tooltip.en 含 \"hash\"（术语「哈希」⇒ hash）"
+            },
+            {
+              "source": "blockType",
+              "term": "hash",
+              "evidence": "blockType 含 \"hash\"（术语「哈希」⇒ hash）"
+            },
+            {
+              "source": "definition",
+              "term": "hash",
+              "evidence": "definition 含 \"hash\"（术语「哈希」⇒ hash）"
+            },
+            {
+              "source": "python",
+              "term": "hash",
+              "evidence": "python 含 \"hash\"（术语「哈希」⇒ hash）"
+            }
+          ]
+        },
+        {
+          "blockType": "gcm_ghash",
+          "score": 32.664,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "hash",
+              "evidence": "label.zh 含 \"hash\"（术语「哈希」⇒ hash）"
+            },
+            {
+              "source": "label.en",
+              "term": "hash",
+              "evidence": "label.en 含 \"hash\"（术语「哈希」⇒ hash）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "hash",
+              "evidence": "tooltip.zh 含 \"hash\"（术语「哈希」⇒ hash）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "哈希",
+              "evidence": "tooltip.zh 含 \"哈希\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "散列",
+              "evidence": "tooltip.zh 含 \"散列\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "hash",
+              "evidence": "tooltip.en 含 \"hash\"（术语「哈希」⇒ hash）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "哈希",
+              "evidence": "tooltip.en 含 \"哈希\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "散列",
+              "evidence": "tooltip.en 含 \"散列\""
+            }
+          ]
+        }
+      ],
+      "hit": false,
+      "covered": [],
+      "missingExpected": [
+        "merkle_leaf"
+      ]
+    },
+    {
+      "id": "t02",
+      "query": "生成默克尔树的一条认证路径",
+      "in": [],
+      "out": [],
+      "expected": [
+        "merkle_auth_path"
+      ],
+      "top5": [
+        {
+          "blockType": "merkle_auth_path",
+          "score": 41.76,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "merkle",
+              "evidence": "label.zh 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "label.en",
+              "term": "merkle",
+              "evidence": "label.en 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "merkle",
+              "evidence": "tooltip.zh 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "认证",
+              "evidence": "tooltip.zh 含 \"认证\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "证路",
+              "evidence": "tooltip.zh 含 \"证路\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "路径",
+              "evidence": "tooltip.zh 含 \"路径\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "merkle",
+              "evidence": "tooltip.en 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "认证",
+              "evidence": "tooltip.en 含 \"认证\""
+            }
+          ]
+        },
+        {
+          "blockType": "merkle_root",
+          "score": 36,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "merkle",
+              "evidence": "label.zh 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "label.en",
+              "term": "merkle",
+              "evidence": "label.en 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "merkle",
+              "evidence": "tooltip.zh 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "merkle",
+              "evidence": "tooltip.en 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "blockType",
+              "term": "merkle",
+              "evidence": "blockType 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "python",
+              "term": "merkle",
+              "evidence": "python 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            }
+          ]
+        },
+        {
+          "blockType": "merkle_leaf",
+          "score": 30.240000000000002,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "merkle",
+              "evidence": "label.zh 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "label.en",
+              "term": "merkle",
+              "evidence": "label.en 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "生成",
+              "evidence": "tooltip.zh 含 \"生成\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "生成",
+              "evidence": "tooltip.en 含 \"生成\""
+            },
+            {
+              "source": "blockType",
+              "term": "merkle",
+              "evidence": "blockType 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "python",
+              "term": "merkle",
+              "evidence": "python 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            }
+          ]
+        },
+        {
+          "blockType": "merkle_node",
+          "score": 28.32,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "merkle",
+              "evidence": "label.zh 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "label.en",
+              "term": "merkle",
+              "evidence": "label.en 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "blockType",
+              "term": "merkle",
+              "evidence": "blockType 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            },
+            {
+              "source": "python",
+              "term": "merkle",
+              "evidence": "python 含 \"merkle\"（术语「默克尔」⇒ merkle）"
+            }
+          ]
+        },
+        {
+          "blockType": "drbg_generate",
+          "score": 15.89,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "generate",
+              "evidence": "label.zh 含 \"generate\"（术语「生成」⇒ generate）"
+            },
+            {
+              "source": "label.en",
+              "term": "generate",
+              "evidence": "label.en 含 \"generate\"（术语「生成」⇒ generate）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "generate",
+              "evidence": "tooltip.zh 含 \"generate\"（术语「生成」⇒ generate）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "生成",
+              "evidence": "tooltip.zh 含 \"生成\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "认证",
+              "evidence": "tooltip.zh 含 \"认证\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "generate",
+              "evidence": "tooltip.en 含 \"generate\"（术语「生成」⇒ generate）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "生成",
+              "evidence": "tooltip.en 含 \"生成\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "认证",
+              "evidence": "tooltip.en 含 \"认证\""
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "merkle_auth_path"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "t03",
+      "query": "对二元矩阵求逆",
+      "in": [],
+      "out": [],
+      "expected": [
+        "bin_mat_inv"
+      ],
+      "top5": [
+        {
+          "blockType": "pq_mat_vec_mul",
+          "score": 36.486000000000004,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "mat",
+              "evidence": "label.zh 含 \"mat\"（术语「矩阵」⇒ mat）"
+            },
+            {
+              "source": "label.en",
+              "term": "mat",
+              "evidence": "label.en 含 \"mat\"（术语「矩阵」⇒ mat）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "mat",
+              "evidence": "tooltip.zh 含 \"mat\"（术语「矩阵」⇒ mat）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "matrix",
+              "evidence": "tooltip.zh 含 \"matrix\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "mat",
+              "evidence": "tooltip.en 含 \"mat\"（术语「矩阵」⇒ mat）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "matrix",
+              "evidence": "tooltip.en 含 \"matrix\""
+            },
+            {
+              "source": "blockType",
+              "term": "mat",
+              "evidence": "blockType 含 \"mat\"（术语「矩阵」⇒ mat）"
+            },
+            {
+              "source": "input",
+              "term": "mat",
+              "evidence": "输入 MATRIX/VEC 含 mat（术语「矩阵」⇒ mat）"
+            }
+          ]
+        },
+        {
+          "blockType": "bin_mat_inv",
+          "score": 28.769999999999996,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "mat",
+              "evidence": "label.zh 含 \"mat\"（术语「矩阵」⇒ mat）"
+            },
+            {
+              "source": "label.en",
+              "term": "mat",
+              "evidence": "label.en 含 \"mat\"（术语「矩阵」⇒ mat）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "求逆",
+              "evidence": "tooltip.zh 含 \"求逆\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "矩阵",
+              "evidence": "tooltip.zh 含 \"矩阵\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "阵求",
+              "evidence": "tooltip.zh 含 \"阵求\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "求逆",
+              "evidence": "tooltip.en 含 \"求逆\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "矩阵",
+              "evidence": "tooltip.en 含 \"矩阵\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "阵求",
+              "evidence": "tooltip.en 含 \"阵求\""
+            }
+          ]
+        },
+        {
+          "blockType": "bin_mat_mul",
+          "score": 24.93,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "mat",
+              "evidence": "label.zh 含 \"mat\"（术语「矩阵」⇒ mat）"
+            },
+            {
+              "source": "label.en",
+              "term": "mat",
+              "evidence": "label.en 含 \"mat\"（术语「矩阵」⇒ mat）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "矩阵",
+              "evidence": "tooltip.zh 含 \"矩阵\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "矩阵",
+              "evidence": "tooltip.en 含 \"矩阵\""
+            },
+            {
+              "source": "blockType",
+              "term": "mat",
+              "evidence": "blockType 含 \"mat\"（术语「矩阵」⇒ mat）"
+            },
+            {
+              "source": "python",
+              "term": "mat",
+              "evidence": "python 含 \"mat\"（术语「矩阵」⇒ mat）"
+            }
+          ]
+        },
+        {
+          "blockType": "pq_seed_with_nonce",
+          "score": 7.5840000000000005,
+          "matched": [
+            {
+              "source": "tooltip.zh",
+              "term": "mat",
+              "evidence": "tooltip.zh 含 \"mat\"（术语「矩阵」⇒ mat）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "matrix",
+              "evidence": "tooltip.zh 含 \"matrix\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "mat",
+              "evidence": "tooltip.en 含 \"mat\"（术语「矩阵」⇒ mat）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "matrix",
+              "evidence": "tooltip.en 含 \"matrix\""
+            }
+          ]
+        },
+        {
+          "blockType": "pq_compress",
+          "score": 6.24,
+          "matched": [
+            {
+              "source": "tooltip.zh",
+              "term": "mat",
+              "evidence": "tooltip.zh 含 \"mat\"（术语「矩阵」⇒ mat）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "mat",
+              "evidence": "tooltip.en 含 \"mat\"（术语「矩阵」⇒ mat）"
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "bin_mat_inv"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "t04",
+      "query": "在有限扩域上做多项式取模",
+      "in": [],
+      "out": [],
+      "expected": [
+        "gf2m_poly_mod"
+      ],
+      "top5": [
+        {
+          "blockType": "gf2m_poly_mod",
+          "score": 66.84000000000002,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "mod",
+              "evidence": "label.zh 含 \"mod\"（术语「取模」⇒ mod）"
+            },
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "mod",
+              "evidence": "label.en 含 \"mod\"（术语「取模」⇒ mod）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "mod",
+              "evidence": "tooltip.zh 含 \"mod\"（术语「取模」⇒ mod）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "poly",
+              "evidence": "tooltip.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "多项",
+              "evidence": "tooltip.zh 含 \"多项\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "项式",
+              "evidence": "tooltip.zh 含 \"项式\""
+            }
+          ]
+        },
+        {
+          "blockType": "gf2_poly_mod",
+          "score": 63.00000000000001,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "mod",
+              "evidence": "label.zh 含 \"mod\"（术语「取模」⇒ mod）"
+            },
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "mod",
+              "evidence": "label.en 含 \"mod\"（术语「取模」⇒ mod）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "mod",
+              "evidence": "tooltip.zh 含 \"mod\"（术语「取模」⇒ mod）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "取模",
+              "evidence": "tooltip.zh 含 \"取模\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "多项",
+              "evidence": "tooltip.zh 含 \"多项\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "式取",
+              "evidence": "tooltip.zh 含 \"式取\""
+            }
+          ]
+        },
+        {
+          "blockType": "pq_poly_mul",
+          "score": 60.04000000000001,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "mod",
+              "evidence": "label.zh 含 \"mod\"（术语「取模」⇒ mod）"
+            },
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "mod",
+              "evidence": "label.en 含 \"mod\"（术语「取模」⇒ mod）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "mod",
+              "evidence": "tooltip.zh 含 \"mod\"（术语「取模」⇒ mod）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "poly",
+              "evidence": "tooltip.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "取模",
+              "evidence": "tooltip.zh 含 \"取模\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "mod",
+              "evidence": "tooltip.en 含 \"mod\"（术语「取模」⇒ mod）"
+            }
+          ]
+        },
+        {
+          "blockType": "pq_poly_add",
+          "score": 47.68000000000001,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "mod",
+              "evidence": "tooltip.zh 含 \"mod\"（术语「取模」⇒ mod）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "poly",
+              "evidence": "tooltip.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "mod",
+              "evidence": "tooltip.en 含 \"mod\"（术语「取模」⇒ mod）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "poly",
+              "evidence": "tooltip.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "blockType",
+              "term": "poly",
+              "evidence": "blockType 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "definition",
+              "term": "mod",
+              "evidence": "definition 含 \"mod\"（术语「取模」⇒ mod）"
+            }
+          ]
+        },
+        {
+          "blockType": "pq_poly_sub",
+          "score": 47.68000000000001,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "mod",
+              "evidence": "tooltip.zh 含 \"mod\"（术语「取模」⇒ mod）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "poly",
+              "evidence": "tooltip.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "mod",
+              "evidence": "tooltip.en 含 \"mod\"（术语「取模」⇒ mod）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "poly",
+              "evidence": "tooltip.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "blockType",
+              "term": "poly",
+              "evidence": "blockType 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "definition",
+              "term": "mod",
+              "evidence": "definition 含 \"mod\"（术语「取模」⇒ mod）"
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "gf2m_poly_mod"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "t05",
+      "query": "把两个系数域多项式相加",
+      "in": [],
+      "out": [],
+      "expected": [
+        "pq_poly_add"
+      ],
+      "top5": [
+        {
+          "blockType": "pq_poly_add",
+          "score": 67.48,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "add",
+              "evidence": "label.zh 含 \"add\"（术语「相加」⇒ add）"
+            },
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "add",
+              "evidence": "label.en 含 \"add\"（术语「相加」⇒ add）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "add",
+              "evidence": "tooltip.zh 含 \"add\"（术语「相加」⇒ add）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "poly",
+              "evidence": "tooltip.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "add",
+              "evidence": "tooltip.en 含 \"add\"（术语「相加」⇒ add）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "poly",
+              "evidence": "tooltip.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            }
+          ]
+        },
+        {
+          "blockType": "gf2m_poly_add",
+          "score": 65.56,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "add",
+              "evidence": "label.zh 含 \"add\"（术语「相加」⇒ add）"
+            },
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "add",
+              "evidence": "label.en 含 \"add\"（术语「相加」⇒ add）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "poly",
+              "evidence": "tooltip.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "多项",
+              "evidence": "tooltip.zh 含 \"多项\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "系数",
+              "evidence": "tooltip.zh 含 \"系数\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "项式",
+              "evidence": "tooltip.zh 含 \"项式\""
+            }
+          ]
+        },
+        {
+          "blockType": "gf2m_poly_eval",
+          "score": 41.76,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "poly",
+              "evidence": "tooltip.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "多项",
+              "evidence": "tooltip.zh 含 \"多项\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "系数",
+              "evidence": "tooltip.zh 含 \"系数\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "项式",
+              "evidence": "tooltip.zh 含 \"项式\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "poly",
+              "evidence": "tooltip.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "多项",
+              "evidence": "tooltip.en 含 \"多项\""
+            }
+          ]
+        },
+        {
+          "blockType": "gf2m_poly_mod",
+          "score": 41.76,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "poly",
+              "evidence": "tooltip.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "多项",
+              "evidence": "tooltip.zh 含 \"多项\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "系数",
+              "evidence": "tooltip.zh 含 \"系数\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "项式",
+              "evidence": "tooltip.zh 含 \"项式\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "poly",
+              "evidence": "tooltip.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "多项",
+              "evidence": "tooltip.en 含 \"多项\""
+            }
+          ]
+        },
+        {
+          "blockType": "gf2m_poly_mul",
+          "score": 41.76,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "poly",
+              "evidence": "tooltip.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "多项",
+              "evidence": "tooltip.zh 含 \"多项\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "系数",
+              "evidence": "tooltip.zh 含 \"系数\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "项式",
+              "evidence": "tooltip.zh 含 \"项式\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "poly",
+              "evidence": "tooltip.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "多项",
+              "evidence": "tooltip.en 含 \"多项\""
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "pq_poly_add"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "t06",
+      "query": "构造 Keccak 的初始状态",
+      "in": [],
+      "out": [],
+      "expected": [
+        "keccak_state_init"
+      ],
+      "top5": [
+        {
+          "blockType": "keccak_f",
+          "score": 24.1,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "keccak",
+              "evidence": "label.zh 含 \"keccak\""
+            },
+            {
+              "source": "label.en",
+              "term": "keccak",
+              "evidence": "label.en 含 \"keccak\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "keccak",
+              "evidence": "tooltip.zh 含 \"keccak\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "keccak",
+              "evidence": "tooltip.en 含 \"keccak\""
+            },
+            {
+              "source": "blockType",
+              "term": "keccak",
+              "evidence": "blockType 含 \"keccak\""
+            },
+            {
+              "source": "definition",
+              "term": "keccak",
+              "evidence": "definition 含 \"keccak\""
+            },
+            {
+              "source": "python",
+              "term": "keccak",
+              "evidence": "python 含 \"keccak\""
+            }
+          ]
+        },
+        {
+          "blockType": "keccak_state_init",
+          "score": 21.3,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "keccak",
+              "evidence": "label.zh 含 \"keccak\""
+            },
+            {
+              "source": "label.en",
+              "term": "keccak",
+              "evidence": "label.en 含 \"keccak\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "keccak",
+              "evidence": "tooltip.zh 含 \"keccak\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "keccak",
+              "evidence": "tooltip.en 含 \"keccak\""
+            },
+            {
+              "source": "blockType",
+              "term": "keccak",
+              "evidence": "blockType 含 \"keccak\""
+            }
+          ]
+        },
+        {
+          "blockType": "sponge_squeeze",
+          "score": 5.84,
+          "matched": [
+            {
+              "source": "tooltip.zh",
+              "term": "keccak",
+              "evidence": "tooltip.zh 含 \"keccak\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "状态",
+              "evidence": "tooltip.zh 含 \"状态\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "keccak",
+              "evidence": "tooltip.en 含 \"keccak\""
+            }
+          ]
+        },
+        {
+          "blockType": "gf2_poly_mul",
+          "score": 4.800000000000001,
+          "matched": [
+            {
+              "source": "tooltip.zh",
+              "term": "构造",
+              "evidence": "tooltip.zh 含 \"构造\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "构造",
+              "evidence": "tooltip.en 含 \"构造\""
+            }
+          ]
+        },
+        {
+          "blockType": "goppa_gen_poly",
+          "score": 4.800000000000001,
+          "matched": [
+            {
+              "source": "tooltip.zh",
+              "term": "构造",
+              "evidence": "tooltip.zh 含 \"构造\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "构造",
+              "evidence": "tooltip.en 含 \"构造\""
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "keccak_state_init"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "t07",
+      "query": "把多项式按指定比特压缩",
+      "in": [],
+      "out": [],
+      "expected": [
+        "pq_compress"
+      ],
+      "top5": [
+        {
+          "blockType": "gf2m_poly_add",
+          "score": 42.400000000000006,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "poly",
+              "evidence": "tooltip.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "多项",
+              "evidence": "tooltip.zh 含 \"多项\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "项式",
+              "evidence": "tooltip.zh 含 \"项式\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "poly",
+              "evidence": "tooltip.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "多项",
+              "evidence": "tooltip.en 含 \"多项\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "项式",
+              "evidence": "tooltip.en 含 \"项式\""
+            }
+          ]
+        },
+        {
+          "blockType": "gf2m_poly_eval",
+          "score": 39.84,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "poly",
+              "evidence": "tooltip.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "多项",
+              "evidence": "tooltip.zh 含 \"多项\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "项式",
+              "evidence": "tooltip.zh 含 \"项式\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "poly",
+              "evidence": "tooltip.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "多项",
+              "evidence": "tooltip.en 含 \"多项\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "项式",
+              "evidence": "tooltip.en 含 \"项式\""
+            }
+          ]
+        },
+        {
+          "blockType": "gf2m_poly_mod",
+          "score": 39.84,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "poly",
+              "evidence": "tooltip.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "多项",
+              "evidence": "tooltip.zh 含 \"多项\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "项式",
+              "evidence": "tooltip.zh 含 \"项式\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "poly",
+              "evidence": "tooltip.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "多项",
+              "evidence": "tooltip.en 含 \"多项\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "项式",
+              "evidence": "tooltip.en 含 \"项式\""
+            }
+          ]
+        },
+        {
+          "blockType": "gf2m_poly_mul",
+          "score": 39.84,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "poly",
+              "evidence": "tooltip.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "多项",
+              "evidence": "tooltip.zh 含 \"多项\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "项式",
+              "evidence": "tooltip.zh 含 \"项式\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "poly",
+              "evidence": "tooltip.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "多项",
+              "evidence": "tooltip.en 含 \"多项\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "项式",
+              "evidence": "tooltip.en 含 \"项式\""
+            }
+          ]
+        },
+        {
+          "blockType": "gf2m_poly_xgcd",
+          "score": 39.84,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "poly",
+              "evidence": "tooltip.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "多项",
+              "evidence": "tooltip.zh 含 \"多项\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "项式",
+              "evidence": "tooltip.zh 含 \"项式\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "poly",
+              "evidence": "tooltip.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "多项",
+              "evidence": "tooltip.en 含 \"多项\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "项式",
+              "evidence": "tooltip.en 含 \"项式\""
+            }
+          ]
+        }
+      ],
+      "hit": false,
+      "covered": [],
+      "missingExpected": [
+        "pq_compress"
+      ]
+    },
+    {
+      "id": "t08",
+      "query": "用 CBC 方式算消息认证码",
+      "in": [],
+      "out": [],
+      "expected": [
+        "ccm_cbc_mac"
+      ],
+      "top5": [
+        {
+          "blockType": "ccm_cbc_mac",
+          "score": 90,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "cbc",
+              "evidence": "label.zh 含 \"cbc\""
+            },
+            {
+              "source": "label.zh",
+              "term": "mac",
+              "evidence": "label.zh 含 \"mac\"（术语「消息认证码」⇒ mac）"
+            },
+            {
+              "source": "label.zh",
+              "term": "msg",
+              "evidence": "label.zh 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "label.zh",
+              "term": "tag",
+              "evidence": "label.zh 含 \"tag\"（术语「消息认证码」⇒ tag）"
+            },
+            {
+              "source": "label.en",
+              "term": "cbc",
+              "evidence": "label.en 含 \"cbc\""
+            },
+            {
+              "source": "label.en",
+              "term": "mac",
+              "evidence": "label.en 含 \"mac\"（术语「消息认证码」⇒ mac）"
+            },
+            {
+              "source": "label.en",
+              "term": "msg",
+              "evidence": "label.en 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "label.en",
+              "term": "tag",
+              "evidence": "label.en 含 \"tag\"（术语「消息认证码」⇒ tag）"
+            }
+          ]
+        },
+        {
+          "blockType": "cmac_mac",
+          "score": 57.02000000000002,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "mac",
+              "evidence": "label.zh 含 \"mac\"（术语「消息认证码」⇒ mac）"
+            },
+            {
+              "source": "label.zh",
+              "term": "msg",
+              "evidence": "label.zh 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "label.en",
+              "term": "mac",
+              "evidence": "label.en 含 \"mac\"（术语「消息认证码」⇒ mac）"
+            },
+            {
+              "source": "label.en",
+              "term": "msg",
+              "evidence": "label.en 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "cbc",
+              "evidence": "tooltip.zh 含 \"cbc\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "mac",
+              "evidence": "tooltip.zh 含 \"mac\"（术语「消息认证码」⇒ mac）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "认证",
+              "evidence": "tooltip.zh 含 \"认证\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "cbc",
+              "evidence": "tooltip.en 含 \"cbc\""
+            }
+          ]
+        },
+        {
+          "blockType": "ccm_ctr",
+          "score": 46.54000000000001,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "msg",
+              "evidence": "label.zh 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "label.zh",
+              "term": "tag",
+              "evidence": "label.zh 含 \"tag\"（术语「消息认证码」⇒ tag）"
+            },
+            {
+              "source": "label.en",
+              "term": "msg",
+              "evidence": "label.en 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "label.en",
+              "term": "tag",
+              "evidence": "label.en 含 \"tag\"（术语「消息认证码」⇒ tag）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "cbc",
+              "evidence": "tooltip.zh 含 \"cbc\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "mac",
+              "evidence": "tooltip.zh 含 \"mac\"（术语「消息认证码」⇒ mac）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "用",
+              "evidence": "tooltip.zh 含 \"用\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "认证",
+              "evidence": "tooltip.zh 含 \"认证\""
+            }
+          ]
+        },
+        {
+          "blockType": "hash_hmac",
+          "score": 45.10000000000001,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "mac",
+              "evidence": "label.zh 含 \"mac\"（术语「消息认证码」⇒ mac）"
+            },
+            {
+              "source": "label.zh",
+              "term": "msg",
+              "evidence": "label.zh 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "label.en",
+              "term": "mac",
+              "evidence": "label.en 含 \"mac\"（术语「消息认证码」⇒ mac）"
+            },
+            {
+              "source": "label.en",
+              "term": "msg",
+              "evidence": "label.en 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "mac",
+              "evidence": "tooltip.zh 含 \"mac\"（术语「消息认证码」⇒ mac）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "mac",
+              "evidence": "tooltip.en 含 \"mac\"（术语「消息认证码」⇒ mac）"
+            },
+            {
+              "source": "blockType",
+              "term": "mac",
+              "evidence": "blockType 含 \"mac\"（术语「消息认证码」⇒ mac）"
+            },
+            {
+              "source": "input",
+              "term": "msg",
+              "evidence": "输入 KEY/MSG 含 msg（术语「消息」⇒ msg）"
+            }
+          ]
+        },
+        {
+          "blockType": "ccm_encrypt",
+          "score": 41.74000000000001,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "msg",
+              "evidence": "label.zh 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "label.zh",
+              "term": "tag",
+              "evidence": "label.zh 含 \"tag\"（术语「消息认证码」⇒ tag）"
+            },
+            {
+              "source": "label.en",
+              "term": "msg",
+              "evidence": "label.en 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "label.en",
+              "term": "tag",
+              "evidence": "label.en 含 \"tag\"（术语「消息认证码」⇒ tag）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "cbc",
+              "evidence": "tooltip.zh 含 \"cbc\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "mac",
+              "evidence": "tooltip.zh 含 \"mac\"（术语「消息认证码」⇒ mac）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "认证",
+              "evidence": "tooltip.zh 含 \"认证\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "cbc",
+              "evidence": "tooltip.en 含 \"cbc\""
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "ccm_cbc_mac"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "t09",
+      "query": "把字节流按比特数编码",
+      "in": [],
+      "out": [],
+      "expected": [
+        "pq_byte_encode"
+      ],
+      "top5": [
+        {
+          "blockType": "pq_bytes_to_bits",
+          "score": 34.20799999999999,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "bit",
+              "evidence": "label.zh 含 \"bit\"（术语「比特」⇒ bit）"
+            },
+            {
+              "source": "label.zh",
+              "term": "bits",
+              "evidence": "label.zh 含 \"bits\""
+            },
+            {
+              "source": "label.zh",
+              "term": "byte",
+              "evidence": "label.zh 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.zh",
+              "term": "bytes",
+              "evidence": "label.zh 含 \"bytes\""
+            },
+            {
+              "source": "label.en",
+              "term": "bit",
+              "evidence": "label.en 含 \"bit\"（术语「比特」⇒ bit）"
+            },
+            {
+              "source": "label.en",
+              "term": "bits",
+              "evidence": "label.en 含 \"bits\""
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            }
+          ]
+        },
+        {
+          "blockType": "pq_bits_to_bytes",
+          "score": 33.98799999999999,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "bit",
+              "evidence": "label.zh 含 \"bit\"（术语「比特」⇒ bit）"
+            },
+            {
+              "source": "label.zh",
+              "term": "bits",
+              "evidence": "label.zh 含 \"bits\""
+            },
+            {
+              "source": "label.zh",
+              "term": "byte",
+              "evidence": "label.zh 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.zh",
+              "term": "bytes",
+              "evidence": "label.zh 含 \"bytes\""
+            },
+            {
+              "source": "label.en",
+              "term": "bit",
+              "evidence": "label.en 含 \"bit\"（术语「比特」⇒ bit）"
+            },
+            {
+              "source": "label.en",
+              "term": "bits",
+              "evidence": "label.en 含 \"bits\""
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            }
+          ]
+        },
+        {
+          "blockType": "data_convert_bits_to_bytes",
+          "score": 29.215999999999994,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "字节",
+              "evidence": "label.zh 含 \"字节\""
+            },
+            {
+              "source": "label.zh",
+              "term": "比特",
+              "evidence": "label.zh 含 \"比特\""
+            },
+            {
+              "source": "label.en",
+              "term": "bit",
+              "evidence": "label.en 含 \"bit\"（术语「比特」⇒ bit）"
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "字节",
+              "evidence": "tooltip.zh 含 \"字节\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "比特",
+              "evidence": "tooltip.zh 含 \"比特\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "bit",
+              "evidence": "tooltip.en 含 \"bit\"（术语「比特」⇒ bit）"
+            }
+          ]
+        },
+        {
+          "blockType": "data_convert_bytes_to_bits",
+          "score": 29.215999999999994,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "字节",
+              "evidence": "label.zh 含 \"字节\""
+            },
+            {
+              "source": "label.zh",
+              "term": "比特",
+              "evidence": "label.zh 含 \"比特\""
+            },
+            {
+              "source": "label.en",
+              "term": "bit",
+              "evidence": "label.en 含 \"bit\"（术语「比特」⇒ bit）"
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "字节",
+              "evidence": "tooltip.zh 含 \"字节\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "比特",
+              "evidence": "tooltip.zh 含 \"比特\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "bit",
+              "evidence": "tooltip.en 含 \"bit\"（术语「比特」⇒ bit）"
+            }
+          ]
+        },
+        {
+          "blockType": "primitive_def",
+          "score": 22.366000000000003,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "byte",
+              "evidence": "label.zh 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.zh",
+              "term": "bytes",
+              "evidence": "label.zh 含 \"bytes\""
+            },
+            {
+              "source": "label.zh",
+              "term": "字节",
+              "evidence": "label.zh 含 \"字节\""
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            },
+            {
+              "source": "label.en",
+              "term": "字节",
+              "evidence": "label.en 含 \"字节\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "byte",
+              "evidence": "tooltip.zh 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "bytes",
+              "evidence": "tooltip.zh 含 \"bytes\""
+            }
+          ]
+        }
+      ],
+      "hit": false,
+      "covered": [],
+      "missingExpected": [
+        "pq_byte_encode"
+      ]
+    },
+    {
+      "id": "t10",
+      "query": "对消息做海绵填充",
+      "in": [],
+      "out": [],
+      "expected": [
+        "sponge_pad"
+      ],
+      "top5": [
+        {
+          "blockType": "sponge_pad",
+          "score": 41.156,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "pad",
+              "evidence": "label.zh 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "label.en",
+              "term": "pad",
+              "evidence": "label.en 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "pad",
+              "evidence": "tooltip.zh 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "填充",
+              "evidence": "tooltip.zh 含 \"填充\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "pad",
+              "evidence": "tooltip.en 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "padding",
+              "evidence": "tooltip.en 含 \"padding\""
+            },
+            {
+              "source": "blockType",
+              "term": "pad",
+              "evidence": "blockType 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "blockType",
+              "term": "sponge",
+              "evidence": "blockType 含 \"sponge\"（术语「海绵」⇒ sponge）"
+            }
+          ]
+        },
+        {
+          "blockType": "hash_sha512_pad",
+          "score": 39.744,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "msg",
+              "evidence": "label.zh 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "label.zh",
+              "term": "pad",
+              "evidence": "label.zh 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "label.en",
+              "term": "msg",
+              "evidence": "label.en 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "label.en",
+              "term": "pad",
+              "evidence": "label.en 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "pad",
+              "evidence": "tooltip.zh 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "padding",
+              "evidence": "tooltip.zh 含 \"padding\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "pad",
+              "evidence": "tooltip.en 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "padding",
+              "evidence": "tooltip.en 含 \"padding\""
+            }
+          ]
+        },
+        {
+          "blockType": "hash_sha3_pad_hex",
+          "score": 35.396,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "pad",
+              "evidence": "label.zh 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "label.en",
+              "term": "pad",
+              "evidence": "label.en 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "pad",
+              "evidence": "tooltip.zh 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "填充",
+              "evidence": "tooltip.zh 含 \"填充\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "pad",
+              "evidence": "tooltip.en 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "padding",
+              "evidence": "tooltip.en 含 \"padding\""
+            },
+            {
+              "source": "blockType",
+              "term": "pad",
+              "evidence": "blockType 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "definition",
+              "term": "pad",
+              "evidence": "definition 含 \"pad\"（术语「填充」⇒ pad）"
+            }
+          ]
+        },
+        {
+          "blockType": "hash_sha3_pad_text",
+          "score": 35.396,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "pad",
+              "evidence": "label.zh 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "label.en",
+              "term": "pad",
+              "evidence": "label.en 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "pad",
+              "evidence": "tooltip.zh 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "填充",
+              "evidence": "tooltip.zh 含 \"填充\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "pad",
+              "evidence": "tooltip.en 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "padding",
+              "evidence": "tooltip.en 含 \"padding\""
+            },
+            {
+              "source": "blockType",
+              "term": "pad",
+              "evidence": "blockType 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "definition",
+              "term": "pad",
+              "evidence": "definition 含 \"pad\"（术语「填充」⇒ pad）"
+            }
+          ]
+        },
+        {
+          "blockType": "hash_sm3_pad",
+          "score": 32.796,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "pad",
+              "evidence": "label.zh 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "label.en",
+              "term": "pad",
+              "evidence": "label.en 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "填充",
+              "evidence": "tooltip.zh 含 \"填充\""
+            },
+            {
+              "source": "tooltip.zh",
+              "term": "消息",
+              "evidence": "tooltip.zh 含 \"消息\""
+            },
+            {
+              "source": "tooltip.en",
+              "term": "pad",
+              "evidence": "tooltip.en 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "tooltip.en",
+              "term": "padding",
+              "evidence": "tooltip.en 含 \"padding\""
+            },
+            {
+              "source": "blockType",
+              "term": "pad",
+              "evidence": "blockType 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "definition",
+              "term": "pad",
+              "evidence": "definition 含 \"pad\"（术语「填充」⇒ pad）"
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "sponge_pad"
+      ],
+      "missingExpected": []
+    }
+  ],
+  "misses": [
+    {
+      "id": "t01",
+      "query": "计算默克尔树的叶子节点哈希",
+      "expected": [
+        "merkle_leaf"
+      ],
+      "top5": [
+        "merkle_auth_path",
+        "merkle_root",
+        "hash_sha224_hash",
+        "sha3_hash",
+        "gcm_ghash"
+      ]
+    },
+    {
+      "id": "t07",
+      "query": "把多项式按指定比特压缩",
+      "expected": [
+        "pq_compress"
+      ],
+      "top5": [
+        "gf2m_poly_add",
+        "gf2m_poly_eval",
+        "gf2m_poly_mod",
+        "gf2m_poly_mul",
+        "gf2m_poly_xgcd"
+      ]
+    },
+    {
+      "id": "t09",
+      "query": "把字节流按比特数编码",
+      "expected": [
+        "pq_byte_encode"
+      ],
+      "top5": [
+        "pq_bytes_to_bits",
+        "pq_bits_to_bytes",
+        "data_convert_bits_to_bytes",
+        "data_convert_bytes_to_bits",
+        "primitive_def"
+      ]
+    }
+  ]
+}

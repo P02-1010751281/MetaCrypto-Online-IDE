@@ -1,0 +1,47 @@
+[
+  { "q": "SM4 的密钥扩展怎么算", "expect": ["docs/standards/gbt32907-SM4/"] },
+  { "q": "AES 密钥扩展里 Rcon 轮常量怎么生成", "expect": ["docs/standards/fips197-AES/"] },
+  { "q": "HKDF 的 extract 与 expand 两步各做什么", "expect": ["docs/standards/rfc5869-hkdf/"] },
+  { "q": "GCM 如何用 GHASH 做认证", "expect": ["docs/standards/sp800-38d-gcm/"] },
+  { "q": "CCM 的首块 B0 里放什么", "expect": ["docs/standards/sp800-38c-ccm/"] },
+  { "q": "XTS 模式怎么处理不满一个分组的尾块", "expect": ["docs/standards/sp800-38e-xts/"] },
+  { "q": "PBKDF2 的迭代次数要求", "expect": ["docs/standards/sp800-132-pbkdf2/"] },
+  { "q": "Argon2 的三种变体有什么区别", "expect": ["docs/standards/rfc9106-argon2/"] },
+  { "q": "Ed25519 的签名与验签流程", "expect": ["docs/standards/rfc8032-eddsa/"] },
+  { "q": "X25519 的密钥协商怎么算共享密钥", "expect": ["docs/standards/rfc7748-x25519/"] },
+  { "q": "确定性 ECDSA 的随机数 k 怎么来", "expect": ["docs/standards/rfc6979-ecdsa/"] },
+  { "q": "SM2 数字签名算法", "expect": ["docs/standards/gbt32918-SM2/"] },
+  { "q": "ZUC 的 LFSR 初始化模式", "expect": ["docs/standards/gbt33133-ZUC/"] },
+  { "q": "SM3 的压缩函数结构", "expect": ["docs/standards/gbt32905-SM3/"] },
+  { "q": "SHA-256 消息填充怎么补位", "expect": ["docs/standards/fips180-4-SHA2/"] },
+  { "q": "SHA-3 的海绵结构吸收与挤压", "expect": ["docs/standards/fips202-SHA3/"] },
+  { "q": "ML-KEM 密钥封装的三步", "expect": ["docs/standards/fips203-ML-KEM/"] },
+  { "q": "ML-DSA 签名里怎么用拒绝采样", "expect": ["docs/standards/fips204-ML-DSA/"] },
+  { "q": "SLH-DSA 有哪些参数集", "expect": ["docs/standards/fips205-SLH-DSA/"] },
+  { "q": "Classic McEliece 的 Goppa 码参数", "expect": ["docs/standards/mceliece-goppa/"] },
+  { "q": "Base64 的填充字符和换行规则", "expect": ["docs/standards/rfc4648-base64/"] },
+  { "q": "PKCS#7 填充长度怎么计算", "expect": ["docs/standards/rfc2315-pkcs7/"] },
+  { "q": "CMAC 的子密钥 K1 K2 如何派生", "expect": ["docs/standards/sp800-38b-cmac/"] },
+  { "q": "ASCON 的置换函数怎么做", "expect": ["docs/standards/sp800-232-ascon/"] },
+  { "q": "DRBG 需要多少熵输入", "expect": ["docs/standards/sp800-90a-drbg/"] },
+  {
+    "q": "分组密码怎么做带认证的加密",
+    "expect": [
+      "docs/standards/sp800-38c-ccm/",
+      "docs/standards/sp800-38d-gcm/",
+      "docs/standards/gbt36624-aead/"
+    ],
+    "note": "意图式提问：不出现具体模式名，允许多个正确答案"
+  },
+  { "q": "环境搭建与验收怎么做", "expect": ["docs/guides/SETUP.md"] },
+  { "q": "积木之间的类型检查与转换规则", "expect": ["docs/guides/TYPE-SYSTEM.md"] },
+  {
+    "q": "怎么把工作区导出成生成的代码",
+    "expect": ["docs/guides/USER-GUIDE.md", "docs/guides/BLOCKLY-GUIDE.md"]
+  },
+  {
+    "q": "How is the SM4 round function defined",
+    "expect": ["docs/standards/gbt32907-SM4/"],
+    "note": "英文提问检索中文语料：只靠拉丁术语与结构匹配"
+  }
+]

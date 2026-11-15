@@ -1,0 +1,18 @@
+[
+  { "q": "Kyber 的 NTT 参数与模数", "expect": ["CRYSTALS-Kyber-2017-634.pdf"] },
+  { "q": "Dilithium 的拒绝采样", "expect": ["CRYSTALS-Dilithium-2017-633.pdf"] },
+  { "q": "SP 800-90B 最小熵估计", "expect": ["NIST.SP.800-90B.pdf"] },
+  { "q": "CryptoScratch 怎么教密码学", "expect": ["CryptoScratch-2023.pdf"] },
+  { "q": "常数时间验证工具", "expect": ["constant-time-verification-2024.pdf"] },
+  { "q": "HACL* 已验证密码库", "expect": ["HACL-star-verified-library.pdf"] },
+  { "q": "SPHINCS+ 无状态哈希签名", "expect": ["SPHINCS-plus-2019-1086.pdf"] },
+  { "q": "FIPS 140-3 实现指南", "expect": ["FIPS-140-3-IG.pdf"] },
+  { "q": "SP 800-22 随机性测试套件", "expect": ["NIST.SP.800-22r1a.pdf"] },
+  { "q": "machine-checked crypto standards", "expect": ["machine-checked-crypto-standards-2019-1155.pdf"] },
+  { "q": "SP 800-227 密钥封装建议", "expect": ["NIST.SP.800-227.pdf"] },
+  { "q": "SP 800-90C RBG 构造", "expect": ["NIST.SP.800-90C.pdf"] },
+  { "q": "ML-KEM 标准 FIPS 203", "expect": ["NIST.FIPS.203.pdf"] },
+  { "q": "ML-DSA 标准 FIPS 204", "expect": ["NIST.FIPS.204.pdf"] },
+  { "q": "Ascon 轻量认证加密", "expect": ["NIST.SP.800-232.pdf"] },
+  { "q": "practical formal methods for crypto", "expect": ["practical-formal-methods-crypto-2019.pdf"] }
+]

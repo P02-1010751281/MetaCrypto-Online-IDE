@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "description": "第二轮留出集：在术语层 + 下拉选项索引完成后一次性写出、只跑一次、不再据其调参。全部只描述意图，不给算法名。",
+  "queries": [
+    { "id": "g01", "text": "把 32 位字循环左移", "expect": ["bit_rotate_left"] },
+    { "id": "g02", "text": "把两个字节序列首尾相接", "expect": ["pq_byte_concat"] },
+    { "id": "g03", "text": "交换字节序做大小端转换", "expect": ["endian_swap"] },
+    { "id": "g04", "text": "从海绵结构里挤出输出", "expect": ["sponge_squeeze"] },
+    { "id": "g05", "text": "把消息吸收进海绵结构", "expect": ["sponge_absorb"] },
+    { "id": "g06", "text": "按中心二项分布采样多项式", "expect": ["pq_sample_poly_cbd"] },
+    { "id": "g07", "text": "把整数数组按区间切片", "expect": ["arr_slice"] },
+    { "id": "g08", "text": "生成指定长度的随机种子字节", "expect": ["seed_bytes"] },
+    { "id": "g09", "text": "用扩展欧几里得求多项式的公因式", "expect": ["gf2m_poly_xgcd"] },
+    { "id": "g10", "text": "把字节序列按比特展开", "expect": ["pq_bytes_to_bits"] },
+    { "id": "g11", "text": "计算 128 位有限域上的乘法", "expect": ["gcm_gf128_mul"] },
+    { "id": "g12", "text": "对消息做 1024 位分组的填充", "expect": ["hash_sha512_pad"], "note": "SHA-512 分组 128 字节 = 1024 位，唯一。" },
+    { "id": "g13", "text": "构造 CCM 的首个计数器块", "expect": ["ccm_b0"] },
+    { "id": "g14", "text": "在数论变换域里采随机多项式", "expect": ["pq_sample_ntt"] },
+    { "id": "g15", "text": "对两个 32 位字做按位异或", "expect": ["bit_expr_infix", "lgc_operation", "bit_operation"], "note": "异或表达式、逻辑异或、按位运算符三个块都能完成。" }
+  ]
+}

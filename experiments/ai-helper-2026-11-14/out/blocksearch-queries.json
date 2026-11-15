@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 1,
+  "description": "D 线查块的 30 条真实用户意图查询。expect 只列真正能完成该语义的块类型；in/out 是用户意图里的类型约束，同时用于验证结构化过滤。text 为原话（中英混合），不做人工改写。",
+  "queries": [
+    {
+      "id": "q01",
+      "query": "16 字节密钥算 MAC",
+      "in": "Bytes",
+      "out": "Bytes",
+      "text": "16 字节密钥算 MAC",
+      "expect": [
+        "hash_hmac",
+        "cmac_mac"
+      ]
+    },
+    {
+      "id": "q02",
+      "query": "AES 轮密钥加",
+      "in": "IntList",
+      "out": "IntList",
+      "text": "AES 轮密钥加",
+      "expect": [
+        "aes_add_round_key"
+      ]
+    },
+    {
+      "id": "q03",
+      "query": "AES 列混合",
+      "in": "IntList",
+      "out": "IntList",
+      "text": "AES 列混合",
+      "expect": [
+        "aes_mix_columns"
+      ]
+    },
+    {
+      "id": "q04",
+      "query": "AES-GCM 加密",
+      "in": "Bytes",
+      "out": "Bytes",
+      "text": "AES-GCM 加密",
+      "expect": [
+        "gcm_encrypt"
+      ]
+    },
+    {
+      "id": "q05",
+      "query": "AES-CTR 计数器模式加密",
+      "in": "Bytes",
+      "out": "Bytes",
+      "text": "AES-CTR 计数器模式加密",
+      "expect": [
+        "mode_ctr_encrypt"
+      ]
+    },
+    {
+      "id": "q06",
+      "query": "SM4 轮函数",
+      "in": "IntList",
+      "out": "IntList",
+      "text": "SM4 轮函数",
+      "expect": [
+        "sm4_round_func"
+      ]
+    },
+    {
+      "id": "q07",
+      "query": "SM4 S 盒查表",
+      "in": "Number",
+      "out": "Number",
+      "text": "SM4 S 盒查表",
+      "expect": [
+        "sm4_sbox"
+      ]
+    },
+    {
+      "id": "q08",
+      "query": "S 盒替换",
+      "text": "S 盒替换",
+      "expect": [
+        "sbox_sub"
+      ]
+    },
+    {
+      "id": "q09",
+      "query": "大数模幂",
+      "in": "Number",
+      "out": "Number",
+      "text": "大数模幂",
+      "expect": [
+        "nt_mod_pow"
+      ]
+    },
+    {
+      "id": "q10",
+      "query": "求模逆",
+      "text": "求模逆",
+      "expect": [
+        "nt_mod_inverse"
+      ]
+    },
+    {
+      "id": "q11",
+      "query": "大数加法",
+      "in": "IntList",
+      "out": "IntList",
+      "text": "大数加法",
+      "expect": [
+        "bn_add"
+      ]
+    },
+    {
+      "id": "q12",
+      "query": "SHA-256 压缩函数",
+      "out": "IntList",
+      "text": "SHA-256 压缩函数",
+      "expect": [
+        "hash_sha256_compress"
+      ]
+    },
+    {
+      "id": "q13",
+      "query": "SHA-256 文本填充",
+      "out": "Bytes",
+      "text": "SHA-256 文本填充",
+      "expect": [
+        "hash_sha256_pad_text"
+      ]
+    },
+    {
+      "id": "q14",
+      "query": "PKCS7 填充",
+      "in": "Bytes",
+      "out": "Bytes",
+      "text": "PKCS7 填充",
+      "expect": [
+        "pad_pkcs7"
+      ]
+    },
+    {
+      "id": "q15",
+      "query": "Base64 编码",
+      "in": "Bytes",
+      "out": "String",
+      "text": "Base64 编码",
+      "expect": [
+        "base64_encode"
+      ]
+    },
+    {
+      "id": "q16",
+      "query": "十六进制转字节",
+      "in": "String",
+      "out": "Bytes",
+      "text": "十六进制转字节",
+      "expect": [
+        "hex_to_bytes"
+      ]
+    },
+    {
+      "id": "q17",
+      "query": "字节转十六进制",
+      "in": "Bytes",
+      "out": "String",
+      "text": "字节转十六进制",
+      "expect": [
+        "bytes_to_hex"
+      ]
+    },
+    {
+      "id": "q18",
+      "query": "RSA 签名",
+      "in": "Bytes",
+      "out": "Bytes",
+      "text": "RSA 签名",
+      "expect": [
+        "rsa_sign"
+      ]
+    },
+    {
+      "id": "q19",
+      "query": "RSA 验签",
+      "in": "Bytes",
+      "out": "Boolean",
+      "text": "RSA 验签",
+      "expect": [
+        "rsa_verify"
+      ]
+    },
+    {
+      "id": "q20",
+      "query": "ECDSA 签名",
+      "in": "Bytes",
+      "out": "Bytes",
+      "text": "ECDSA 签名",
+      "expect": [
+        "ecdsa_sign"
+      ]
+    },
+    {
+      "id": "q21",
+      "query": "ECDH 共享密钥",
+      "in": "String",
+      "out": "String",
+      "text": "ECDH 共享密钥",
+      "expect": [
+        "ecdh_shared_secret"
+      ]
+    },
+    {
+      "id": "q22",
+      "query": "X25519 密钥交换",
+      "in": "IntList",
+      "out": "Bytes",
+      "text": "X25519 密钥交换",
+      "expect": [
+        "x25519"
+      ]
+    },
+    {
+      "id": "q23",
+      "query": "SM2 加密",
+      "in": "Bytes",
+      "out": "String",
+      "text": "SM2 加密",
+      "expect": [
+        "sm2_encrypt"
+      ]
+    },
+    {
+      "id": "q24",
+      "query": "PBKDF2 派生密钥",
+      "in": "Bytes",
+      "out": "Bytes",
+      "text": "PBKDF2 派生密钥",
+      "expect": [
+        "pbkdf2"
+      ]
+    },
+    {
+      "id": "q25",
+      "query": "HKDF 扩展",
+      "in": "Bytes",
+      "out": "Bytes",
+      "text": "HKDF 扩展",
+      "expect": [
+        "hkdf_expand"
+      ]
+    },
+    {
+      "id": "q26",
+      "query": "HMAC-DRBG 生成随机数",
+      "in": "Bytes",
+      "out": "Bytes",
+      "text": "HMAC-DRBG 生成随机数",
+      "expect": [
+        "drbg_generate"
+      ]
+    },
+    {
+      "id": "q27",
+      "query": "NTT 变换",
+      "in": "IntList",
+      "out": "IntList",
+      "text": "NTT 变换",
+      "expect": [
+        "pq_ntt"
+      ]
+    },
+    {
+      "id": "q28",
+      "query": "NTT 域多项式乘法",
+      "in": "IntList",
+      "out": "IntList",
+      "text": "NTT 域多项式乘法",
+      "expect": [
+        "pq_ntt_mul"
+      ]
+    },
+    {
+      "id": "q29",
+      "query": "Merkle 树根",
+      "in": "Bytes",
+      "out": "Bytes",
+      "text": "Merkle 树根",
+      "expect": [
+        "merkle_root"
+      ]
+    },
+    {
+      "id": "q30",
+      "query": "ML-DSA 签名",
+      "in": "Bytes",
+      "out": "Bytes",
+      "text": "ML-DSA 签名",
+      "expect": [
+        "mldsa_sign"
+      ]
+    }
+  ]
+}

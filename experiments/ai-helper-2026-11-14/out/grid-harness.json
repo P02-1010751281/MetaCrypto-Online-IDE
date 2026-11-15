@@ -1,0 +1,129 @@
+{
+ "blockly": "13.2.0",
+ "viewport": "1400x800",
+ "pageErrors": [],
+ "cases": [
+  {
+   "case": "A.1d-4-editable",
+   "title": "整数列表 4",
+   "anchorExists": true,
+   "inputs": 4,
+   "rows": 2,
+   "cells": [
+    "0",
+    "1",
+    "2",
+    "3"
+   ],
+   "rect": {
+    "left": 279,
+    "top": 40,
+    "width": 330,
+    "height": 113,
+    "insideViewport": true
+   },
+   "cellFont": "monospace",
+   "cellBackground": "rgba(0, 0, 0, 0)",
+   "visible": true,
+   "afterValidEdit": "42",
+   "afterIllegalEdit": {
+    "value": "1",
+    "warning": "第 2 个单元格非法：x"
+   }
+  },
+  {
+   "case": "B.3x3x3-sliced",
+   "title": "整数列表 3×3×3",
+   "storedCells": 27,
+   "cellsPerPage": 9,
+   "slices": 3,
+   "sliceLabels": [
+    "切片 1/3",
+    "切片 2/3",
+    "切片 3/3"
+   ],
+   "cellsAfterSliceChange": 9,
+   "firstCellOfSlice2": "0",
+   "expectedSlice2": "0",
+   "rect": {
+    "left": 279,
+    "top": 40,
+    "width": 265,
+    "height": 200,
+    "insideViewport": true
+   }
+  },
+  {
+   "case": "C.1d-100",
+   "storedCells": 100,
+   "renderedInputs": 100,
+   "rows": 7,
+   "firstInputs": [
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   "trailingInputValues": [],
+   "rect": {
+    "left": 279,
+    "top": 40,
+    "width": 748,
+    "height": 296,
+    "insideViewport": true
+   },
+   "afterEditingOutOfRange": "no input at index 105"
+  },
+  {
+   "case": "D.1d-14671",
+   "storedCells": 14671,
+   "renderedInputs": 14671,
+   "rows": 917,
+   "openMs": 754,
+   "popupNodes": 31198,
+   "rect": {
+    "left": 279,
+    "top": 40,
+    "width": 748,
+    "height": 448,
+    "insideViewport": true
+   },
+   "scrollHeight": 25757,
+   "clientHeight": 429
+  },
+  {
+   "case": "F.capacity-14671",
+   "openMs": 328,
+   "renderedInputs": 14671,
+   "rows": 917,
+   "nodes": 31198,
+   "height": 448,
+   "scrollHeight": 25757,
+   "written": 0
+  },
+  {
+   "case": "F.capacity-65536",
+   "openMs": 1140,
+   "renderedInputs": 65536,
+   "rows": 4096,
+   "nodes": 139285,
+   "height": 448,
+   "scrollHeight": 114769,
+   "written": 0
+  },
+  {
+   "case": "E.sbox-readonly",
+   "title": "S-box 4×4",
+   "cells": 20,
+   "inputs": 0,
+   "firstRow": "x0x1x2x3",
+   "rect": {
+    "left": 312,
+    "top": 40,
+    "width": 174,
+    "height": 191,
+    "insideViewport": true
+   }
+  }
+ ]
+}

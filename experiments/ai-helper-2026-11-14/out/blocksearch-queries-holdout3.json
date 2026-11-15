@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "description": "第三轮留出集：tooltip 索引上线后一次性写出、只跑一次，不据其调参。全部只描述意图，不给块名与算法名。",
+  "queries": [
+    { "id": "t01", "text": "计算默克尔树的叶子节点哈希", "expect": ["merkle_leaf"] },
+    { "id": "t02", "text": "生成默克尔树的一条认证路径", "expect": ["merkle_auth_path"] },
+    { "id": "t03", "text": "对二元矩阵求逆", "expect": ["bin_mat_inv"] },
+    { "id": "t04", "text": "在有限扩域上做多项式取模", "expect": ["gf2m_poly_mod"] },
+    { "id": "t05", "text": "把两个系数域多项式相加", "expect": ["pq_poly_add"] },
+    { "id": "t06", "text": "构造 Keccak 的初始状态", "expect": ["keccak_state_init"] },
+    { "id": "t07", "text": "把多项式按指定比特压缩", "expect": ["pq_compress"] },
+    { "id": "t08", "text": "用 CBC 方式算消息认证码", "expect": ["ccm_cbc_mac"] },
+    { "id": "t09", "text": "把字节流按比特数编码", "expect": ["pq_byte_encode"] },
+    { "id": "t10", "text": "对消息做海绵填充", "expect": ["sponge_pad"], "note": "与 sponge_absorb/squeeze 区分：填充是 pad 不是 absorb。" }
+  ]
+}

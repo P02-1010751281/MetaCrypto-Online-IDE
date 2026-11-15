@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { ui, uiLocaleRef, useBlocklyLocale } from '@/composables/locale';
 import { useDocsCatalog } from '@/composables/useDocsCatalog';
 import {
@@ -66,6 +66,7 @@ const {
   localizedCounterpart,
 } = useDocsCatalog();
 const router = useRouter();
+const route = useRoute();
 const blocklyLocale = useBlocklyLocale();
 function toggleLocale() {
   blocklyLocale.setLocale(
@@ -226,7 +227,24 @@ async function setupDocLinks() {
   });
 }
 
-onMounted(rebuildCategories);
+/** 深链：`#/docs?doc=/docs/xxx.md&line=42`（查文档面板的检索结果跳转）。 */
+function applyDeepLink(): void {
+  const doc = route.query.doc;
+  const line = route.query.line;
+  if (typeof doc !== 'string' || !doc) return;
+  const path = doc.startsWith('/') ? doc : `/${doc}`;
+  if (!(path in docLoaders)) return;
+  const sourceLine = typeof line === 'string' ? Number(line) : undefined;
+  void selectDoc(path, Number.isFinite(sourceLine) ? sourceLine : undefined);
+}
+
+onMounted(() => {
+  rebuildCategories();
+  applyDeepLink();
+});
+// doc 与 line 各自独立监听：同一篇文档换行号（跳到另一段）时只改 line，
+// 只看 doc 的话面板连续点同一文件的第二条结果不会滚动。
+watch([() => route.query.doc, () => route.query.line], applyDeepLink);
 // 语言切换：优先使用对应译文；标准页暂无英文译本时保留 source 语言页面作为可见 fallback。
 watch(currentLocale, async () => {
   rebuildCategories();

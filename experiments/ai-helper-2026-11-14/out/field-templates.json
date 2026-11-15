@@ -1,0 +1,5023 @@
+{
+  "generatedAt": "2026-11-14T09:28:09.256Z",
+  "stats": {
+    "blocks": 221,
+    "withTemplate": 219,
+    "blocksWithVisibleFields": 60,
+    "blocksWithVariants": 55,
+    "variantCount": 175,
+    "blocksWithWildcardFields": 10,
+    "blocksWithInvisibleFields": 4,
+    "invisibleFieldCount": 8,
+    "unprobedFieldCount": 0,
+    "constantFieldCount": 6,
+    "collisionsAfterVariants": 3,
+    "errors": 2
+  },
+  "collisions": [
+    {
+      "template": "crypto_to_uint32(zzsigv_A) ^ crypto_to_uint32(zzsigv_B)",
+      "types": [
+        "bit_expr_infix",
+        "bit_operation"
+      ]
+    },
+    {
+      "template": "crypto_to_uint32(zzsigv_A) & crypto_to_uint32(zzsigv_B)",
+      "types": [
+        "bit_expr_infix",
+        "bit_operation"
+      ]
+    },
+    {
+      "template": "crypto_to_uint32(zzsigv_A) | crypto_to_uint32(zzsigv_B)",
+      "types": [
+        "bit_expr_infix",
+        "bit_operation"
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "aes_add_round_key",
+      "template": "aes_add_round_key(zzsigv_STATE, zzsigv_ROUND_KEY)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "aes_add_round_key(zzsigv_STATE, zzsigv_ROUND_KEY)"
+    },
+    {
+      "type": "aes_mix_columns",
+      "template": "aes_mix_columns(zzsigv_STATE)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "aes_mix_columns(zzsigv_STATE)"
+    },
+    {
+      "type": "aes_shift_rows",
+      "template": "aes_shift_rows(zzsigv_STATE)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "aes_shift_rows(zzsigv_STATE)"
+    },
+    {
+      "type": "aes_sub_bytes",
+      "template": "aes_sub_bytes(zzsigv_STATE)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "aes_sub_bytes(zzsigv_STATE)"
+    },
+    {
+      "type": "argon2_g",
+      "template": "bytes(argon2_g(zzsigv_X, zzsigv_Y))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(argon2_g(zzsigv_X, zzsigv_Y))"
+    },
+    {
+      "type": "argon2_hash",
+      "template": "bytes(argon2_hash(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_SECRET, zzsigv_AD, zzsigv_M_COST, zzsigv_T_COST, zzsigv_LANES, zzsigv_TAGLEN, 0))",
+      "error": null,
+      "fields": [
+        {
+          "name": "VARIANT",
+          "kind": "dropdown",
+          "defaultValue": "0",
+          "options": [
+            "0",
+            "1",
+            "2"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "VARIANT",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "1",
+              "template": "bytes(argon2_hash(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_SECRET, zzsigv_AD, zzsigv_M_COST, zzsigv_T_COST, zzsigv_LANES, zzsigv_TAGLEN, 1))"
+            },
+            {
+              "value": "2",
+              "template": "bytes(argon2_hash(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_SECRET, zzsigv_AD, zzsigv_M_COST, zzsigv_T_COST, zzsigv_LANES, zzsigv_TAGLEN, 2))"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(argon2_hash(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_SECRET, zzsigv_AD, zzsigv_M_COST, zzsigv_T_COST, zzsigv_LANES, zzsigv_TAGLEN, 0))"
+    },
+    {
+      "type": "arr_partition_to_array",
+      "template": "zzsigv_TARGET = crypto_partition_array(zzsigv_SRC, zzsigv_COUNT, \"BYTES\")\n",
+      "error": null,
+      "fields": [
+        {
+          "name": "MODE",
+          "kind": "dropdown",
+          "defaultValue": "BYTES",
+          "options": [
+            "BYTES",
+            "WORDS32"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "MODE",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "WORDS32",
+              "template": "zzsigv_TARGET = crypto_partition_array(zzsigv_SRC, zzsigv_COUNT, \"WORDS32\")\n"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zzsigv_TARGET = crypto_partition_array(zzsigv_SRC, zzsigv_COUNT, \"BYTES\")\n"
+    },
+    {
+      "type": "arr_slice",
+      "template": "crypto_array_slice(zzsigv_LIST, zzsigv_START, zzsigv_LENGTH)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "crypto_array_slice(zzsigv_LIST, zzsigv_START, zzsigv_LENGTH)"
+    },
+    {
+      "type": "ascon_cxof128",
+      "template": "bytes(ascon_hash_xof(zzsigv_MSG, zzsigv_LEN, zzsigv_CUSTOM, 0x0000080000CC0004))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(ascon_hash_xof(zzsigv_MSG, zzsigv_LEN, zzsigv_CUSTOM, 0x0000080000CC0004))"
+    },
+    {
+      "type": "ascon_decrypt",
+      "template": "bytes(ascon_decrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AD, zzsigv_CT))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(ascon_decrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AD, zzsigv_CT))"
+    },
+    {
+      "type": "ascon_encrypt",
+      "template": "bytes(ascon_encrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AD, zzsigv_MSG))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(ascon_encrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AD, zzsigv_MSG))"
+    },
+    {
+      "type": "ascon_hash256",
+      "template": "bytes(ascon_hash_xof(zzsigv_MSG, 32, None, 0x0000080100CC0002))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(ascon_hash_xof(zzsigv_MSG, 32, None, 0x0000080100CC0002))"
+    },
+    {
+      "type": "ascon_xof128",
+      "template": "bytes(ascon_hash_xof(zzsigv_MSG, zzsigv_LEN, None, 0x0000080000CC0003))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(ascon_hash_xof(zzsigv_MSG, zzsigv_LEN, None, 0x0000080000CC0003))"
+    },
+    {
+      "type": "base64_decode",
+      "template": "__import__(\"base64\").b64decode(zzsigv_INPUT, validate=True)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "__import__(\"base64\").b64decode(zzsigv_INPUT, validate=True)"
+    },
+    {
+      "type": "base64_encode",
+      "template": "__import__(\"base64\").b64encode(zzsigv_INPUT).decode()",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "__import__(\"base64\").b64encode(zzsigv_INPUT).decode()"
+    },
+    {
+      "type": "berlekamp_massey",
+      "template": "code_based()[\"bm_shiftreg\"](zzsigv_SEQ)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "code_based()[\"bm_shiftreg\"](zzsigv_SEQ)"
+    },
+    {
+      "type": "bin_mat_inv",
+      "template": "code_based()[\"mat_inv\"](zzsigv_A, zzsigv_N)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "code_based()[\"mat_inv\"](zzsigv_A, zzsigv_N)"
+    },
+    {
+      "type": "bin_mat_mul",
+      "template": "code_based()[\"mat_mul\"](zzsigv_A, zzsigv_B, zzsigv_N)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "code_based()[\"mat_mul\"](zzsigv_A, zzsigv_B, zzsigv_N)"
+    },
+    {
+      "type": "bit_byte_substitute",
+      "template": "\n_byte_substitute_index = zzsigv_INPUT\nif isinstance(_byte_substitute_index, bool) or not isinstance(_byte_substitute_index, (int, float)) or not 0 <= _byte_substitute_index <= 255 or int(_byte_substitute_index) != _byte_substitute_index:\n    raise ValueError(\"S-box input must be a byte\")\nif not isinstance(sbox, list) or len(sbox) < 256:\n    raise TypeError(\"sbox must contain at least 256 entries\")\n_byte_substitute_value = sbox[int(_byte_substitute_index)]\nif isinstance(_byte_substitute_value, bool) or not isinstance(_byte_substitute_value, (int, float)) or not 0 <= _byte_substitute_value <= 255 or int(_byte_substitute_value) != _byte_substitute_value:\n    raise ValueError(\"S-box output must be a byte\")\nzzsigv_OUTPUT = int(_byte_substitute_value)\n",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "\n_byte_substitute_index = zzsigv_INPUT\nif isinstance(_byte_substitute_index, bool) or not isinstance(_byte_substitute_index, (int, float)) or not 0 <= _byte_substitute_index <= 255 or int(_byte_substitute_index) != _byte_substitute_index:\n    raise ValueError(\"S-box input must be a byte\")\nif not isinstance(sbox, list) or len(sbox) < 256:\n    raise TypeError(\"sbox must contain at least 256 entries\")\n_byte_substitute_value = sbox[int(_byte_substitute_index)]\nif isinstance(_byte_substitute_value, bool) or not isinstance(_byte_substitute_value, (int, float)) or not 0 <= _byte_substitute_value <= 255 or int(_byte_substitute_value) != _byte_substitute_value:\n    raise ValueError(\"S-box output must be a byte\")\nzzsigv_OUTPUT = int(_byte_substitute_value)\n"
+    },
+    {
+      "type": "bit_expr_infix",
+      "template": "crypto_to_uint32(zzsigv_A) ^ crypto_to_uint32(zzsigv_B)",
+      "error": null,
+      "fields": [
+        {
+          "name": "OP",
+          "kind": "dropdown",
+          "defaultValue": "XOR",
+          "options": [
+            "XOR",
+            "AND",
+            "OR",
+            "EQ"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "OP",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "AND",
+              "template": "crypto_to_uint32(zzsigv_A) & crypto_to_uint32(zzsigv_B)"
+            },
+            {
+              "value": "OR",
+              "template": "crypto_to_uint32(zzsigv_A) | crypto_to_uint32(zzsigv_B)"
+            },
+            {
+              "value": "EQ",
+              "template": "(zzsigv_A == zzsigv_B)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "crypto_to_uint32(zzsigv_A) ^ crypto_to_uint32(zzsigv_B)"
+    },
+    {
+      "type": "bit_not32",
+      "template": "(~crypto_to_uint32(zzsigv_A)) & 0xFFFFFFFF",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "(~crypto_to_uint32(zzsigv_A)) & 0xFFFFFFFF"
+    },
+    {
+      "type": "bit_operation",
+      "template": "crypto_to_uint32(zzsigv_A) & crypto_to_uint32(zzsigv_B)",
+      "error": null,
+      "fields": [
+        {
+          "name": "OP",
+          "kind": "dropdown",
+          "defaultValue": "AND",
+          "options": [
+            "AND",
+            "OR",
+            "XOR",
+            "RIGHT_SHIFT",
+            "LEFT_SHIFT",
+            "RIGHT_ROTATE",
+            "LEFT_ROTATE"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "OP",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "OR",
+              "template": "crypto_to_uint32(zzsigv_A) | crypto_to_uint32(zzsigv_B)"
+            },
+            {
+              "value": "XOR",
+              "template": "crypto_to_uint32(zzsigv_A) ^ crypto_to_uint32(zzsigv_B)"
+            },
+            {
+              "value": "RIGHT_SHIFT",
+              "template": "crypto_to_uint32(zzsigv_A) >> (crypto_to_uint32(zzsigv_B) & 31)"
+            },
+            {
+              "value": "LEFT_SHIFT",
+              "template": "(crypto_to_uint32(zzsigv_A) << (crypto_to_uint32(zzsigv_B) & 31)) & 0xFFFFFFFF"
+            },
+            {
+              "value": "RIGHT_ROTATE",
+              "template": "((crypto_to_uint32(zzsigv_A) >> (crypto_to_uint32(zzsigv_B) & 31)) | (crypto_to_uint32(zzsigv_A) << (32 - (crypto_to_uint32(zzsigv_B) & 31)))) & 0xFFFFFFFF"
+            },
+            {
+              "value": "LEFT_ROTATE",
+              "template": "((crypto_to_uint32(zzsigv_A) << (crypto_to_uint32(zzsigv_B) & 31)) | (crypto_to_uint32(zzsigv_A) >> (32 - (crypto_to_uint32(zzsigv_B) & 31)))) & 0xFFFFFFFF"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "crypto_to_uint32(zzsigv_A) & crypto_to_uint32(zzsigv_B)"
+    },
+    {
+      "type": "bit_rotate_left",
+      "template": "zzsigv_Output = ((crypto_to_uint32(zzsigv_Input) << 0) | (crypto_to_uint32(zzsigv_Input) >> (32 - 0))) & 0xFFFFFFFF\n",
+      "error": null,
+      "fields": [
+        {
+          "name": "bit",
+          "kind": "number",
+          "defaultValue": "0",
+          "options": null
+        }
+      ],
+      "probes": [
+        {
+          "name": "bit",
+          "kind": "number",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": "0",
+          "variants": [],
+          "wildcard": "-?\\d+",
+          "valueShape": "number"
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zzsigv_Output = ((crypto_to_uint32(zzsigv_Input) << zzfield_bit) | (crypto_to_uint32(zzsigv_Input) >> (32 - 0))) & 0xFFFFFFFF\n"
+    },
+    {
+      "type": "bit_rotate_left_op",
+      "template": "zzsigv_Output = (crypto_to_uint32(zzsigv_Input) ^ ((crypto_to_uint32(zzsigv_Input) << 0) | (crypto_to_uint32(zzsigv_Input) >> (32 - 0)))) & 0xFFFFFFFF\n",
+      "error": null,
+      "fields": [
+        {
+          "name": "option",
+          "kind": "dropdown",
+          "defaultValue": "ROL32_XOR",
+          "options": [
+            "ROL32_XOR",
+            "ROL32_AND",
+            "ROL32_OR",
+            "ROL32_ADD"
+          ]
+        },
+        {
+          "name": "bit",
+          "kind": "number",
+          "defaultValue": "0",
+          "options": null
+        }
+      ],
+      "probes": [
+        {
+          "name": "option",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "ROL32_AND",
+              "template": "zzsigv_Output = (crypto_to_uint32(zzsigv_Input) & ((crypto_to_uint32(zzsigv_Input) << 0) | (crypto_to_uint32(zzsigv_Input) >> (32 - 0)))) & 0xFFFFFFFF\n"
+            },
+            {
+              "value": "ROL32_OR",
+              "template": "zzsigv_Output = (crypto_to_uint32(zzsigv_Input) | ((crypto_to_uint32(zzsigv_Input) << 0) | (crypto_to_uint32(zzsigv_Input) >> (32 - 0)))) & 0xFFFFFFFF\n"
+            },
+            {
+              "value": "ROL32_ADD",
+              "template": "zzsigv_Output = (crypto_to_uint32(zzsigv_Input) + ((crypto_to_uint32(zzsigv_Input) << 0) | (crypto_to_uint32(zzsigv_Input) >> (32 - 0)))) & 0xFFFFFFFF\n"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        },
+        {
+          "name": "bit",
+          "kind": "number",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": "0",
+          "variants": [],
+          "wildcard": "-?\\d+",
+          "valueShape": "number"
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zzsigv_Output = (crypto_to_uint32(zzsigv_Input) ^ ((crypto_to_uint32(zzsigv_Input) << zzfield_bit) | (crypto_to_uint32(zzsigv_Input) >> (32 - 0)))) & 0xFFFFFFFF\n"
+    },
+    {
+      "type": "bit_rotate_right",
+      "template": "zzsigv_Output = ((crypto_to_uint32(zzsigv_Input) >> 0) | (crypto_to_uint32(zzsigv_Input) << (32 - 0))) & 0xFFFFFFFF\n",
+      "error": null,
+      "fields": [
+        {
+          "name": "bit",
+          "kind": "number",
+          "defaultValue": "0",
+          "options": null
+        }
+      ],
+      "probes": [
+        {
+          "name": "bit",
+          "kind": "number",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": "0",
+          "variants": [],
+          "wildcard": "-?\\d+",
+          "valueShape": "number"
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zzsigv_Output = ((crypto_to_uint32(zzsigv_Input) >> zzfield_bit) | (crypto_to_uint32(zzsigv_Input) << (32 - 0))) & 0xFFFFFFFF\n"
+    },
+    {
+      "type": "bit_rotate_right_op",
+      "template": "zzsigv_Output = (crypto_to_uint32(zzsigv_Input) ^ ((crypto_to_uint32(zzsigv_Input) >> 0) | (crypto_to_uint32(zzsigv_Input) << (32 - 0)))) & 0xFFFFFFFF\n",
+      "error": null,
+      "fields": [
+        {
+          "name": "option",
+          "kind": "dropdown",
+          "defaultValue": "ROR32_XOR",
+          "options": [
+            "ROR32_XOR",
+            "ROR32_AND",
+            "ROR32_OR",
+            "ROR32_ADD"
+          ]
+        },
+        {
+          "name": "bit",
+          "kind": "number",
+          "defaultValue": "0",
+          "options": null
+        }
+      ],
+      "probes": [
+        {
+          "name": "option",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "ROR32_AND",
+              "template": "zzsigv_Output = (crypto_to_uint32(zzsigv_Input) & ((crypto_to_uint32(zzsigv_Input) >> 0) | (crypto_to_uint32(zzsigv_Input) << (32 - 0)))) & 0xFFFFFFFF\n"
+            },
+            {
+              "value": "ROR32_OR",
+              "template": "zzsigv_Output = (crypto_to_uint32(zzsigv_Input) | ((crypto_to_uint32(zzsigv_Input) >> 0) | (crypto_to_uint32(zzsigv_Input) << (32 - 0)))) & 0xFFFFFFFF\n"
+            },
+            {
+              "value": "ROR32_ADD",
+              "template": "zzsigv_Output = (crypto_to_uint32(zzsigv_Input) + ((crypto_to_uint32(zzsigv_Input) >> 0) | (crypto_to_uint32(zzsigv_Input) << (32 - 0)))) & 0xFFFFFFFF\n"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        },
+        {
+          "name": "bit",
+          "kind": "number",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": "0",
+          "variants": [],
+          "wildcard": "-?\\d+",
+          "valueShape": "number"
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zzsigv_Output = (crypto_to_uint32(zzsigv_Input) ^ ((crypto_to_uint32(zzsigv_Input) >> zzfield_bit) | (crypto_to_uint32(zzsigv_Input) << (32 - 0)))) & 0xFFFFFFFF\n"
+    },
+    {
+      "type": "bn_add",
+      "template": "bn_from_int((bn_to_int(zzsigv_A) + bn_to_int(zzsigv_B)))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bn_from_int((bn_to_int(zzsigv_A) + bn_to_int(zzsigv_B)))"
+    },
+    {
+      "type": "bn_div",
+      "template": "bn_from_int((bn_to_int(zzsigv_A) // bn_to_int(zzsigv_B)))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bn_from_int((bn_to_int(zzsigv_A) // bn_to_int(zzsigv_B)))"
+    },
+    {
+      "type": "bn_mul",
+      "template": "bn_from_int((bn_to_int(zzsigv_A) * bn_to_int(zzsigv_B)))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bn_from_int((bn_to_int(zzsigv_A) * bn_to_int(zzsigv_B)))"
+    },
+    {
+      "type": "bn_sub",
+      "template": "bn_subtract(bn_to_int(zzsigv_A), bn_to_int(zzsigv_B))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bn_subtract(bn_to_int(zzsigv_A), bn_to_int(zzsigv_B))"
+    },
+    {
+      "type": "bytes_to_hex",
+      "template": "(zzsigv_INPUT).hex()",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "(zzsigv_INPUT).hex()"
+    },
+    {
+      "type": "ccm_aad_len_prefix",
+      "template": "ccm_aad_len_prefix(zzsigv_AADLEN)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "ccm_aad_len_prefix(zzsigv_AADLEN)"
+    },
+    {
+      "type": "ccm_b0",
+      "template": "ccm_b0(zzsigv_NONCE, zzsigv_MSGLEN, zzsigv_AADLEN, 4)",
+      "error": null,
+      "fields": [
+        {
+          "name": "TAGLEN",
+          "kind": "dropdown",
+          "defaultValue": "4",
+          "options": [
+            "4",
+            "6",
+            "8",
+            "10",
+            "12",
+            "14",
+            "16"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "TAGLEN",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "6",
+              "template": "ccm_b0(zzsigv_NONCE, zzsigv_MSGLEN, zzsigv_AADLEN, 6)"
+            },
+            {
+              "value": "8",
+              "template": "ccm_b0(zzsigv_NONCE, zzsigv_MSGLEN, zzsigv_AADLEN, 8)"
+            },
+            {
+              "value": "10",
+              "template": "ccm_b0(zzsigv_NONCE, zzsigv_MSGLEN, zzsigv_AADLEN, 10)"
+            },
+            {
+              "value": "12",
+              "template": "ccm_b0(zzsigv_NONCE, zzsigv_MSGLEN, zzsigv_AADLEN, 12)"
+            },
+            {
+              "value": "14",
+              "template": "ccm_b0(zzsigv_NONCE, zzsigv_MSGLEN, zzsigv_AADLEN, 14)"
+            },
+            {
+              "value": "16",
+              "template": "ccm_b0(zzsigv_NONCE, zzsigv_MSGLEN, zzsigv_AADLEN, 16)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "ccm_b0(zzsigv_NONCE, zzsigv_MSGLEN, zzsigv_AADLEN, 4)"
+    },
+    {
+      "type": "ccm_cbc_mac",
+      "template": "bytes(ccm_cbc_mac(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 4))",
+      "error": null,
+      "fields": [
+        {
+          "name": "TAGLEN",
+          "kind": "dropdown",
+          "defaultValue": "4",
+          "options": [
+            "4",
+            "6",
+            "8",
+            "10",
+            "12",
+            "14",
+            "16"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "TAGLEN",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "6",
+              "template": "bytes(ccm_cbc_mac(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 6))"
+            },
+            {
+              "value": "8",
+              "template": "bytes(ccm_cbc_mac(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 8))"
+            },
+            {
+              "value": "10",
+              "template": "bytes(ccm_cbc_mac(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 10))"
+            },
+            {
+              "value": "12",
+              "template": "bytes(ccm_cbc_mac(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 12))"
+            },
+            {
+              "value": "14",
+              "template": "bytes(ccm_cbc_mac(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 14))"
+            },
+            {
+              "value": "16",
+              "template": "bytes(ccm_cbc_mac(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 16))"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(ccm_cbc_mac(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 4))"
+    },
+    {
+      "type": "ccm_counter_block",
+      "template": "ccm_counter_block(zzsigv_NONCE, zzsigv_I, 4)",
+      "error": null,
+      "fields": [
+        {
+          "name": "TAGLEN",
+          "kind": "dropdown",
+          "defaultValue": "4",
+          "options": [
+            "4",
+            "6",
+            "8",
+            "10",
+            "12",
+            "14",
+            "16"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "TAGLEN",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "6",
+              "template": "ccm_counter_block(zzsigv_NONCE, zzsigv_I, 6)"
+            },
+            {
+              "value": "8",
+              "template": "ccm_counter_block(zzsigv_NONCE, zzsigv_I, 8)"
+            },
+            {
+              "value": "10",
+              "template": "ccm_counter_block(zzsigv_NONCE, zzsigv_I, 10)"
+            },
+            {
+              "value": "12",
+              "template": "ccm_counter_block(zzsigv_NONCE, zzsigv_I, 12)"
+            },
+            {
+              "value": "14",
+              "template": "ccm_counter_block(zzsigv_NONCE, zzsigv_I, 14)"
+            },
+            {
+              "value": "16",
+              "template": "ccm_counter_block(zzsigv_NONCE, zzsigv_I, 16)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "ccm_counter_block(zzsigv_NONCE, zzsigv_I, 4)"
+    },
+    {
+      "type": "ccm_ctr",
+      "template": "bytes(ccm_ctr(zzsigv_KEY, zzsigv_NONCE, zzsigv_MSG, 4))",
+      "error": null,
+      "fields": [
+        {
+          "name": "TAGLEN",
+          "kind": "dropdown",
+          "defaultValue": "4",
+          "options": [
+            "4",
+            "6",
+            "8",
+            "10",
+            "12",
+            "14",
+            "16"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "TAGLEN",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "6",
+              "template": "bytes(ccm_ctr(zzsigv_KEY, zzsigv_NONCE, zzsigv_MSG, 6))"
+            },
+            {
+              "value": "8",
+              "template": "bytes(ccm_ctr(zzsigv_KEY, zzsigv_NONCE, zzsigv_MSG, 8))"
+            },
+            {
+              "value": "10",
+              "template": "bytes(ccm_ctr(zzsigv_KEY, zzsigv_NONCE, zzsigv_MSG, 10))"
+            },
+            {
+              "value": "12",
+              "template": "bytes(ccm_ctr(zzsigv_KEY, zzsigv_NONCE, zzsigv_MSG, 12))"
+            },
+            {
+              "value": "14",
+              "template": "bytes(ccm_ctr(zzsigv_KEY, zzsigv_NONCE, zzsigv_MSG, 14))"
+            },
+            {
+              "value": "16",
+              "template": "bytes(ccm_ctr(zzsigv_KEY, zzsigv_NONCE, zzsigv_MSG, 16))"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(ccm_ctr(zzsigv_KEY, zzsigv_NONCE, zzsigv_MSG, 4))"
+    },
+    {
+      "type": "ccm_decrypt",
+      "template": "bytes(ccm_decrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_CT, 16))",
+      "error": null,
+      "fields": [
+        {
+          "name": "TAGLEN",
+          "kind": "dropdown",
+          "defaultValue": "16",
+          "options": [
+            "4",
+            "6",
+            "8",
+            "10",
+            "12",
+            "14",
+            "16"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "TAGLEN",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "4",
+              "template": "bytes(ccm_decrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_CT, 4))"
+            },
+            {
+              "value": "6",
+              "template": "bytes(ccm_decrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_CT, 6))"
+            },
+            {
+              "value": "8",
+              "template": "bytes(ccm_decrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_CT, 8))"
+            },
+            {
+              "value": "10",
+              "template": "bytes(ccm_decrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_CT, 10))"
+            },
+            {
+              "value": "12",
+              "template": "bytes(ccm_decrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_CT, 12))"
+            },
+            {
+              "value": "14",
+              "template": "bytes(ccm_decrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_CT, 14))"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(ccm_decrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_CT, 16))"
+    },
+    {
+      "type": "ccm_encrypt",
+      "template": "bytes(ccm_encrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 16))",
+      "error": null,
+      "fields": [
+        {
+          "name": "TAGLEN",
+          "kind": "dropdown",
+          "defaultValue": "16",
+          "options": [
+            "4",
+            "6",
+            "8",
+            "10",
+            "12",
+            "14",
+            "16"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "TAGLEN",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "4",
+              "template": "bytes(ccm_encrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 4))"
+            },
+            {
+              "value": "6",
+              "template": "bytes(ccm_encrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 6))"
+            },
+            {
+              "value": "8",
+              "template": "bytes(ccm_encrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 8))"
+            },
+            {
+              "value": "10",
+              "template": "bytes(ccm_encrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 10))"
+            },
+            {
+              "value": "12",
+              "template": "bytes(ccm_encrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 12))"
+            },
+            {
+              "value": "14",
+              "template": "bytes(ccm_encrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 14))"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(ccm_encrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 16))"
+    },
+    {
+      "type": "cipher_key_from_seed",
+      "template": "crypto_cipher_key_from_seed(data)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "crypto_cipher_key_from_seed(data)"
+    },
+    {
+      "type": "cmac_double",
+      "template": "cmac_double(zzsigv_X)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "cmac_double(zzsigv_X)"
+    },
+    {
+      "type": "cmac_mac",
+      "template": "bytes(cmac_cbc(zzsigv_MSG, zzsigv_KEY, aes_encrypt_block, cmac_double))",
+      "error": null,
+      "fields": [
+        {
+          "name": "CIPHER",
+          "kind": "dropdown",
+          "defaultValue": "aes",
+          "options": [
+            "aes",
+            "sm4"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "CIPHER",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "sm4",
+              "template": "bytes(cmac_cbc(zzsigv_MSG, zzsigv_KEY, sm4_encrypt_block, cmac_double))"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(cmac_cbc(zzsigv_MSG, zzsigv_KEY, aes_encrypt_block, cmac_double))"
+    },
+    {
+      "type": "cmac_subkeys",
+      "template": "bytes(cmac_subkeys_aes(zzsigv_KEY))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(cmac_subkeys_aes(zzsigv_KEY))"
+    },
+    {
+      "type": "comb",
+      "template": "multivariate()[\"comb\"](zzsigv_N, zzsigv_K)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "multivariate()[\"comb\"](zzsigv_N, zzsigv_K)"
+    },
+    {
+      "type": "crypto_decrypt_func",
+      "template": "\ndef crypto_decrypt_func(ciphertext: bytes) -> bytes:\n    \"\"\"\n    Crypto function: crypto_decrypt_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n",
+      "error": null,
+      "fields": [
+        {
+          "name": "FUNC_NAME",
+          "kind": "text",
+          "defaultValue": "crypto_decrypt_func",
+          "options": null
+        },
+        {
+          "name": "PARAM_NAME",
+          "kind": "text",
+          "defaultValue": "ciphertext",
+          "options": null
+        },
+        {
+          "name": "PARAM_TYPE",
+          "kind": "dropdown",
+          "defaultValue": "message",
+          "options": [
+            "bytes",
+            "int",
+            "int_list",
+            "poly",
+            "seed",
+            "key",
+            "message"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "FUNC_NAME",
+          "kind": "text",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": "crypto_decrypt_func",
+          "variants": [],
+          "wildcard": "-?\\d+",
+          "valueShape": "number"
+        },
+        {
+          "name": "PARAM_NAME",
+          "kind": "text",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": "ciphertext",
+          "variants": [],
+          "wildcard": "-?\\d+",
+          "valueShape": "number"
+        },
+        {
+          "name": "PARAM_TYPE",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "int",
+              "template": "\ndef crypto_decrypt_func(ciphertext: int) -> int:\n    \"\"\"\n    Crypto function: crypto_decrypt_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n"
+            },
+            {
+              "value": "int_list",
+              "template": "\ndef crypto_decrypt_func(ciphertext: list[int]) -> list[int]:\n    \"\"\"\n    Crypto function: crypto_decrypt_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n"
+            },
+            {
+              "value": "poly",
+              "template": "\ndef crypto_decrypt_func(ciphertext: list[int]) -> list[int]:\n    \"\"\"\n    Crypto function: crypto_decrypt_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "\ndef zzfield_FUNC_NAME(zzfield_PARAM_NAME: bytes) -> bytes:\n    \"\"\"\n    Crypto function: crypto_decrypt_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n"
+    },
+    {
+      "type": "crypto_encrypt_func",
+      "template": "\ndef crypto_encrypt_func(message: bytes) -> bytes:\n    \"\"\"\n    Crypto function: crypto_encrypt_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n",
+      "error": null,
+      "fields": [
+        {
+          "name": "FUNC_NAME",
+          "kind": "text",
+          "defaultValue": "crypto_encrypt_func",
+          "options": null
+        },
+        {
+          "name": "PARAM_NAME",
+          "kind": "text",
+          "defaultValue": "message",
+          "options": null
+        },
+        {
+          "name": "PARAM_TYPE",
+          "kind": "dropdown",
+          "defaultValue": "message",
+          "options": [
+            "bytes",
+            "int",
+            "int_list",
+            "poly",
+            "seed",
+            "key",
+            "message"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "FUNC_NAME",
+          "kind": "text",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": "crypto_encrypt_func",
+          "variants": [],
+          "wildcard": "-?\\d+",
+          "valueShape": "number"
+        },
+        {
+          "name": "PARAM_NAME",
+          "kind": "text",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": "message",
+          "variants": [],
+          "wildcard": "-?\\d+",
+          "valueShape": "number"
+        },
+        {
+          "name": "PARAM_TYPE",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "int",
+              "template": "\ndef crypto_encrypt_func(message: int) -> int:\n    \"\"\"\n    Crypto function: crypto_encrypt_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n"
+            },
+            {
+              "value": "int_list",
+              "template": "\ndef crypto_encrypt_func(message: list[int]) -> list[int]:\n    \"\"\"\n    Crypto function: crypto_encrypt_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n"
+            },
+            {
+              "value": "poly",
+              "template": "\ndef crypto_encrypt_func(message: list[int]) -> list[int]:\n    \"\"\"\n    Crypto function: crypto_encrypt_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "\ndef zzfield_FUNC_NAME(zzfield_PARAM_NAME: bytes) -> bytes:\n    \"\"\"\n    Crypto function: crypto_encrypt_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n"
+    },
+    {
+      "type": "crypto_hash_func",
+      "template": "\ndef crypto_hash_func(message: bytes) -> bytes:\n    \"\"\"\n    Crypto function: crypto_hash_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n",
+      "error": null,
+      "fields": [
+        {
+          "name": "FUNC_NAME",
+          "kind": "text",
+          "defaultValue": "crypto_hash_func",
+          "options": null
+        },
+        {
+          "name": "PARAM_NAME",
+          "kind": "text",
+          "defaultValue": "message",
+          "options": null
+        },
+        {
+          "name": "PARAM_TYPE",
+          "kind": "dropdown",
+          "defaultValue": "message",
+          "options": [
+            "bytes",
+            "int",
+            "int_list",
+            "poly",
+            "seed",
+            "key",
+            "message"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "FUNC_NAME",
+          "kind": "text",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": "crypto_hash_func",
+          "variants": [],
+          "wildcard": "-?\\d+",
+          "valueShape": "number"
+        },
+        {
+          "name": "PARAM_NAME",
+          "kind": "text",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": "message",
+          "variants": [],
+          "wildcard": "-?\\d+",
+          "valueShape": "number"
+        },
+        {
+          "name": "PARAM_TYPE",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "int",
+              "template": "\ndef crypto_hash_func(message: int) -> int:\n    \"\"\"\n    Crypto function: crypto_hash_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n"
+            },
+            {
+              "value": "int_list",
+              "template": "\ndef crypto_hash_func(message: list[int]) -> list[int]:\n    \"\"\"\n    Crypto function: crypto_hash_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n"
+            },
+            {
+              "value": "poly",
+              "template": "\ndef crypto_hash_func(message: list[int]) -> list[int]:\n    \"\"\"\n    Crypto function: crypto_hash_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "\ndef zzfield_FUNC_NAME(zzfield_PARAM_NAME: bytes) -> bytes:\n    \"\"\"\n    Crypto function: crypto_hash_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n"
+    },
+    {
+      "type": "crypto_return",
+      "template": "return zzsigv_VALUE\n",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "return zzsigv_VALUE\n"
+    },
+    {
+      "type": "ctrl_iterate",
+      "template": "for i in range(32):\n    zzsigs_DO",
+      "error": null,
+      "fields": [
+        {
+          "name": "VAR",
+          "kind": "text",
+          "defaultValue": "i",
+          "options": null
+        },
+        {
+          "name": "TIMES",
+          "kind": "number",
+          "defaultValue": "32",
+          "options": null
+        }
+      ],
+      "probes": [
+        {
+          "name": "VAR",
+          "kind": "text",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": "i",
+          "variants": [],
+          "wildcard": "-?\\d+",
+          "valueShape": "number"
+        },
+        {
+          "name": "TIMES",
+          "kind": "number",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": "32",
+          "variants": [],
+          "wildcard": "-?\\d+",
+          "valueShape": "number"
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "for zzfield_VAR in range(zzfield_TIMES):\n    zzsigs_DO"
+    },
+    {
+      "type": "data_bit_length",
+      "template": "(lambda value: len(value.encode('utf-8')) * 8 if isinstance(value, str) else len(value) * 8 if isinstance(value, (bytes, list)) else 32 if isinstance(value, (int, float)) and not isinstance(value, bool) else 0)(zzsigv_X)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "(lambda value: len(value.encode('utf-8')) * 8 if isinstance(value, str) else len(value) * 8 if isinstance(value, (bytes, list)) else 32 if isinstance(value, (int, float)) and not isinstance(value, bool) else 0)(zzsigv_X)"
+    },
+    {
+      "type": "data_byte_length",
+      "template": "(lambda value: len(value.encode('utf-8')) if isinstance(value, str) else len(value) if isinstance(value, (bytes, list)) else 4 if isinstance(value, (int, float)) and not isinstance(value, bool) else 0)(zzsigv_X)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "(lambda value: len(value.encode('utf-8')) if isinstance(value, str) else len(value) if isinstance(value, (bytes, list)) else 4 if isinstance(value, (int, float)) and not isinstance(value, bool) else 0)(zzsigv_X)"
+    },
+    {
+      "type": "data_convert_bits_to_bytes",
+      "template": "zzsigv_BYTES = crypto_bits_to_bytes(zzsigv_BITS)\n",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zzsigv_BYTES = crypto_bits_to_bytes(zzsigv_BITS)\n"
+    },
+    {
+      "type": "data_convert_bytes_to_bits",
+      "template": "zzsigv_BITS = crypto_bytes_to_bits(zzsigv_BYTES)\n",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zzsigv_BITS = crypto_bytes_to_bits(zzsigv_BYTES)\n"
+    },
+    {
+      "type": "data_convert_to_int",
+      "template": "zzsigv_VAR = crypto_convert_to_int(zzsigv_VAR)\n",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zzsigv_VAR = crypto_convert_to_int(zzsigv_VAR)\n"
+    },
+    {
+      "type": "data_value",
+      "template": "0",
+      "error": null,
+      "fields": [
+        {
+          "name": "NUM",
+          "kind": "text",
+          "defaultValue": "0",
+          "options": null
+        }
+      ],
+      "probes": [
+        {
+          "name": "NUM",
+          "kind": "text",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": "0",
+          "variants": [],
+          "wildcard": "-?\\d+",
+          "valueShape": "number"
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zzfield_NUM"
+    },
+    {
+      "type": "drbg_generate",
+      "template": "bytes(drbg_generate_all(zzsigv_ENTROPY, zzsigv_NONCE, zzsigv_PERSO, zzsigv_BITS))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(drbg_generate_all(zzsigv_ENTROPY, zzsigv_NONCE, zzsigv_PERSO, zzsigv_BITS))"
+    },
+    {
+      "type": "drbg_update",
+      "template": "bytes(drbg_update_raw(zzsigv_STATE, zzsigv_PROVIDED))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(drbg_update_raw(zzsigv_STATE, zzsigv_PROVIDED))"
+    },
+    {
+      "type": "ecc_add",
+      "template": "\n# 点加法运算\necc_validate_curve_point(zzsigv_value1, curve)\necc_validate_curve_point(zzsigv_value2, curve)\nif zzsigv_value1.get(\"infinity\", False):\n    zzsigv_value3 = zzsigv_value2\nelif zzsigv_value2.get(\"infinity\", False):\n    zzsigv_value3 = zzsigv_value1\nelif zzsigv_value1[\"x\"] == zzsigv_value2[\"x\"] and (zzsigv_value1[\"y\"] + zzsigv_value2[\"y\"]) % curve[\"p\"] == 0:\n    zzsigv_value3 = {\"infinity\": True}\nelif zzsigv_value1[\"x\"] == zzsigv_value2[\"x\"] and zzsigv_value1[\"y\"] == zzsigv_value2[\"y\"]:\n    # 点相同，调用倍点公式\n    lambda_val = (3 * zzsigv_value1[\"x\"] * zzsigv_value1[\"x\"] + curve[\"a\"]) * pow(2 * zzsigv_value1[\"y\"], -1, curve[\"p\"]) % curve[\"p\"]\n    zzsigv_value3 = {\n        \"x\": (lambda_val * lambda_val - 2 * zzsigv_value1[\"x\"]) % curve[\"p\"],\n        \"y\": (lambda_val * (zzsigv_value1[\"x\"] - ((lambda_val * lambda_val - 2 * zzsigv_value1[\"x\"]) % curve[\"p\"])) - zzsigv_value1[\"y\"]) % curve[\"p\"]\n    }\nelif zzsigv_value1[\"x\"] == zzsigv_value2[\"x\"]:\n    raise ValueError(\"points with equal x must be equal or inverses\")\nelse:\n    # 点不同，使用加法公式\n    lambda_val = (zzsigv_value2[\"y\"] - zzsigv_value1[\"y\"]) * pow(zzsigv_value2[\"x\"] - zzsigv_value1[\"x\"], -1, curve[\"p\"]) % curve[\"p\"]\n    zzsigv_value3 = {\n        \"x\": (lambda_val * lambda_val - zzsigv_value1[\"x\"] - zzsigv_value2[\"x\"]) % curve[\"p\"],\n        \"y\": (lambda_val * (zzsigv_value1[\"x\"] - ((lambda_val * lambda_val - zzsigv_value1[\"x\"] - zzsigv_value2[\"x\"]) % curve[\"p\"])) - zzsigv_value1[\"y\"]) % curve[\"p\"]\n    }\nif not zzsigv_value3.get(\"infinity\", False):\n    if zzsigv_value3[\"x\"] < 0:\n        zzsigv_value3[\"x\"] += curve[\"p\"]\n    if zzsigv_value3[\"y\"] < 0:\n        zzsigv_value3[\"y\"] += curve[\"p\"]\n",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "\n# 点加法运算\necc_validate_curve_point(zzsigv_value1, curve)\necc_validate_curve_point(zzsigv_value2, curve)\nif zzsigv_value1.get(\"infinity\", False):\n    zzsigv_value3 = zzsigv_value2\nelif zzsigv_value2.get(\"infinity\", False):\n    zzsigv_value3 = zzsigv_value1\nelif zzsigv_value1[\"x\"] == zzsigv_value2[\"x\"] and (zzsigv_value1[\"y\"] + zzsigv_value2[\"y\"]) % curve[\"p\"] == 0:\n    zzsigv_value3 = {\"infinity\": True}\nelif zzsigv_value1[\"x\"] == zzsigv_value2[\"x\"] and zzsigv_value1[\"y\"] == zzsigv_value2[\"y\"]:\n    # 点相同，调用倍点公式\n    lambda_val = (3 * zzsigv_value1[\"x\"] * zzsigv_value1[\"x\"] + curve[\"a\"]) * pow(2 * zzsigv_value1[\"y\"], -1, curve[\"p\"]) % curve[\"p\"]\n    zzsigv_value3 = {\n        \"x\": (lambda_val * lambda_val - 2 * zzsigv_value1[\"x\"]) % curve[\"p\"],\n        \"y\": (lambda_val * (zzsigv_value1[\"x\"] - ((lambda_val * lambda_val - 2 * zzsigv_value1[\"x\"]) % curve[\"p\"])) - zzsigv_value1[\"y\"]) % curve[\"p\"]\n    }\nelif zzsigv_value1[\"x\"] == zzsigv_value2[\"x\"]:\n    raise ValueError(\"points with equal x must be equal or inverses\")\nelse:\n    # 点不同，使用加法公式\n    lambda_val = (zzsigv_value2[\"y\"] - zzsigv_value1[\"y\"]) * pow(zzsigv_value2[\"x\"] - zzsigv_value1[\"x\"], -1, curve[\"p\"]) % curve[\"p\"]\n    zzsigv_value3 = {\n        \"x\": (lambda_val * lambda_val - zzsigv_value1[\"x\"] - zzsigv_value2[\"x\"]) % curve[\"p\"],\n        \"y\": (lambda_val * (zzsigv_value1[\"x\"] - ((lambda_val * lambda_val - zzsigv_value1[\"x\"] - zzsigv_value2[\"x\"]) % curve[\"p\"])) - zzsigv_value1[\"y\"]) % curve[\"p\"]\n    }\nif not zzsigv_value3.get(\"infinity\", False):\n    if zzsigv_value3[\"x\"] < 0:\n        zzsigv_value3[\"x\"] += curve[\"p\"]\n    if zzsigv_value3[\"y\"] < 0:\n        zzsigv_value3[\"y\"] += curve[\"p\"]\n"
+    },
+    {
+      "type": "ecc_load_curve_params",
+      "template": "curve = {\"a\": scan_out, \"b\": scan_out, \"p\": scan_out}\necc_validate_curve_point({\"infinity\": True}, curve)\n",
+      "error": null,
+      "fields": [
+        {
+          "name": "a",
+          "kind": "text",
+          "defaultValue": "scan_out",
+          "options": null
+        },
+        {
+          "name": "b",
+          "kind": "text",
+          "defaultValue": "scan_out",
+          "options": null
+        },
+        {
+          "name": "p",
+          "kind": "text",
+          "defaultValue": "scan_out",
+          "options": null
+        }
+      ],
+      "probes": [],
+      "invisible": [
+        "a",
+        "b",
+        "p"
+      ],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "curve = {\"a\": scan_out, \"b\": scan_out, \"p\": scan_out}\necc_validate_curve_point({\"infinity\": True}, curve)\n"
+    },
+    {
+      "type": "ecc_load_point",
+      "template": "zzsigv_point = {\"x\": scan_out, \"y\": scan_out}\necc_validate_curve_point(zzsigv_point, curve)\n",
+      "error": null,
+      "fields": [
+        {
+          "name": "x",
+          "kind": "text",
+          "defaultValue": "scan_out",
+          "options": null
+        },
+        {
+          "name": "y",
+          "kind": "text",
+          "defaultValue": "scan_out",
+          "options": null
+        }
+      ],
+      "probes": [],
+      "invisible": [
+        "x",
+        "y"
+      ],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zzsigv_point = {\"x\": scan_out, \"y\": scan_out}\necc_validate_curve_point(zzsigv_point, curve)\n"
+    },
+    {
+      "type": "ecc_multiply",
+      "template": "\n# 点乘法运算 - 使用倍加算法\necc_validate_curve_point(zzsigv_value1, curve)\nk = scan_out\nif type(k) is not int or k < 0:\n    raise ValueError(\"scalar must be a non-negative integer\")\nP_temp = zzsigv_value1.copy()\nresult = {\"infinity\": True}\n\nwhile k > 0:\n    if k & 1:\n        # 如果结果点为无穷远点，则直接赋值为当前点\n        if not P_temp.get(\"infinity\", False) and result[\"infinity\"]:\n            result = {\"x\": P_temp[\"x\"], \"y\": P_temp[\"y\"], \"infinity\": False}\n        elif not P_temp.get(\"infinity\", False) and result[\"x\"] == P_temp[\"x\"] and (result[\"y\"] + P_temp[\"y\"]) % curve[\"p\"] == 0:\n            result = {\"infinity\": True}\n        elif not P_temp.get(\"infinity\", False) and result[\"x\"] == P_temp[\"x\"] and result[\"y\"] == P_temp[\"y\"]:\n            lambda_val = (3 * P_temp[\"x\"] * P_temp[\"x\"] + curve[\"a\"]) * pow(2 * P_temp[\"y\"], -1, curve[\"p\"]) % curve[\"p\"]\n            x = (lambda_val * lambda_val - 2 * P_temp[\"x\"]) % curve[\"p\"]\n            y = (lambda_val * (P_temp[\"x\"] - x) - P_temp[\"y\"]) % curve[\"p\"]\n            result = {\"x\": x, \"y\": y, \"infinity\": False}\n        elif not P_temp.get(\"infinity\", False):\n            # 点加运算\n            lambda_val = (result[\"y\"] - P_temp[\"y\"]) * pow(result[\"x\"] - P_temp[\"x\"], -1, curve[\"p\"]) % curve[\"p\"]\n            x = (lambda_val * lambda_val - result[\"x\"] - P_temp[\"x\"]) % curve[\"p\"]\n            y = (lambda_val * (result[\"x\"] - x) - result[\"y\"]) % curve[\"p\"]\n            result = {\"x\": x, \"y\": y, \"infinity\": False}\n\n    # 倍点运算\n    if P_temp.get(\"infinity\", False) or P_temp[\"y\"] % curve[\"p\"] == 0:\n        P_temp = {\"infinity\": True}\n    else:\n        lambda_val = (3 * P_temp[\"x\"] * P_temp[\"x\"] + curve[\"a\"]) * pow(2 * P_temp[\"y\"], -1, curve[\"p\"]) % curve[\"p\"]\n        x = (lambda_val * lambda_val - 2 * P_temp[\"x\"]) % curve[\"p\"]\n        y = (lambda_val * (P_temp[\"x\"] - x) - P_temp[\"y\"]) % curve[\"p\"]\n        P_temp = {\"x\": x, \"y\": y}\n\n    k = k >> 1\n\n    if not result[\"infinity\"]:\n        if result[\"x\"] < 0:\n            result[\"x\"] += curve[\"p\"]\n        if result[\"y\"] < 0:\n            result[\"y\"] += curve[\"p\"]\n    if not P_temp.get(\"infinity\", False):\n        if P_temp[\"x\"] < 0:\n            P_temp[\"x\"] += curve[\"p\"]\n        if P_temp[\"y\"] < 0:\n            P_temp[\"y\"] += curve[\"p\"]\n\nzzsigv_value2 = {\"infinity\": True} if result[\"infinity\"] else {\"x\": result[\"x\"], \"y\": result[\"y\"]}\n\n# Python中使用内置的pow(a, -1, m)来计算模逆\n",
+      "error": null,
+      "fields": [
+        {
+          "name": "times",
+          "kind": "text",
+          "defaultValue": "scan_out",
+          "options": null
+        }
+      ],
+      "probes": [
+        {
+          "name": "times",
+          "kind": "text",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": "scan_out",
+          "variants": [],
+          "wildcard": "-?\\d+",
+          "valueShape": "number"
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "\n# 点乘法运算 - 使用倍加算法\necc_validate_curve_point(zzsigv_value1, curve)\nk = zzfield_times\nif type(k) is not int or k < 0:\n    raise ValueError(\"scalar must be a non-negative integer\")\nP_temp = zzsigv_value1.copy()\nresult = {\"infinity\": True}\n\nwhile k > 0:\n    if k & 1:\n        # 如果结果点为无穷远点，则直接赋值为当前点\n        if not P_temp.get(\"infinity\", False) and result[\"infinity\"]:\n            result = {\"x\": P_temp[\"x\"], \"y\": P_temp[\"y\"], \"infinity\": False}\n        elif not P_temp.get(\"infinity\", False) and result[\"x\"] == P_temp[\"x\"] and (result[\"y\"] + P_temp[\"y\"]) % curve[\"p\"] == 0:\n            result = {\"infinity\": True}\n        elif not P_temp.get(\"infinity\", False) and result[\"x\"] == P_temp[\"x\"] and result[\"y\"] == P_temp[\"y\"]:\n            lambda_val = (3 * P_temp[\"x\"] * P_temp[\"x\"] + curve[\"a\"]) * pow(2 * P_temp[\"y\"], -1, curve[\"p\"]) % curve[\"p\"]\n            x = (lambda_val * lambda_val - 2 * P_temp[\"x\"]) % curve[\"p\"]\n            y = (lambda_val * (P_temp[\"x\"] - x) - P_temp[\"y\"]) % curve[\"p\"]\n            result = {\"x\": x, \"y\": y, \"infinity\": False}\n        elif not P_temp.get(\"infinity\", False):\n            # 点加运算\n            lambda_val = (result[\"y\"] - P_temp[\"y\"]) * pow(result[\"x\"] - P_temp[\"x\"], -1, curve[\"p\"]) % curve[\"p\"]\n            x = (lambda_val * lambda_val - result[\"x\"] - P_temp[\"x\"]) % curve[\"p\"]\n            y = (lambda_val * (result[\"x\"] - x) - result[\"y\"]) % curve[\"p\"]\n            result = {\"x\": x, \"y\": y, \"infinity\": False}\n\n    # 倍点运算\n    if P_temp.get(\"infinity\", False) or P_temp[\"y\"] % curve[\"p\"] == 0:\n        P_temp = {\"infinity\": True}\n    else:\n        lambda_val = (3 * P_temp[\"x\"] * P_temp[\"x\"] + curve[\"a\"]) * pow(2 * P_temp[\"y\"], -1, curve[\"p\"]) % curve[\"p\"]\n        x = (lambda_val * lambda_val - 2 * P_temp[\"x\"]) % curve[\"p\"]\n        y = (lambda_val * (P_temp[\"x\"] - x) - P_temp[\"y\"]) % curve[\"p\"]\n        P_temp = {\"x\": x, \"y\": y}\n\n    k = k >> 1\n\n    if not result[\"infinity\"]:\n        if result[\"x\"] < 0:\n            result[\"x\"] += curve[\"p\"]\n        if result[\"y\"] < 0:\n            result[\"y\"] += curve[\"p\"]\n    if not P_temp.get(\"infinity\", False):\n        if P_temp[\"x\"] < 0:\n            P_temp[\"x\"] += curve[\"p\"]\n        if P_temp[\"y\"] < 0:\n            P_temp[\"y\"] += curve[\"p\"]\n\nzzsigv_value2 = {\"infinity\": True} if result[\"infinity\"] else {\"x\": result[\"x\"], \"y\": result[\"y\"]}\n\n# Python中使用内置的pow(a, -1, m)来计算模逆\n"
+    },
+    {
+      "type": "ecc_point_double",
+      "template": "\n# 点倍点运算\necc_validate_curve_point(zzsigv_value1, curve)\nif zzsigv_value1.get(\"infinity\", False) or zzsigv_value1[\"y\"] % curve[\"p\"] == 0:\n    zzsigv_value2 = {\"infinity\": True}\nelse:\n    lambda_val = (3 * zzsigv_value1[\"x\"] * zzsigv_value1[\"x\"] + curve[\"a\"]) * pow(2 * zzsigv_value1[\"y\"], -1, curve[\"p\"]) % curve[\"p\"]\n    zzsigv_value2 = {\n        \"x\": (lambda_val * lambda_val - 2 * zzsigv_value1[\"x\"]) % curve[\"p\"],\n        \"y\": (lambda_val * (zzsigv_value1[\"x\"] - ((lambda_val * lambda_val - 2 * zzsigv_value1[\"x\"]) % curve[\"p\"])) - zzsigv_value1[\"y\"]) % curve[\"p\"]\n    }\n",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "\n# 点倍点运算\necc_validate_curve_point(zzsigv_value1, curve)\nif zzsigv_value1.get(\"infinity\", False) or zzsigv_value1[\"y\"] % curve[\"p\"] == 0:\n    zzsigv_value2 = {\"infinity\": True}\nelse:\n    lambda_val = (3 * zzsigv_value1[\"x\"] * zzsigv_value1[\"x\"] + curve[\"a\"]) * pow(2 * zzsigv_value1[\"y\"], -1, curve[\"p\"]) % curve[\"p\"]\n    zzsigv_value2 = {\n        \"x\": (lambda_val * lambda_val - 2 * zzsigv_value1[\"x\"]) % curve[\"p\"],\n        \"y\": (lambda_val * (zzsigv_value1[\"x\"] - ((lambda_val * lambda_val - 2 * zzsigv_value1[\"x\"]) % curve[\"p\"])) - zzsigv_value1[\"y\"]) % curve[\"p\"]\n    }\n"
+    },
+    {
+      "type": "ecdh_shared_secret",
+      "template": "ecdh_shared_secret(zzsigv_D, zzsigv_QX, zzsigv_QY)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "ecdh_shared_secret(zzsigv_D, zzsigv_QX, zzsigv_QY)"
+    },
+    {
+      "type": "ecdsa_k_rfc6979",
+      "template": "bytes(ecdsa_k_rfc6979(zzsigv_PRIV, zzsigv_HASH))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(ecdsa_k_rfc6979(zzsigv_PRIV, zzsigv_HASH))"
+    },
+    {
+      "type": "ecdsa_sign",
+      "template": "bytes(ecdsa_sign(zzsigv_PRIV, zzsigv_MSG))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(ecdsa_sign(zzsigv_PRIV, zzsigv_MSG))"
+    },
+    {
+      "type": "ecdsa_verify",
+      "template": "ecdsa_verify(zzsigv_MSG, zzsigv_PUB, zzsigv_SIG)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "ecdsa_verify(zzsigv_MSG, zzsigv_PUB, zzsigv_SIG)"
+    },
+    {
+      "type": "eddsa_sign",
+      "template": "bytes(eddsa_sign(zzsigv_SECRET, zzsigv_MSG))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(eddsa_sign(zzsigv_SECRET, zzsigv_MSG))"
+    },
+    {
+      "type": "eddsa_verify",
+      "template": "eddsa_verify(zzsigv_PUBLIC, zzsigv_MSG, zzsigv_SIGNATURE)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "eddsa_verify(zzsigv_PUBLIC, zzsigv_MSG, zzsigv_SIGNATURE)"
+    },
+    {
+      "type": "endian_swap",
+      "template": "list(reversed(zzsigv_INPUT))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "list(reversed(zzsigv_INPUT))"
+    },
+    {
+      "type": "fors_leaf_index",
+      "template": "hash_based()[\"fors_leaf_index\"](zzsigv_M, zzsigv_I)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "hash_based()[\"fors_leaf_index\"](zzsigv_M, zzsigv_I)"
+    },
+    {
+      "type": "fors_pk_from_sk",
+      "template": "fors_core()[\"fors_pk\"](zzsigv_SK_SEED)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "fors_core()[\"fors_pk\"](zzsigv_SK_SEED)"
+    },
+    {
+      "type": "fors_root",
+      "template": "hash_based()[\"fors_root\"](zzsigv_ROOTS, zzsigv_ADRS)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "hash_based()[\"fors_root\"](zzsigv_ROOTS, zzsigv_ADRS)"
+    },
+    {
+      "type": "fors_sign",
+      "template": "fors_core()[\"fors_sign\"](zzsigv_SK_SEED, zzsigv_MESSAGE)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "fors_core()[\"fors_sign\"](zzsigv_SK_SEED, zzsigv_MESSAGE)"
+    },
+    {
+      "type": "fors_verify",
+      "template": "fors_core()[\"fors_verify\"](zzsigv_PUBLIC_KEY, zzsigv_MESSAGE, zzsigv_SIGNATURE)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "fors_core()[\"fors_verify\"](zzsigv_PUBLIC_KEY, zzsigv_MESSAGE, zzsigv_SIGNATURE)"
+    },
+    {
+      "type": "gauss_elim",
+      "template": "multivariate()[\"gauss_elim\"](zzsigv_AUG, zzsigv_N)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "multivariate()[\"gauss_elim\"](zzsigv_AUG, zzsigv_N)"
+    },
+    {
+      "type": "gauss_pmf",
+      "template": "multivariate()[\"gauss_pmf\"](zzsigv_X, zzsigv_SIGMA)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "multivariate()[\"gauss_pmf\"](zzsigv_X, zzsigv_SIGMA)"
+    },
+    {
+      "type": "gcm_encrypt",
+      "template": "bytes(gcm_encrypt(zzsigv_KEY, zzsigv_IV, zzsigv_AAD, zzsigv_MSG))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(gcm_encrypt(zzsigv_KEY, zzsigv_IV, zzsigv_AAD, zzsigv_MSG))"
+    },
+    {
+      "type": "gcm_gctr",
+      "template": "bytes(gcm_gctr(zzsigv_KEY, zzsigv_ICB, zzsigv_X))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(gcm_gctr(zzsigv_KEY, zzsigv_ICB, zzsigv_X))"
+    },
+    {
+      "type": "gcm_gf128_mul",
+      "template": "gcm_mul(zzsigv_X, zzsigv_Y)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "gcm_mul(zzsigv_X, zzsigv_Y)"
+    },
+    {
+      "type": "gcm_ghash",
+      "template": "gcm_ghash(zzsigv_H, zzsigv_A, zzsigv_C)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "gcm_ghash(zzsigv_H, zzsigv_A, zzsigv_C)"
+    },
+    {
+      "type": "gcm_inc32",
+      "template": "gcm_inc32(zzsigv_X)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "gcm_inc32(zzsigv_X)"
+    },
+    {
+      "type": "gcm_j0",
+      "template": "gcm_j0(zzsigv_H, zzsigv_IV)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "gcm_j0(zzsigv_H, zzsigv_IV)"
+    },
+    {
+      "type": "gf2_poly_div",
+      "template": "code_based()[\"poly_div\"](zzsigv_A, zzsigv_B)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "code_based()[\"poly_div\"](zzsigv_A, zzsigv_B)"
+    },
+    {
+      "type": "gf2_poly_gcd",
+      "template": "code_based()[\"poly_gcd\"](zzsigv_A, zzsigv_B)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "code_based()[\"poly_gcd\"](zzsigv_A, zzsigv_B)"
+    },
+    {
+      "type": "gf2_poly_mod",
+      "template": "code_based()[\"poly_mod\"](zzsigv_A, zzsigv_B)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "code_based()[\"poly_mod\"](zzsigv_A, zzsigv_B)"
+    },
+    {
+      "type": "gf2_poly_mul",
+      "template": "code_based()[\"poly_mul\"](zzsigv_A, zzsigv_B)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "code_based()[\"poly_mul\"](zzsigv_A, zzsigv_B)"
+    },
+    {
+      "type": "gf2m_add",
+      "template": "[zzsigv_A[0] ^ zzsigv_B[0]]",
+      "error": null,
+      "fields": [
+        {
+          "name": "FIELD",
+          "kind": "dropdown",
+          "defaultValue": "aes",
+          "options": [
+            "aes",
+            "gcm"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "FIELD",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "gcm",
+              "template": "[(zzsigv_A[0] ^ zzsigv_B[0]) & 0xFFFFFFFF, (zzsigv_A[1] ^ zzsigv_B[1]) & 0xFFFFFFFF, (zzsigv_A[2] ^ zzsigv_B[2]) & 0xFFFFFFFF, (zzsigv_A[3] ^ zzsigv_B[3]) & 0xFFFFFFFF]"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "[zzsigv_A[0] ^ zzsigv_B[0]]"
+    },
+    {
+      "type": "gf2m_inv",
+      "template": "[gf2m_inv_aes(zzsigv_A[0])]",
+      "error": null,
+      "fields": [
+        {
+          "name": "FIELD",
+          "kind": "dropdown",
+          "defaultValue": "aes",
+          "options": [
+            "aes",
+            "gcm"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "FIELD",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "gcm",
+              "template": "gf2m_inv_gcm(zzsigv_A)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "[gf2m_inv_aes(zzsigv_A[0])]"
+    },
+    {
+      "type": "gf2m_mul",
+      "template": "[gf2m_mul_aes(zzsigv_A[0],zzsigv_B[0])]",
+      "error": null,
+      "fields": [
+        {
+          "name": "FIELD",
+          "kind": "dropdown",
+          "defaultValue": "aes",
+          "options": [
+            "aes",
+            "gcm"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "FIELD",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "gcm",
+              "template": "gf2m_mul_gcm(zzsigv_A,zzsigv_B)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "[gf2m_mul_aes(zzsigv_A[0],zzsigv_B[0])]"
+    },
+    {
+      "type": "gf2m_poly_add",
+      "template": "gf2m_poly()[\"poly_add\"](zzsigv_A, zzsigv_B)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "gf2m_poly()[\"poly_add\"](zzsigv_A, zzsigv_B)"
+    },
+    {
+      "type": "gf2m_poly_eval",
+      "template": "gf2m_poly()[\"poly_eval\"](zzsigv_P, zzsigv_X)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "gf2m_poly()[\"poly_eval\"](zzsigv_P, zzsigv_X)"
+    },
+    {
+      "type": "gf2m_poly_mod",
+      "template": "gf2m_poly()[\"poly_mod\"](zzsigv_A, zzsigv_B)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "gf2m_poly()[\"poly_mod\"](zzsigv_A, zzsigv_B)"
+    },
+    {
+      "type": "gf2m_poly_mul",
+      "template": "gf2m_poly()[\"poly_mul\"](zzsigv_A, zzsigv_B)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "gf2m_poly()[\"poly_mul\"](zzsigv_A, zzsigv_B)"
+    },
+    {
+      "type": "gf2m_poly_xgcd",
+      "template": "gf2m_poly()[\"poly_xgcd\"](zzsigv_A, zzsigv_B)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "gf2m_poly()[\"poly_xgcd\"](zzsigv_A, zzsigv_B)"
+    },
+    {
+      "type": "gm_rng",
+      "template": "bytes(gm_drbg(zzsigv_ENTROPY, zzsigv_NONCE, zzsigv_PERSO, zzsigv_LEN))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(gm_drbg(zzsigv_ENTROPY, zzsigv_NONCE, zzsigv_PERSO, zzsigv_LEN))"
+    },
+    {
+      "type": "goppa_decode",
+      "template": "goppa_core()[\"goppa_decode\"](zzsigv_Y, zzsigv_G, zzsigv_L)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "goppa_core()[\"goppa_decode\"](zzsigv_Y, zzsigv_G, zzsigv_L)"
+    },
+    {
+      "type": "goppa_gen_poly",
+      "template": "code_based()[\"goppa_gen_poly\"](zzsigv_ALPHA)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "code_based()[\"goppa_gen_poly\"](zzsigv_ALPHA)"
+    },
+    {
+      "type": "ham_dist",
+      "template": "code_based()[\"ham_dist\"](zzsigv_X, zzsigv_Y)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "code_based()[\"ham_dist\"](zzsigv_X, zzsigv_Y)"
+    },
+    {
+      "type": "ham_weight",
+      "template": "code_based()[\"ham_weight\"](zzsigv_X)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "code_based()[\"ham_weight\"](zzsigv_X)"
+    },
+    {
+      "type": "hash_chain",
+      "template": "hash_based()[\"hash_chain\"](zzsigv_INPUT, zzsigv_ITERATIONS)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "hash_based()[\"hash_chain\"](zzsigv_INPUT, zzsigv_ITERATIONS)"
+    },
+    {
+      "type": "hash_hmac",
+      "template": "hmac_sha256(zzsigv_KEY,zzsigv_MSG)",
+      "error": null,
+      "fields": [
+        {
+          "name": "HASH",
+          "kind": "dropdown",
+          "defaultValue": "SHA-256",
+          "options": [
+            "SHA-256",
+            "SM3"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "HASH",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "SM3",
+              "template": "sm3_hmac(zzsigv_KEY,zzsigv_MSG)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "hmac_sha256(zzsigv_KEY,zzsigv_MSG)"
+    },
+    {
+      "type": "hash_sha224_hash",
+      "template": "sha224_hash(zzsigv_MSG)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sha224_hash(zzsigv_MSG)"
+    },
+    {
+      "type": "hash_sha256_compress",
+      "template": "sha256_compress(zzsigv_V, zzsigv_W)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sha256_compress(zzsigv_V, zzsigv_W)"
+    },
+    {
+      "type": "hash_sha256_pad",
+      "template": "sha256_pad(zzsigv_INPUT)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sha256_pad(zzsigv_INPUT)"
+    },
+    {
+      "type": "hash_sha256_pad_hex",
+      "template": "sha256_pad(decodeHexBytes(zzsigv_INPUT))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sha256_pad(decodeHexBytes(zzsigv_INPUT))"
+    },
+    {
+      "type": "hash_sha256_pad_text",
+      "template": "sha256_pad_text(zzsigv_INPUT)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sha256_pad_text(zzsigv_INPUT)"
+    },
+    {
+      "type": "hash_sha3_pad_hex",
+      "template": "sha3_pad(decodeHexBytes(zzsigv_INPUT), rate_bytes=136, suffix=0x06)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sha3_pad(decodeHexBytes(zzsigv_INPUT), rate_bytes=136, suffix=0x06)"
+    },
+    {
+      "type": "hash_sha3_pad_text",
+      "template": "sha3_pad_text(zzsigv_INPUT)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sha3_pad_text(zzsigv_INPUT)"
+    },
+    {
+      "type": "hash_sha512_compress",
+      "template": "sha512_compress(zzsigv_V, zzsigv_W)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sha512_compress(zzsigv_V, zzsigv_W)"
+    },
+    {
+      "type": "hash_sha512_hash",
+      "template": "sha512_hash(zzsigv_MSG, 384)",
+      "error": null,
+      "fields": [
+        {
+          "name": "SIZE",
+          "kind": "dropdown",
+          "defaultValue": "384",
+          "options": [
+            "384",
+            "512"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "SIZE",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "512",
+              "template": "sha512_hash(zzsigv_MSG, 512)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sha512_hash(zzsigv_MSG, 384)"
+    },
+    {
+      "type": "hash_sha512_pad",
+      "template": "sha512_pad(zzsigv_INPUT)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sha512_pad(zzsigv_INPUT)"
+    },
+    {
+      "type": "hash_sm3_compress",
+      "template": "sm3_compress(zzsigv_V, zzsigv_W)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sm3_compress(zzsigv_V, zzsigv_W)"
+    },
+    {
+      "type": "hash_sm3_pad",
+      "template": "sm3_pad(zzsigv_INPUT)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sm3_pad(zzsigv_INPUT)"
+    },
+    {
+      "type": "hash_sm3_pad_hex",
+      "template": "sm3_pad(decodeHexBytes(zzsigv_INPUT))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sm3_pad(decodeHexBytes(zzsigv_INPUT))"
+    },
+    {
+      "type": "hash_sm3_pad_text",
+      "template": "sm3_pad_text(zzsigv_INPUT)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sm3_pad_text(zzsigv_INPUT)"
+    },
+    {
+      "type": "hex_to_bytes",
+      "template": "hex_to_bytes(zzsigv_INPUT)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "hex_to_bytes(zzsigv_INPUT)"
+    },
+    {
+      "type": "hkdf",
+      "template": "bytes(hkdf(zzsigv_SALT, zzsigv_IKM, zzsigv_INFO, zzsigv_LEN))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(hkdf(zzsigv_SALT, zzsigv_IKM, zzsigv_INFO, zzsigv_LEN))"
+    },
+    {
+      "type": "hkdf_expand",
+      "template": "bytes(hkdf_expand(zzsigv_PRK, zzsigv_INFO, zzsigv_LEN))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(hkdf_expand(zzsigv_PRK, zzsigv_INFO, zzsigv_LEN))"
+    },
+    {
+      "type": "hkdf_extract",
+      "template": "bytes(hkdf_extract(zzsigv_SALT, zzsigv_IKM))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(hkdf_extract(zzsigv_SALT, zzsigv_IKM))"
+    },
+    {
+      "type": "keccak_f",
+      "template": "keccak_f(zzsigv_STATE, 200)",
+      "error": null,
+      "fields": [
+        {
+          "name": "WIDTH",
+          "kind": "dropdown",
+          "defaultValue": "200",
+          "options": [
+            "200",
+            "400",
+            "800",
+            "1600"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "WIDTH",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "400",
+              "template": "keccak_f(zzsigv_STATE, 400)"
+            },
+            {
+              "value": "800",
+              "template": "keccak_f(zzsigv_STATE, 800)"
+            },
+            {
+              "value": "1600",
+              "template": "keccak_f(zzsigv_STATE, 1600)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "keccak_f(zzsigv_STATE, 200)"
+    },
+    {
+      "type": "keccak_state_init",
+      "template": "[0] * 25",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "[0] * 25"
+    },
+    {
+      "type": "lgc_compound",
+      "template": "zzsigv_C = ((zzsigv_A ^ zzsigv_B) ^ zzsigv_B) & 0xFFFFFFFF\n",
+      "error": null,
+      "fields": [
+        {
+          "name": "instr",
+          "kind": "dropdown",
+          "defaultValue": "XOR_XOR",
+          "options": [
+            "XOR_XOR",
+            "OR_XOR",
+            "AND_XOR",
+            "XOR_OR",
+            "OR_OR",
+            "AND_OR",
+            "XOR_AND",
+            "OR_AND",
+            "AND_AND"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "instr",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "OR_XOR",
+              "template": "zzsigv_C = ((zzsigv_A | zzsigv_B) ^ zzsigv_B) & 0xFFFFFFFF\n"
+            },
+            {
+              "value": "AND_XOR",
+              "template": "zzsigv_C = ((zzsigv_A & zzsigv_B) ^ zzsigv_B) & 0xFFFFFFFF\n"
+            },
+            {
+              "value": "XOR_OR",
+              "template": "zzsigv_C = ((zzsigv_A ^ zzsigv_B) | zzsigv_B) & 0xFFFFFFFF\n"
+            },
+            {
+              "value": "OR_OR",
+              "template": "zzsigv_C = ((zzsigv_A | zzsigv_B) | zzsigv_B) & 0xFFFFFFFF\n"
+            },
+            {
+              "value": "AND_OR",
+              "template": "zzsigv_C = ((zzsigv_A & zzsigv_B) | zzsigv_B) & 0xFFFFFFFF\n"
+            },
+            {
+              "value": "XOR_AND",
+              "template": "zzsigv_C = ((zzsigv_A ^ zzsigv_B) & zzsigv_B) & 0xFFFFFFFF\n"
+            },
+            {
+              "value": "OR_AND",
+              "template": "zzsigv_C = ((zzsigv_A | zzsigv_B) & zzsigv_B) & 0xFFFFFFFF\n"
+            },
+            {
+              "value": "AND_AND",
+              "template": "zzsigv_C = ((zzsigv_A & zzsigv_B) & zzsigv_B) & 0xFFFFFFFF\n"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zzsigv_C = ((zzsigv_A ^ zzsigv_B) ^ zzsigv_B) & 0xFFFFFFFF\n"
+    },
+    {
+      "type": "lgc_not",
+      "template": "zzsigv_VALUE2 = (~zzsigv_VALUE1) & 0xFFFFFFFF\n",
+      "error": null,
+      "fields": [
+        {
+          "name": "NOT_LABEL",
+          "kind": "other",
+          "defaultValue": "非运算",
+          "options": null
+        }
+      ],
+      "probes": [],
+      "invisible": [
+        "NOT_LABEL"
+      ],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zzsigv_VALUE2 = (~zzsigv_VALUE1) & 0xFFFFFFFF\n"
+    },
+    {
+      "type": "lgc_operation",
+      "template": "zzsigv_C = (zzsigv_A ^ zzsigv_B) & 0xFFFFFFFF\n",
+      "error": null,
+      "fields": [
+        {
+          "name": "instr",
+          "kind": "dropdown",
+          "defaultValue": "XOR",
+          "options": [
+            "XOR",
+            "OR",
+            "AND"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "instr",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "OR",
+              "template": "zzsigv_C = (zzsigv_A | zzsigv_B) & 0xFFFFFFFF\n"
+            },
+            {
+              "value": "AND",
+              "template": "zzsigv_C = (zzsigv_A & zzsigv_B) & 0xFFFFFFFF\n"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zzsigv_C = (zzsigv_A ^ zzsigv_B) & 0xFFFFFFFF\n"
+    },
+    {
+      "type": "lll_reduce",
+      "template": "multivariate()[\"lll_reduce\"](zzsigv_BASIS, zzsigv_ROWS, zzsigv_COLS)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "multivariate()[\"lll_reduce\"](zzsigv_BASIS, zzsigv_ROWS, zzsigv_COLS)"
+    },
+    {
+      "type": "merkle_auth_path",
+      "template": "hash_based()[\"merkle_auth_path\"](zzsigv_LEAVES, zzsigv_LEAF_LEN, zzsigv_ADRS, zzsigv_INDEX)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "hash_based()[\"merkle_auth_path\"](zzsigv_LEAVES, zzsigv_LEAF_LEN, zzsigv_ADRS, zzsigv_INDEX)"
+    },
+    {
+      "type": "merkle_leaf",
+      "template": "hash_based()[\"merkle_leaf\"](zzsigv_MSG, zzsigv_ADRS)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "hash_based()[\"merkle_leaf\"](zzsigv_MSG, zzsigv_ADRS)"
+    },
+    {
+      "type": "merkle_node",
+      "template": "hash_based()[\"merkle_node\"](zzsigv_LEFT, zzsigv_RIGHT, zzsigv_ADRS)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "hash_based()[\"merkle_node\"](zzsigv_LEFT, zzsigv_RIGHT, zzsigv_ADRS)"
+    },
+    {
+      "type": "merkle_root",
+      "template": "hash_based()[\"merkle_root\"](zzsigv_LEAVES, zzsigv_LEAF_LEN, zzsigv_ADRS)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "hash_based()[\"merkle_root\"](zzsigv_LEAVES, zzsigv_LEAF_LEN, zzsigv_ADRS)"
+    },
+    {
+      "type": "mldsa_sign",
+      "template": "bytes(ml_dsa_sign(zzsigv_SECRET_KEY, zzsigv_MESSAGE))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(ml_dsa_sign(zzsigv_SECRET_KEY, zzsigv_MESSAGE))"
+    },
+    {
+      "type": "mldsa_verify",
+      "template": "ml_dsa_verify(zzsigv_PUBLIC_KEY, zzsigv_MESSAGE, zzsigv_SIGNATURE)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "ml_dsa_verify(zzsigv_PUBLIC_KEY, zzsigv_MESSAGE, zzsigv_SIGNATURE)"
+    },
+    {
+      "type": "mode_cbc_encrypt",
+      "template": "bytes(aes_cbc_encrypt(zzsigv_DATA, zzsigv_KEY, zzsigv_IV))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(aes_cbc_encrypt(zzsigv_DATA, zzsigv_KEY, zzsigv_IV))"
+    },
+    {
+      "type": "mode_ctr_encrypt",
+      "template": "bytes(aes_ctr_encrypt(zzsigv_DATA, zzsigv_KEY, zzsigv_NONCE))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(aes_ctr_encrypt(zzsigv_DATA, zzsigv_KEY, zzsigv_NONCE))"
+    },
+    {
+      "type": "mode_ecb_decrypt",
+      "template": "bytes(aes_ecb_decrypt(zzsigv_DATA, zzsigv_KEY))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(aes_ecb_decrypt(zzsigv_DATA, zzsigv_KEY))"
+    },
+    {
+      "type": "mode_ecb_encrypt",
+      "template": "bytes(aes_ecb_encrypt(zzsigv_DATA, zzsigv_KEY))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(aes_ecb_encrypt(zzsigv_DATA, zzsigv_KEY))"
+    },
+    {
+      "type": "mv_quad_eval",
+      "template": "multivariate()[\"mv_quad_eval\"](zzsigv_COEFFS, zzsigv_X)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "multivariate()[\"mv_quad_eval\"](zzsigv_COEFFS, zzsigv_X)"
+    },
+    {
+      "type": "nt_div_rem",
+      "template": "safe_divmod(zzsigv_A, zzsigv_B)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "safe_divmod(zzsigv_A, zzsigv_B)"
+    },
+    {
+      "type": "nt_field_add",
+      "template": "field_operation(zzsigv_A, zzsigv_B, zzsigv_P, \"ADD\")",
+      "error": null,
+      "fields": [
+        {
+          "name": "OP",
+          "kind": "dropdown",
+          "defaultValue": "ADD",
+          "options": [
+            "ADD",
+            "SUB",
+            "MUL"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "OP",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "SUB",
+              "template": "field_operation(zzsigv_A, zzsigv_B, zzsigv_P, \"SUB\")"
+            },
+            {
+              "value": "MUL",
+              "template": "field_operation(zzsigv_A, zzsigv_B, zzsigv_P, \"MUL\")"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "field_operation(zzsigv_A, zzsigv_B, zzsigv_P, \"ADD\")"
+    },
+    {
+      "type": "nt_mod",
+      "template": "positive_mod(zzsigv_A, zzsigv_B)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "positive_mod(zzsigv_A, zzsigv_B)"
+    },
+    {
+      "type": "nt_mod_inverse",
+      "template": "\n# 扩展欧几里得算法求模逆元\ndef extended_gcd(a, b):\n    if a == 0:\n        return b, 0, 1\n    else:\n        g, y, x = extended_gcd(b % a, a)\n        return g, x - (b // a) * y, y\n\ndef mod_inverse(a, m):\n    values = (a, m)\n    if any(isinstance(value, bool) or not isinstance(value, (int, float)) or not -9007199254740991 <= value <= 9007199254740991 or int(value) != value for value in values):\n        raise ValueError('modular inverse inputs must be safe integers')\n    a, m = (int(value) for value in values)\n    if m <= 0:\n        raise ValueError('modulus must be positive')\n    a %= m\n    g, x, y = extended_gcd(a, m)\n    if g != 1:\n        raise Exception('modular inverse does not exist')\n    return x % m\n\nzzsigv_D = mod_inverse(zzsigv_E, zzsigv_PHI)\n",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "\n# 扩展欧几里得算法求模逆元\ndef extended_gcd(a, b):\n    if a == 0:\n        return b, 0, 1\n    else:\n        g, y, x = extended_gcd(b % a, a)\n        return g, x - (b // a) * y, y\n\ndef mod_inverse(a, m):\n    values = (a, m)\n    if any(isinstance(value, bool) or not isinstance(value, (int, float)) or not -9007199254740991 <= value <= 9007199254740991 or int(value) != value for value in values):\n        raise ValueError('modular inverse inputs must be safe integers')\n    a, m = (int(value) for value in values)\n    if m <= 0:\n        raise ValueError('modulus must be positive')\n    a %= m\n    g, x, y = extended_gcd(a, m)\n    if g != 1:\n        raise Exception('modular inverse does not exist')\n    return x % m\n\nzzsigv_D = mod_inverse(zzsigv_E, zzsigv_PHI)\n"
+    },
+    {
+      "type": "nt_mod_pow",
+      "template": "pow_mod(zzsigv_A, zzsigv_B, 3329)",
+      "error": null,
+      "fields": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "defaultValue": "3329",
+          "options": [
+            "3329",
+            "8380417",
+            "12289",
+            "65537",
+            "1000000007"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "8380417",
+              "template": "pow_mod(zzsigv_A, zzsigv_B, 8380417)"
+            },
+            {
+              "value": "12289",
+              "template": "pow_mod(zzsigv_A, zzsigv_B, 12289)"
+            },
+            {
+              "value": "65537",
+              "template": "pow_mod(zzsigv_A, zzsigv_B, 65537)"
+            },
+            {
+              "value": "1000000007",
+              "template": "pow_mod(zzsigv_A, zzsigv_B, 1000000007)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "pow_mod(zzsigv_A, zzsigv_B, 3329)"
+    },
+    {
+      "type": "pad_pkcs7",
+      "template": "pad_pkcs7(zzsigv_DATA, zzsigv_BLOCK_SIZE)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "pad_pkcs7(zzsigv_DATA, zzsigv_BLOCK_SIZE)"
+    },
+    {
+      "type": "pad_zero",
+      "template": "pad_zero(zzsigv_DATA, zzsigv_BLOCK_SIZE)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "pad_zero(zzsigv_DATA, zzsigv_BLOCK_SIZE)"
+    },
+    {
+      "type": "pbkdf2",
+      "template": "bytes(pbkdf2(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_ITER, zzsigv_KEYLEN, pbkdf2_hmac_sha256))",
+      "error": null,
+      "fields": [
+        {
+          "name": "HASH",
+          "kind": "dropdown",
+          "defaultValue": "sha256",
+          "options": [
+            "sha256",
+            "sm3"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "HASH",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "sm3",
+              "template": "bytes(pbkdf2(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_ITER, zzsigv_KEYLEN, sm3_hmac))"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(pbkdf2(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_ITER, zzsigv_KEYLEN, pbkdf2_hmac_sha256))"
+    },
+    {
+      "type": "pbkdf2_f",
+      "template": "bytes(pbkdf2_f(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_ITER, zzsigv_INDEX, pbkdf2_hmac_sha256))",
+      "error": null,
+      "fields": [
+        {
+          "name": "HASH",
+          "kind": "dropdown",
+          "defaultValue": "sha256",
+          "options": [
+            "sha256",
+            "sm3"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "HASH",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "sm3",
+              "template": "bytes(pbkdf2_f(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_ITER, zzsigv_INDEX, sm3_hmac))"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(pbkdf2_f(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_ITER, zzsigv_INDEX, pbkdf2_hmac_sha256))"
+    },
+    {
+      "type": "poly_scale",
+      "template": "multivariate()[\"poly_scale\"](zzsigv_P, zzsigv_K)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "multivariate()[\"poly_scale\"](zzsigv_P, zzsigv_K)"
+    },
+    {
+      "type": "pq_bits_to_bytes",
+      "template": "bits_to_bytes(zzsigv_INPUT)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bits_to_bytes(zzsigv_INPUT)"
+    },
+    {
+      "type": "pq_byte_concat",
+      "template": "bytes_concat(zzsigv_A, zzsigv_B)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes_concat(zzsigv_A, zzsigv_B)"
+    },
+    {
+      "type": "pq_byte_decode",
+      "template": "byte_decode_d12(zzsigv_INPUT)",
+      "error": null,
+      "fields": [
+        {
+          "name": "BITS",
+          "kind": "dropdown",
+          "defaultValue": "12",
+          "options": [
+            "12",
+            "11",
+            "10",
+            "5",
+            "4",
+            "1"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "BITS",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "11",
+              "template": "byte_decode_d11(zzsigv_INPUT)"
+            },
+            {
+              "value": "10",
+              "template": "byte_decode_d10(zzsigv_INPUT)"
+            },
+            {
+              "value": "5",
+              "template": "byte_decode_d5(zzsigv_INPUT)"
+            },
+            {
+              "value": "4",
+              "template": "byte_decode_d4(zzsigv_INPUT)"
+            },
+            {
+              "value": "1",
+              "template": "byte_decode_d1(zzsigv_INPUT)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "byte_decode_d12(zzsigv_INPUT)"
+    },
+    {
+      "type": "pq_byte_encode",
+      "template": "byte_encode_d12(zzsigv_INPUT)",
+      "error": null,
+      "fields": [
+        {
+          "name": "BITS",
+          "kind": "dropdown",
+          "defaultValue": "12",
+          "options": [
+            "12",
+            "11",
+            "10",
+            "5",
+            "4",
+            "1"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "BITS",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "11",
+              "template": "byte_encode_d11(zzsigv_INPUT)"
+            },
+            {
+              "value": "10",
+              "template": "byte_encode_d10(zzsigv_INPUT)"
+            },
+            {
+              "value": "5",
+              "template": "byte_encode_d5(zzsigv_INPUT)"
+            },
+            {
+              "value": "4",
+              "template": "byte_encode_d4(zzsigv_INPUT)"
+            },
+            {
+              "value": "1",
+              "template": "byte_encode_d1(zzsigv_INPUT)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "byte_encode_d12(zzsigv_INPUT)"
+    },
+    {
+      "type": "pq_bytes_slice",
+      "template": "bytes_slice(zzsigv_INPUT, zzsigv_START, zzsigv_END)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes_slice(zzsigv_INPUT, zzsigv_START, zzsigv_END)"
+    },
+    {
+      "type": "pq_bytes_to_bits",
+      "template": "bytes_to_bits(zzsigv_INPUT)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes_to_bits(zzsigv_INPUT)"
+    },
+    {
+      "type": "pq_compress",
+      "template": "compress_d11(zzsigv_INPUT, q=3329)",
+      "error": null,
+      "fields": [
+        {
+          "name": "BITS",
+          "kind": "dropdown",
+          "defaultValue": "11",
+          "options": [
+            "11",
+            "10",
+            "5",
+            "4",
+            "12",
+            "6",
+            "3",
+            "1"
+          ]
+        },
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "defaultValue": "3329",
+          "options": [
+            "3329"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "BITS",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "10",
+              "template": "compress_d10(zzsigv_INPUT, q=3329)"
+            },
+            {
+              "value": "5",
+              "template": "compress_d5(zzsigv_INPUT, q=3329)"
+            },
+            {
+              "value": "4",
+              "template": "compress_d4(zzsigv_INPUT, q=3329)"
+            },
+            {
+              "value": "12",
+              "template": "compress_d12(zzsigv_INPUT, q=3329)"
+            },
+            {
+              "value": "6",
+              "template": "compress_d6(zzsigv_INPUT, q=3329)"
+            },
+            {
+              "value": "3",
+              "template": "compress_d3(zzsigv_INPUT, q=3329)"
+            },
+            {
+              "value": "1",
+              "template": "compress_d1(zzsigv_INPUT, q=3329)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        },
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "visible": false,
+          "constant": true,
+          "emittedDefault": null,
+          "variants": [],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [
+        "MODULUS"
+      ],
+      "unprobed": [],
+      "fieldized": "compress_d11(zzsigv_INPUT, q=3329)"
+    },
+    {
+      "type": "pq_decompose",
+      "template": "ml_dsa_primitives()[\"decompose\"](zzsigv_INPUT, 0)",
+      "error": null,
+      "fields": [
+        {
+          "name": "PART",
+          "kind": "dropdown",
+          "defaultValue": "r1",
+          "options": [
+            "r1",
+            "r0"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "PART",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "r0",
+              "template": "ml_dsa_primitives()[\"decompose\"](zzsigv_INPUT, 1)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "ml_dsa_primitives()[\"decompose\"](zzsigv_INPUT, 0)"
+    },
+    {
+      "type": "pq_decompress",
+      "template": "decompress_d11(zzsigv_INPUT, q=3329)",
+      "error": null,
+      "fields": [
+        {
+          "name": "BITS",
+          "kind": "dropdown",
+          "defaultValue": "11",
+          "options": [
+            "11",
+            "10",
+            "5",
+            "4",
+            "12",
+            "6",
+            "3",
+            "1"
+          ]
+        },
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "defaultValue": "3329",
+          "options": [
+            "3329"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "BITS",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "10",
+              "template": "decompress_d10(zzsigv_INPUT, q=3329)"
+            },
+            {
+              "value": "5",
+              "template": "decompress_d5(zzsigv_INPUT, q=3329)"
+            },
+            {
+              "value": "4",
+              "template": "decompress_d4(zzsigv_INPUT, q=3329)"
+            },
+            {
+              "value": "12",
+              "template": "decompress_d12(zzsigv_INPUT, q=3329)"
+            },
+            {
+              "value": "6",
+              "template": "decompress_d6(zzsigv_INPUT, q=3329)"
+            },
+            {
+              "value": "3",
+              "template": "decompress_d3(zzsigv_INPUT, q=3329)"
+            },
+            {
+              "value": "1",
+              "template": "decompress_d1(zzsigv_INPUT, q=3329)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        },
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "visible": false,
+          "constant": true,
+          "emittedDefault": null,
+          "variants": [],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [
+        "MODULUS"
+      ],
+      "unprobed": [],
+      "fieldized": "decompress_d11(zzsigv_INPUT, q=3329)"
+    },
+    {
+      "type": "pq_intt",
+      "template": "intt(zzsigv_INPUT, q=3329, n=256)",
+      "error": null,
+      "fields": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "defaultValue": "3329",
+          "options": [
+            "3329",
+            "8380417",
+            "12289"
+          ]
+        },
+        {
+          "name": "DEGREE",
+          "kind": "dropdown",
+          "defaultValue": "256",
+          "options": [
+            "256"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "8380417",
+              "template": "intt(zzsigv_INPUT, q=8380417, n=256)"
+            },
+            {
+              "value": "12289",
+              "template": "intt(zzsigv_INPUT, q=12289, n=256)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        },
+        {
+          "name": "DEGREE",
+          "kind": "dropdown",
+          "visible": false,
+          "constant": true,
+          "emittedDefault": null,
+          "variants": [],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [
+        "DEGREE"
+      ],
+      "unprobed": [],
+      "fieldized": "intt(zzsigv_INPUT, q=3329, n=256)"
+    },
+    {
+      "type": "pq_make_hint",
+      "template": "ml_dsa_primitives()[\"make_hint\"](zzsigv_Z, zzsigv_R)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "ml_dsa_primitives()[\"make_hint\"](zzsigv_Z, zzsigv_R)"
+    },
+    {
+      "type": "pq_mat_vec_mul",
+      "template": "mat_vec_mul(zzsigv_MATRIX, zzsigv_VEC, q=3329)",
+      "error": null,
+      "fields": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "defaultValue": "3329",
+          "options": [
+            "3329",
+            "8380417"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "8380417",
+              "template": "mat_vec_mul(zzsigv_MATRIX, zzsigv_VEC, q=8380417)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "mat_vec_mul(zzsigv_MATRIX, zzsigv_VEC, q=3329)"
+    },
+    {
+      "type": "pq_ntt",
+      "template": "ntt(zzsigv_INPUT, q=3329, n=256)",
+      "error": null,
+      "fields": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "defaultValue": "3329",
+          "options": [
+            "3329",
+            "8380417",
+            "12289"
+          ]
+        },
+        {
+          "name": "DEGREE",
+          "kind": "dropdown",
+          "defaultValue": "256",
+          "options": [
+            "256"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "8380417",
+              "template": "ntt(zzsigv_INPUT, q=8380417, n=256)"
+            },
+            {
+              "value": "12289",
+              "template": "ntt(zzsigv_INPUT, q=12289, n=256)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        },
+        {
+          "name": "DEGREE",
+          "kind": "dropdown",
+          "visible": false,
+          "constant": true,
+          "emittedDefault": null,
+          "variants": [],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [
+        "DEGREE"
+      ],
+      "unprobed": [],
+      "fieldized": "ntt(zzsigv_INPUT, q=3329, n=256)"
+    },
+    {
+      "type": "pq_ntt_butterfly",
+      "template": "ntt_butterfly(zzsigv_A, zzsigv_B, zzsigv_ZETA, 3329, \"ct\")",
+      "error": null,
+      "fields": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "defaultValue": "3329",
+          "options": [
+            "3329",
+            "8380417",
+            "12289"
+          ]
+        },
+        {
+          "name": "TYPE",
+          "kind": "dropdown",
+          "defaultValue": "ct",
+          "options": [
+            "ct",
+            "gs"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "8380417",
+              "template": "ntt_butterfly(zzsigv_A, zzsigv_B, zzsigv_ZETA, 8380417, \"ct\")"
+            },
+            {
+              "value": "12289",
+              "template": "ntt_butterfly(zzsigv_A, zzsigv_B, zzsigv_ZETA, 12289, \"ct\")"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        },
+        {
+          "name": "TYPE",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "gs",
+              "template": "ntt_butterfly(zzsigv_A, zzsigv_B, zzsigv_ZETA, 3329, \"gs\")"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "ntt_butterfly(zzsigv_A, zzsigv_B, zzsigv_ZETA, 3329, \"ct\")"
+    },
+    {
+      "type": "pq_ntt_mul",
+      "template": "ntt_mul(zzsigv_A, zzsigv_B, q=3329)",
+      "error": null,
+      "fields": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "defaultValue": "3329",
+          "options": [
+            "3329",
+            "8380417"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "8380417",
+              "template": "ntt_mul(zzsigv_A, zzsigv_B, q=8380417)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "ntt_mul(zzsigv_A, zzsigv_B, q=3329)"
+    },
+    {
+      "type": "pq_poly_add",
+      "template": "poly_add_mod(zzsigv_A, zzsigv_B, q=3329)",
+      "error": null,
+      "fields": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "defaultValue": "3329",
+          "options": [
+            "3329",
+            "8380417"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "8380417",
+              "template": "poly_add_mod(zzsigv_A, zzsigv_B, q=8380417)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "poly_add_mod(zzsigv_A, zzsigv_B, q=3329)"
+    },
+    {
+      "type": "pq_poly_mul",
+      "template": "pq_poly_mul(zzsigv_A, zzsigv_B, 0)",
+      "error": null,
+      "fields": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "defaultValue": "none",
+          "options": [
+            "none",
+            "3329",
+            "8380417",
+            "12289"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "3329",
+              "template": "pq_poly_mul(zzsigv_A, zzsigv_B, 3329)"
+            },
+            {
+              "value": "8380417",
+              "template": "pq_poly_mul(zzsigv_A, zzsigv_B, 8380417)"
+            },
+            {
+              "value": "12289",
+              "template": "pq_poly_mul(zzsigv_A, zzsigv_B, 12289)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "pq_poly_mul(zzsigv_A, zzsigv_B, 0)"
+    },
+    {
+      "type": "pq_poly_sub",
+      "template": "poly_sub_mod(zzsigv_A, zzsigv_B, q=3329)",
+      "error": null,
+      "fields": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "defaultValue": "3329",
+          "options": [
+            "3329",
+            "8380417"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "8380417",
+              "template": "poly_sub_mod(zzsigv_A, zzsigv_B, q=8380417)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "poly_sub_mod(zzsigv_A, zzsigv_B, q=3329)"
+    },
+    {
+      "type": "pq_power2round",
+      "template": "ml_dsa_primitives()[\"power2round\"](zzsigv_INPUT, 0)",
+      "error": null,
+      "fields": [
+        {
+          "name": "PART",
+          "kind": "dropdown",
+          "defaultValue": "r1",
+          "options": [
+            "r1",
+            "r0"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "PART",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "r0",
+              "template": "ml_dsa_primitives()[\"power2round\"](zzsigv_INPUT, 1)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "ml_dsa_primitives()[\"power2round\"](zzsigv_INPUT, 0)"
+    },
+    {
+      "type": "pq_prf",
+      "template": "prf_shake256(zzsigv_SEED, zzsigv_NONCE, out_len=zzsigv_OUTLEN)",
+      "error": null,
+      "fields": [
+        {
+          "name": "ALGO",
+          "kind": "dropdown",
+          "defaultValue": "SHAKE256",
+          "options": [
+            "SHAKE256",
+            "SHAKE128"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "ALGO",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "SHAKE128",
+              "template": "prf_shake128(zzsigv_SEED, zzsigv_NONCE, out_len=zzsigv_OUTLEN)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "prf_shake256(zzsigv_SEED, zzsigv_NONCE, out_len=zzsigv_OUTLEN)"
+    },
+    {
+      "type": "pq_rej_sample",
+      "template": "((zzsigv_X) if (zzsigv_X) < (zzsigv_BOUND) else -1)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "((zzsigv_X) if (zzsigv_X) < (zzsigv_BOUND) else -1)"
+    },
+    {
+      "type": "pq_sample_in_ball",
+      "template": "ml_dsa_primitives()[\"sample_in_ball\"](zzsigv_SEED)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "ml_dsa_primitives()[\"sample_in_ball\"](zzsigv_SEED)"
+    },
+    {
+      "type": "pq_sample_ntt",
+      "template": "sample_ntt(zzsigv_SEED, q=3329)",
+      "error": null,
+      "fields": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "defaultValue": "3329",
+          "options": [
+            "3329",
+            "8380417"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "8380417",
+              "template": "sample_ntt(zzsigv_SEED, q=8380417)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sample_ntt(zzsigv_SEED, q=3329)"
+    },
+    {
+      "type": "pq_sample_poly_cbd",
+      "template": "sample_poly_cbd_eta3(zzsigv_SEED, q=3329)",
+      "error": null,
+      "fields": [
+        {
+          "name": "ETA",
+          "kind": "dropdown",
+          "defaultValue": "3",
+          "options": [
+            "3",
+            "2"
+          ]
+        },
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "defaultValue": "3329",
+          "options": [
+            "3329",
+            "8380417"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "ETA",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "2",
+              "template": "sample_poly_cbd_eta2(zzsigv_SEED, q=3329)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        },
+        {
+          "name": "MODULUS",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "8380417",
+              "template": "sample_poly_cbd_eta3(zzsigv_SEED, q=8380417)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sample_poly_cbd_eta3(zzsigv_SEED, q=3329)"
+    },
+    {
+      "type": "pq_seed_with_nonce",
+      "template": "seed_with_nonce(zzsigv_SEED, zzsigv_NONCE)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "seed_with_nonce(zzsigv_SEED, zzsigv_NONCE)"
+    },
+    {
+      "type": "pq_use_hint",
+      "template": "ml_dsa_primitives()[\"use_hint\"](zzsigv_H, zzsigv_R)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "ml_dsa_primitives()[\"use_hint\"](zzsigv_H, zzsigv_R)"
+    },
+    {
+      "type": "pq_xof",
+      "template": "xof_shake128(zzsigv_SEED, out_len=zzsigv_OUTLEN)",
+      "error": null,
+      "fields": [
+        {
+          "name": "ALGO",
+          "kind": "dropdown",
+          "defaultValue": "SHAKE128",
+          "options": [
+            "SHAKE128",
+            "SHAKE256"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "ALGO",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "SHAKE256",
+              "template": "xof_shake256(zzsigv_SEED, out_len=zzsigv_OUTLEN)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "xof_shake128(zzsigv_SEED, out_len=zzsigv_OUTLEN)"
+    },
+    {
+      "type": "primitive_def",
+      "template": "\ndef primitive(n_bytes: int = zzsigv_NBYTES, seed: bytes = zzsigv_SEED) -> bytes:\n    \"\"\"随机性测评入口：返回至少 n_bytes 字节。\"\"\"\n    seed = bytes(seed or b\"\")\n    data = seed\n  zzsigs_BODY    return zzsigv_RETURN\n",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "\ndef primitive(n_bytes: int = zzsigv_NBYTES, seed: bytes = zzsigv_SEED) -> bytes:\n    \"\"\"随机性测评入口：返回至少 n_bytes 字节。\"\"\"\n    seed = bytes(seed or b\"\")\n    data = seed\n  zzsigs_BODY    return zzsigv_RETURN\n"
+    },
+    {
+      "type": "rsa_decrypt",
+      "template": "bytes(rsa_decrypt(zzsigv_KEY, zzsigv_CT))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(rsa_decrypt(zzsigv_KEY, zzsigv_CT))"
+    },
+    {
+      "type": "rsa_emsa_pkcs1_v15_encode",
+      "template": "bytes(rsa_emsa_pkcs1_v15(zzsigv_MSG, zzsigv_EMLEN))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(rsa_emsa_pkcs1_v15(zzsigv_MSG, zzsigv_EMLEN))"
+    },
+    {
+      "type": "rsa_encrypt",
+      "template": "bytes(rsa_encrypt(zzsigv_KEY, zzsigv_MSG))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(rsa_encrypt(zzsigv_KEY, zzsigv_MSG))"
+    },
+    {
+      "type": "rsa_keygen",
+      "template": "bytes(rsa_keygen(512))",
+      "error": null,
+      "fields": [
+        {
+          "name": "BITS",
+          "kind": "dropdown",
+          "defaultValue": "512",
+          "options": [
+            "512",
+            "1024",
+            "2048"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "BITS",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "1024",
+              "template": "bytes(rsa_keygen(1024))"
+            },
+            {
+              "value": "2048",
+              "template": "bytes(rsa_keygen(2048))"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(rsa_keygen(512))"
+    },
+    {
+      "type": "rsa_mgf1",
+      "template": "bytes(rsa_mgf1(zzsigv_SEED, zzsigv_LEN))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(rsa_mgf1(zzsigv_SEED, zzsigv_LEN))"
+    },
+    {
+      "type": "rsa_sign",
+      "template": "bytes(rsa_sign(zzsigv_KEY, zzsigv_MSG))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(rsa_sign(zzsigv_KEY, zzsigv_MSG))"
+    },
+    {
+      "type": "rsa_verify",
+      "template": "rsa_verify(zzsigv_KEY, zzsigv_MSG, zzsigv_SIG)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "rsa_verify(zzsigv_KEY, zzsigv_MSG, zzsigv_SIG)"
+    },
+    {
+      "type": "sbox",
+      "template": "[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]",
+      "error": null,
+      "fields": [
+        {
+          "name": "ROW",
+          "kind": "number",
+          "defaultValue": "4",
+          "options": null
+        },
+        {
+          "name": "COL",
+          "kind": "number",
+          "defaultValue": "4",
+          "options": null
+        },
+        {
+          "name": "OUTPUT_FORMAT",
+          "kind": "dropdown",
+          "defaultValue": "1d",
+          "options": [
+            "1d",
+            "2d"
+          ]
+        },
+        {
+          "name": "PRESET",
+          "kind": "dropdown",
+          "defaultValue": "",
+          "options": [
+            "",
+            "aes",
+            "sm4",
+            "zuc_s0",
+            "zuc_s1"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "OUTPUT_FORMAT",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "2d",
+              "template": "[[0x00, 0x00, 0x00, 0x00], [0x00, 0x00, 0x00, 0x00], [0x00, 0x00, 0x00, 0x00], [0x00, 0x00, 0x00, 0x00]]"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        },
+        {
+          "name": "PRESET",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "aes",
+              "template": "[0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76, 0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0, 0xb7, 0xfd, 0x93, 0x26, 0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15, 0x04, 0xc7, 0x23, 0xc3, 0x18, 0x96, 0x05, 0x9a, 0x07, 0x12, 0x80, 0xe2, 0xeb, 0x27, 0xb2, 0x75, 0x09, 0x83, 0x2c, 0x1a, 0x1b, 0x6e, 0x5a, 0xa0, 0x52, 0x3b, 0xd6, 0xb3, 0x29, 0xe3, 0x2f, 0x84, 0x53, 0xd1, 0x00, 0xed, 0x20, 0xfc, 0xb1, 0x5b, 0x6a, 0xcb, 0xbe, 0x39, 0x4a, 0x4c, 0x58, 0xcf, 0xd0, 0xef, 0xaa, 0xfb, 0x43, 0x4d, 0x33, 0x85, 0x45, 0xf9, 0x02, 0x7f, 0x50, 0x3c, 0x9f, 0xa8, 0x51, 0xa3, 0x40, 0x8f, 0x92, 0x9d, 0x38, 0xf5, 0xbc, 0xb6, 0xda, 0x21, 0x10, 0xff, 0xf3, 0xd2, 0xcd, 0x0c, 0x13, 0xec, 0x5f, 0x97, 0x44, 0x17, 0xc4, 0xa7, 0x7e, 0x3d, 0x64, 0x5d, 0x19, 0x73, 0x60, 0x81, 0x4f, 0xdc, 0x22, 0x2a, 0x90, 0x88, 0x46, 0xee, 0xb8, 0x14, 0xde, 0x5e, 0x0b, 0xdb, 0xe0, 0x32, 0x3a, 0x0a, 0x49, 0x06, 0x24, 0x5c, 0xc2, 0xd3, 0xac, 0x62, 0x91, 0x95, 0xe4, 0x79, 0xe7, 0xc8, 0x37, 0x6d, 0x8d, 0xd5, 0x4e, 0xa9, 0x6c, 0x56, 0xf4, 0xea, 0x65, 0x7a, 0xae, 0x08, 0xba, 0x78, 0x25, 0x2e, 0x1c, 0xa6, 0xb4, 0xc6, 0xe8, 0xdd, 0x74, 0x1f, 0x4b, 0xbd, 0x8b, 0x8a, 0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e, 0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf, 0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16]"
+            },
+            {
+              "value": "sm4",
+              "template": "[0xd6, 0x90, 0xe9, 0xfe, 0xcc, 0xe1, 0x3d, 0xb7, 0x16, 0xb6, 0x14, 0xc2, 0x28, 0xfb, 0x2c, 0x05, 0x2b, 0x67, 0x9a, 0x76, 0x2a, 0xbe, 0x04, 0xc3, 0xaa, 0x44, 0x13, 0x26, 0x49, 0x86, 0x06, 0x99, 0x9c, 0x42, 0x50, 0xf4, 0x91, 0xef, 0x98, 0x7a, 0x33, 0x54, 0x0b, 0x43, 0xed, 0xcf, 0xac, 0x62, 0xe4, 0xb3, 0x1c, 0xa9, 0xc9, 0x08, 0xe8, 0x95, 0x80, 0xdf, 0x94, 0xfa, 0x75, 0x8f, 0x3f, 0xa6, 0x47, 0x07, 0xa7, 0xfc, 0xf3, 0x73, 0x17, 0xba, 0x83, 0x59, 0x3c, 0x19, 0xe6, 0x85, 0x4f, 0xa8, 0x68, 0x6b, 0x81, 0xb2, 0x71, 0x64, 0xda, 0x8b, 0xf8, 0xeb, 0x0f, 0x4b, 0x70, 0x56, 0x9d, 0x35, 0x1e, 0x24, 0x0e, 0x5e, 0x63, 0x58, 0xd1, 0xa2, 0x25, 0x22, 0x7c, 0x3b, 0x01, 0x21, 0x78, 0x87, 0xd4, 0x00, 0x46, 0x57, 0x9f, 0xd3, 0x27, 0x52, 0x4c, 0x36, 0x02, 0xe7, 0xa0, 0xc4, 0xc8, 0x9e, 0xea, 0xbf, 0x8a, 0xd2, 0x40, 0xc7, 0x38, 0xb5, 0xa3, 0xf7, 0xf2, 0xce, 0xf9, 0x61, 0x15, 0xa1, 0xe0, 0xae, 0x5d, 0xa4, 0x9b, 0x34, 0x1a, 0x55, 0xad, 0x93, 0x32, 0x30, 0xf5, 0x8c, 0xb1, 0xe3, 0x1d, 0xf6, 0xe2, 0x2e, 0x82, 0x66, 0xca, 0x60, 0xc0, 0x29, 0x23, 0xab, 0x0d, 0x53, 0x4e, 0x6f, 0xd5, 0xdb, 0x37, 0x45, 0xde, 0xfd, 0x8e, 0x2f, 0x03, 0xff, 0x6a, 0x72, 0x6d, 0x6c, 0x5b, 0x51, 0x8d, 0x1b, 0xaf, 0x92, 0xbb, 0xdd, 0xbc, 0x7f, 0x11, 0xd9, 0x5c, 0x41, 0x1f, 0x10, 0x5a, 0xd8, 0x0a, 0xc1, 0x31, 0x88, 0xa5, 0xcd, 0x7b, 0xbd, 0x2d, 0x74, 0xd0, 0x12, 0xb8, 0xe5, 0xb4, 0xb0, 0x89, 0x69, 0x97, 0x4a, 0x0c, 0x96, 0x77, 0x7e, 0x65, 0xb9, 0xf1, 0x09, 0xc5, 0x6e, 0xc6, 0x84, 0x18, 0xf0, 0x7d, 0xec, 0x3a, 0xdc, 0x4d, 0x20, 0x79, 0xee, 0x5f, 0x3e, 0xd7, 0xcb, 0x39, 0x48]"
+            },
+            {
+              "value": "zuc_s0",
+              "template": "[0x3e, 0x72, 0x5b, 0x47, 0xca, 0xe0, 0x00, 0x33, 0x04, 0xd1, 0x54, 0x98, 0x09, 0xb9, 0x6d, 0xcb, 0x7b, 0x1b, 0xf9, 0x32, 0xaf, 0x9d, 0x6a, 0xa5, 0xb8, 0x2d, 0xfc, 0x1d, 0x08, 0x53, 0x03, 0x90, 0x4d, 0x4e, 0x84, 0x99, 0xe4, 0xce, 0xd9, 0x91, 0xdd, 0xb6, 0x85, 0x48, 0x8b, 0x29, 0x6e, 0xac, 0xcd, 0xc1, 0xf8, 0x1e, 0x73, 0x43, 0x69, 0xc6, 0xb5, 0xbd, 0xfd, 0x39, 0x63, 0x20, 0xd4, 0x38, 0x76, 0x7d, 0xb2, 0xa7, 0xcf, 0xed, 0x57, 0xc5, 0xf3, 0x2c, 0xbb, 0x14, 0x21, 0x06, 0x55, 0x9b, 0xe3, 0xef, 0x5e, 0x31, 0x4f, 0x7f, 0x5a, 0xa4, 0x0d, 0x82, 0x51, 0x49, 0x5f, 0xba, 0x58, 0x1c, 0x4a, 0x16, 0xd5, 0x17, 0xa8, 0x92, 0x24, 0x1f, 0x8c, 0xff, 0xd8, 0xae, 0x2e, 0x01, 0xd3, 0xad, 0x3b, 0x4b, 0xda, 0x46, 0xeb, 0xc9, 0xde, 0x9a, 0x8f, 0x87, 0xd7, 0x3a, 0x80, 0x6f, 0x2f, 0xc8, 0xb1, 0xb4, 0x37, 0xf7, 0x0a, 0x22, 0x13, 0x28, 0x7c, 0xcc, 0x3c, 0x89, 0xc7, 0xc3, 0x96, 0x56, 0x07, 0xbf, 0x7e, 0xf0, 0x0b, 0x2b, 0x97, 0x52, 0x35, 0x41, 0x79, 0x61, 0xa6, 0x4c, 0x10, 0xfe, 0xbc, 0x26, 0x95, 0x88, 0x8a, 0xb0, 0xa3, 0xfb, 0xc0, 0x18, 0x94, 0xf2, 0xe1, 0xe5, 0xe9, 0x5d, 0xd0, 0xdc, 0x11, 0x66, 0x64, 0x5c, 0xec, 0x59, 0x42, 0x75, 0x12, 0xf5, 0x74, 0x9c, 0xaa, 0x23, 0x0e, 0x86, 0xab, 0xbe, 0x2a, 0x02, 0xe7, 0x67, 0xe6, 0x44, 0xa2, 0x6c, 0xc2, 0x93, 0x9f, 0xf1, 0xf6, 0xfa, 0x36, 0xd2, 0x50, 0x68, 0x9e, 0x62, 0x71, 0x15, 0x3d, 0xd6, 0x40, 0xc4, 0xe2, 0x0f, 0x8e, 0x83, 0x77, 0x6b, 0x25, 0x05, 0x3f, 0x0c, 0x30, 0xea, 0x70, 0xb7, 0xa1, 0xe8, 0xa9, 0x65, 0x8d, 0x27, 0x1a, 0xdb, 0x81, 0xb3, 0xa0, 0xf4, 0x45, 0x7a, 0x19, 0xdf, 0xee, 0x78, 0x34, 0x60]"
+            },
+            {
+              "value": "zuc_s1",
+              "template": "[0x55, 0xc2, 0x63, 0x71, 0x3b, 0xc8, 0x47, 0x86, 0x9f, 0x3c, 0xda, 0x5b, 0x29, 0xaa, 0xfd, 0x77, 0x8c, 0xc5, 0x94, 0x0c, 0xa6, 0x1a, 0x13, 0x00, 0xe3, 0xa8, 0x16, 0x72, 0x40, 0xf9, 0xf8, 0x42, 0x44, 0x26, 0x68, 0x96, 0x81, 0xd9, 0x45, 0x3e, 0x10, 0x76, 0xc6, 0xa7, 0x8b, 0x39, 0x43, 0xe1, 0x3a, 0xb5, 0x56, 0x2a, 0xc0, 0x6d, 0xb3, 0x05, 0x22, 0x66, 0xbf, 0xdc, 0x0b, 0xfa, 0x62, 0x48, 0xdd, 0x20, 0x11, 0x06, 0x36, 0xc9, 0xc1, 0xcf, 0xf6, 0x27, 0x52, 0xbb, 0x69, 0xf5, 0xd4, 0x87, 0x7f, 0x84, 0x4c, 0xd2, 0x9c, 0x57, 0xa4, 0xbc, 0x4f, 0x9a, 0xdf, 0xfe, 0xd6, 0x8d, 0x7a, 0xeb, 0x2b, 0x53, 0xd8, 0x5c, 0xa1, 0x14, 0x17, 0xfb, 0x23, 0xd5, 0x7d, 0x30, 0x67, 0x73, 0x08, 0x09, 0xee, 0xb7, 0x70, 0x3f, 0x61, 0xb2, 0x19, 0x8e, 0x4e, 0xe5, 0x4b, 0x93, 0x8f, 0x5d, 0xdb, 0xa9, 0xad, 0xf1, 0xae, 0x2e, 0xcb, 0x0d, 0xfc, 0xf4, 0x2d, 0x46, 0x6e, 0x1d, 0x97, 0xe8, 0xd1, 0xe9, 0x4d, 0x37, 0xa5, 0x75, 0x5e, 0x83, 0x9e, 0xab, 0x82, 0x9d, 0xb9, 0x1c, 0xe0, 0xcd, 0x49, 0x89, 0x01, 0xb6, 0xbd, 0x58, 0x24, 0xa2, 0x5f, 0x38, 0x78, 0x99, 0x15, 0x90, 0x50, 0xb8, 0x95, 0xe4, 0xd0, 0x91, 0xc7, 0xce, 0xed, 0x0f, 0xb4, 0x6f, 0xa0, 0xcc, 0xf0, 0x02, 0x4a, 0x79, 0xc3, 0xde, 0xa3, 0xef, 0xea, 0x51, 0xe6, 0x6b, 0x18, 0xec, 0x1b, 0x2c, 0x80, 0xf7, 0x74, 0xe7, 0xff, 0x21, 0x5a, 0x6a, 0x54, 0x1e, 0x41, 0x31, 0x92, 0x35, 0xc4, 0x33, 0x07, 0x0a, 0xba, 0x7e, 0x0e, 0x34, 0x88, 0xb1, 0x98, 0x7c, 0xf3, 0x3d, 0x60, 0x6c, 0x7b, 0xca, 0xd3, 0x1f, 0x32, 0x65, 0x04, 0x28, 0x64, 0xbe, 0x85, 0x9b, 0x2f, 0x59, 0x8a, 0xd7, 0xb0, 0x25, 0xac, 0xaf, 0x12, 0x03, 0xe2, 0xf2]"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [
+        "ROW",
+        "COL"
+      ],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]"
+    },
+    {
+      "type": "sbox_sub",
+      "template": "\n# Apply S-box substitution byte-wise using the user-defined 'sbox'\ntry:\n    _sbox_ref = zzsigv_SBOX_VAR\nexcept NameError:\n    raise NameError(\"Variable 'zzsigv_SBOX_VAR' is not defined. Please define it first using an S-box definition block.\")\nif isinstance(_sbox_ref, list) and len(_sbox_ref) > 0 and isinstance(_sbox_ref[0], list):\n    _sbox_ref = [item for row in _sbox_ref for item in row]\nif not isinstance(_sbox_ref, list) or len(_sbox_ref) < 256:\n    raise ValueError(\"S-box must contain at least 256 entries\")\nfor _sbox_index in range(256):\n    _sbox_entry = _sbox_ref[_sbox_index]\n    if isinstance(_sbox_entry, bool) or not isinstance(_sbox_entry, (int, float)) or not 0 <= _sbox_entry <= 255 or int(_sbox_entry) != _sbox_entry:\n        raise ValueError(\"S-box entries must be bytes\")\n_sbox_ref = [int(value) for value in _sbox_ref[:256]]\n\n_input_val = zzsigv_INPUT_VAR\nif _input_val is None:\n    _input_val = 0\nif isinstance(_input_val, bool) or not isinstance(_input_val, (int, float)) or not 0 <= _input_val <= 0xFFFFFFFF or int(_input_val) != _input_val:\n    raise ValueError(\"S-box input must be an unsigned 32-bit word\")\n_input_val = int(_input_val)\n_b0 = (_input_val >> 24) & 0xFF\n_b1 = (_input_val >> 16) & 0xFF\n_b2 = (_input_val >> 8) & 0xFF\n_b3 = _input_val & 0xFF\n\n_s_b0 = _sbox_ref[_b0]\n_s_b1 = _sbox_ref[_b1]\n_s_b2 = _sbox_ref[_b2]\n_s_b3 = _sbox_ref[_b3]\n\nzzsigv_OUTPUT_VAR = ((_s_b0 << 24) | (_s_b1 << 16) | (_s_b2 << 8) | _s_b3) & 0xFFFFFFFF\n",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "\n# Apply S-box substitution byte-wise using the user-defined 'sbox'\ntry:\n    _sbox_ref = zzsigv_SBOX_VAR\nexcept NameError:\n    raise NameError(\"Variable 'zzsigv_SBOX_VAR' is not defined. Please define it first using an S-box definition block.\")\nif isinstance(_sbox_ref, list) and len(_sbox_ref) > 0 and isinstance(_sbox_ref[0], list):\n    _sbox_ref = [item for row in _sbox_ref for item in row]\nif not isinstance(_sbox_ref, list) or len(_sbox_ref) < 256:\n    raise ValueError(\"S-box must contain at least 256 entries\")\nfor _sbox_index in range(256):\n    _sbox_entry = _sbox_ref[_sbox_index]\n    if isinstance(_sbox_entry, bool) or not isinstance(_sbox_entry, (int, float)) or not 0 <= _sbox_entry <= 255 or int(_sbox_entry) != _sbox_entry:\n        raise ValueError(\"S-box entries must be bytes\")\n_sbox_ref = [int(value) for value in _sbox_ref[:256]]\n\n_input_val = zzsigv_INPUT_VAR\nif _input_val is None:\n    _input_val = 0\nif isinstance(_input_val, bool) or not isinstance(_input_val, (int, float)) or not 0 <= _input_val <= 0xFFFFFFFF or int(_input_val) != _input_val:\n    raise ValueError(\"S-box input must be an unsigned 32-bit word\")\n_input_val = int(_input_val)\n_b0 = (_input_val >> 24) & 0xFF\n_b1 = (_input_val >> 16) & 0xFF\n_b2 = (_input_val >> 8) & 0xFF\n_b3 = _input_val & 0xFF\n\n_s_b0 = _sbox_ref[_b0]\n_s_b1 = _sbox_ref[_b1]\n_s_b2 = _sbox_ref[_b2]\n_s_b3 = _sbox_ref[_b3]\n\nzzsigv_OUTPUT_VAR = ((_s_b0 << 24) | (_s_b1 << 16) | (_s_b2 << 8) | _s_b3) & 0xFFFFFFFF\n"
+    },
+    {
+      "type": "sbox_variables_get",
+      "template": null,
+      "error": "Cannot read properties of null (reading 'toLowerCase')",
+      "fields": [
+        {
+          "name": "VAR",
+          "kind": "variable",
+          "defaultValue": "",
+          "options": null
+        }
+      ],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": null
+    },
+    {
+      "type": "sbox_variables_set",
+      "template": null,
+      "error": "Cannot read properties of null (reading 'toLowerCase')",
+      "fields": [
+        {
+          "name": "VAR",
+          "kind": "variable",
+          "defaultValue": "",
+          "options": null
+        }
+      ],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": null
+    },
+    {
+      "type": "seed_bytes",
+      "template": "data",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "data"
+    },
+    {
+      "type": "seed_hex",
+      "template": "data.hex()",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "data.hex()"
+    },
+    {
+      "type": "sha3_hash",
+      "template": "sha3_hash(zzsigv_MSG, 224, 144)",
+      "error": null,
+      "fields": [
+        {
+          "name": "SIZE",
+          "kind": "dropdown",
+          "defaultValue": "224",
+          "options": [
+            "224",
+            "256",
+            "384",
+            "512"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "SIZE",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "256",
+              "template": "sha3_hash(zzsigv_MSG, 256, 136)"
+            },
+            {
+              "value": "384",
+              "template": "sha3_hash(zzsigv_MSG, 384, 104)"
+            },
+            {
+              "value": "512",
+              "template": "sha3_hash(zzsigv_MSG, 512, 72)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sha3_hash(zzsigv_MSG, 224, 144)"
+    },
+    {
+      "type": "slh_addr",
+      "template": "hash_based()[\"slh_addr\"](zzsigv_LAYER, zzsigv_TREE, zzsigv_LEAF, 0)",
+      "error": null,
+      "fields": [
+        {
+          "name": "TYPE",
+          "kind": "dropdown",
+          "defaultValue": "0",
+          "options": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "TYPE",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "1",
+              "template": "hash_based()[\"slh_addr\"](zzsigv_LAYER, zzsigv_TREE, zzsigv_LEAF, 1)"
+            },
+            {
+              "value": "2",
+              "template": "hash_based()[\"slh_addr\"](zzsigv_LAYER, zzsigv_TREE, zzsigv_LEAF, 2)"
+            },
+            {
+              "value": "3",
+              "template": "hash_based()[\"slh_addr\"](zzsigv_LAYER, zzsigv_TREE, zzsigv_LEAF, 3)"
+            },
+            {
+              "value": "4",
+              "template": "hash_based()[\"slh_addr\"](zzsigv_LAYER, zzsigv_TREE, zzsigv_LEAF, 4)"
+            },
+            {
+              "value": "5",
+              "template": "hash_based()[\"slh_addr\"](zzsigv_LAYER, zzsigv_TREE, zzsigv_LEAF, 5)"
+            },
+            {
+              "value": "6",
+              "template": "hash_based()[\"slh_addr\"](zzsigv_LAYER, zzsigv_TREE, zzsigv_LEAF, 6)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "hash_based()[\"slh_addr\"](zzsigv_LAYER, zzsigv_TREE, zzsigv_LEAF, 0)"
+    },
+    {
+      "type": "slh_adrs_full",
+      "template": "slh_adrs_full(zzsigv_LAYER, zzsigv_TREE, 0, zzsigv_KEYPAIR, zzsigv_HEIGHT, zzsigv_INDEX)",
+      "error": null,
+      "fields": [
+        {
+          "name": "TYPE",
+          "kind": "dropdown",
+          "defaultValue": "0",
+          "options": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "TYPE",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "1",
+              "template": "slh_adrs_full(zzsigv_LAYER, zzsigv_TREE, 1, zzsigv_KEYPAIR, zzsigv_HEIGHT, zzsigv_INDEX)"
+            },
+            {
+              "value": "2",
+              "template": "slh_adrs_full(zzsigv_LAYER, zzsigv_TREE, 2, zzsigv_KEYPAIR, zzsigv_HEIGHT, zzsigv_INDEX)"
+            },
+            {
+              "value": "3",
+              "template": "slh_adrs_full(zzsigv_LAYER, zzsigv_TREE, 3, zzsigv_KEYPAIR, zzsigv_HEIGHT, zzsigv_INDEX)"
+            },
+            {
+              "value": "4",
+              "template": "slh_adrs_full(zzsigv_LAYER, zzsigv_TREE, 4, zzsigv_KEYPAIR, zzsigv_HEIGHT, zzsigv_INDEX)"
+            },
+            {
+              "value": "5",
+              "template": "slh_adrs_full(zzsigv_LAYER, zzsigv_TREE, 5, zzsigv_KEYPAIR, zzsigv_HEIGHT, zzsigv_INDEX)"
+            },
+            {
+              "value": "6",
+              "template": "slh_adrs_full(zzsigv_LAYER, zzsigv_TREE, 6, zzsigv_KEYPAIR, zzsigv_HEIGHT, zzsigv_INDEX)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "slh_adrs_full(zzsigv_LAYER, zzsigv_TREE, 0, zzsigv_KEYPAIR, zzsigv_HEIGHT, zzsigv_INDEX)"
+    },
+    {
+      "type": "slh_msg_randomness",
+      "template": "bytes(slh_msg_randomness(zzsigv_SK_PRF, zzsigv_OPT_RAND, zzsigv_MESSAGE, zzsigv_CONTEXT))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(slh_msg_randomness(zzsigv_SK_PRF, zzsigv_OPT_RAND, zzsigv_MESSAGE, zzsigv_CONTEXT))"
+    },
+    {
+      "type": "slh_sign",
+      "template": "bytes(slh_sign(zzsigv_SK, zzsigv_MESSAGE, zzsigv_CONTEXT, \"SLH-DSA-SHAKE-128f\"))",
+      "error": null,
+      "fields": [
+        {
+          "name": "PARAM_SET",
+          "kind": "dropdown",
+          "defaultValue": "SLH-DSA-SHAKE-128f",
+          "options": [
+            "SLH-DSA-SHAKE-128f",
+            "SLH-DSA-SHAKE-128s",
+            "SLH-DSA-SHAKE-192f",
+            "SLH-DSA-SHAKE-192s",
+            "SLH-DSA-SHAKE-256f",
+            "SLH-DSA-SHAKE-256s"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "PARAM_SET",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "SLH-DSA-SHAKE-128s",
+              "template": "bytes(slh_sign(zzsigv_SK, zzsigv_MESSAGE, zzsigv_CONTEXT, \"SLH-DSA-SHAKE-128s\"))"
+            },
+            {
+              "value": "SLH-DSA-SHAKE-192f",
+              "template": "bytes(slh_sign(zzsigv_SK, zzsigv_MESSAGE, zzsigv_CONTEXT, \"SLH-DSA-SHAKE-192f\"))"
+            },
+            {
+              "value": "SLH-DSA-SHAKE-192s",
+              "template": "bytes(slh_sign(zzsigv_SK, zzsigv_MESSAGE, zzsigv_CONTEXT, \"SLH-DSA-SHAKE-192s\"))"
+            },
+            {
+              "value": "SLH-DSA-SHAKE-256f",
+              "template": "bytes(slh_sign(zzsigv_SK, zzsigv_MESSAGE, zzsigv_CONTEXT, \"SLH-DSA-SHAKE-256f\"))"
+            },
+            {
+              "value": "SLH-DSA-SHAKE-256s",
+              "template": "bytes(slh_sign(zzsigv_SK, zzsigv_MESSAGE, zzsigv_CONTEXT, \"SLH-DSA-SHAKE-256s\"))"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(slh_sign(zzsigv_SK, zzsigv_MESSAGE, zzsigv_CONTEXT, \"SLH-DSA-SHAKE-128f\"))"
+    },
+    {
+      "type": "slh_xmss_root",
+      "template": "bytes(slh_xmss_root(zzsigv_SK_SEED, zzsigv_PK_SEED, zzsigv_H_PRIME, zzsigv_LAYER, zzsigv_TREE))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(slh_xmss_root(zzsigv_SK_SEED, zzsigv_PK_SEED, zzsigv_H_PRIME, zzsigv_LAYER, zzsigv_TREE))"
+    },
+    {
+      "type": "sm2_decrypt",
+      "template": "bytes(sm2_decrypt(zzsigv_CT, zzsigv_DA))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(sm2_decrypt(zzsigv_CT, zzsigv_DA))"
+    },
+    {
+      "type": "sm2_encrypt",
+      "template": "sm2_encrypt(zzsigv_MSG, zzsigv_PX, zzsigv_PY, zzsigv_K)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sm2_encrypt(zzsigv_MSG, zzsigv_PX, zzsigv_PY, zzsigv_K)"
+    },
+    {
+      "type": "sm2_kdf",
+      "template": "bytes(sm2_kdf_derive(zzsigv_Z, zzsigv_KLEN))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(sm2_kdf_derive(zzsigv_Z, zzsigv_KLEN))"
+    },
+    {
+      "type": "sm2_key_exchange",
+      "template": "sm2_key_exchange(zzsigv_DB, zzsigv_RBVAL, zzsigv_PAX, zzsigv_PAY, zzsigv_RA, zzsigv_RBP, zzsigv_ZA, zzsigv_ZB, zzsigv_WLEN)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sm2_key_exchange(zzsigv_DB, zzsigv_RBVAL, zzsigv_PAX, zzsigv_PAY, zzsigv_RA, zzsigv_RBP, zzsigv_ZA, zzsigv_ZB, zzsigv_WLEN)"
+    },
+    {
+      "type": "sm2_sign",
+      "template": "bytes(sm2_sign(zzsigv_DA, zzsigv_IDA, zzsigv_MSG, zzsigv_K))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(sm2_sign(zzsigv_DA, zzsigv_IDA, zzsigv_MSG, zzsigv_K))"
+    },
+    {
+      "type": "sm2_verify",
+      "template": "sm2_verify(zzsigv_PAX, zzsigv_PAY, zzsigv_IDA, zzsigv_MSG, zzsigv_R, zzsigv_S)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sm2_verify(zzsigv_PAX, zzsigv_PAY, zzsigv_IDA, zzsigv_MSG, zzsigv_R, zzsigv_S)"
+    },
+    {
+      "type": "sm4_linear_transform",
+      "template": "sm4_linear_transform(zzsigv_B)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sm4_linear_transform(zzsigv_B)"
+    },
+    {
+      "type": "sm4_round_func",
+      "template": "sm4_round_func(zzsigv_X0, zzsigv_X1, zzsigv_X2, zzsigv_X3, zzsigv_RK)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sm4_round_func(zzsigv_X0, zzsigv_X1, zzsigv_X2, zzsigv_X3, zzsigv_RK)"
+    },
+    {
+      "type": "sm4_sbox",
+      "template": "sm4_sbox_lookup(zzsigv_INPUT)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sm4_sbox_lookup(zzsigv_INPUT)"
+    },
+    {
+      "type": "sm9_master_key",
+      "template": "bytes(sm9_master_key(zzsigv_KS))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(sm9_master_key(zzsigv_KS))"
+    },
+    {
+      "type": "sm9_sign",
+      "template": "bytes(sm9_sign(zzsigv_MSG, zzsigv_DS, zzsigv_PPUB, zzsigv_R, True))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(sm9_sign(zzsigv_MSG, zzsigv_DS, zzsigv_PPUB, zzsigv_R, True))"
+    },
+    {
+      "type": "sm9_user_key",
+      "template": "bytes(sm9_user_key(zzsigv_KS, zzsigv_ID, 1))",
+      "error": null,
+      "fields": [
+        {
+          "name": "HID",
+          "kind": "dropdown",
+          "defaultValue": "1",
+          "options": [
+            "1"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "HID",
+          "kind": "dropdown",
+          "visible": false,
+          "constant": true,
+          "emittedDefault": null,
+          "variants": [],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [
+        "HID"
+      ],
+      "unprobed": [],
+      "fieldized": "bytes(sm9_user_key(zzsigv_KS, zzsigv_ID, 1))"
+    },
+    {
+      "type": "sm9_verify",
+      "template": "sm9_verify(zzsigv_MSG, zzsigv_ID, zzsigv_H, zzsigv_S, zzsigv_PPUB, 1)",
+      "error": null,
+      "fields": [
+        {
+          "name": "HID",
+          "kind": "dropdown",
+          "defaultValue": "1",
+          "options": [
+            "1"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "HID",
+          "kind": "dropdown",
+          "visible": false,
+          "constant": true,
+          "emittedDefault": null,
+          "variants": [],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [
+        "HID"
+      ],
+      "unprobed": [],
+      "fieldized": "sm9_verify(zzsigv_MSG, zzsigv_ID, zzsigv_H, zzsigv_S, zzsigv_PPUB, 1)"
+    },
+    {
+      "type": "sponge_absorb",
+      "template": "sha3_absorb(zzsigv_STATE, zzsigv_BLOCK, rate_bytes=136)",
+      "error": null,
+      "fields": [
+        {
+          "name": "RATE",
+          "kind": "dropdown",
+          "defaultValue": "1088",
+          "options": [
+            "1088",
+            "576",
+            "1152",
+            "832",
+            "1344"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "RATE",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "576",
+              "template": "sha3_absorb(zzsigv_STATE, zzsigv_BLOCK, rate_bytes=72)"
+            },
+            {
+              "value": "1152",
+              "template": "sha3_absorb(zzsigv_STATE, zzsigv_BLOCK, rate_bytes=144)"
+            },
+            {
+              "value": "832",
+              "template": "sha3_absorb(zzsigv_STATE, zzsigv_BLOCK, rate_bytes=104)"
+            },
+            {
+              "value": "1344",
+              "template": "sha3_absorb(zzsigv_STATE, zzsigv_BLOCK, rate_bytes=168)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sha3_absorb(zzsigv_STATE, zzsigv_BLOCK, rate_bytes=136)"
+    },
+    {
+      "type": "sponge_pad",
+      "template": "sha3_pad(zzsigv_INPUT, rate_bytes=136, suffix=0x06)",
+      "error": null,
+      "fields": [
+        {
+          "name": "RATE",
+          "kind": "dropdown",
+          "defaultValue": "1088",
+          "options": [
+            "1088",
+            "576",
+            "1152",
+            "832",
+            "1344"
+          ]
+        },
+        {
+          "name": "SUFFIX",
+          "kind": "dropdown",
+          "defaultValue": "0x06",
+          "options": [
+            "0x06",
+            "0x1F"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "RATE",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "576",
+              "template": "sha3_pad(zzsigv_INPUT, rate_bytes=72, suffix=0x06)"
+            },
+            {
+              "value": "1152",
+              "template": "sha3_pad(zzsigv_INPUT, rate_bytes=144, suffix=0x06)"
+            },
+            {
+              "value": "832",
+              "template": "sha3_pad(zzsigv_INPUT, rate_bytes=104, suffix=0x06)"
+            },
+            {
+              "value": "1344",
+              "template": "sha3_pad(zzsigv_INPUT, rate_bytes=168, suffix=0x06)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        },
+        {
+          "name": "SUFFIX",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "0x1F",
+              "template": "sha3_pad(zzsigv_INPUT, rate_bytes=136, suffix=0x1F)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sha3_pad(zzsigv_INPUT, rate_bytes=136, suffix=0x06)"
+    },
+    {
+      "type": "sponge_squeeze",
+      "template": "sha3_squeeze(zzsigv_STATE, zzsigv_OUTLEN, rate_bytes=136)",
+      "error": null,
+      "fields": [
+        {
+          "name": "RATE",
+          "kind": "dropdown",
+          "defaultValue": "1088",
+          "options": [
+            "1088",
+            "576",
+            "1152",
+            "832",
+            "1344"
+          ]
+        }
+      ],
+      "probes": [
+        {
+          "name": "RATE",
+          "kind": "dropdown",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": null,
+          "variants": [
+            {
+              "value": "576",
+              "template": "sha3_squeeze(zzsigv_STATE, zzsigv_OUTLEN, rate_bytes=72)"
+            },
+            {
+              "value": "1152",
+              "template": "sha3_squeeze(zzsigv_STATE, zzsigv_OUTLEN, rate_bytes=144)"
+            },
+            {
+              "value": "832",
+              "template": "sha3_squeeze(zzsigv_STATE, zzsigv_OUTLEN, rate_bytes=104)"
+            },
+            {
+              "value": "1344",
+              "template": "sha3_squeeze(zzsigv_STATE, zzsigv_OUTLEN, rate_bytes=168)"
+            }
+          ],
+          "wildcard": null,
+          "valueShape": null
+        }
+      ],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "sha3_squeeze(zzsigv_STATE, zzsigv_OUTLEN, rate_bytes=136)"
+    },
+    {
+      "type": "syndrome_calc",
+      "template": "code_based()[\"syndrome_calc\"](zzsigv_H, zzsigv_Y, zzsigv_ROWS, zzsigv_COLS)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "code_based()[\"syndrome_calc\"](zzsigv_H, zzsigv_Y, zzsigv_ROWS, zzsigv_COLS)"
+    },
+    {
+      "type": "vec_dot",
+      "template": "multivariate()[\"vec_dot\"](zzsigv_A, zzsigv_B)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "multivariate()[\"vec_dot\"](zzsigv_A, zzsigv_B)"
+    },
+    {
+      "type": "wots_checksum",
+      "template": "wots_checksum(zzsigv_M)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "wots_checksum(zzsigv_M)"
+    },
+    {
+      "type": "x25519",
+      "template": "bytes(x25519(zzsigv_SCALAR, zzsigv_U))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(x25519(zzsigv_SCALAR, zzsigv_U))"
+    },
+    {
+      "type": "xts_encrypt",
+      "template": "bytes(xts_encrypt(zzsigv_KEY, zzsigv_TWEAK, zzsigv_MSG))",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "bytes(xts_encrypt(zzsigv_KEY, zzsigv_TWEAK, zzsigv_MSG))"
+    },
+    {
+      "type": "xts_tweak_mul",
+      "template": "xts_tweak_mul(zzsigv_TWEAK)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "xts_tweak_mul(zzsigv_TWEAK)"
+    },
+    {
+      "type": "zuc_eia3",
+      "template": "zuc_eia3(zzsigv_KEY, zzsigv_COUNT, zzsigv_BEARER, zzsigv_DIRECTION, zzsigv_MESSAGE, zzsigv_LENGTH)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zuc_eia3(zzsigv_KEY, zzsigv_COUNT, zzsigv_BEARER, zzsigv_DIRECTION, zzsigv_MESSAGE, zzsigv_LENGTH)"
+    },
+    {
+      "type": "zuc_f",
+      "template": "zuc_f(zzsigv_X0, zzsigv_X1, zzsigv_X2, zzsigv_R1, zzsigv_R2)[0]",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zuc_f(zzsigv_X0, zzsigv_X1, zzsigv_X2, zzsigv_R1, zzsigv_R2)[0]"
+    },
+    {
+      "type": "zuc_keystream",
+      "template": "zuc_keystream(zzsigv_KEY, zzsigv_IV, zzsigv_LEN)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zuc_keystream(zzsigv_KEY, zzsigv_IV, zzsigv_LEN)"
+    },
+    {
+      "type": "zuc_l1",
+      "template": "zuc_l1(zzsigv_INPUT)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zuc_l1(zzsigv_INPUT)"
+    },
+    {
+      "type": "zuc_l2",
+      "template": "zuc_l2(zzsigv_INPUT)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zuc_l2(zzsigv_INPUT)"
+    },
+    {
+      "type": "zuc_s0",
+      "template": "zuc_s0_lookup(zzsigv_INPUT)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zuc_s0_lookup(zzsigv_INPUT)"
+    },
+    {
+      "type": "zuc_s1",
+      "template": "zuc_s1_lookup(zzsigv_INPUT)",
+      "error": null,
+      "fields": [],
+      "probes": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zuc_s1_lookup(zzsigv_INPUT)"
+    }
+  ]
+}

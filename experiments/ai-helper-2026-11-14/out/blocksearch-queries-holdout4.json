@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "description": "第四轮留出集：tooltip 打分回退、CCM-B0 标签补语义之后一次性写出、只跑一次，不据其调参。",
+  "queries": [
+    { "id": "u01", "text": "生成 CMAC 的子密钥", "expect": ["cmac_subkeys"] },
+    { "id": "u02", "text": "在 GF(2^128) 上做加倍运算", "expect": ["cmac_double"] },
+    { "id": "u03", "text": "加载椭圆曲线的参数", "expect": ["ecc_load_curve_params"] },
+    { "id": "u04", "text": "把数组按段长切分成多段", "expect": ["arr_partition_to_array"] },
+    { "id": "u05", "text": "把 NTT 域的多项式变换回系数域", "expect": ["pq_intt"] },
+    { "id": "u06", "text": "计算 GCM 的初始计数器块", "expect": ["gcm_j0"] },
+    { "id": "u07", "text": "在有限扩域上做多项式乘法", "expect": ["gf2m_poly_mul"] },
+    { "id": "u08", "text": "把两个多项式相减", "expect": ["pq_poly_sub"] },
+    { "id": "u09", "text": "把种子和 nonce 组合派生新种子", "expect": ["pq_seed_with_nonce"] },
+    { "id": "u10", "text": "把矩阵和向量相乘", "expect": ["pq_mat_vec_mul"] }
+  ]
+}

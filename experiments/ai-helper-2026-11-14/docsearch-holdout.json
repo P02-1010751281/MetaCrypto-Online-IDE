@@ -1,0 +1,22 @@
+[
+  { "q": "项目整体架构分几层", "expect": ["docs/guides/ARCHITECTURE.md"] },
+  { "q": "能力地图里对称密码有哪些", "expect": ["docs/guides/CAPABILITY-MAP.md"] },
+  { "q": "规格卡怎么把标准变成断言", "expect": ["docs/guides/SPEC-CARDS.md"] },
+  { "q": "新手教程从哪里开始", "expect": ["docs/guides/TUTORIALS.md"] },
+  { "q": "开发命令有哪些", "expect": ["docs/guides/DEVELOPMENT.md"] },
+  { "q": "位运算块支持哪些算子", "expect": ["docs/blocks/bitwise-logic.md"] },
+  { "q": "Base64 编码块在哪", "expect": ["docs/blocks/data-encoding.md"] },
+  { "q": "数论块里的模幂怎么用", "expect": ["docs/blocks/numtheory.md"] },
+  { "q": "ZUC 积木块参考", "expect": ["docs/blocks/zuc.md"] },
+  { "q": "后量子积木块有哪些", "expect": ["docs/blocks/post-quantum.md"] },
+  { "q": "RSA 的密钥生成怎么搭", "expect": ["docs/build/rsa.md"] },
+  { "q": "随机数生成怎么配置", "expect": ["docs/build/rng.md"] },
+  { "q": "密钥派生与口令处理", "expect": ["docs/build/kdf.md"] },
+  { "q": "纠错码与多变量构件", "expect": ["docs/build/code-based.md"] },
+  { "q": "格基后量子构件", "expect": ["docs/build/pq-lattice.md"] },
+  { "q": "哈希基后量子构件", "expect": ["docs/build/pq-hash.md"] },
+  { "q": "AES 演示步骤", "expect": ["docs/demos/aes.md"] },
+  { "q": "SM2 演示怎么做", "expect": ["docs/demos/sm2.md"] },
+  { "q": "后量子演示", "expect": ["docs/demos/post-quantum.md"] },
+  { "q": "端点矩阵是什么", "expect": ["docs/demos/ENDPOINT-MATRIX.md"] }
+]

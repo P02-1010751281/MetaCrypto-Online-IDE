@@ -1,0 +1,2985 @@
+{
+  "schemaVersion": 1,
+  "index": {
+    "path": "experiments/ai-helper-2026-11-14/out/block-index.json",
+    "blockTypes": 221,
+    "labelCoverage": {
+      "en": {
+        "labeled": 221,
+        "total": 221
+      },
+      "zh": {
+        "labeled": 221,
+        "total": 221
+      }
+    },
+    "localizedZh": 32
+  },
+  "target": 0.8,
+  "pass": true,
+  "recallAt5": 0.9333333333333333,
+  "meanExpectedRecall": 0.9111111111111111,
+  "queries": [
+    {
+      "id": "g01",
+      "query": "把 32 位字循环左移",
+      "in": [],
+      "out": [],
+      "expected": [
+        "bit_rotate_left"
+      ],
+      "top5": [
+        {
+          "blockType": "bit_rotate_left_op",
+          "score": 33.080000000000005,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "2位",
+              "evidence": "label.zh 含 \"2位\""
+            },
+            {
+              "source": "label.zh",
+              "term": "32",
+              "evidence": "label.zh 含 \"32\""
+            },
+            {
+              "source": "label.zh",
+              "term": "左移",
+              "evidence": "label.zh 含 \"左移\""
+            },
+            {
+              "source": "label.zh",
+              "term": "循环",
+              "evidence": "label.zh 含 \"循环\""
+            },
+            {
+              "source": "label.zh",
+              "term": "环左",
+              "evidence": "label.zh 含 \"环左\""
+            },
+            {
+              "source": "label.en",
+              "term": "32",
+              "evidence": "label.en 含 \"32\""
+            },
+            {
+              "source": "label.en",
+              "term": "rotate left",
+              "evidence": "label.en 含 \"rotate left\"（术语「循环左移」⇒ rotate left）"
+            },
+            {
+              "source": "option",
+              "term": "32",
+              "evidence": "option 含 \"32\""
+            }
+          ]
+        },
+        {
+          "blockType": "bit_rotate_left",
+          "score": 31.480000000000004,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "2位",
+              "evidence": "label.zh 含 \"2位\""
+            },
+            {
+              "source": "label.zh",
+              "term": "32",
+              "evidence": "label.zh 含 \"32\""
+            },
+            {
+              "source": "label.zh",
+              "term": "左移",
+              "evidence": "label.zh 含 \"左移\""
+            },
+            {
+              "source": "label.zh",
+              "term": "循环",
+              "evidence": "label.zh 含 \"循环\""
+            },
+            {
+              "source": "label.zh",
+              "term": "环左",
+              "evidence": "label.zh 含 \"环左\""
+            },
+            {
+              "source": "label.en",
+              "term": "32",
+              "evidence": "label.en 含 \"32\""
+            },
+            {
+              "source": "label.en",
+              "term": "rotate left",
+              "evidence": "label.en 含 \"rotate left\"（术语「循环左移」⇒ rotate left）"
+            },
+            {
+              "source": "blockType",
+              "term": "rotate left",
+              "evidence": "blockType 含 \"rotate left\"（术语「循环左移」⇒ rotate left）"
+            }
+          ]
+        },
+        {
+          "blockType": "bit_rotate_right_op",
+          "score": 11.480000000000002,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "2位",
+              "evidence": "label.zh 含 \"2位\""
+            },
+            {
+              "source": "label.zh",
+              "term": "32",
+              "evidence": "label.zh 含 \"32\""
+            },
+            {
+              "source": "label.zh",
+              "term": "循环",
+              "evidence": "label.zh 含 \"循环\""
+            },
+            {
+              "source": "label.en",
+              "term": "32",
+              "evidence": "label.en 含 \"32\""
+            },
+            {
+              "source": "option",
+              "term": "32",
+              "evidence": "option 含 \"32\""
+            },
+            {
+              "source": "python",
+              "term": "32",
+              "evidence": "python 含 \"32\""
+            }
+          ]
+        },
+        {
+          "blockType": "bit_rotate_right",
+          "score": 9.880000000000003,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "2位",
+              "evidence": "label.zh 含 \"2位\""
+            },
+            {
+              "source": "label.zh",
+              "term": "32",
+              "evidence": "label.zh 含 \"32\""
+            },
+            {
+              "source": "label.zh",
+              "term": "循环",
+              "evidence": "label.zh 含 \"循环\""
+            },
+            {
+              "source": "label.en",
+              "term": "32",
+              "evidence": "label.en 含 \"32\""
+            },
+            {
+              "source": "python",
+              "term": "32",
+              "evidence": "python 含 \"32\""
+            }
+          ]
+        },
+        {
+          "blockType": "ctrl_iterate",
+          "score": 7.48,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "32",
+              "evidence": "label.zh 含 \"32\""
+            },
+            {
+              "source": "label.zh",
+              "term": "循环",
+              "evidence": "label.zh 含 \"循环\""
+            },
+            {
+              "source": "label.en",
+              "term": "32",
+              "evidence": "label.en 含 \"32\""
+            },
+            {
+              "source": "python",
+              "term": "32",
+              "evidence": "python 含 \"32\""
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "bit_rotate_left"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "g02",
+      "query": "把两个字节序列首尾相接",
+      "in": [],
+      "out": [],
+      "expected": [
+        "pq_byte_concat"
+      ],
+      "top5": [
+        {
+          "blockType": "endian_swap",
+          "score": 39.6,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "endian",
+              "evidence": "label.zh 含 \"endian\"（术语「字节序」⇒ endian）"
+            },
+            {
+              "source": "label.zh",
+              "term": "swap",
+              "evidence": "label.zh 含 \"swap\"（术语「字节序」⇒ swap）"
+            },
+            {
+              "source": "label.en",
+              "term": "endian",
+              "evidence": "label.en 含 \"endian\"（术语「字节序」⇒ endian）"
+            },
+            {
+              "source": "label.en",
+              "term": "swap",
+              "evidence": "label.en 含 \"swap\"（术语「字节序」⇒ swap）"
+            },
+            {
+              "source": "blockType",
+              "term": "endian",
+              "evidence": "blockType 含 \"endian\"（术语「字节序」⇒ endian）"
+            },
+            {
+              "source": "blockType",
+              "term": "swap",
+              "evidence": "blockType 含 \"swap\"（术语「字节序」⇒ swap）"
+            }
+          ]
+        },
+        {
+          "blockType": "primitive_def",
+          "score": 16.701999999999998,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "byte",
+              "evidence": "label.zh 含 \"byte\"（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "label.zh",
+              "term": "bytes",
+              "evidence": "label.zh 含 \"bytes\""
+            },
+            {
+              "source": "label.zh",
+              "term": "字节",
+              "evidence": "label.zh 含 \"字节\""
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            },
+            {
+              "source": "label.en",
+              "term": "字节",
+              "evidence": "label.en 含 \"字节\""
+            },
+            {
+              "source": "input",
+              "term": "byte",
+              "evidence": "输入 NBYTES/SEED/BODY/RETURN 含 byte（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "input",
+              "term": "bytes",
+              "evidence": "输入 NBYTES/SEED/BODY/RETURN 含 bytes"
+            }
+          ]
+        },
+        {
+          "blockType": "pq_bytes_slice",
+          "score": 16.02,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "byte",
+              "evidence": "label.zh 含 \"byte\"（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "label.zh",
+              "term": "bytes",
+              "evidence": "label.zh 含 \"bytes\""
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            },
+            {
+              "source": "blockType",
+              "term": "byte",
+              "evidence": "blockType 含 \"byte\"（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "blockType",
+              "term": "bytes",
+              "evidence": "blockType 含 \"bytes\""
+            },
+            {
+              "source": "input",
+              "term": "byte",
+              "evidence": "输入 INPUT/START/END 含 byte（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "input",
+              "term": "bytes",
+              "evidence": "输入 INPUT/START/END 含 bytes"
+            }
+          ]
+        },
+        {
+          "blockType": "pq_bytes_to_bits",
+          "score": 16.02,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "byte",
+              "evidence": "label.zh 含 \"byte\"（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "label.zh",
+              "term": "bytes",
+              "evidence": "label.zh 含 \"bytes\""
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            },
+            {
+              "source": "blockType",
+              "term": "byte",
+              "evidence": "blockType 含 \"byte\"（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "blockType",
+              "term": "bytes",
+              "evidence": "blockType 含 \"bytes\""
+            },
+            {
+              "source": "input",
+              "term": "byte",
+              "evidence": "输入 INPUT 含 byte（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "input",
+              "term": "bytes",
+              "evidence": "输入 INPUT 含 bytes"
+            }
+          ]
+        },
+        {
+          "blockType": "pq_byte_concat",
+          "score": 15.37,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "byte",
+              "evidence": "label.zh 含 \"byte\"（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "label.zh",
+              "term": "bytes",
+              "evidence": "label.zh 含 \"bytes\""
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            },
+            {
+              "source": "blockType",
+              "term": "byte",
+              "evidence": "blockType 含 \"byte\"（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "input",
+              "term": "byte",
+              "evidence": "输入 A/B 含 byte（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "input",
+              "term": "bytes",
+              "evidence": "输入 A/B 含 bytes"
+            },
+            {
+              "source": "definition",
+              "term": "byte",
+              "evidence": "definition 含 \"byte\"（术语「字节序列」⇒ byte）"
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "pq_byte_concat"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "g03",
+      "query": "交换字节序做大小端转换",
+      "in": [],
+      "out": [],
+      "expected": [
+        "endian_swap"
+      ],
+      "top5": [
+        {
+          "blockType": "endian_swap",
+          "score": 39.6,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "endian",
+              "evidence": "label.zh 含 \"endian\"（术语「交换」⇒ endian）"
+            },
+            {
+              "source": "label.zh",
+              "term": "swap",
+              "evidence": "label.zh 含 \"swap\"（术语「交换」⇒ swap）"
+            },
+            {
+              "source": "label.en",
+              "term": "endian",
+              "evidence": "label.en 含 \"endian\"（术语「交换」⇒ endian）"
+            },
+            {
+              "source": "label.en",
+              "term": "swap",
+              "evidence": "label.en 含 \"swap\"（术语「交换」⇒ swap）"
+            },
+            {
+              "source": "blockType",
+              "term": "endian",
+              "evidence": "blockType 含 \"endian\"（术语「交换」⇒ endian）"
+            },
+            {
+              "source": "blockType",
+              "term": "swap",
+              "evidence": "blockType 含 \"swap\"（术语「交换」⇒ swap）"
+            }
+          ]
+        },
+        {
+          "blockType": "data_convert_bits_to_bytes",
+          "score": 17.740000000000002,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "字节",
+              "evidence": "label.zh 含 \"字节\""
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            },
+            {
+              "source": "blockType",
+              "term": "byte",
+              "evidence": "blockType 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "blockType",
+              "term": "bytes",
+              "evidence": "blockType 含 \"bytes\""
+            },
+            {
+              "source": "blockType",
+              "term": "convert",
+              "evidence": "blockType 含 \"convert\"（术语「转换」⇒ convert）"
+            },
+            {
+              "source": "input",
+              "term": "byte",
+              "evidence": "输入 BYTES/BITS 含 byte（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "input",
+              "term": "bytes",
+              "evidence": "输入 BYTES/BITS 含 bytes"
+            }
+          ]
+        },
+        {
+          "blockType": "data_convert_bytes_to_bits",
+          "score": 17.740000000000002,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "字节",
+              "evidence": "label.zh 含 \"字节\""
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            },
+            {
+              "source": "blockType",
+              "term": "byte",
+              "evidence": "blockType 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "blockType",
+              "term": "bytes",
+              "evidence": "blockType 含 \"bytes\""
+            },
+            {
+              "source": "blockType",
+              "term": "convert",
+              "evidence": "blockType 含 \"convert\"（术语「转换」⇒ convert）"
+            },
+            {
+              "source": "input",
+              "term": "byte",
+              "evidence": "输入 BITS/BYTES 含 byte（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "input",
+              "term": "bytes",
+              "evidence": "输入 BITS/BYTES 含 bytes"
+            }
+          ]
+        },
+        {
+          "blockType": "primitive_def",
+          "score": 16.701999999999998,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "byte",
+              "evidence": "label.zh 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.zh",
+              "term": "bytes",
+              "evidence": "label.zh 含 \"bytes\""
+            },
+            {
+              "source": "label.zh",
+              "term": "字节",
+              "evidence": "label.zh 含 \"字节\""
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            },
+            {
+              "source": "label.en",
+              "term": "字节",
+              "evidence": "label.en 含 \"字节\""
+            },
+            {
+              "source": "input",
+              "term": "byte",
+              "evidence": "输入 NBYTES/SEED/BODY/RETURN 含 byte（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "input",
+              "term": "bytes",
+              "evidence": "输入 NBYTES/SEED/BODY/RETURN 含 bytes"
+            }
+          ]
+        },
+        {
+          "blockType": "pq_bytes_slice",
+          "score": 16.02,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "byte",
+              "evidence": "label.zh 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.zh",
+              "term": "bytes",
+              "evidence": "label.zh 含 \"bytes\""
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            },
+            {
+              "source": "blockType",
+              "term": "byte",
+              "evidence": "blockType 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "blockType",
+              "term": "bytes",
+              "evidence": "blockType 含 \"bytes\""
+            },
+            {
+              "source": "input",
+              "term": "byte",
+              "evidence": "输入 INPUT/START/END 含 byte（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "input",
+              "term": "bytes",
+              "evidence": "输入 INPUT/START/END 含 bytes"
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "endian_swap"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "g04",
+      "query": "从海绵结构里挤出输出",
+      "in": [],
+      "out": [],
+      "expected": [
+        "sponge_squeeze"
+      ],
+      "top5": [
+        {
+          "blockType": "sponge_squeeze",
+          "score": 32.78,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "squeeze",
+              "evidence": "label.zh 含 \"squeeze\"（术语「挤出」⇒ squeeze）"
+            },
+            {
+              "source": "label.en",
+              "term": "squeeze",
+              "evidence": "label.en 含 \"squeeze\"（术语「挤出」⇒ squeeze）"
+            },
+            {
+              "source": "blockType",
+              "term": "sponge",
+              "evidence": "blockType 含 \"sponge\"（术语「海绵」⇒ sponge）"
+            },
+            {
+              "source": "blockType",
+              "term": "squeeze",
+              "evidence": "blockType 含 \"squeeze\"（术语「挤出」⇒ squeeze）"
+            },
+            {
+              "source": "python",
+              "term": "squeeze",
+              "evidence": "python 含 \"squeeze\"（术语「挤出」⇒ squeeze）"
+            }
+          ]
+        },
+        {
+          "blockType": "sponge_absorb",
+          "score": 8,
+          "matched": [
+            {
+              "source": "blockType",
+              "term": "sponge",
+              "evidence": "blockType 含 \"sponge\"（术语「海绵」⇒ sponge）"
+            }
+          ]
+        },
+        {
+          "blockType": "sponge_pad",
+          "score": 8,
+          "matched": [
+            {
+              "source": "blockType",
+              "term": "sponge",
+              "evidence": "blockType 含 \"sponge\"（术语「海绵」⇒ sponge）"
+            }
+          ]
+        },
+        {
+          "blockType": "bit_byte_substitute",
+          "score": 2.4000000000000004,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "输出",
+              "evidence": "label.zh 含 \"输出\""
+            }
+          ]
+        },
+        {
+          "blockType": "bit_rotate_left",
+          "score": 2.4000000000000004,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "输出",
+              "evidence": "label.zh 含 \"输出\""
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "sponge_squeeze"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "g05",
+      "query": "把消息吸收进海绵结构",
+      "in": [],
+      "out": [],
+      "expected": [
+        "sponge_absorb"
+      ],
+      "top5": [
+        {
+          "blockType": "sponge_absorb",
+          "score": 32.78,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "absorb",
+              "evidence": "label.zh 含 \"absorb\"（术语「吸收」⇒ absorb）"
+            },
+            {
+              "source": "label.en",
+              "term": "absorb",
+              "evidence": "label.en 含 \"absorb\"（术语「吸收」⇒ absorb）"
+            },
+            {
+              "source": "blockType",
+              "term": "absorb",
+              "evidence": "blockType 含 \"absorb\"（术语「吸收」⇒ absorb）"
+            },
+            {
+              "source": "blockType",
+              "term": "sponge",
+              "evidence": "blockType 含 \"sponge\"（术语「海绵」⇒ sponge）"
+            },
+            {
+              "source": "python",
+              "term": "absorb",
+              "evidence": "python 含 \"absorb\"（术语「吸收」⇒ absorb）"
+            }
+          ]
+        },
+        {
+          "blockType": "slh_msg_randomness",
+          "score": 16.18,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "msg",
+              "evidence": "label.zh 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "label.zh",
+              "term": "消息",
+              "evidence": "label.zh 含 \"消息\""
+            },
+            {
+              "source": "label.en",
+              "term": "msg",
+              "evidence": "label.en 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "label.en",
+              "term": "消息",
+              "evidence": "label.en 含 \"消息\""
+            },
+            {
+              "source": "blockType",
+              "term": "msg",
+              "evidence": "blockType 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "definition",
+              "term": "msg",
+              "evidence": "definition 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "python",
+              "term": "msg",
+              "evidence": "python 含 \"msg\"（术语「消息」⇒ msg）"
+            }
+          ]
+        },
+        {
+          "blockType": "sha3_hash",
+          "score": 11.18,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "msg",
+              "evidence": "label.zh 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "label.en",
+              "term": "msg",
+              "evidence": "label.en 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "input",
+              "term": "msg",
+              "evidence": "输入 MSG 含 msg（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "definition",
+              "term": "absorb",
+              "evidence": "definition 含 \"absorb\"（术语「吸收」⇒ absorb）"
+            },
+            {
+              "source": "python",
+              "term": "msg",
+              "evidence": "python 含 \"msg\"（术语「消息」⇒ msg）"
+            }
+          ]
+        },
+        {
+          "blockType": "ascon_encrypt",
+          "score": 8.94,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "msg",
+              "evidence": "label.zh 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "label.en",
+              "term": "msg",
+              "evidence": "label.en 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "input",
+              "term": "msg",
+              "evidence": "输入 KEY/NONCE/AD/MSG 含 msg（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "python",
+              "term": "msg",
+              "evidence": "python 含 \"msg\"（术语「消息」⇒ msg）"
+            }
+          ]
+        },
+        {
+          "blockType": "ascon_hash256",
+          "score": 8.94,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "msg",
+              "evidence": "label.zh 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "label.en",
+              "term": "msg",
+              "evidence": "label.en 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "input",
+              "term": "msg",
+              "evidence": "输入 MSG 含 msg（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "python",
+              "term": "msg",
+              "evidence": "python 含 \"msg\"（术语「消息」⇒ msg）"
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "sponge_absorb"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "g06",
+      "query": "按中心二项分布采样多项式",
+      "in": [],
+      "out": [],
+      "expected": [
+        "pq_sample_poly_cbd"
+      ],
+      "top5": [
+        {
+          "blockType": "pq_sample_poly_cbd",
+          "score": 55.970000000000006,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.zh",
+              "term": "sample",
+              "evidence": "label.zh 含 \"sample\"（术语「采样」⇒ sample）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "sample",
+              "evidence": "label.en 含 \"sample\"（术语「采样」⇒ sample）"
+            },
+            {
+              "source": "blockType",
+              "term": "poly",
+              "evidence": "blockType 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "blockType",
+              "term": "sample",
+              "evidence": "blockType 含 \"sample\"（术语「采样」⇒ sample）"
+            },
+            {
+              "source": "definition",
+              "term": "poly",
+              "evidence": "definition 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "definition",
+              "term": "sample",
+              "evidence": "definition 含 \"sample\"（术语「采样」⇒ sample）"
+            }
+          ]
+        },
+        {
+          "blockType": "gf2m_poly_add",
+          "score": 30.880000000000003,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "blockType",
+              "term": "poly",
+              "evidence": "blockType 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "definition",
+              "term": "poly",
+              "evidence": "definition 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "python",
+              "term": "poly",
+              "evidence": "python 含 \"poly\"（术语「多项式」⇒ poly）"
+            }
+          ]
+        },
+        {
+          "blockType": "pq_poly_add",
+          "score": 30.880000000000003,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "blockType",
+              "term": "poly",
+              "evidence": "blockType 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "definition",
+              "term": "poly",
+              "evidence": "definition 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "python",
+              "term": "poly",
+              "evidence": "python 含 \"poly\"（术语「多项式」⇒ poly）"
+            }
+          ]
+        },
+        {
+          "blockType": "pq_poly_mul",
+          "score": 30.880000000000003,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "blockType",
+              "term": "poly",
+              "evidence": "blockType 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "definition",
+              "term": "poly",
+              "evidence": "definition 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "python",
+              "term": "poly",
+              "evidence": "python 含 \"poly\"（术语「多项式」⇒ poly）"
+            }
+          ]
+        },
+        {
+          "blockType": "pq_poly_sub",
+          "score": 30.880000000000003,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "blockType",
+              "term": "poly",
+              "evidence": "blockType 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "definition",
+              "term": "poly",
+              "evidence": "definition 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "python",
+              "term": "poly",
+              "evidence": "python 含 \"poly\"（术语「多项式」⇒ poly）"
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "pq_sample_poly_cbd"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "g07",
+      "query": "把整数数组按区间切片",
+      "in": [],
+      "out": [],
+      "expected": [
+        "arr_slice"
+      ],
+      "top5": [
+        {
+          "blockType": "arr_partition_to_array",
+          "score": 23.030000000000005,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "切片",
+              "evidence": "label.zh 含 \"切片\""
+            },
+            {
+              "source": "label.en",
+              "term": "slice",
+              "evidence": "label.en 含 \"slice\"（术语「切片」⇒ slice）"
+            },
+            {
+              "source": "option",
+              "term": "slice",
+              "evidence": "option 含 \"slice\"（术语「切片」⇒ slice）"
+            },
+            {
+              "source": "option",
+              "term": "切片",
+              "evidence": "option 含 \"切片\""
+            },
+            {
+              "source": "blockType",
+              "term": "partition",
+              "evidence": "blockType 含 \"partition\"（术语「切片」⇒ partition）"
+            },
+            {
+              "source": "definition",
+              "term": "partition",
+              "evidence": "definition 含 \"partition\"（术语「切片」⇒ partition）"
+            },
+            {
+              "source": "python",
+              "term": "partition",
+              "evidence": "python 含 \"partition\"（术语「切片」⇒ partition）"
+            }
+          ]
+        },
+        {
+          "blockType": "arr_slice",
+          "score": 21.230000000000004,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "slice",
+              "evidence": "label.zh 含 \"slice\"（术语「切片」⇒ slice）"
+            },
+            {
+              "source": "label.en",
+              "term": "slice",
+              "evidence": "label.en 含 \"slice\"（术语「切片」⇒ slice）"
+            },
+            {
+              "source": "blockType",
+              "term": "slice",
+              "evidence": "blockType 含 \"slice\"（术语「切片」⇒ slice）"
+            },
+            {
+              "source": "definition",
+              "term": "slice",
+              "evidence": "definition 含 \"slice\"（术语「切片」⇒ slice）"
+            },
+            {
+              "source": "python",
+              "term": "slice",
+              "evidence": "python 含 \"slice\"（术语「切片」⇒ slice）"
+            }
+          ]
+        },
+        {
+          "blockType": "pq_bytes_slice",
+          "score": 21.230000000000004,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "slice",
+              "evidence": "label.zh 含 \"slice\"（术语「切片」⇒ slice）"
+            },
+            {
+              "source": "label.en",
+              "term": "slice",
+              "evidence": "label.en 含 \"slice\"（术语「切片」⇒ slice）"
+            },
+            {
+              "source": "blockType",
+              "term": "slice",
+              "evidence": "blockType 含 \"slice\"（术语「切片」⇒ slice）"
+            },
+            {
+              "source": "definition",
+              "term": "slice",
+              "evidence": "definition 含 \"slice\"（术语「切片」⇒ slice）"
+            },
+            {
+              "source": "python",
+              "term": "slice",
+              "evidence": "python 含 \"slice\"（术语「切片」⇒ slice）"
+            }
+          ]
+        },
+        {
+          "blockType": "sbox",
+          "score": 4,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "数组",
+              "evidence": "label.zh 含 \"数组\""
+            },
+            {
+              "source": "option",
+              "term": "数组",
+              "evidence": "option 含 \"数组\""
+            }
+          ]
+        },
+        {
+          "blockType": "data_convert_to_int",
+          "score": 2.4000000000000004,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "整数",
+              "evidence": "label.zh 含 \"整数\""
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "arr_slice"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "g08",
+      "query": "生成指定长度的随机种子字节",
+      "in": [],
+      "out": [],
+      "expected": [
+        "seed_bytes"
+      ],
+      "top5": [
+        {
+          "blockType": "primitive_def",
+          "score": 41.151999999999994,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "byte",
+              "evidence": "label.zh 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.zh",
+              "term": "bytes",
+              "evidence": "label.zh 含 \"bytes\""
+            },
+            {
+              "source": "label.zh",
+              "term": "seed",
+              "evidence": "label.zh 含 \"seed\"（术语「种子」⇒ seed）"
+            },
+            {
+              "source": "label.zh",
+              "term": "字节",
+              "evidence": "label.zh 含 \"字节\""
+            },
+            {
+              "source": "label.zh",
+              "term": "种子",
+              "evidence": "label.zh 含 \"种子\""
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            },
+            {
+              "source": "label.en",
+              "term": "seed",
+              "evidence": "label.en 含 \"seed\"（术语「种子」⇒ seed）"
+            }
+          ]
+        },
+        {
+          "blockType": "seed_bytes",
+          "score": 33.57,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "byte",
+              "evidence": "label.zh 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.zh",
+              "term": "bytes",
+              "evidence": "label.zh 含 \"bytes\""
+            },
+            {
+              "source": "label.zh",
+              "term": "seed",
+              "evidence": "label.zh 含 \"seed\"（术语「种子」⇒ seed）"
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            },
+            {
+              "source": "label.en",
+              "term": "seed",
+              "evidence": "label.en 含 \"seed\"（术语「种子」⇒ seed）"
+            },
+            {
+              "source": "blockType",
+              "term": "byte",
+              "evidence": "blockType 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "blockType",
+              "term": "bytes",
+              "evidence": "blockType 含 \"bytes\""
+            }
+          ]
+        },
+        {
+          "blockType": "pq_seed_with_nonce",
+          "score": 29.666,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "seed",
+              "evidence": "label.zh 含 \"seed\"（术语「种子」⇒ seed）"
+            },
+            {
+              "source": "label.en",
+              "term": "seed",
+              "evidence": "label.en 含 \"seed\"（术语「种子」⇒ seed）"
+            },
+            {
+              "source": "blockType",
+              "term": "seed",
+              "evidence": "blockType 含 \"seed\"（术语「种子」⇒ seed）"
+            },
+            {
+              "source": "input",
+              "term": "byte",
+              "evidence": "输入 SEED/NONCE 含 byte（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "input",
+              "term": "bytes",
+              "evidence": "输入 SEED/NONCE 含 bytes"
+            },
+            {
+              "source": "input",
+              "term": "seed",
+              "evidence": "输入 SEED/NONCE 含 seed（术语「种子」⇒ seed）"
+            },
+            {
+              "source": "definition",
+              "term": "seed",
+              "evidence": "definition 含 \"seed\"（术语「种子」⇒ seed）"
+            },
+            {
+              "source": "python",
+              "term": "seed",
+              "evidence": "python 含 \"seed\"（术语「种子」⇒ seed）"
+            }
+          ]
+        },
+        {
+          "blockType": "data_byte_length",
+          "score": 25.686,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "字节",
+              "evidence": "label.zh 含 \"字节\""
+            },
+            {
+              "source": "label.zh",
+              "term": "长度",
+              "evidence": "label.zh 含 \"长度\""
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "length",
+              "evidence": "label.en 含 \"length\"（术语「长度」⇒ length）"
+            },
+            {
+              "source": "blockType",
+              "term": "byte",
+              "evidence": "blockType 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "blockType",
+              "term": "length",
+              "evidence": "blockType 含 \"length\"（术语「长度」⇒ length）"
+            },
+            {
+              "source": "python",
+              "term": "byte",
+              "evidence": "python 含 \"byte\"（术语「字节」⇒ byte）"
+            },
+            {
+              "source": "python",
+              "term": "bytes",
+              "evidence": "python 含 \"bytes\""
+            }
+          ]
+        },
+        {
+          "blockType": "cipher_key_from_seed",
+          "score": 25.09,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "seed",
+              "evidence": "label.zh 含 \"seed\"（术语「种子」⇒ seed）"
+            },
+            {
+              "source": "label.en",
+              "term": "seed",
+              "evidence": "label.en 含 \"seed\"（术语「种子」⇒ seed）"
+            },
+            {
+              "source": "blockType",
+              "term": "seed",
+              "evidence": "blockType 含 \"seed\"（术语「种子」⇒ seed）"
+            },
+            {
+              "source": "definition",
+              "term": "seed",
+              "evidence": "definition 含 \"seed\"（术语「种子」⇒ seed）"
+            },
+            {
+              "source": "python",
+              "term": "seed",
+              "evidence": "python 含 \"seed\"（术语「种子」⇒ seed）"
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "seed_bytes"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "g09",
+      "query": "用扩展欧几里得求多项式的公因式",
+      "in": [],
+      "out": [],
+      "expected": [
+        "gf2m_poly_xgcd"
+      ],
+      "top5": [
+        {
+          "blockType": "gf2_poly_gcd",
+          "score": 56.64000000000001,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "gcd",
+              "evidence": "label.zh 含 \"gcd\"（术语「公因式」⇒ gcd）"
+            },
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "gcd",
+              "evidence": "label.en 含 \"gcd\"（术语「公因式」⇒ gcd）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "blockType",
+              "term": "gcd",
+              "evidence": "blockType 含 \"gcd\"（术语「公因式」⇒ gcd）"
+            },
+            {
+              "source": "blockType",
+              "term": "poly",
+              "evidence": "blockType 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "python",
+              "term": "gcd",
+              "evidence": "python 含 \"gcd\"（术语「公因式」⇒ gcd）"
+            },
+            {
+              "source": "python",
+              "term": "poly",
+              "evidence": "python 含 \"poly\"（术语「多项式」⇒ poly）"
+            }
+          ]
+        },
+        {
+          "blockType": "gf2m_poly_xgcd",
+          "score": 54.24000000000001,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "gcd",
+              "evidence": "label.zh 含 \"gcd\"（术语「公因式」⇒ gcd）"
+            },
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "gcd",
+              "evidence": "label.en 含 \"gcd\"（术语「公因式」⇒ gcd）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "blockType",
+              "term": "gcd",
+              "evidence": "blockType 含 \"gcd\"（术语「公因式」⇒ gcd）"
+            },
+            {
+              "source": "blockType",
+              "term": "poly",
+              "evidence": "blockType 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "python",
+              "term": "gcd",
+              "evidence": "python 含 \"gcd\"（术语「公因式」⇒ gcd）"
+            },
+            {
+              "source": "python",
+              "term": "poly",
+              "evidence": "python 含 \"poly\"（术语「多项式」⇒ poly）"
+            }
+          ]
+        },
+        {
+          "blockType": "gf2m_poly_add",
+          "score": 30.880000000000003,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "blockType",
+              "term": "poly",
+              "evidence": "blockType 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "definition",
+              "term": "poly",
+              "evidence": "definition 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "python",
+              "term": "poly",
+              "evidence": "python 含 \"poly\"（术语「多项式」⇒ poly）"
+            }
+          ]
+        },
+        {
+          "blockType": "pq_poly_add",
+          "score": 30.880000000000003,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "blockType",
+              "term": "poly",
+              "evidence": "blockType 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "definition",
+              "term": "poly",
+              "evidence": "definition 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "python",
+              "term": "poly",
+              "evidence": "python 含 \"poly\"（术语「多项式」⇒ poly）"
+            }
+          ]
+        },
+        {
+          "blockType": "pq_poly_mul",
+          "score": 30.880000000000003,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "blockType",
+              "term": "poly",
+              "evidence": "blockType 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "definition",
+              "term": "poly",
+              "evidence": "definition 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "python",
+              "term": "poly",
+              "evidence": "python 含 \"poly\"（术语「多项式」⇒ poly）"
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "gf2m_poly_xgcd"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "g10",
+      "query": "把字节序列按比特展开",
+      "in": [],
+      "out": [],
+      "expected": [
+        "pq_bytes_to_bits"
+      ],
+      "top5": [
+        {
+          "blockType": "endian_swap",
+          "score": 39.6,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "endian",
+              "evidence": "label.zh 含 \"endian\"（术语「字节序」⇒ endian）"
+            },
+            {
+              "source": "label.zh",
+              "term": "swap",
+              "evidence": "label.zh 含 \"swap\"（术语「字节序」⇒ swap）"
+            },
+            {
+              "source": "label.en",
+              "term": "endian",
+              "evidence": "label.en 含 \"endian\"（术语「字节序」⇒ endian）"
+            },
+            {
+              "source": "label.en",
+              "term": "swap",
+              "evidence": "label.en 含 \"swap\"（术语「字节序」⇒ swap）"
+            },
+            {
+              "source": "blockType",
+              "term": "endian",
+              "evidence": "blockType 含 \"endian\"（术语「字节序」⇒ endian）"
+            },
+            {
+              "source": "blockType",
+              "term": "swap",
+              "evidence": "blockType 含 \"swap\"（术语「字节序」⇒ swap）"
+            }
+          ]
+        },
+        {
+          "blockType": "pq_bytes_to_bits",
+          "score": 28.543999999999997,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "bit",
+              "evidence": "label.zh 含 \"bit\"（术语「比特」⇒ bit）"
+            },
+            {
+              "source": "label.zh",
+              "term": "bits",
+              "evidence": "label.zh 含 \"bits\""
+            },
+            {
+              "source": "label.zh",
+              "term": "byte",
+              "evidence": "label.zh 含 \"byte\"（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "label.zh",
+              "term": "bytes",
+              "evidence": "label.zh 含 \"bytes\""
+            },
+            {
+              "source": "label.en",
+              "term": "bit",
+              "evidence": "label.en 含 \"bit\"（术语「比特」⇒ bit）"
+            },
+            {
+              "source": "label.en",
+              "term": "bits",
+              "evidence": "label.en 含 \"bits\""
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            }
+          ]
+        },
+        {
+          "blockType": "pq_bits_to_bytes",
+          "score": 28.323999999999995,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "bit",
+              "evidence": "label.zh 含 \"bit\"（术语「比特」⇒ bit）"
+            },
+            {
+              "source": "label.zh",
+              "term": "bits",
+              "evidence": "label.zh 含 \"bits\""
+            },
+            {
+              "source": "label.zh",
+              "term": "byte",
+              "evidence": "label.zh 含 \"byte\"（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "label.zh",
+              "term": "bytes",
+              "evidence": "label.zh 含 \"bytes\""
+            },
+            {
+              "source": "label.en",
+              "term": "bit",
+              "evidence": "label.en 含 \"bit\"（术语「比特」⇒ bit）"
+            },
+            {
+              "source": "label.en",
+              "term": "bits",
+              "evidence": "label.en 含 \"bits\""
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            }
+          ]
+        },
+        {
+          "blockType": "data_convert_bits_to_bytes",
+          "score": 24.54,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "字节",
+              "evidence": "label.zh 含 \"字节\""
+            },
+            {
+              "source": "label.zh",
+              "term": "比特",
+              "evidence": "label.zh 含 \"比特\""
+            },
+            {
+              "source": "label.en",
+              "term": "bit",
+              "evidence": "label.en 含 \"bit\"（术语「比特」⇒ bit）"
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            },
+            {
+              "source": "blockType",
+              "term": "bit",
+              "evidence": "blockType 含 \"bit\"（术语「比特」⇒ bit）"
+            },
+            {
+              "source": "blockType",
+              "term": "bits",
+              "evidence": "blockType 含 \"bits\""
+            },
+            {
+              "source": "blockType",
+              "term": "byte",
+              "evidence": "blockType 含 \"byte\"（术语「字节序列」⇒ byte）"
+            }
+          ]
+        },
+        {
+          "blockType": "data_convert_bytes_to_bits",
+          "score": 24.54,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "字节",
+              "evidence": "label.zh 含 \"字节\""
+            },
+            {
+              "source": "label.zh",
+              "term": "比特",
+              "evidence": "label.zh 含 \"比特\""
+            },
+            {
+              "source": "label.en",
+              "term": "bit",
+              "evidence": "label.en 含 \"bit\"（术语「比特」⇒ bit）"
+            },
+            {
+              "source": "label.en",
+              "term": "byte",
+              "evidence": "label.en 含 \"byte\"（术语「字节序列」⇒ byte）"
+            },
+            {
+              "source": "label.en",
+              "term": "bytes",
+              "evidence": "label.en 含 \"bytes\""
+            },
+            {
+              "source": "blockType",
+              "term": "bit",
+              "evidence": "blockType 含 \"bit\"（术语「比特」⇒ bit）"
+            },
+            {
+              "source": "blockType",
+              "term": "bits",
+              "evidence": "blockType 含 \"bits\""
+            },
+            {
+              "source": "blockType",
+              "term": "byte",
+              "evidence": "blockType 含 \"byte\"（术语「字节序列」⇒ byte）"
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "pq_bytes_to_bits"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "g11",
+      "query": "计算 128 位有限域上的乘法",
+      "in": [],
+      "out": [],
+      "expected": [
+        "gcm_gf128_mul"
+      ],
+      "top5": [
+        {
+          "blockType": "gf2m_poly_mul",
+          "score": 45.69,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "gf",
+              "evidence": "label.zh 含 \"gf\"（术语「有限域」⇒ gf）"
+            },
+            {
+              "source": "label.zh",
+              "term": "mul",
+              "evidence": "label.zh 含 \"mul\"（术语「乘法」⇒ mul）"
+            },
+            {
+              "source": "label.en",
+              "term": "gf",
+              "evidence": "label.en 含 \"gf\"（术语「有限域」⇒ gf）"
+            },
+            {
+              "source": "label.en",
+              "term": "mul",
+              "evidence": "label.en 含 \"mul\"（术语「乘法」⇒ mul）"
+            },
+            {
+              "source": "blockType",
+              "term": "gf",
+              "evidence": "blockType 含 \"gf\"（术语「有限域」⇒ gf）"
+            },
+            {
+              "source": "blockType",
+              "term": "mul",
+              "evidence": "blockType 含 \"mul\"（术语「乘法」⇒ mul）"
+            },
+            {
+              "source": "python",
+              "term": "gf",
+              "evidence": "python 含 \"gf\"（术语「有限域」⇒ gf）"
+            },
+            {
+              "source": "python",
+              "term": "mul",
+              "evidence": "python 含 \"mul\"（术语「乘法」⇒ mul）"
+            }
+          ]
+        },
+        {
+          "blockType": "gf2_poly_mul",
+          "score": 44.01,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "gf",
+              "evidence": "label.zh 含 \"gf\"（术语「有限域」⇒ gf）"
+            },
+            {
+              "source": "label.zh",
+              "term": "mul",
+              "evidence": "label.zh 含 \"mul\"（术语「乘法」⇒ mul）"
+            },
+            {
+              "source": "label.en",
+              "term": "gf",
+              "evidence": "label.en 含 \"gf\"（术语「有限域」⇒ gf）"
+            },
+            {
+              "source": "label.en",
+              "term": "mul",
+              "evidence": "label.en 含 \"mul\"（术语「乘法」⇒ mul）"
+            },
+            {
+              "source": "blockType",
+              "term": "gf",
+              "evidence": "blockType 含 \"gf\"（术语「有限域」⇒ gf）"
+            },
+            {
+              "source": "blockType",
+              "term": "mul",
+              "evidence": "blockType 含 \"mul\"（术语「乘法」⇒ mul）"
+            },
+            {
+              "source": "python",
+              "term": "mul",
+              "evidence": "python 含 \"mul\"（术语「乘法」⇒ mul）"
+            }
+          ]
+        },
+        {
+          "blockType": "gf2m_mul",
+          "score": 36.66,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "gf",
+              "evidence": "label.zh 含 \"gf\"（术语「有限域」⇒ gf）"
+            },
+            {
+              "source": "label.en",
+              "term": "gf",
+              "evidence": "label.en 含 \"gf\"（术语「有限域」⇒ gf）"
+            },
+            {
+              "source": "option",
+              "term": "128",
+              "evidence": "option 含 \"128\""
+            },
+            {
+              "source": "blockType",
+              "term": "gf",
+              "evidence": "blockType 含 \"gf\"（术语「有限域」⇒ gf）"
+            },
+            {
+              "source": "blockType",
+              "term": "mul",
+              "evidence": "blockType 含 \"mul\"（术语「乘法」⇒ mul）"
+            },
+            {
+              "source": "definition",
+              "term": "gf",
+              "evidence": "definition 含 \"gf\"（术语「有限域」⇒ gf）"
+            },
+            {
+              "source": "definition",
+              "term": "mul",
+              "evidence": "definition 含 \"mul\"（术语「乘法」⇒ mul）"
+            },
+            {
+              "source": "python",
+              "term": "gf",
+              "evidence": "python 含 \"gf\"（术语「有限域」⇒ gf）"
+            }
+          ]
+        },
+        {
+          "blockType": "gcm_gf128_mul",
+          "score": 35.06,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "gf",
+              "evidence": "label.zh 含 \"gf\"（术语「有限域」⇒ gf）"
+            },
+            {
+              "source": "label.zh",
+              "term": "乘法",
+              "evidence": "label.zh 含 \"乘法\""
+            },
+            {
+              "source": "label.en",
+              "term": "gf",
+              "evidence": "label.en 含 \"gf\"（术语「有限域」⇒ gf）"
+            },
+            {
+              "source": "label.en",
+              "term": "乘法",
+              "evidence": "label.en 含 \"乘法\""
+            },
+            {
+              "source": "blockType",
+              "term": "128",
+              "evidence": "blockType 含 \"128\""
+            },
+            {
+              "source": "blockType",
+              "term": "gf",
+              "evidence": "blockType 含 \"gf\"（术语「有限域」⇒ gf）"
+            },
+            {
+              "source": "blockType",
+              "term": "mul",
+              "evidence": "blockType 含 \"mul\"（术语「乘法」⇒ mul）"
+            },
+            {
+              "source": "python",
+              "term": "mul",
+              "evidence": "python 含 \"mul\"（术语「乘法」⇒ mul）"
+            }
+          ]
+        },
+        {
+          "blockType": "gf2m_inv",
+          "score": 26.519999999999996,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "gf",
+              "evidence": "label.zh 含 \"gf\"（术语「有限域」⇒ gf）"
+            },
+            {
+              "source": "label.en",
+              "term": "gf",
+              "evidence": "label.en 含 \"gf\"（术语「有限域」⇒ gf）"
+            },
+            {
+              "source": "option",
+              "term": "128",
+              "evidence": "option 含 \"128\""
+            },
+            {
+              "source": "blockType",
+              "term": "gf",
+              "evidence": "blockType 含 \"gf\"（术语「有限域」⇒ gf）"
+            },
+            {
+              "source": "definition",
+              "term": "gf",
+              "evidence": "definition 含 \"gf\"（术语「有限域」⇒ gf）"
+            },
+            {
+              "source": "python",
+              "term": "gf",
+              "evidence": "python 含 \"gf\"（术语「有限域」⇒ gf）"
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "gcm_gf128_mul"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "g12",
+      "query": "对消息做 1024 位分组的填充",
+      "in": [],
+      "out": [],
+      "expected": [
+        "hash_sha512_pad"
+      ],
+      "top5": [
+        {
+          "blockType": "pad_zero",
+          "score": 38.94,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "block",
+              "evidence": "label.zh 含 \"block\"（术语「分组」⇒ block）"
+            },
+            {
+              "source": "label.zh",
+              "term": "pad",
+              "evidence": "label.zh 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "label.en",
+              "term": "block",
+              "evidence": "label.en 含 \"block\"（术语「分组」⇒ block）"
+            },
+            {
+              "source": "label.en",
+              "term": "pad",
+              "evidence": "label.en 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "blockType",
+              "term": "pad",
+              "evidence": "blockType 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "input",
+              "term": "block",
+              "evidence": "输入 DATA/BLOCK_SIZE 含 block（术语「分组」⇒ block）"
+            },
+            {
+              "source": "definition",
+              "term": "pad",
+              "evidence": "definition 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "python",
+              "term": "block",
+              "evidence": "python 含 \"block\"（术语「分组」⇒ block）"
+            }
+          ]
+        },
+        {
+          "blockType": "hash_sha512_pad",
+          "score": 31.679999999999996,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "msg",
+              "evidence": "label.zh 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "label.zh",
+              "term": "pad",
+              "evidence": "label.zh 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "label.en",
+              "term": "msg",
+              "evidence": "label.en 含 \"msg\"（术语「消息」⇒ msg）"
+            },
+            {
+              "source": "label.en",
+              "term": "pad",
+              "evidence": "label.en 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "blockType",
+              "term": "pad",
+              "evidence": "blockType 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "python",
+              "term": "pad",
+              "evidence": "python 含 \"pad\"（术语「填充」⇒ pad）"
+            }
+          ]
+        },
+        {
+          "blockType": "hash_sha256_pad_text",
+          "score": 27.019999999999996,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "pad",
+              "evidence": "label.zh 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "label.en",
+              "term": "pad",
+              "evidence": "label.en 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "blockType",
+              "term": "pad",
+              "evidence": "blockType 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "definition",
+              "term": "pad",
+              "evidence": "definition 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "python",
+              "term": "pad",
+              "evidence": "python 含 \"pad\"（术语「填充」⇒ pad）"
+            }
+          ]
+        },
+        {
+          "blockType": "hash_sha3_pad_hex",
+          "score": 27.019999999999996,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "pad",
+              "evidence": "label.zh 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "label.en",
+              "term": "pad",
+              "evidence": "label.en 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "blockType",
+              "term": "pad",
+              "evidence": "blockType 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "definition",
+              "term": "pad",
+              "evidence": "definition 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "python",
+              "term": "pad",
+              "evidence": "python 含 \"pad\"（术语「填充」⇒ pad）"
+            }
+          ]
+        },
+        {
+          "blockType": "hash_sha3_pad_text",
+          "score": 27.019999999999996,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "pad",
+              "evidence": "label.zh 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "label.en",
+              "term": "pad",
+              "evidence": "label.en 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "blockType",
+              "term": "pad",
+              "evidence": "blockType 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "definition",
+              "term": "pad",
+              "evidence": "definition 含 \"pad\"（术语「填充」⇒ pad）"
+            },
+            {
+              "source": "python",
+              "term": "pad",
+              "evidence": "python 含 \"pad\"（术语「填充」⇒ pad）"
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "hash_sha512_pad"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "g13",
+      "query": "构造 CCM 的首个计数器块",
+      "in": [],
+      "out": [],
+      "expected": [
+        "ccm_b0"
+      ],
+      "top5": [
+        {
+          "blockType": "ccm_ctr",
+          "score": 50.180000000000014,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "ccm",
+              "evidence": "label.zh 含 \"ccm\""
+            },
+            {
+              "source": "label.zh",
+              "term": "ctr",
+              "evidence": "label.zh 含 \"ctr\"（术语「计数器」⇒ ctr）"
+            },
+            {
+              "source": "label.en",
+              "term": "ccm",
+              "evidence": "label.en 含 \"ccm\""
+            },
+            {
+              "source": "label.en",
+              "term": "ctr",
+              "evidence": "label.en 含 \"ctr\"（术语「计数器」⇒ ctr）"
+            },
+            {
+              "source": "blockType",
+              "term": "ccm",
+              "evidence": "blockType 含 \"ccm\""
+            },
+            {
+              "source": "blockType",
+              "term": "ctr",
+              "evidence": "blockType 含 \"ctr\"（术语「计数器」⇒ ctr）"
+            },
+            {
+              "source": "definition",
+              "term": "ccm",
+              "evidence": "definition 含 \"ccm\""
+            },
+            {
+              "source": "definition",
+              "term": "ctr",
+              "evidence": "definition 含 \"ctr\"（术语「计数器」⇒ ctr）"
+            }
+          ]
+        },
+        {
+          "blockType": "ccm_b0",
+          "score": 42.300000000000004,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "ccm",
+              "evidence": "label.zh 含 \"ccm\""
+            },
+            {
+              "source": "label.zh",
+              "term": "个计",
+              "evidence": "label.zh 含 \"个计\""
+            },
+            {
+              "source": "label.zh",
+              "term": "器块",
+              "evidence": "label.zh 含 \"器块\""
+            },
+            {
+              "source": "label.zh",
+              "term": "数器",
+              "evidence": "label.zh 含 \"数器\""
+            },
+            {
+              "source": "label.zh",
+              "term": "计数",
+              "evidence": "label.zh 含 \"计数\""
+            },
+            {
+              "source": "label.zh",
+              "term": "首个",
+              "evidence": "label.zh 含 \"首个\""
+            },
+            {
+              "source": "label.en",
+              "term": "ccm",
+              "evidence": "label.en 含 \"ccm\""
+            },
+            {
+              "source": "label.en",
+              "term": "个计",
+              "evidence": "label.en 含 \"个计\""
+            }
+          ]
+        },
+        {
+          "blockType": "ccm_counter_block",
+          "score": 33.1,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "ccm",
+              "evidence": "label.zh 含 \"ccm\""
+            },
+            {
+              "source": "label.zh",
+              "term": "器块",
+              "evidence": "label.zh 含 \"器块\""
+            },
+            {
+              "source": "label.zh",
+              "term": "数器",
+              "evidence": "label.zh 含 \"数器\""
+            },
+            {
+              "source": "label.zh",
+              "term": "计数",
+              "evidence": "label.zh 含 \"计数\""
+            },
+            {
+              "source": "label.en",
+              "term": "ccm",
+              "evidence": "label.en 含 \"ccm\""
+            },
+            {
+              "source": "label.en",
+              "term": "器块",
+              "evidence": "label.en 含 \"器块\""
+            },
+            {
+              "source": "label.en",
+              "term": "数器",
+              "evidence": "label.en 含 \"数器\""
+            },
+            {
+              "source": "label.en",
+              "term": "计数",
+              "evidence": "label.en 含 \"计数\""
+            }
+          ]
+        },
+        {
+          "blockType": "mode_ctr_encrypt",
+          "score": 30.880000000000003,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "ctr",
+              "evidence": "label.zh 含 \"ctr\"（术语「计数器」⇒ ctr）"
+            },
+            {
+              "source": "label.en",
+              "term": "ctr",
+              "evidence": "label.en 含 \"ctr\"（术语「计数器」⇒ ctr）"
+            },
+            {
+              "source": "blockType",
+              "term": "ctr",
+              "evidence": "blockType 含 \"ctr\"（术语「计数器」⇒ ctr）"
+            },
+            {
+              "source": "definition",
+              "term": "ctr",
+              "evidence": "definition 含 \"ctr\"（术语「计数器」⇒ ctr）"
+            },
+            {
+              "source": "python",
+              "term": "ctr",
+              "evidence": "python 含 \"ctr\"（术语「计数器」⇒ ctr）"
+            }
+          ]
+        },
+        {
+          "blockType": "gcm_gctr",
+          "score": 25.92,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "ctr",
+              "evidence": "label.zh 含 \"ctr\"（术语「计数器」⇒ ctr）"
+            },
+            {
+              "source": "label.en",
+              "term": "ctr",
+              "evidence": "label.en 含 \"ctr\"（术语「计数器」⇒ ctr）"
+            },
+            {
+              "source": "blockType",
+              "term": "ctr",
+              "evidence": "blockType 含 \"ctr\"（术语「计数器」⇒ ctr）"
+            },
+            {
+              "source": "python",
+              "term": "ctr",
+              "evidence": "python 含 \"ctr\"（术语「计数器」⇒ ctr）"
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "ccm_b0"
+      ],
+      "missingExpected": []
+    },
+    {
+      "id": "g14",
+      "query": "在数论变换域里采随机多项式",
+      "in": [],
+      "out": [],
+      "expected": [
+        "pq_sample_ntt"
+      ],
+      "top5": [
+        {
+          "blockType": "pq_ntt_butterfly",
+          "score": 37.28000000000001,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "ntt",
+              "evidence": "label.zh 含 \"ntt\"（术语「数论变换」⇒ ntt）"
+            },
+            {
+              "source": "label.en",
+              "term": "ntt",
+              "evidence": "label.en 含 \"ntt\"（术语「数论变换」⇒ ntt）"
+            },
+            {
+              "source": "option",
+              "term": "ntt",
+              "evidence": "option 含 \"ntt\"（术语「数论变换」⇒ ntt）"
+            },
+            {
+              "source": "blockType",
+              "term": "ntt",
+              "evidence": "blockType 含 \"ntt\"（术语「数论变换」⇒ ntt）"
+            },
+            {
+              "source": "definition",
+              "term": "ntt",
+              "evidence": "definition 含 \"ntt\"（术语「数论变换」⇒ ntt）"
+            },
+            {
+              "source": "python",
+              "term": "ntt",
+              "evidence": "python 含 \"ntt\"（术语「数论变换」⇒ ntt）"
+            }
+          ]
+        },
+        {
+          "blockType": "gf2m_poly_add",
+          "score": 30.880000000000003,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "blockType",
+              "term": "poly",
+              "evidence": "blockType 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "definition",
+              "term": "poly",
+              "evidence": "definition 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "python",
+              "term": "poly",
+              "evidence": "python 含 \"poly\"（术语「多项式」⇒ poly）"
+            }
+          ]
+        },
+        {
+          "blockType": "pq_ntt",
+          "score": 30.880000000000003,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "ntt",
+              "evidence": "label.zh 含 \"ntt\"（术语「数论变换」⇒ ntt）"
+            },
+            {
+              "source": "label.en",
+              "term": "ntt",
+              "evidence": "label.en 含 \"ntt\"（术语「数论变换」⇒ ntt）"
+            },
+            {
+              "source": "blockType",
+              "term": "ntt",
+              "evidence": "blockType 含 \"ntt\"（术语「数论变换」⇒ ntt）"
+            },
+            {
+              "source": "definition",
+              "term": "ntt",
+              "evidence": "definition 含 \"ntt\"（术语「数论变换」⇒ ntt）"
+            },
+            {
+              "source": "python",
+              "term": "ntt",
+              "evidence": "python 含 \"ntt\"（术语「数论变换」⇒ ntt）"
+            }
+          ]
+        },
+        {
+          "blockType": "pq_ntt_mul",
+          "score": 30.880000000000003,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "ntt",
+              "evidence": "label.zh 含 \"ntt\"（术语「数论变换」⇒ ntt）"
+            },
+            {
+              "source": "label.en",
+              "term": "ntt",
+              "evidence": "label.en 含 \"ntt\"（术语「数论变换」⇒ ntt）"
+            },
+            {
+              "source": "blockType",
+              "term": "ntt",
+              "evidence": "blockType 含 \"ntt\"（术语「数论变换」⇒ ntt）"
+            },
+            {
+              "source": "definition",
+              "term": "ntt",
+              "evidence": "definition 含 \"ntt\"（术语「数论变换」⇒ ntt）"
+            },
+            {
+              "source": "python",
+              "term": "ntt",
+              "evidence": "python 含 \"ntt\"（术语「数论变换」⇒ ntt）"
+            }
+          ]
+        },
+        {
+          "blockType": "pq_poly_add",
+          "score": 30.880000000000003,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "poly",
+              "evidence": "label.zh 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "label.en",
+              "term": "poly",
+              "evidence": "label.en 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "blockType",
+              "term": "poly",
+              "evidence": "blockType 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "definition",
+              "term": "poly",
+              "evidence": "definition 含 \"poly\"（术语「多项式」⇒ poly）"
+            },
+            {
+              "source": "python",
+              "term": "poly",
+              "evidence": "python 含 \"poly\"（术语「多项式」⇒ poly）"
+            }
+          ]
+        }
+      ],
+      "hit": false,
+      "covered": [],
+      "missingExpected": [
+        "pq_sample_ntt"
+      ]
+    },
+    {
+      "id": "g15",
+      "query": "对两个 32 位字做按位异或",
+      "in": [],
+      "out": [],
+      "expected": [
+        "bit_expr_infix",
+        "lgc_operation",
+        "bit_operation"
+      ],
+      "top5": [
+        {
+          "blockType": "bit_rotate_left_op",
+          "score": 33.88,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "2位",
+              "evidence": "label.zh 含 \"2位\""
+            },
+            {
+              "source": "label.zh",
+              "term": "32",
+              "evidence": "label.zh 含 \"32\""
+            },
+            {
+              "source": "label.zh",
+              "term": "xor",
+              "evidence": "label.zh 含 \"xor\"（术语「异或」⇒ xor）"
+            },
+            {
+              "source": "label.en",
+              "term": "32",
+              "evidence": "label.en 含 \"32\""
+            },
+            {
+              "source": "label.en",
+              "term": "xor",
+              "evidence": "label.en 含 \"xor\"（术语「异或」⇒ xor）"
+            },
+            {
+              "source": "option",
+              "term": "32",
+              "evidence": "option 含 \"32\""
+            },
+            {
+              "source": "option",
+              "term": "xor",
+              "evidence": "option 含 \"xor\"（术语「异或」⇒ xor）"
+            },
+            {
+              "source": "python",
+              "term": "32",
+              "evidence": "python 含 \"32\""
+            }
+          ]
+        },
+        {
+          "blockType": "bit_rotate_right_op",
+          "score": 33.88,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "2位",
+              "evidence": "label.zh 含 \"2位\""
+            },
+            {
+              "source": "label.zh",
+              "term": "32",
+              "evidence": "label.zh 含 \"32\""
+            },
+            {
+              "source": "label.zh",
+              "term": "xor",
+              "evidence": "label.zh 含 \"xor\"（术语「异或」⇒ xor）"
+            },
+            {
+              "source": "label.en",
+              "term": "32",
+              "evidence": "label.en 含 \"32\""
+            },
+            {
+              "source": "label.en",
+              "term": "xor",
+              "evidence": "label.en 含 \"xor\"（术语「异或」⇒ xor）"
+            },
+            {
+              "source": "option",
+              "term": "32",
+              "evidence": "option 含 \"32\""
+            },
+            {
+              "source": "option",
+              "term": "xor",
+              "evidence": "option 含 \"xor\"（术语「异或」⇒ xor）"
+            },
+            {
+              "source": "python",
+              "term": "32",
+              "evidence": "python 含 \"32\""
+            }
+          ]
+        },
+        {
+          "blockType": "bit_expr_infix",
+          "score": 24.320000000000004,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "异或",
+              "evidence": "label.zh 含 \"异或\""
+            },
+            {
+              "source": "label.en",
+              "term": "xor",
+              "evidence": "label.en 含 \"xor\"（术语「异或」⇒ xor）"
+            },
+            {
+              "source": "option",
+              "term": "xor",
+              "evidence": "option 含 \"xor\"（术语「异或」⇒ xor）"
+            },
+            {
+              "source": "option",
+              "term": "异或",
+              "evidence": "option 含 \"异或\""
+            },
+            {
+              "source": "definition",
+              "term": "32",
+              "evidence": "definition 含 \"32\""
+            },
+            {
+              "source": "python",
+              "term": "32",
+              "evidence": "python 含 \"32\""
+            }
+          ]
+        },
+        {
+          "blockType": "lgc_operation",
+          "score": 23.200000000000003,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "异或",
+              "evidence": "label.zh 含 \"异或\""
+            },
+            {
+              "source": "label.en",
+              "term": "xor",
+              "evidence": "label.en 含 \"xor\"（术语「异或」⇒ xor）"
+            },
+            {
+              "source": "option",
+              "term": "xor",
+              "evidence": "option 含 \"xor\"（术语「异或」⇒ xor）"
+            },
+            {
+              "source": "option",
+              "term": "异或",
+              "evidence": "option 含 \"异或\""
+            }
+          ]
+        },
+        {
+          "blockType": "lgc_compound",
+          "score": 19.200000000000003,
+          "matched": [
+            {
+              "source": "label.zh",
+              "term": "异或",
+              "evidence": "label.zh 含 \"异或\""
+            },
+            {
+              "source": "label.en",
+              "term": "xor",
+              "evidence": "label.en 含 \"xor\"（术语「异或」⇒ xor）"
+            },
+            {
+              "source": "option",
+              "term": "xor",
+              "evidence": "option 含 \"xor\"（术语「异或」⇒ xor）"
+            },
+            {
+              "source": "option",
+              "term": "异或",
+              "evidence": "option 含 \"异或\""
+            }
+          ]
+        }
+      ],
+      "hit": true,
+      "covered": [
+        "bit_expr_infix",
+        "lgc_operation"
+      ],
+      "missingExpected": [
+        "bit_operation"
+      ]
+    }
+  ],
+  "misses": [
+    {
+      "id": "g14",
+      "query": "在数论变换域里采随机多项式",
+      "expected": [
+        "pq_sample_ntt"
+      ],
+      "top5": [
+        "pq_ntt_butterfly",
+        "gf2m_poly_add",
+        "pq_ntt",
+        "pq_ntt_mul",
+        "pq_poly_add"
+      ]
+    }
+  ]
+}

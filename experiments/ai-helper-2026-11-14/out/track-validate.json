@@ -1,0 +1,872 @@
+{
+  "generatedAt": "2026-11-14T14:35:35.397Z",
+  "argv": [
+    "validate",
+    "demos/AES-Atomic-Round.json",
+    "demos/ML-KEM-Atomic.json",
+    "demos/Procedure-AES-Round.json",
+    "demos/procedures/AES-LastRound.json",
+    "demos/procedures/AES-Round.json",
+    "demos/procedures/ARGON2.json",
+    "demos/procedures/ASCON-Extended.json",
+    "demos/procedures/ASCON.json",
+    "demos/procedures/CCM-Encrypt.json",
+    "demos/procedures/CMAC-AES.json",
+    "demos/procedures/Code-Based-Math.json",
+    "demos/procedures/DRBG.json",
+    "demos/procedures/ECDH.json",
+    "demos/procedures/ECDSA.json",
+    "demos/procedures/EDDSA.json",
+    "demos/procedures/EEA3.json",
+    "demos/procedures/EIA3.json",
+    "demos/procedures/FORS-Sign.json",
+    "demos/procedures/GCM-Encrypt.json",
+    "demos/procedures/GF2m-Poly.json",
+    "demos/procedures/GM-RNG.json",
+    "demos/procedures/Goppa-Decode.json",
+    "demos/procedures/Hash-Based-Structures.json",
+    "demos/procedures/HKDF-SHA256.json",
+    "demos/procedures/HMAC-SHA256.json",
+    "demos/Procedure-SM4-Round.json",
+    "demos/procedures/ML-DSA-NTT.json",
+    "demos/procedures/ML-DSA-Primitives.json",
+    "demos/procedures/ML-DSA-Sign.json",
+    "demos/procedures/ML-KEM-Encaps.json",
+    "demos/procedures/Mode-CBC.json",
+    "demos/procedures/Mode-CTR.json",
+    "demos/procedures/Mode-ECB.json",
+    "demos/procedures/Multivariate-Math.json",
+    "demos/procedures/PBKDF2.json",
+    "demos/procedures/PBKDF2-SHA256.json",
+    "demos/procedures/PBKDF2-SM3.json",
+    "demos/procedures/PQC-Gaps.json",
+    "demos/procedures/Research-Math.json",
+    "demos/procedures/RSA-Encrypt.json",
+    "demos/procedures/RSA-Sign.json",
+    "demos/procedures/SHA224-Hash.json",
+    "demos/procedures/SHA256-Hash.json",
+    "demos/procedures/SHA384-Hash.json",
+    "demos/procedures/SHA3-Hash.json",
+    "demos/procedures/SHA512-Hash.json",
+    "demos/procedures/SM2-Encrypt.json",
+    "demos/procedures/SM2-KeyExchange.json",
+    "demos/procedures/SM2-PointMul.json",
+    "demos/procedures/SM2-Sign.json",
+    "demos/procedures/SM3-Hash.json",
+    "demos/procedures/SM4-Round.json",
+    "demos/procedures/SM4-Sbox.json",
+    "demos/procedures/SM9-Sign.json",
+    "demos/procedures/Tree-Index.json",
+    "demos/procedures/Wrap-Up-Math.json",
+    "demos/procedures/X25519.json",
+    "demos/procedures/XTS-Encrypt.json",
+    "demos/SHA256-Atomic-Hash.json",
+    "demos/SM4-Atomic-Round.json",
+    "--json"
+  ],
+  "exitCode": 0,
+  "files": [
+    {
+      "file": "demos/AES-Atomic-Round.json",
+      "blocks": 13,
+      "pairs": 5,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 5,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "variables_get": 5
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/ML-KEM-Atomic.json",
+      "blocks": 11,
+      "pairs": 5,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 5,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 5
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/Procedure-AES-Round.json",
+      "blocks": 7,
+      "pairs": 5,
+      "ok": 5,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/AES-LastRound.json",
+      "blocks": 6,
+      "pairs": 4,
+      "ok": 4,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/AES-Round.json",
+      "blocks": 7,
+      "pairs": 5,
+      "ok": 5,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/ARGON2.json",
+      "blocks": 10,
+      "pairs": 8,
+      "ok": 4,
+      "mismatch": 0,
+      "unknown": 4,
+      "unknownRate": 50,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 4
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/ASCON-Extended.json",
+      "blocks": 18,
+      "pairs": 10,
+      "ok": 2,
+      "mismatch": 0,
+      "unknown": 8,
+      "unknownRate": 80,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 8
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/ASCON.json",
+      "blocks": 6,
+      "pairs": 4,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 4,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 4
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/CCM-Encrypt.json",
+      "blocks": 35,
+      "pairs": 21,
+      "ok": 4,
+      "mismatch": 0,
+      "unknown": 17,
+      "unknownRate": 81,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 17
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/CMAC-AES.json",
+      "blocks": 7,
+      "pairs": 3,
+      "ok": 3,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/Code-Based-Math.json",
+      "blocks": 32,
+      "pairs": 16,
+      "ok": 16,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/DRBG.json",
+      "blocks": 6,
+      "pairs": 4,
+      "ok": 1,
+      "mismatch": 0,
+      "unknown": 3,
+      "unknownRate": 75,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 3
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/ECDH.json",
+      "blocks": 5,
+      "pairs": 3,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 3,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 3
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/ECDSA.json",
+      "blocks": 9,
+      "pairs": 5,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 5,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 5
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/EDDSA.json",
+      "blocks": 9,
+      "pairs": 5,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 5,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 5
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/EEA3.json",
+      "blocks": 5,
+      "pairs": 3,
+      "ok": 1,
+      "mismatch": 0,
+      "unknown": 2,
+      "unknownRate": 66.7,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 2
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/EIA3.json",
+      "blocks": 16,
+      "pairs": 12,
+      "ok": 8,
+      "mismatch": 0,
+      "unknown": 4,
+      "unknownRate": 33.3,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 4
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/FORS-Sign.json",
+      "blocks": 12,
+      "pairs": 6,
+      "ok": 6,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/GCM-Encrypt.json",
+      "blocks": 6,
+      "pairs": 4,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 4,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 4
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/GF2m-Poly.json",
+      "blocks": 23,
+      "pairs": 11,
+      "ok": 11,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/GM-RNG.json",
+      "blocks": 6,
+      "pairs": 4,
+      "ok": 1,
+      "mismatch": 0,
+      "unknown": 3,
+      "unknownRate": 75,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 3
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/Goppa-Decode.json",
+      "blocks": 47,
+      "pairs": 31,
+      "ok": 31,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/Hash-Based-Structures.json",
+      "blocks": 23,
+      "pairs": 13,
+      "ok": 13,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/HKDF-SHA256.json",
+      "blocks": 6,
+      "pairs": 4,
+      "ok": 1,
+      "mismatch": 0,
+      "unknown": 3,
+      "unknownRate": 75,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 3
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/HMAC-SHA256.json",
+      "blocks": 4,
+      "pairs": 2,
+      "ok": 2,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/Procedure-SM4-Round.json",
+      "blocks": 7,
+      "pairs": 5,
+      "ok": 5,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/ML-DSA-NTT.json",
+      "blocks": 10,
+      "pairs": 4,
+      "ok": 4,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/ML-DSA-Primitives.json",
+      "blocks": 23,
+      "pairs": 9,
+      "ok": 9,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/ML-DSA-Sign.json",
+      "blocks": 9,
+      "pairs": 5,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 5,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 5
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/ML-KEM-Encaps.json",
+      "blocks": 1494,
+      "pairs": 893,
+      "ok": 893,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/Mode-CBC.json",
+      "blocks": 5,
+      "pairs": 3,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 3,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 3
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/Mode-CTR.json",
+      "blocks": 5,
+      "pairs": 3,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 3,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 3
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/Mode-ECB.json",
+      "blocks": 4,
+      "pairs": 2,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 2,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 2
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/Multivariate-Math.json",
+      "blocks": 23,
+      "pairs": 11,
+      "ok": 11,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/PBKDF2.json",
+      "blocks": 6,
+      "pairs": 4,
+      "ok": 2,
+      "mismatch": 0,
+      "unknown": 2,
+      "unknownRate": 50,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 2
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/PBKDF2-SHA256.json",
+      "blocks": 6,
+      "pairs": 4,
+      "ok": 2,
+      "mismatch": 0,
+      "unknown": 2,
+      "unknownRate": 50,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 2
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/PBKDF2-SM3.json",
+      "blocks": 6,
+      "pairs": 4,
+      "ok": 2,
+      "mismatch": 0,
+      "unknown": 2,
+      "unknownRate": 50,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 2
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/PQC-Gaps.json",
+      "blocks": 33,
+      "pairs": 7,
+      "ok": 7,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/Research-Math.json",
+      "blocks": 12,
+      "pairs": 6,
+      "ok": 6,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/RSA-Encrypt.json",
+      "blocks": 10,
+      "pairs": 4,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 4,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 4
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/RSA-Sign.json",
+      "blocks": 14,
+      "pairs": 8,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 8,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 8
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/SHA224-Hash.json",
+      "blocks": 3,
+      "pairs": 0,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/SHA256-Hash.json",
+      "blocks": 5,
+      "pairs": 0,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/SHA384-Hash.json",
+      "blocks": 3,
+      "pairs": 1,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 1,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "variables_get": 1
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/SHA3-Hash.json",
+      "blocks": 3,
+      "pairs": 1,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 1,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "variables_get": 1
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/SHA512-Hash.json",
+      "blocks": 3,
+      "pairs": 1,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 1,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "variables_get": 1
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/SM2-Encrypt.json",
+      "blocks": 10,
+      "pairs": 6,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 6,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 6
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/SM2-KeyExchange.json",
+      "blocks": 11,
+      "pairs": 9,
+      "ok": 9,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/SM2-PointMul.json",
+      "blocks": 8,
+      "pairs": 0,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/SM2-Sign.json",
+      "blocks": 6,
+      "pairs": 4,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 4,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 4
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/SM3-Hash.json",
+      "blocks": 5,
+      "pairs": 0,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/SM4-Round.json",
+      "blocks": 7,
+      "pairs": 5,
+      "ok": 5,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/SM4-Sbox.json",
+      "blocks": 3,
+      "pairs": 1,
+      "ok": 1,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/SM9-Sign.json",
+      "blocks": 9,
+      "pairs": 7,
+      "ok": 2,
+      "mismatch": 0,
+      "unknown": 5,
+      "unknownRate": 71.4,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 5
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/Tree-Index.json",
+      "blocks": 25,
+      "pairs": 15,
+      "ok": 15,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/Wrap-Up-Math.json",
+      "blocks": 21,
+      "pairs": 11,
+      "ok": 11,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/X25519.json",
+      "blocks": 4,
+      "pairs": 2,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 2,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 2
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/procedures/XTS-Encrypt.json",
+      "blocks": 8,
+      "pairs": 4,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 4,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "data_value": 4
+      },
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/SHA256-Atomic-Hash.json",
+      "blocks": 6,
+      "pairs": 0,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 0,
+      "unknownRate": 0,
+      "findings": [],
+      "unknownByChild": {},
+      "variableConflicts": []
+    },
+    {
+      "file": "demos/SM4-Atomic-Round.json",
+      "blocks": 15,
+      "pairs": 5,
+      "ok": 0,
+      "mismatch": 0,
+      "unknown": 5,
+      "unknownRate": 100,
+      "findings": [],
+      "unknownByChild": {
+        "variables_get": 4,
+        "data_value": 1
+      },
+      "variableConflicts": []
+    }
+  ],
+  "totals": {
+    "blocks": 2151,
+    "pairs": 1237,
+    "ok": 1102,
+    "mismatch": 0,
+    "unknown": 135,
+    "unknownRate": 10.9,
+    "findings": [],
+    "unknownByChild": {
+      "variables_get": 12,
+      "data_value": 123
+    },
+    "variableConflicts": []
+  },
+  "errors": []
+}

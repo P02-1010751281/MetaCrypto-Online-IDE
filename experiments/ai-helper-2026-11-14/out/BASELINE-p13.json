@@ -1,0 +1,41 @@
+{
+  "capturedAt": "2026-11-14T11:39:49.315Z",
+  "head": "04d9ccc",
+  "files": {
+    "scripts/ai-helper-typecheck.ts": {
+      "sha256": "202f9a8154c54e59",
+      "lines": 395
+    },
+    "scripts/ai-helper-roundtrip.ts": {
+      "sha256": "9a953308a36f1fc5",
+      "lines": 412
+    },
+    "scripts/ai-helper-reverse.ts": {
+      "sha256": "f6f0722f493c3412",
+      "lines": 390
+    },
+    "scripts/ai-helper-contract.ts": {
+      "sha256": "c9a1f09b78445740",
+      "lines": 117
+    },
+    "vite.verify.config.ts": {
+      "sha256": "795b12e349ab29c4",
+      "lines": 42
+    }
+  },
+  "baseline": {
+    "typecheck": {
+      "demos": 60,
+      "pairs": 1237,
+      "ok": 956,
+      "mismatch": 0,
+      "unknown": 281,
+      "unknown_rate": "22.7%"
+    },
+    "roundtrip": {
+      "procedure": "50/54",
+      "atomic": "4/4",
+      "negate": "3/3"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "description": "主线程补充的困难集：只描述意图、不出现算法名与块名，用来检验检索是否真的理解语义，而不是靠名字子串命中。与 track-blocksearch 的 30 条（多含算法名）分开统计。",
+  "queries": [
+    { "id": "h01", "query": "把一段文本补成 512 位的整数倍", "expect": ["hash_sha256_pad_text"] },
+    { "id": "h02", "query": "给消息加一个能发现篡改的认证标签", "expect": ["hash_hmac"] },
+    { "id": "h03", "query": "用口令和盐反复迭代派生密钥", "expect": ["pbkdf2"] },
+    { "id": "h04", "query": "把已有的密钥材料扩展成长密钥流", "expect": ["hkdf_expand"] },
+    { "id": "h05", "query": "对每个字节做查表替换", "expect": ["sbox_sub"] },
+    { "id": "h06", "query": "生成指定长度的伪随机字节", "expect": ["drbg_generate"] },
+    { "id": "h07", "query": "把字节串解释成一个大整数", "expect": ["data_convert_to_int"] },
+    { "id": "h08", "query": "把数据补到块长度的整数倍", "expect": ["pad_pkcs7"] },
+    { "id": "h09", "query": "求两个多项式的最大公因式", "expect": ["gf2_poly_gcd"] },
+    { "id": "h10", "query": "计算椭圆曲线上点的倍乘", "expect": ["ecc_multiply"] }
+  ]
+}

@@ -1,0 +1,291 @@
+<template>
+  <div v-if="visible" :class="docked ? 'bsp bsp-docked' : 'bsp-overlay'" @click.self="docked ? undefined : emit('close')">
+    <div class="bsp">
+      <div class="bsp-header">
+        <span class="bsp-title">{{ t('CRYPTO_BLOCK_SEARCH_TITLE', '查块') }}</span>
+        <button class="bsp-close" :aria-label="t('CRYPTO_CLOSE', '关闭')" @click="emit('close')">×</button>
+      </div>
+
+      <div class="bsp-query">
+        <input
+          ref="inputEl"
+          v-model="query"
+          class="bsp-input"
+          type="text"
+          :placeholder="t('CRYPTO_BLOCK_SEARCH_PLACEHOLDER', '描述你要做的事，例如「16 字节密钥算 MAC」或「S 盒」')"
+          @keydown.down.prevent="move(1)"
+          @keydown.up.prevent="move(-1)"
+          @keydown.enter.prevent="pickSelected"
+          @keydown.esc.prevent="emit('close')"
+        />
+        <select v-model="inType" class="bsp-select" :aria-label="t('CRYPTO_BLOCK_SEARCH_IN', '输入类型')">
+          <option value="">{{ t('CRYPTO_BLOCK_SEARCH_ANY_IN', '输入不限') }}</option>
+          <option v-for="type in TYPE_NAMES" :key="`in-${type}`" :value="type">{{ type }}</option>
+        </select>
+        <select v-model="outType" class="bsp-select" :aria-label="t('CRYPTO_BLOCK_SEARCH_OUT', '输出类型')">
+          <option value="">{{ t('CRYPTO_BLOCK_SEARCH_ANY_OUT', '输出不限') }}</option>
+          <option v-for="type in TYPE_NAMES" :key="`out-${type}`" :value="type">{{ type }}</option>
+        </select>
+      </div>
+
+      <p v-if="!query.trim() && !inType && !outType" class="bsp-hint">
+        {{ t('CRYPTO_BLOCK_SEARCH_HINT', '写一句要做的事，或只选输入/输出类型做结构化筛选。') }}
+      </p>
+      <p v-else-if="!hits.length" class="bsp-hint">
+        {{ t('CRYPTO_BLOCK_SEARCH_EMPTY', '没有匹配的块。换个说法，或去掉输入/输出限制。') }}
+      </p>
+      <ul v-else class="bsp-results">
+        <li
+          v-for="(hit, index) in hits"
+          :key="hit.blockType"
+          :class="['bsp-item', { 'bsp-item-active': index === active }]"
+          @mouseenter="active = index"
+          @click="insert(hit.blockType)"
+        >
+          <div class="bsp-item-head">
+            <span class="bsp-item-label">{{ labelOf(hit) }}</span>
+            <code class="bsp-item-type">{{ hit.blockType }}</code>
+          </div>
+          <div class="bsp-item-meta">
+            <span v-for="type in hit.outputCheck ?? []" :key="`out-${type}`" class="bsp-tag bsp-tag-out">→ {{ type }}</span>
+            <span v-for="reason in hit.matched.slice(0, 2)" :key="reason.evidence" class="bsp-reason">{{ reason.evidence }}</span>
+          </div>
+        </li>
+      </ul>
+
+      <p class="bsp-foot">
+        {{ t('CRYPTO_BLOCK_SEARCH_FOOT', '↑↓ 选择，Enter 插入，Esc 关闭。') }}
+      </p>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import * as Blockly from 'blockly/core';
+import { computed, nextTick, ref, watch } from 'vue';
+
+// `?raw` + 手工解析：索引是构建期产物（288 KB），走 JSON 模块会让 vue-tsc 推断一个巨大的字面量类型。
+import rawIndex from '@/services/ai-helper/block-index.json?raw';
+import { search } from '@/services/ai-helper/block-search';
+import type { BlockIndex, SearchHit } from '@/services/ai-helper/block-search';
+
+const props = defineProps<{
+  visible: boolean;
+  workspace: Blockly.WorkspaceSvg | null;
+  /** docked：停靠进某一栏（不遮挡画布）；缺省是全屏遮罩。 */
+  docked?: boolean;
+}>();
+
+const emit = defineEmits<{ (e: 'close'): void }>();
+
+const INDEX = JSON.parse(rawIndex) as BlockIndex;
+
+/** 槽位类型词表（与 `BLOCK-IO-CONTRACT.json` 里实际出现的 check 一致）。 */
+const TYPE_NAMES = ['Bytes', 'IntList', 'Bits', 'Number', 'String', 'Boolean', 'SBox'];
+
+const msg = Blockly.Msg as Record<string, string>;
+function t(key: string, fallback: string): string {
+  return msg[key] || fallback;
+}
+
+const query = ref('');
+const inType = ref('');
+const outType = ref('');
+const active = ref(0);
+const inputEl = ref<HTMLInputElement | null>(null);
+
+const hits = computed<SearchHit[]>(() => {
+  const text = query.value.trim();
+  if (!text && !inType.value && !outType.value) return [];
+  return search(INDEX, {
+    inTypes: inType.value ? [inType.value] : [],
+    outTypes: outType.value ? [outType.value] : [],
+    text: text || null,
+    limit: 12,
+  });
+});
+
+/** 结果行标题：中文标签优先，没有中文标签时退回英文标签。 */
+function labelOf(hit: SearchHit): string {
+  const zh = hit.labels.zh.filter(Boolean).join(' ');
+  if (zh) return zh;
+  const en = hit.labels.en.filter(Boolean).join(' ');
+  return en || hit.blockType;
+}
+
+function move(step: number): void {
+  if (!hits.value.length) return;
+  active.value = (active.value + step + hits.value.length) % hits.value.length;
+}
+
+function pickSelected(): void {
+  const hit = hits.value[active.value];
+  if (hit) insert(hit.blockType);
+}
+
+let insertSeq = 0;
+function insert(type: string): void {
+  const ws = props.workspace;
+  if (!ws) return;
+  const block = ws.newBlock(type);
+  block.initSvg();
+  block.render();
+  const metrics = ws.getMetrics();
+  // 连点插入时错开，避免叠成一块（与模板面板的 40px 起点一致）。
+  block.moveBy(metrics.viewLeft + 40 + (insertSeq % 6) * 24, metrics.viewTop + 40 + (insertSeq % 6) * 24);
+  insertSeq += 1;
+  block.select();
+  if (!props.docked) emit('close');
+}
+
+watch(
+  () => props.visible,
+  async (visible) => {
+    if (!visible) return;
+    query.value = '';
+    active.value = 0;
+    await nextTick();
+    inputEl.value?.focus();
+  },
+);
+
+watch(hits, () => {
+  active.value = 0;
+});
+</script>
+
+<style scoped>
+.bsp-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+  background: rgba(0, 0, 0, 0.18);
+  pointer-events: auto;
+}
+.bsp {
+  display: flex;
+  flex-direction: column;
+  width: min(560px, 92vw);
+  max-height: 68vh;
+  overflow: hidden;
+  border: 1px solid var(--color-border, #d0d3d9);
+  border-radius: 8px;
+  background: var(--el-bg-color-overlay, #fff);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  font-size: 13px;
+}
+.bsp-docked {
+  width: 100%;
+  max-height: none;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.bsp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--color-border, #d0d3d9);
+}
+.bsp-title {
+  font-weight: 600;
+}
+.bsp-close {
+  border: 0;
+  background: transparent;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+}
+.bsp-query {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--color-border, #d0d3d9);
+}
+.bsp-input {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 8px;
+  border: 1px solid var(--color-border, #d0d3d9);
+  border-radius: 4px;
+  background: var(--el-fill-color-blank, #fff);
+  color: inherit;
+  font: inherit;
+}
+.bsp-select {
+  max-width: 108px;
+  border: 1px solid var(--color-border, #d0d3d9);
+  border-radius: 4px;
+  background: var(--el-fill-color-blank, #fff);
+  color: inherit;
+  font: inherit;
+}
+.bsp-hint {
+  margin: 0;
+  padding: 14px 12px;
+  color: var(--el-text-color-secondary, #888);
+  line-height: 1.5;
+}
+.bsp-results {
+  flex: 1;
+  margin: 0;
+  padding: 4px 0;
+  overflow-y: auto;
+  list-style: none;
+}
+.bsp-item {
+  padding: 6px 12px;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+}
+.bsp-item-active {
+  border-left-color: var(--el-color-primary, #4a90d9);
+  background: var(--el-fill-color-light, #f2f6fc);
+}
+.bsp-item-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.bsp-item-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bsp-item-type {
+  color: var(--el-text-color-secondary, #888);
+  font-size: 11px;
+}
+.bsp-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin-top: 2px;
+  color: var(--el-text-color-secondary, #888);
+  font-size: 11px;
+}
+.bsp-tag-out {
+  color: var(--el-color-success, #2e7d32);
+}
+.bsp-reason {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+.bsp-foot {
+  margin: 0;
+  padding: 6px 12px;
+  border-top: 1px solid var(--color-border, #d0d3d9);
+  color: var(--el-text-color-secondary, #888);
+  font-size: 11px;
+}
+</style>

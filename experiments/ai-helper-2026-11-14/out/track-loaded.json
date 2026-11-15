@@ -1,0 +1,89 @@
+{
+  "generatedAt": "2026-11-15T02:20:18.552Z",
+  "command": "node dist-verify/track-loaded/ai-helper-typecheck.js check-loaded",
+  "offline": {
+    "demos": 60,
+    "pairs": 1237,
+    "ok": 1088,
+    "mismatch": 0,
+    "unknown": 149,
+    "unknown_rate": 12,
+    "var_inferred": 36,
+    "var_conflicts": 0,
+    "returns_inferred": 128,
+    "param_unmapped": 5,
+    "call_args": 0,
+    "var_by_param_name": 106
+  },
+  "loaded": {
+    "demos": 60,
+    "pairs": 1237,
+    "ok": 1234,
+    "mismatch": 0,
+    "unknown": 3,
+    "unknown_rate": 0.2,
+    "var_inferred": 36,
+    "var_conflicts": 0,
+    "returns_inferred": 128,
+    "param_unmapped": 5,
+    "call_args": 0,
+    "var_by_param_name": 252
+  },
+  "offlineIdScoped": {
+    "demos": 60,
+    "pairs": 1237,
+    "ok": 1234,
+    "mismatch": 0,
+    "unknown": 3,
+    "unknown_rate": 0.2,
+    "var_inferred": 36,
+    "var_conflicts": 0,
+    "returns_inferred": 128,
+    "param_unmapped": 5,
+    "call_args": 0,
+    "var_by_param_name": 252
+  },
+  "loadedCauses": {
+    "literal_no_check": 0,
+    "unassigned_variables_get": 0,
+    "vocab_unmapped": 3,
+    "unknown_procedure_return": 0,
+    "other": 0
+  },
+  "samples": [
+    {
+      "cause": "vocab_unmapped",
+      "parent": "sha3_hash",
+      "input": "MSG",
+      "child": "variables_get",
+      "expected": [
+        "Bytes"
+      ],
+      "actual": [],
+      "file": "demos/procedures/SHA3-Hash.json"
+    },
+    {
+      "cause": "vocab_unmapped",
+      "parent": "hash_sha512_hash",
+      "input": "MSG",
+      "child": "variables_get",
+      "expected": [
+        "Bytes"
+      ],
+      "actual": [],
+      "file": "demos/procedures/SHA384-Hash.json"
+    },
+    {
+      "cause": "vocab_unmapped",
+      "parent": "hash_sha512_hash",
+      "input": "MSG",
+      "child": "variables_get",
+      "expected": [
+        "Bytes"
+      ],
+      "actual": [],
+      "file": "demos/procedures/SHA512-Hash.json"
+    }
+  ],
+  "findings": []
+}
