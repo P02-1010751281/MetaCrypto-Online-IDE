@@ -298,6 +298,17 @@ npm run cycles:check
 
 如果重命名或废弃了旧积木块类型，需要在 `src/utils/migration.ts` 的 `BLOCK_TYPE_MIGRATION_MAP` 中添加映射记录。该映射会在工作区加载时自动转换旧块名。
 
+### 把核心改动同步到 metacrypt_server
+
+Blockly 核心是**单向镜像**：`scripts/sync-to-metacrypt.sh` 以 CipherCat 为权威源，全量覆盖 `metacrypt_server/frontend/src/features/blockly/core/`（blocks、generators、constants 等）。所以镜像区里的任何改动都必须先在 CipherCat 落地；metacrypt 专属的实现放到 `features/blockly/algorithms/` 这类非镜像目录，不要长在 `core/` 里。
+
+脚本在任何写操作之前做两项预检，任一命中就中止：
+
+1. 镜像目标存在 CipherCat 没有的导出名——这类增量同步后必然被删（历史事故：`core/blocks/{hash,pq}/index.ts` 的分组导出被覆盖，导致 `build:prod` 报 `HASH_ALGORITHM_BLOCK_GROUPS is not exported`）；
+2. 镜像区工作树有未提交改动。
+
+确认这些改动可以丢弃时，加 `--overwrite-local` 强跑。
+
 ---
 
 ## 参考链接

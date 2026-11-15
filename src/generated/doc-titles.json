@@ -78,6 +78,8 @@
   "/docs/guides/DEMO.md": "Demo 指南",
   "/docs/guides/DEVELOPMENT.en.md": "CipherCat development guide",
   "/docs/guides/DEVELOPMENT.md": "CipherCat 开发指南",
+  "/docs/guides/METACRYPT-SYNC.en.md": "CipherCat → metacrypt_server editor-shell alignment whitelist",
+  "/docs/guides/METACRYPT-SYNC.md": "CipherCat → metacrypt_server 编辑器壳对齐白名单",
   "/docs/guides/SETUP.en.md": "Setup and acceptance guide",
   "/docs/guides/SETUP.md": "环境搭建与验收指南",
   "/docs/guides/SPEC-CARDS.en.md": "SpecCards: turning \"what the standard says\" into machine-checkable assertions",
