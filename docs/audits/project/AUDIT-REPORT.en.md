@@ -5,7 +5,7 @@
 ## Current snapshot
 
 - **219 custom block types**: recursively expanding and deduplicating `ALL_BLOCK_TYPES` from `src/blocks/index.ts` yields 219 unique types.
-- **29 function templates**: counted from `TEMPLATE_REGISTRY` in `src/blocks/procedure/blocks.ts`.
+- **29 function templates**: counted from `TEMPLATE_REGISTRY` in `src/blocks/procedure/blocks/shared.ts`.
 - **17 toolbox categories**: including custom crypto categories, Function Wrapping, Crypto Templates, and Blockly-native categories.
 - **59 registered demos**: `demos/tests.json` matches 59 demo workspace `.json` files one-to-one (excluding the registry itself).
 - **Function templates**: the 29 template registrations include three base `crypto_*` blocks already counted among the block types and 26 additional `proc_*` template types. Demo regressions cover registered workspaces; they do not prove that every block type is individually exercised.

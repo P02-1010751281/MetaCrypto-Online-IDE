@@ -12,7 +12,7 @@
 |---|---:|---|---|
 | 唯一自定义 Blockly 块（活动清单） | 222 | [`ALL_BLOCK_TYPES`](../../src/blocks/index.ts) 及各块族导出 | `npm run verify:demos`、`npm run verify:templates`、Vitest |
 | 已废弃/兼容注册身份 | 1 | [`COMPAT_BLOCK_TYPES`](../../src/blocks/ctrl/index.ts) | `npm run verify:templates`（登记一致性）；详见下方兼容身份章节 |
-| Procedure 模板注册身份 | 29 | [`TEMPLATE_REGISTRY`](../../src/blocks/procedure/blocks.ts) | `scripts/verify-templates.ts` |
+| Procedure 模板注册身份 | 29 | [`TEMPLATE_REGISTRY`](../../src/blocks/procedure/blocks/shared.ts) | `scripts/verify-templates.ts` |
 | 与基础块同名的模板身份 | 3 | `crypto_encrypt_func`、`crypto_decrypt_func`、`crypto_hash_func` | 模板注入与生成测试；计数时不重复加入唯一块数 |
 | Demo 工作区 | 60 | [`demos/tests.json`](../../demos/tests.json) 的键与 `demos/**/*.json` 文件 | `scripts/verify-demos.mjs`；每项登记 Python、JavaScript 用例 |
 

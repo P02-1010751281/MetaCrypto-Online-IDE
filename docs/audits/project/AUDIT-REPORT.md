@@ -5,7 +5,7 @@
 ## 当前快照
 
 - **219 个自定义块类型**：递归展开 `src/blocks/index.ts` 的 `ALL_BLOCK_TYPES`，去重后为 219；没有重复类型。
-- **29 个函数模板**：以 `src/blocks/procedure/blocks.ts` 的 `TEMPLATE_REGISTRY` 为准。
+- **29 个函数模板**：以 `src/blocks/procedure/blocks/shared.ts` 的 `TEMPLATE_REGISTRY` 为准。
 - **17 个工具箱类目**：包括自定义密码学类目、函数封装空间、Crypto Templates 和 Blockly 原生类目。
 - **59 个 Demo 注册项**：`demos/tests.json` 与 59 个 Demo 工作区一一对应（不含注册表自身）。
 - **函数模板**：29 个模板注册项中有 3 个基础 `crypto_*` 块已计入块类型总数；另有 26 个 `proc_*` 模板类型。Demo 回归覆盖登记的工作区，不等同于逐一执行全部块类型。
