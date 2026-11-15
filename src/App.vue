@@ -1,13 +1,13 @@
 <template>
   <div ref="editorViewRef" class="editor-view" :inert="navigationPending" @click="closeMenus">
     <EditorSidebar
+      :style="leftStyle"
       :project-name="projectName"
       :save-status="saveStatus"
       :files="projectFileList"
       :active-file-id="activeProjectFileId"
       :entry-file-id="entryProjectFileId"
-      :functions-open="showCryptoPanel"
-      :doc-search-open="showDocSearch"
+      :active-panel="activePanel"
       @back="goBack"
       @update:project-name="projectName = $event"
       @select-file="onSelectProjectFile"
@@ -15,22 +15,37 @@
       @rename-file="onRenameProjectFile"
       @delete-file="onDeleteProjectFile"
       @set-entry="onSetEntryFile"
-      @toggle-functions="toggleFunctionsPanel"
-      @toggle-doc-search="toggleDocSearch"
+      @toggle-panel="togglePanel"
     >
+      <!-- 互斥面板：同一时刻只渲染一个，与 activity bar 的选中项一一对应。 -->
+      <ProjectPanel v-if="activePanel === 'projects'" :current-id="currentProjectId" />
       <CryptoFunctionPanel
-        :visible="showCryptoPanel"
+        v-else-if="activePanel === 'functions'"
+        :visible="true"
         :workspace="currentWorkspace"
         :docked="!isNarrowViewport"
-        @close="closeFunctionsPanel"
+        @close="closePanel"
       />
-      <!-- 查文档结果要展示完整路径与摘录，侧栏 250px 装不下：固定用浮层。 -->
       <DocSearchPanel
-        :visible="showDocSearch"
-        @close="closeDocSearch"
+        v-else-if="activePanel === 'docSearch'"
+        :visible="true"
+        :docked="!isNarrowViewport"
+        @close="closePanel"
         @open="onOpenDocHit"
       />
+      <BlockSearchPanel
+        v-else-if="activePanel === 'blockSearch'"
+        :visible="true"
+        :workspace="currentWorkspace"
+        :docked="!isNarrowViewport"
+        @close="closePanel"
+      />
     </EditorSidebar>
+
+    <div class="split-handle split-handle-left" @mousedown="onLeftDragStart">
+      <div class="split-line" />
+    </div>
+
     <div class="view-left" :style="editorStyle">
       <EditorBreadcrumb
         :project-name="projectName"
@@ -48,7 +63,9 @@
         :import-format="importFormat"
         @save="onManualSave"
         @update:auto-save-enabled="autoSaveEnabled = $event"
+        :code-pane-visible="codePaneVisible"
         @toggle-locale="toggleBlocklyLocale"
+        @toggle-code-pane="toggleCodePane"
         @toggle-menu="toggleMenu"
         @update:export-format="exportFormat = $event"
         @update:import-format="importFormat = $event"
@@ -69,11 +86,12 @@
       />
     </div>
 
-    <div class="split-handle" @mousedown="onSplitDragStart">
+    <div v-if="codePaneVisible" class="split-handle" @mousedown="onSplitDragStart">
       <div class="split-line" />
     </div>
 
     <CodePanel
+      v-if="codePaneVisible"
       ref="codePanel"
       :workspace="currentWorkspace"
       :language="selectedLanguage"
@@ -84,6 +102,7 @@
       :entry-badge="activeProjectFileId === entryProjectFileId"
       @update:language="selectedLanguage = $event"
       @generate="generateCode"
+      @collapse="toggleCodePane"
     />
 
     <EditorToast :visible="toastVisible" :message="toastMessage" />
@@ -91,11 +110,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import BlocklyEditor from '@/components/BlocklyEditor.vue';
 import CryptoFunctionPanel from '@/components/CryptoFunctionPanel.vue';
 import DocSearchPanel from '@/components/ai-helper/DocSearchPanel.vue';
+import ProjectPanel from '@/components/editor/ProjectPanel.vue';
+import BlockSearchPanel from '@/components/ai-helper/BlockSearchPanel.vue';
 import EditorSidebar from '@/components/editor/EditorSidebar.vue';
 import EditorToast from '@/components/editor/EditorToast.vue';
 import EditorBreadcrumb from '@/components/editor/EditorBreadcrumb.vue';
@@ -136,7 +157,6 @@ const selectedLanguage = ref<CodeLanguage>(CODE_LANGUAGES.PYTHON);
 const exportFormat = ref<'json' | 'xml'>('json');
 const importFormat = ref<'auto' | 'json' | 'xml'>('auto');
 const blockCount = ref(0);
-const router = useRouter();
 
 // Toast 先建立：面板与文件操作都靠它回执（保存提示、入口提示、删除拒绝）。
 const {
@@ -157,15 +177,22 @@ const toggleBlocklyLocale = (): void => {
 };
 
 const {
-  showCryptoPanel,
-  showDocSearch,
+  activePanel,
   isNarrowViewport,
-  toggleFunctionsPanel,
-  closeFunctionsPanel,
-  toggleDocSearch,
-  closeDocSearch,
+  togglePanel,
+  closePanel,
   onOpenDocHit,
 } = useEditorPanels({ notify: showToast });
+
+/** 项目 id 来自 /editor/:id；项目面板用它高亮当前项。 */
+const route = useRoute();
+const currentProjectId = computed(() => Number(route.params.id) || null);
+
+/** 检索面板需要读路径与摘录，248px 不够；进检索自动展宽，回文件/项目收窄。 */
+watch(activePanel, (panel) => {
+  const wide = panel === 'docSearch' || panel === 'blockSearch';
+  setLeftWidth(wide ? 400 : undefined);
+});
 
 // 文件操作要置「有未保存改动」，而脏标记由保存层（useEditorProject）提供；
 // 保存层反过来又要用文件操作落库。用一次性回填打破这个循环——markFilesChanged
@@ -277,12 +304,12 @@ async function onManualSave(): Promise<void> {
 }
 
 function goBack(): void {
-  // `/` 现在会直接回到编辑器（开屏不再停留在列表），返回键必须显式去项目列表。
-  router.push('/projects');
+  // 项目列表已收进侧栏（与 metacrypt 一致），返回键展开「项目」面板而不是跳页。
+  activePanel.value = 'projects';
 }
 
 // ---- 拖拽分割条 ----
-const { editorViewRef, codeStyle, editorStyle, onSplitDragStart } =
+const { editorViewRef, codeStyle, editorStyle, leftStyle, setLeftWidth, codePaneVisible, toggleCodePane, onSplitDragStart, onLeftDragStart } =
   useEditorSplit({
     onResize: () => blocklyEditor.value?.resizeWorkspace(),
   });

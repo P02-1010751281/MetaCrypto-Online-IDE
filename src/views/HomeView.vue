@@ -16,7 +16,7 @@ import { ui } from '@/composables/locale';
  * 开屏不再停在项目列表：直接进入编辑器。
  *
  * 选择项目的顺序是「上次打开的项目 → 最近修改的项目 → 新建一个」。
- * 项目列表仍然存在，路径是 `/projects`，从编辑器侧栏的返回键进入。
+ * 项目列表收在编辑器侧栏的「项目」面板里，不再有独立的 /projects 页。
  */
 
 const LAST_PROJECT_KEY = 'ciphercat:last-project';
@@ -59,9 +59,9 @@ onMounted(async () => {
     const id = await indexedDbProjectStore.save(record);
     await router.replace(`/editor/${id}`);
   } catch (err) {
-    // 读取失败（存储被禁用/配额满）时退回项目列表，让用户能自己处理。
-    console.error('打开项目失败，退回项目列表:', err);
-    await router.replace('/projects');
+    // 读取失败（存储被禁用/配额满）：项目列表已收进侧栏，这里停在开屏并说明原因。
+    console.error('打开项目失败:', err);
+    message.value = ui('openProjectFailed');
   }
 });
 </script>

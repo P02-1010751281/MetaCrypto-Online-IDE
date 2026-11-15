@@ -18,15 +18,25 @@
           @keydown.enter.prevent="pickSelected"
           @keydown.esc.prevent="emit('close')"
         />
-        <select v-model="inType" class="bsp-select" :aria-label="t('CRYPTO_BLOCK_SEARCH_IN', '输入类型')">
-          <option value="">{{ t('CRYPTO_BLOCK_SEARCH_ANY_IN', '输入不限') }}</option>
-          <option v-for="type in TYPE_NAMES" :key="`in-${type}`" :value="type">{{ type }}</option>
-        </select>
-        <select v-model="outType" class="bsp-select" :aria-label="t('CRYPTO_BLOCK_SEARCH_OUT', '输出类型')">
-          <option value="">{{ t('CRYPTO_BLOCK_SEARCH_ANY_OUT', '输出不限') }}</option>
-          <option v-for="type in TYPE_NAMES" :key="`out-${type}`" :value="type">{{ type }}</option>
-        </select>
       </div>
+
+      <!-- 结构化筛选默认折叠：绝大多数查询一句话就够，两个下拉常驻会把输入框挤窄。 -->
+      <details class="bsp-filters" :open="hasFilter">
+        <summary class="bsp-filters-summary">
+          {{ t('CRYPTO_BLOCK_SEARCH_FILTERS', '筛选') }}
+          <span v-if="hasFilter" class="bsp-filters-tag">{{ filterSummary }}</span>
+        </summary>
+        <div class="bsp-filter-row">
+          <select v-model="inType" class="bsp-select" :aria-label="t('CRYPTO_BLOCK_SEARCH_IN', '输入类型')">
+            <option value="">{{ t('CRYPTO_BLOCK_SEARCH_ANY_IN', '输入不限') }}</option>
+            <option v-for="type in TYPE_NAMES" :key="`in-${type}`" :value="type">{{ type }}</option>
+          </select>
+          <select v-model="outType" class="bsp-select" :aria-label="t('CRYPTO_BLOCK_SEARCH_OUT', '输出类型')">
+            <option value="">{{ t('CRYPTO_BLOCK_SEARCH_ANY_OUT', '输出不限') }}</option>
+            <option v-for="type in TYPE_NAMES" :key="`out-${type}`" :value="type">{{ type }}</option>
+          </select>
+        </div>
+      </details>
 
       <p v-if="!query.trim() && !inType && !outType" class="bsp-hint">
         {{ t('CRYPTO_BLOCK_SEARCH_HINT', '写一句要做的事，或只选输入/输出类型做结构化筛选。') }}
@@ -93,6 +103,14 @@ const inType = ref('');
 const outType = ref('');
 const active = ref(0);
 const inputEl = ref<HTMLInputElement | null>(null);
+
+const hasFilter = computed(() => Boolean(inType.value || outType.value));
+const filterSummary = computed(() => {
+  const parts: string[] = [];
+  if (inType.value) parts.push(`in:${inType.value}`);
+  if (outType.value) parts.push(`out:${outType.value}`);
+  return parts.join(' ');
+});
 
 const hits = computed<SearchHit[]>(() => {
   const text = query.value.trim();
@@ -219,6 +237,29 @@ watch(hits, () => {
   background: var(--el-fill-color-blank, #fff);
   color: inherit;
   font: inherit;
+}
+.bsp-filters {
+  padding: 0 12px 6px;
+  border-bottom: 1px solid var(--color-border, #d0d3d9);
+}
+.bsp-filters-summary {
+  cursor: pointer;
+  padding: 4px 0;
+  font-size: 11px;
+  color: var(--el-text-color-secondary, #888);
+  user-select: none;
+}
+.bsp-filters-tag {
+  margin-left: 6px;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: var(--el-fill-color, rgba(0, 0, 0, 0.06));
+  font-family: var(--font-mono, monospace);
+}
+.bsp-filter-row {
+  display: flex;
+  gap: 6px;
+  padding-top: 4px;
 }
 .bsp-select {
   max-width: 108px;

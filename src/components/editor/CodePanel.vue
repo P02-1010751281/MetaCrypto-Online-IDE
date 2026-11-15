@@ -7,6 +7,12 @@
       </span>
       <span v-if="entryBadge" class="code-head-badge">{{ ui("entryFile") }}</span>
       <span class="code-head-lang">{{ languageLabel }}</span>
+      <button
+        class="code-head-collapse"
+        :title="ui('collapseCodePane')"
+        :aria-label="ui('collapseCodePane')"
+        @click="emit('collapse')"
+      >»</button>
     </div>
     <div class="code-toolbar">
       <div class="code-toolbar-left">
@@ -113,6 +119,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:language': [value: CodeLanguage];
   generate: [];
+  collapse: [];
 }>();
 
 const codePreviewer = ref<InstanceType<typeof CodePreviewer> | null>(null);
@@ -217,6 +224,20 @@ defineExpose({
   line-height: 16px;
 }
 
+.code-head-collapse {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  padding: 0 2px;
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0.6;
+}
+.code-head-collapse:hover {
+  opacity: 1;
+}
 .code-head-lang {
   margin-left: auto;
   flex-shrink: 0;

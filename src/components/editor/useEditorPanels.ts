@@ -1,9 +1,9 @@
 /**
- * 编辑器辅助面板：函数模板、文档检索，以及窄屏判定。
+ * 编辑器辅助面板：侧栏 activity bar 的互斥面板状态、窄屏判定，以及文档命中的副作用。
  *
- * 三者放一起是因为它们共享一条布局约束——窄屏（≤1200px）没有第三栏空间，
- * 函数模板必须退回归浮层，否则会把画布挤掉。判定和面板状态分开写，容易出现
- * 「面板还是停靠态但宽度已经不够」的半坏状态。
+ * 对齐 metacrypt 的侧栏模型：左侧一条图标栏，点哪个在侧栏展开哪个面板，同一时刻只有一个。
+ * 窄屏（≤1200px）判定单独放着，因为面板是否 docked 取决于它——窄屏没有第三栏空间，
+ * 函数模板必须退回归浮层，否则会把画布挤掉。
  */
 import { onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -13,6 +13,11 @@ import type { DocHit } from '@/services/ai-helper/doc-search';
 
 const NARROW_VIEWPORT_QUERY = '(max-width: 1200px)';
 
+/** 侧栏可展开的面板；`files` 是缺省页，再点一次当前图标回到它。 */
+export type EditorPanel = 'projects' | 'files' | 'functions' | 'docSearch' | 'blockSearch';
+
+const DEFAULT_PANEL: EditorPanel = 'files';
+
 interface Options {
   notify: (message: string, duration?: number) => void;
 }
@@ -21,8 +26,7 @@ export function useEditorPanels(options: Options) {
   const { notify } = options;
   const router = useRouter();
 
-  const showCryptoPanel = ref(false);
-  const showDocSearch = ref(false);
+  const activePanel = ref<EditorPanel>(DEFAULT_PANEL);
 
   const narrowQuery = window.matchMedia(NARROW_VIEWPORT_QUERY);
   const isNarrowViewport = ref(narrowQuery.matches);
@@ -32,17 +36,12 @@ export function useEditorPanels(options: Options) {
   narrowQuery.addEventListener('change', syncNarrowViewport);
   onUnmounted(() => narrowQuery.removeEventListener('change', syncNarrowViewport));
 
-  const toggleFunctionsPanel = (): void => {
-    showCryptoPanel.value = !showCryptoPanel.value;
+  /** 互斥切换：点当前面板回到缺省的文件页，点别的直接换过去。 */
+  const togglePanel = (panel: EditorPanel): void => {
+    activePanel.value = activePanel.value === panel ? DEFAULT_PANEL : panel;
   };
-  const closeFunctionsPanel = (): void => {
-    showCryptoPanel.value = false;
-  };
-  const toggleDocSearch = (): void => {
-    showDocSearch.value = !showDocSearch.value;
-  };
-  const closeDocSearch = (): void => {
-    showDocSearch.value = false;
+  const closePanel = (): void => {
+    activePanel.value = DEFAULT_PANEL;
   };
 
   /**
@@ -51,7 +50,7 @@ export function useEditorPanels(options: Options) {
    * PDF 命中不跳转，只提示/复制「路径 + 页码」（原文不随应用分发）。
    */
   function onOpenDocHit(hit: DocHit): void {
-    showDocSearch.value = false;
+    activePanel.value = DEFAULT_PANEL;
     const plan = planDocHit(hit, window.location.pathname);
     if (plan.kind === 'pdf-reference') {
       void navigator.clipboard
@@ -77,13 +76,10 @@ export function useEditorPanels(options: Options) {
   }
 
   return {
-    showCryptoPanel,
-    showDocSearch,
+    activePanel,
     isNarrowViewport,
-    toggleFunctionsPanel,
-    closeFunctionsPanel,
-    toggleDocSearch,
-    closeDocSearch,
+    togglePanel,
+    closePanel,
     onOpenDocHit,
   };
 }

@@ -10,12 +10,6 @@ const router = createRouter({
       component: () => import('@/views/HomeView.vue'),
     },
     {
-      // 项目列表仍然保留，从编辑器侧栏的返回键进入。
-      path: '/projects',
-      name: 'ProjectList',
-      component: () => import('@/views/ProjectList.vue'),
-    },
-    {
       path: '/editor/:id',
       name: 'Editor',
       component: () => import('@/App.vue'),

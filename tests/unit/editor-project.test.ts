@@ -913,7 +913,7 @@ describe('useEditorProject saving', () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true);
 
     const guard = routeHooks.beforeLeave.mock.calls.at(-1)?.[0];
-    expect(await guard?.({ fullPath: '/projects' }, { fullPath: '/editor/7' })).toBe(true);
+    expect(await guard?.({ fullPath: '/docs' }, { fullPath: '/editor/7' })).toBe(true);
     expect(project.navigationPending.value).toBe(true);
     expect(saveProject.mock.calls[0][0].id).toBeUndefined();
     expect(routerMock.replace).not.toHaveBeenCalled();

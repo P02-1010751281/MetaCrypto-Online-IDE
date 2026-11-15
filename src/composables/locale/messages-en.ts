@@ -255,4 +255,17 @@ export const MESSAGES_EN: Record<string, string> = {
   CRYPTO_SBOX_CSV_INVALID_VALUE:
     'The {0}th value "{1}" is not a valid hex format.',
   CRYPTO_SBOX_CSV_READ_ERROR: 'Failed to read CSV file',
+  // Block search panel (BlockSearchPanel) — read from Blockly.Msg
+  CRYPTO_CLOSE: 'Close',
+  CRYPTO_BLOCK_SEARCH_TITLE: 'Blocks',
+  CRYPTO_BLOCK_SEARCH_PLACEHOLDER:
+    'Describe what you need, e.g. "compute a MAC with a 16-byte key" or "S-box"',
+  CRYPTO_BLOCK_SEARCH_IN: 'Input type',
+  CRYPTO_BLOCK_SEARCH_OUT: 'Output type',
+  CRYPTO_BLOCK_SEARCH_ANY_IN: 'Any input',
+  CRYPTO_BLOCK_SEARCH_ANY_OUT: 'Any output',
+  CRYPTO_BLOCK_SEARCH_HINT: 'Describe a task, or filter only by input/output type.',
+  CRYPTO_BLOCK_SEARCH_EMPTY: 'No matching block. Try another wording, or drop the filters.',
+  CRYPTO_BLOCK_SEARCH_FILTERS: 'Filters',
+  CRYPTO_BLOCK_SEARCH_FOOT: '↑↓ select · Enter insert · Esc close',
 };

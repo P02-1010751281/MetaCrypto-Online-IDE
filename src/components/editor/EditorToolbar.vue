@@ -48,6 +48,18 @@
       <button class="toolbar-btn lang-btn" @click="$emit('toggle-locale')">
         {{ localeLabel }}
       </button>
+      <button
+        class="toolbar-btn"
+        :class="{ active: codePaneVisible }"
+        :aria-pressed="codePaneVisible"
+        :title="codePaneVisible ? ui('collapseCodePane') : ui('expandCodePane')"
+        @click="$emit('toggle-code-pane')"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="16 18 22 12 16 6" />
+          <polyline points="8 6 2 12 8 18" />
+        </svg>
+      </button>
 
       <div class="toolbar-divider" />
 
@@ -171,12 +183,14 @@ const props = defineProps<{
   openMenu: string;
   exportFormat: 'json' | 'xml';
   importFormat: 'auto' | 'json' | 'xml';
+  codePaneVisible: boolean;
 }>();
 
 const emit = defineEmits<{
   save: [];
   'update:auto-save-enabled': [value: boolean];
   'toggle-locale': [];
+  'toggle-code-pane': [];
   'toggle-menu': [menu: string];
   'update:export-format': [value: 'json' | 'xml'];
   'update:import-format': [value: 'auto' | 'json' | 'xml'];

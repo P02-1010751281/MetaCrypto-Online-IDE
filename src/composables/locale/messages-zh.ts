@@ -243,4 +243,17 @@ export const MESSAGES_ZH_HANS: Record<string, string> = {
     'CSV文件必须包含正好 {0} 个值，但找到了 {1} 个。',
   CRYPTO_SBOX_CSV_INVALID_VALUE: '第 {0} 个值 "{1}" 不是有效的十六进制格式。',
   CRYPTO_SBOX_CSV_READ_ERROR: '读取CSV文件失败',
+  // 查块面板（BlockSearchPanel）—— 模板里走 Blockly.Msg
+  CRYPTO_CLOSE: '关闭',
+  CRYPTO_BLOCK_SEARCH_TITLE: '查块',
+  CRYPTO_BLOCK_SEARCH_PLACEHOLDER:
+    '描述你要做的事，例如「16 字节密钥算 MAC」或「S 盒」',
+  CRYPTO_BLOCK_SEARCH_IN: '输入类型',
+  CRYPTO_BLOCK_SEARCH_OUT: '输出类型',
+  CRYPTO_BLOCK_SEARCH_ANY_IN: '输入不限',
+  CRYPTO_BLOCK_SEARCH_ANY_OUT: '输出不限',
+  CRYPTO_BLOCK_SEARCH_HINT: '写一句要做的事，或只选输入/输出类型做结构化筛选。',
+  CRYPTO_BLOCK_SEARCH_EMPTY: '没有匹配的块。换个说法，或去掉输入/输出限制。',
+  CRYPTO_BLOCK_SEARCH_FILTERS: '筛选',
+  CRYPTO_BLOCK_SEARCH_FOOT: '↑↓ 选择，Enter 插入，Esc 关闭。',
 };

@@ -11,6 +11,9 @@ import {
 const MIN_RIGHT = 320;
 const MIN_TOP = 160;
 const MAX_RIGHT_RATIO = 0.55;
+/** 左栏（activity bar + 面板）宽度：检索结果要读路径与摘录，248px 不够，可拖到 560。 */
+const MIN_LEFT = 248;
+const MAX_LEFT = 560;
 
 export interface EditorSplitOptions {
   /** 拖拽或断点切换后需要重绘画布时调用（BlocklyEditor.resizeWorkspace）。 */
@@ -21,7 +24,15 @@ export interface EditorSplit {
   editorViewRef: Ref<HTMLElement | null>;
   codeStyle: ComputedRef<CSSProperties>;
   editorStyle: ComputedRef<CSSProperties>;
+  /** 左栏宽度（未拖过时交给 CSS 的 248px 缺省值）。 */
+  leftStyle: ComputedRef<CSSProperties>;
+  /** 面板切换时按内容自动设左栏宽度；用户手动拖过则不再生效。 */
+  setLeftWidth: (width?: number) => void;
+  /** 右栏是否显示；窄屏时由调用方按需收起。 */
+  codePaneVisible: Ref<boolean>;
+  toggleCodePane: () => void;
   onSplitDragStart: (event: MouseEvent) => void;
+  onLeftDragStart: (event: MouseEvent) => void;
 }
 
 /**
@@ -32,10 +43,16 @@ export function useEditorSplit(options: EditorSplitOptions = {}): EditorSplit {
   const editorViewRef = ref<HTMLElement | null>(null);
   const rightWidth = ref<number | undefined>(undefined);
   const topHeight = ref<number | undefined>(undefined);
+  const leftWidth = ref<number | undefined>(undefined);
+  /** 用户手动拖过左栏后，不再按面板类型自动改宽度。 */
+  let leftWidthPinned = false;
+  const codePaneVisible = ref(true);
 
-  let splitDragging = false;
+  type SplitMode = 'right' | 'top' | 'left';
+  let splitMode: SplitMode | null = null;
   let rafId = 0;
   let dragRect: {
+    left: number;
     top: number;
     right: number;
     width: number;
@@ -88,11 +105,27 @@ export function useEditorSplit(options: EditorSplitOptions = {}): EditorSplit {
     return {};
   });
 
+  /** 仅在用户没手动拖过时自动设宽度；传 undefined 回到 CSS 缺省。 */
+  function setLeftWidth(width?: number): void {
+    if (leftWidthPinned) return;
+    leftWidth.value = width;
+  }
+
+  const leftStyle = computed((): CSSProperties => {
+    const _lw = leftWidth.value;
+    if (_lw === undefined) return {};
+    return { width: `${_lw}px`, flex: `0 0 ${_lw}px` };
+  });
+
   function applySplitDrag(): void {
     const pos = dragPos;
     const rect = dragRect;
-    if (!pos || !rect) return;
-    if (isNarrowLayout()) {
+    if (!pos || !rect || !splitMode) return;
+    if (splitMode === 'left') {
+      const fromLeft = pos.x - rect.left;
+      leftWidth.value = Math.max(MIN_LEFT, Math.min(fromLeft, MAX_LEFT));
+      leftWidthPinned = true;
+    } else if (splitMode === 'top') {
       const fromTop = pos.y - rect.top;
       const maxTop = rect.height * 0.7;
       topHeight.value = Math.max(MIN_TOP, Math.min(fromTop, maxTop));
@@ -105,7 +138,7 @@ export function useEditorSplit(options: EditorSplitOptions = {}): EditorSplit {
   }
 
   function onSplitDragMove(event: MouseEvent): void {
-    if (!splitDragging) return;
+    if (!splitMode) return;
     event.preventDefault();
     // 记录最新位置，整个 handler 体 rAF 节流（每帧最多应用一次）
     dragPos = { x: event.clientX, y: event.clientY };
@@ -118,7 +151,7 @@ export function useEditorSplit(options: EditorSplitOptions = {}): EditorSplit {
   }
 
   function onSplitDragEnd(): void {
-    splitDragging = false;
+    splitMode = null;
     window.removeEventListener('mousemove', onSplitDragMove, { capture: true });
     window.removeEventListener('mouseup', onSplitDragEnd, { capture: true });
     document.body.style.cursor = '';
@@ -132,15 +165,28 @@ export function useEditorSplit(options: EditorSplitOptions = {}): EditorSplit {
     dragPos = null;
   }
 
-  function onSplitDragStart(event: MouseEvent): void {
+  function beginDrag(mode: SplitMode, event: MouseEvent): void {
     event.preventDefault();
-    splitDragging = true;
+    splitMode = mode;
     // 拖拽起点缓存容器 rect（期间不变），避免每次 mousemove 强制回流
     dragRect = editorViewRef.value?.getBoundingClientRect() ?? null;
     window.addEventListener('mousemove', onSplitDragMove, { capture: true });
     window.addEventListener('mouseup', onSplitDragEnd, { capture: true });
-    document.body.style.cursor = isNarrowLayout() ? 'row-resize' : 'col-resize';
+    document.body.style.cursor = mode === 'top' ? 'row-resize' : 'col-resize';
     document.body.style.userSelect = 'none';
+  }
+
+  function onSplitDragStart(event: MouseEvent): void {
+    beginDrag(isNarrowLayout() ? 'top' : 'right', event);
+  }
+
+  function onLeftDragStart(event: MouseEvent): void {
+    beginDrag('left', event);
+  }
+
+  function toggleCodePane(): void {
+    codePaneVisible.value = !codePaneVisible.value;
+    nextTick(() => options.onResize?.());
   }
 
   // 响应式布局切换时重置尺寸（nextTick 等 DOM 更新完）
@@ -155,7 +201,7 @@ export function useEditorSplit(options: EditorSplitOptions = {}): EditorSplit {
   narrowMedia.addEventListener('change', onBreakpointChange);
 
   onUnmounted(() => {
-    if (splitDragging) {
+    if (splitMode) {
       window.removeEventListener('mousemove', onSplitDragMove, {
         capture: true,
       });
@@ -173,6 +219,11 @@ export function useEditorSplit(options: EditorSplitOptions = {}): EditorSplit {
     editorViewRef,
     codeStyle,
     editorStyle,
+    leftStyle,
+    setLeftWidth,
+    codePaneVisible,
+    toggleCodePane,
     onSplitDragStart,
+    onLeftDragStart,
   };
 }
