@@ -8,12 +8,14 @@
  *
  * 硬前提（缺一条就拒绝产出候选）：
  *   1. 卡片存在且能解析；
- *   2. 目标积木出现在卡片的 entries[].blocks（existing 或 planned）里；
- *   3. 输出目录在 spec-runs/candidates/ 内；
- *   4. `npm run spec:validate` 与 `npm run spec:runs` 都 exit 0（--skip-gates 仅限自检目录）。
+ *   2. 目标积木出现在卡片的 entries[].blocks 里，且必须是 planned——existing 块的定义
+ *      已经在契约里，再脚手架只会产出一份重复的 stub（2026-11-14 实际踩到过）；
+ *   3. 目标积木不在 BLOCK-IO-CONTRACT.json 里（防御卡片把已实现块错标成 planned）；
+ *   4. 输出目录在 spec-runs/candidates/ 内；
+ *   5. `npm run spec:validate` 与 `npm run spec:runs` 都 exit 0（--skip-gates 仅限自检目录）。
  *
  * 用法：
- *   npm run spec:scaffold -- sp800-38b-cmac --block cmac_mac
+ *   npm run spec:scaffold -- <card-id> --block <planned-block>
  *   npm run spec:scaffold -- <card> --block <type> --out spec-runs/candidates/<dir>
  *   npm run spec:scaffold -- --selftest
  */
@@ -259,6 +261,7 @@ function runSelftest() {
     { name: '未知卡片', args: ['no-such-card', '--block', 'cmac_mac'] },
     { name: '积木不在卡片里', args: ['sp800-38b-cmac', '--block', 'no_such_block'] },
     { name: '输出目录越界', args: ['sp800-38b-cmac', '--block', 'cmac_mac', '--out', 'docs/tmp'] },
+    { name: '积木已实现', args: ['sp800-38b-cmac', '--block', 'cmac_mac'] },
   ];
   let fired = 0;
   const failures = [];
@@ -271,17 +274,41 @@ function runSelftest() {
     else failures.push(`应拒绝但通过了: ${control.name}`);
   }
 
-  const outDir = join(candidatesRoot, '.selftest', 'sp800-38b-cmac', 'cmac_mac');
-  const positive = spawnSync(
-    process.execPath,
-    [process.argv[1], 'sp800-38b-cmac', '--block', 'cmac_mac', '--out', outDir, '--skip-gates'],
-    { cwd: root, encoding: 'utf-8' },
-  );
-  const produced = existsSync(join(outDir, 'plan.json')) && existsSync(join(outDir, 'REVIEW-PACKET.md'));
-  if (positive.status === 0 && produced) fired += 1;
-  else failures.push(`正控应产出但失败: status=${positive.status} ${positive.stderr ?? ''}`.trim());
-  // 自检不留残留：正控目录验完即删，避免 candidates/ 里堆历史自检产物
-  rmSync(join(candidatesRoot, '.selftest'), { recursive: true, force: true });
+  // 正控：只有「卡片声明为 planned、契约里不存在」的积木才允许脚手架。
+  // 直接调用 writeCandidates，避免为了自检往 docs/standards 里塞假卡片；
+  // 同时保证 --skip-gates 不会因为自检而放宽到真实卡片目录。
+  const outDir = join(candidatesRoot, '.selftest', 'fixture-card', 'selftest_planned_block');
+  const fixtureEntry = {
+    key: 'selftest-entry',
+    level: 'L1',
+    normative_level: 'MUST',
+    blocks: { existing: [], planned: ['selftest_planned_block'] },
+    io: { inputs: [{ name: 'INPUT', type: 'Bytes' }], outputs: [{ name: 'OUTPUT', type: 'Bytes' }] },
+  };
+  try {
+    const plan = writeCandidates({
+      card: { id: 'fixture-card', entries: [fixtureEntry] },
+      blockType: 'selftest_planned_block',
+      hit: { entry: fixtureEntry, planned: true },
+      outDir,
+      gates: [],
+      contract: { blocks: {} },
+    });
+    const produced = [
+      'plan.json',
+      'REVIEW-PACKET.md',
+      'block.ts',
+      'generator.python.ts',
+      'generator.javascript.ts',
+    ].every((file) => existsSync(join(outDir, file)));
+    if (plan.contract === 'absent' && plan.block === 'selftest_planned_block' && produced) fired += 1;
+    else failures.push(`正控应产出 planned 块候选: contract=${plan.contract} produced=${produced}`);
+  } catch (error) {
+    failures.push(`正控应产出但抛错: ${error.message}`);
+  } finally {
+    // 自检不留残留：正控目录验完即删，避免 candidates/ 里堆历史自检产物
+    rmSync(join(candidatesRoot, '.selftest'), { recursive: true, force: true });
+  }
 
   for (const failure of failures) console.error(`SPEC_SCAFFOLD_SELFTEST_ERROR ${failure}`);
   console.log(`SPEC_SCAFFOLD_SELFTEST controls=${controls.length + 1} fired=${fired}`);
@@ -340,6 +367,22 @@ function main() {
   }
   if (options.skipGates && !relative(root, outDir).includes('.selftest')) {
     console.error('SPEC_SCAFFOLD_ERROR --skip-gates 只允许写到 spec-runs/candidates/.selftest/ 下');
+    process.exit(1);
+  }
+
+  if (!hit.planned) {
+    console.error(
+      `SPEC_SCAFFOLD_ERROR 积木 ${blockType} 在卡片 ${cardId} 里是 existing 而不是 planned：` +
+        '它的块定义已经存在，scaffold 只给尚未实现的新块生成骨架；' +
+        '核对已实现块请用 spec:plan / spec:matrix',
+    );
+    process.exit(1);
+  }
+  if (contract.blocks[blockType]) {
+    console.error(
+      `SPEC_SCAFFOLD_ERROR 积木 ${blockType} 已出现在 BLOCK-IO-CONTRACT.json：` +
+        '契约里存在说明块定义已经实现，拒绝产出重复 stub（若卡片标错了 planned，先修卡片）',
+    );
     process.exit(1);
   }
 

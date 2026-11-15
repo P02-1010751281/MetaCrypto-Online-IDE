@@ -156,25 +156,27 @@ Four kinds of gap:
 | kind | meaning | where it goes |
 | --- | --- | --- |
 | `register-block` | a referenced block is absent from `BLOCK-IO-CONTRACT.json` | card and code disagree; fix one side first |
-| `implement-block` | a block listed under `blocks.planned` | run `spec:scaffold` |
+| `implement-block` | a block listed under `blocks.planned` | run `spec:scaffold` (an `existing` block is already implemented and will be refused) |
 | `wire-vectors` | `vectors.status` is not `wired` | wire the official vectors and update the card |
 | `refine-anchor` | an anchor lacks `quote_sha256` or `line_range` | go back to the source text |
 
 "Registered blocks" means the keys of `docs/blocks/BLOCK-IO-CONTRACT.json`: that file is generated from the real block definitions by `npm run block-io:write`, and `verify:all` checks it still matches the code. Gaps are not errors, so the exit code is always 0; the script only lays out what is missing.
 
-### 7.2 `spec:scaffold`: writes into the candidate directory only
+### 7.2 `spec:scaffold`: skeleton for new blocks only
 
 ```bash
-npm run spec:scaffold -- sp800-38b-cmac --block cmac_mac
-npm run spec:scaffold -- --selftest          # 5 controls: 4 refusals + 1 production
+npm run spec:scaffold -- sp800-38b-cmac --block cmac_mac   # refused: cmac_mac is implemented
+npm run spec:scaffold -- <card> --block <planned-block>     # only entries[].blocks.planned can be scaffolded
+npm run spec:scaffold -- --selftest                         # 6 controls: 5 refusals + 1 production
 ```
 
-Four hard preconditions; failing any one of them refuses to produce candidates:
+Five hard preconditions; failing any one of them refuses to produce candidates:
 
 1. the card exists and parses;
-2. the target block appears in that card's `entries[].blocks` (`existing` or `planned`) — no generating by algorithm name alone;
-3. the output directory is inside `spec-runs/candidates/` (`--skip-gates` is accepted only under `.selftest`);
-4. both `npm run spec:validate` and `npm run spec:runs` exit 0.
+2. the target block appears in that card's `entries[].blocks` and must be `planned` — an `existing` block already has its definition in the contract, so scaffolding it only produces a duplicate stub (actually hit with `cmac_mac` on 2026-11-14);
+3. the target block is absent from `BLOCK-IO-CONTRACT.json` (guards against a card wrongly marking an implemented block as `planned`);
+4. the output directory is inside `spec-runs/candidates/` (`--skip-gates` is accepted only under `.selftest`);
+5. both `npm run spec:validate` and `npm run spec:runs` exit 0.
 
 Exactly five files come out: `plan.json`, `block.ts`, `generator.python.ts`, `generator.javascript.ts`, `REVIEW-PACKET.md`. The block skeleton is built from the contract's input kinds (Blockly VALUE / STATEMENT / DUMMY), `getCheck()` values and field classes, and everything to be filled in stays a `TODO`.
 
@@ -183,7 +185,7 @@ Exactly five files come out: `plan.json`, `block.ts`, `generator.python.ts`, `ge
 ### 7.3 `spec:candidates`: three-layer verification of candidates
 
 ```bash
-npm run spec:candidates              # scan every candidate directory, 16 self-test controls
+npm run spec:candidates              # scan every candidate directory; 16 self-test controls when candidates exist, skipped otherwise
 npm run spec:candidates -- --json    # machine-readable
 ```
 

@@ -156,25 +156,27 @@ SPEC_PLAN_SUMMARY cards=1 gaps=0
 | kind | 含义 | 去处 |
 | --- | --- | --- |
 | `register-block` | 条目引用的积木不在 `BLOCK-IO-CONTRACT.json` | 卡片与代码脱节，先修一侧 |
-| `implement-block` | 条目 `blocks.planned` 里的积木 | 走 `spec:scaffold` |
+| `implement-block` | 条目 `blocks.planned` 里的积木 | 走 `spec:scaffold`（`existing` 块已实现，会被拒绝） |
 | `wire-vectors` | `vectors.status` 不是 `wired` | 接官方向量并改卡片 |
 | `refine-anchor` | 锚点缺 `quote_sha256` 或 `line_range` | 回原文补证据 |
 
 「已注册积木」以 `docs/blocks/BLOCK-IO-CONTRACT.json` 的键为准：它由 `npm run block-io:write` 从真实块定义生成，`verify:all` 校验它与代码一致。缺口不是错误，脚本退出码恒为 0；它只把「差什么」摆出来。
 
-### 7.2 `spec:scaffold`：只往候选目录写
+### 7.2 `spec:scaffold`：只给尚未实现的新块生成骨架
 
 ```bash
-npm run spec:scaffold -- sp800-38b-cmac --block cmac_mac
-npm run spec:scaffold -- --selftest          # 5 条控制：4 条拒绝 + 1 条产出
+npm run spec:scaffold -- sp800-38b-cmac --block cmac_mac   # 拒绝：cmac_mac 已实现
+npm run spec:scaffold -- <card> --block <planned-block>     # 仅 entries[].blocks.planned 可脚手架
+npm run spec:scaffold -- --selftest                         # 6 条控制：5 条拒绝 + 1 条产出
 ```
 
-四道硬前提，缺一条就拒绝产出候选：
+五道硬前提，缺一条就拒绝产出候选：
 
 1. 卡片存在且能解析；
-2. 目标积木出现在该卡片的 `entries[].blocks`（`existing` 或 `planned`）里——不许凭算法名随手生成；
-3. 输出目录在 `spec-runs/candidates/` 内（`--skip-gates` 只允许 `.selftest` 子目录）；
-4. `npm run spec:validate` 与 `npm run spec:runs` 都 exit 0。
+2. 目标积木出现在该卡片的 `entries[].blocks` 里，且必须是 `planned`——`existing` 块的定义已经在契约中，脚手架只会产出重复 stub（2026-11-14 用 `cmac_mac` 实际踩到）；
+3. 目标积木不在 `BLOCK-IO-CONTRACT.json` 里（防御卡片把已实现块错标成 `planned`）；
+4. 输出目录在 `spec-runs/candidates/` 内（`--skip-gates` 只允许 `.selftest` 子目录）；
+5. `npm run spec:validate` 与 `npm run spec:runs` 都 exit 0。
 
 产物固定 5 个：`plan.json`、`block.ts`、`generator.python.ts`、`generator.javascript.ts`、`REVIEW-PACKET.md`。积木骨架按契约的输入类型（Blockly 的 VALUE / STATEMENT / DUMMY）、`getCheck()` 与字段类生成，填充物一律留成 `TODO`。
 
@@ -183,7 +185,7 @@ npm run spec:scaffold -- --selftest          # 5 条控制：4 条拒绝 + 1 条
 ### 7.3 `spec:candidates`：候选的三层验证
 
 ```bash
-npm run spec:candidates              # 扫描全部候选目录并跑 16 条自检控制
+npm run spec:candidates              # 扫描全部候选目录；有候选时跑 16 条自检控制，无候选时跳过
 npm run spec:candidates -- --json    # 机器可读
 ```
 
