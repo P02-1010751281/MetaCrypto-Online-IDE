@@ -1,0 +1,16 @@
+[
+  { "q": "SHA-3 的 θ 步怎么算", "expect": ["docs/standards/fips202-SHA3/01-Theta.md"] },
+  { "q": "AES 的 MixColumns 和轮密钥加怎么实现", "expect": ["docs/standards/fips197-AES/03-MixColumns-AddRoundKey.md"] },
+  { "q": "XTS 的 tweak 怎么计算", "expect": ["docs/standards/sp800-38e-xts/02-Tweak.md"] },
+  { "q": "PBKDF2 的参数边界有哪些", "expect": ["docs/standards/sp800-132-pbkdf2/03-Parameter-Boundaries.md"] },
+  { "q": "ML-DSA 的 MakeHint 怎么算", "expect": ["docs/standards/fips204-ML-DSA/39-MakeHint.md"] },
+  { "q": "SLH-DSA 的 FORS 怎么生成签名", "expect": ["docs/standards/fips205-SLH-DSA/03-FORS.md"] },
+  { "q": "McEliece 的 Goppa 码怎么构造", "expect": ["docs/standards/mceliece-goppa/01-Goppa-Codes.md"] },
+  { "q": "ZUC 的 S 盒怎么构造", "expect": ["docs/standards/gbt33133-ZUC/02-SBox-Linear.md"] },
+  { "q": "GM/T 0005 有哪些随机性检测项目", "expect": ["docs/standards/gmt0005-randomness/02-Test-Suites.md"] },
+  { "q": "SM2 的密钥交换怎么算共享密钥", "expect": ["docs/standards/gbt32918-SM2/05-Key-Exchange.md"] },
+  { "q": "CCM 的认证标签长度怎么选", "expect": ["docs/standards/sp800-38c-ccm/02-Formatting.md"] },
+  { "q": "ML-KEM 的解封装怎么处理失败", "expect": ["docs/standards/fips203-ML-KEM/18-ML-KEM-Decaps-internal.md"] },
+  { "q": "如何用 Rust 写一个 Web 服务器", "expect": [] },
+  { "q": "SQL 注入怎么防", "expect": [] }
+]

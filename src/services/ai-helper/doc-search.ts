@@ -73,18 +73,54 @@ const LATIN = /[a-z]/;
  */
 const TOPIC_BOOST = 1.5;
 /**
+ * 只写在**文件名**里（且不在标准目录内）的加成：`docs/build/rsa.md` 讲的确实是 RSA，
+ * 但它不是 RSA 这条标准的家——给满额会把「标准页 vs 搭建页」拉平。标准目录内部的
+ * 同名章节则完全不加成：SM3 标准里的一节「HMAC」不是 HMAC 的家（RESULTS §26）。
+ */
+const TOPIC_FILE_BOOST = 1.25;
+/**
  * 主题归属只认「只写进少数文档路径」的拉丁标识符：`sm3` 在正文里出现上千次，
  * 但它只落在十来个文档的路径上——路径命中才是「这篇讲的就是它」，正文词频不是。
  */
 const TOPIC_DOC_SPAN = 40;
 /**
- * 实体别名：标准目录用**算法族名**做目录名，用户按**具体成员**提问。
- * `rfc8032-eddsa` 的目录里没有 `ed25519` 这个词，但 RFC 8032 就是 Ed25519/Ed448 的 EdDSA。
- * 只收「同一实体的两个标准写法」，不收上下位关系。
+ * 标准号 ↔ 算法名：标准目录用**标准号 / 算法族名**命名，用户按**算法名或成员名**提问。
+ * `rfc8032-eddsa` 的目录里没有 `ed25519`，但 RFC 8032 就是 Ed25519/Ed448 的 EdDSA；
+ * `rfc8017-pkcs1` 的目录里没有 `rsa`，但 RFC 8017 就是 RSA（PKCS#1 v2.2）。
+ *
+ * 收词口径（两个条件都要满足，缺一不可）：
+ * 1. 别名指向的目录是**这条标准的家**——值取目录名里的路径词元（`rfc8017` / `sha2`），
+ *    不取正文用词，否则「加密」这类词会把一批目录都认成归属页；
+ * 2. 别名与目录是**同一对象的不同写法**（族名 ↔ 成员名、标准号 ↔ 算法名），
+ *    不收上下位关系（RSA 不指向 FIPS 186-5 的 DSS 目录，尽管 DSS 也含 RSA 章节）。
  */
 export const ENTITY_ALIAS: Record<string, string[]> = {
+  // 签名：目录按族名 EdDSA 命名，用户按成员（ed25519 / ed448）提问。
+  // 不收 dsa → ecdsa：`ML-DSA` 会切出 `dsa`，把 FIPS 204 的问题引到 FIPS 186 的 ECDSA 页
+  // （holdout3 实测 MakeHint 从第 2 掉到第 11）。
   ed25519: ['eddsa'],
   ed448: ['eddsa'],
+  // PKCS#1：目录按标准号命名，用户按算法名（rsa）与编码方案（oaep / pss）提问
+  rsa: ['rfc8017'],
+  oaep: ['rfc8017'],
+  pss: ['rfc8017'],
+  // 曲线：RFC 7748 目录按成员 x25519 命名，Curve25519 是同一曲线的常见写法
+  curve25519: ['x25519'],
+  // SHA-2：目录按族名命名，用户按成员名提问（sha-3 不在此列，它是另一个目录）
+  sha1: ['sha2'],
+  sha224: ['sha2'],
+  sha256: ['sha2'],
+  sha384: ['sha2'],
+  sha512: ['sha2'],
+  // Argon2：目录按族名命名，变体名（argon2i/d/id）是同一算法的参数选择
+  argon2i: ['argon2'],
+  argon2d: ['argon2'],
+  argon2id: ['argon2'],
+  // RFC 4648 同时定义 base16/base32/base64，目录按最常见的 base64 命名
+  base16: ['base64'],
+  base32: ['base64'],
+  // GCM 的认证子函数叫 GHASH，标准目录按模式名 gcm 命名
+  ghash: ['gcm'],
 };
 /** 教程页的折扣：问「是什么 / 怎么定义」时，demo 页（怎么点）让位于标准页（是什么）。 */
 const DEMO_WEIGHT = 0.9;
@@ -332,21 +368,47 @@ export function searchDocs(index: DocIndex, query: string, options: DocSearchOpt
   // 不是正文词频；且只认原话里的实体——扩展词（`压缩函数 → compression`）会把兄弟标准页
   // 也认成归属页（第一版就是这么错的）。
   const topicTerms = originalTerms.filter((term) => LATIN.test(term) && pathIdent(term).length >= 3);
-  const homeDocs = new Set<number>();
+  const homeDocs = new Map<number, number>();
   if (topicTerms.length) {
     // 归属只看**路径词元**：`fips203-ML-KEM` 的 `ml`+`kem`、`rfc8032-eddsa` 的 `eddsa`。
     // 不做子串匹配——`docs/blocks/hash.md` 的 `blockshash` 里含 `sha`，会把整页散列目录
     // 当成 SHA 的归属页；也不看标题——对照式标题（「SHA-2 压缩函数，与 SM3 对比」）会把
     // 兄弟标准页也认成归属页。
-    const pathWords = index.docs.map((entry) => pathTokens(entry[0]));
+    const dirWords: Set<string>[] = [];
+    const fileWords: Set<string>[] = [];
+    for (const [path] of index.docs) {
+      const cut = path.lastIndexOf('/');
+      dirWords.push(pathTokens(cut < 0 ? '' : path.slice(0, cut)));
+      fileWords.push(pathTokens(cut < 0 ? path : path.slice(cut + 1)));
+    }
+    const bump = (position: number, factor: number): void => {
+      if ((homeDocs.get(position) ?? 0) < factor) homeDocs.set(position, factor);
+    };
     for (const term of topicTerms) {
-      const idents = [pathIdent(term), ...(ENTITY_ALIAS[pathIdent(term)] ?? []).map(pathIdent)];
+      const idents = new Set([pathIdent(term), ...(ENTITY_ALIAS[pathIdent(term)] ?? []).map(pathIdent)]);
       for (const ident of idents) {
-        const named = index.docs
-          .map((entry, position) => (pathWords[position].has(ident) ? position : -1))
-          .filter((v) => v >= 0);
-        if (named.length === 0 || named.length > TOPIC_DOC_SPAN) continue;
-        for (const position of named) homeDocs.add(position);
+        const dirHits: number[] = [];
+        const fileHits: number[] = [];
+        index.docs.forEach((_doc, position) => {
+          if (dirWords[position].has(ident)) dirHits.push(position);
+          else if (fileWords[position].has(ident)) fileHits.push(position);
+        });
+        if (dirHits.length + fileHits.length === 0) continue;
+        // 只写进太多文档路径的标识符不再「点名」某个实体（`sha` 这类短词）。
+        if (dirHits.length + fileHits.length > TOPIC_DOC_SPAN) continue;
+        for (const position of dirHits) bump(position, TOPIC_BOOST);
+        // 这条标识符已经是某个标准目录的名字时，标准目录内部的同名章节让位：
+        // SM3 标准里的一节「HMAC」不是 HMAC 的家——HMAC 的家是 `fips198-1-hmac/`；
+        // 两页都给满额加成时，内容更密的那一节会把标准首页压下去（RESULTS §26）。
+        // 目录名不含该标识符时（`39-MakeHint.md` 的 makehint），它仍然是这一页的主题。
+        const hasStandardHome = dirHits.length > 0;
+        for (const position of fileHits) {
+          // 没有对应的标准目录时（`39-MakeHint.md` 的 makehint），文件名就是这一页的主题，
+          // 与目录名同级；有标准目录时，标准目录外的同名页（build/demo 页）降一档。
+          if (!hasStandardHome) bump(position, TOPIC_BOOST);
+          else if (index.docs[position][0].startsWith('docs/standards/')) continue;
+          else bump(position, TOPIC_FILE_BOOST);
+        }
       }
     }
   }
@@ -356,7 +418,7 @@ export function searchDocs(index: DocIndex, query: string, options: DocSearchOpt
     const docIndex = docIndexOf.get(hit.path) ?? -1;
     const coverage = (covered.get(docIndex) ?? 0) / Math.max(idfSum, 1e-9);
     const demoWeight = hit.path.startsWith('docs/demos/') && DEFINITION_ASK.test(text) && !DEMO_ASK.test(text) ? DEMO_WEIGHT : 1;
-    const topic = homeDocs.has(docIndex) ? TOPIC_BOOST : 1;
+    const topic = homeDocs.get(docIndex) ?? 1;
     const docScore = (hit.score + COVERAGE_WEIGHT * idfSum * coverage) * topic * demoWeight;
     const existing = best.get(hit.path);
     if (!existing || docScore > existing.docScore) best.set(hit.path, { ...hit, docScore, score: Number(docScore.toFixed(4)) });

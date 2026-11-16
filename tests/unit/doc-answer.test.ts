@@ -98,7 +98,7 @@ describe('句子切分', () => {
 });
 
 describe('答案层（真实索引与文档树）', () => {
-  it('调参集 30 题：15 条敢回答，其中 14 条出处落在期望文档', async () => {
+  it('调参集 30 题：16 条敢回答，其中 15 条出处落在期望文档', async () => {
     let answered = 0;
     let inExpected = 0;
     const wrong: string[] = [];
@@ -111,7 +111,7 @@ describe('答案层（真实索引与文档树）', () => {
       if (ok) inExpected += 1;
       else wrong.push(`${testCase.q} → ${result.best.evidence.path}`);
     }
-    expect({ answered, inExpected }).toEqual({ answered: 15, inExpected: 14 });
+    expect({ answered, inExpected }).toEqual({ answered: 16, inExpected: 15 });
     // 「答了但出处不在期望集」的题必须逐条登记，不能悄悄多出来。
     expect(wrong).toEqual([
       '积木之间的类型检查与转换规则 → docs/guides/USER-GUIDE.md',
@@ -163,7 +163,7 @@ describe('答案层（真实索引与文档树）', () => {
     expect(hits[0].path.startsWith('docs/standards/fips203-ML-KEM/')).toBe(true);
   });
 
-  it('留出集2（未参与调参）：top1 6/12，作答 6 条里 4 条出处正确', async () => {
+  it('留出集2（未参与调参）：top1 7/12，作答 6 条里 5 条出处正确', async () => {
     const holdout = JSON.parse(
       readFileSync(resolve(ROOT, 'experiments/ai-helper-2026-11-14/docsearch-holdout2.json'), 'utf8'),
     ) as Array<{ q: string; expect: string[] }>;
@@ -184,7 +184,9 @@ describe('答案层（真实索引与文档树）', () => {
       answered += 1;
       if (testCase.expect.some((prefix) => result.best!.evidence.path.startsWith(prefix))) correct += 1;
     }
-    expect({ top1, answered, correct }).toEqual({ top1: 6, answered: 6, correct: 4 });
+    // 2026-11-16 别名表后：HMAC 一条由「答在 SM3 的 HMAC 节」改为答在 fips198，
+    // top1 6→7、正确 4→5；作答条数不变（其余仍是覆盖度/句式闸门拒答）。
+    expect({ top1, answered, correct }).toEqual({ top1: 7, answered: 6, correct: 5 });
   });
 
   it('覆盖度阈值挡住「只有实体、没有问题」的答案', async () => {

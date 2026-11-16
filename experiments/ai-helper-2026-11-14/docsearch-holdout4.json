@@ -1,0 +1,16 @@
+[
+  { "q": "SHA-2 的 σ 函数在消息扩展里怎么用", "expect": ["docs/standards/fips180-4-SHA2/03-MessageExpansion.md"] },
+  { "q": "AES 的 SubBytes 怎么做", "expect": ["docs/standards/fips197-AES/01-SubBytes.md"] },
+  { "q": "GCM 的 J0 怎么算", "expect": ["docs/standards/sp800-38d-gcm/03-GCTR-and-J0.md"] },
+  { "q": "ML-KEM 的 NTT 怎么算", "expect": ["docs/standards/fips203-ML-KEM/09-NTT.md"] },
+  { "q": "SLH-DSA 的 WOTS+ 怎么工作", "expect": ["docs/standards/fips205-SLH-DSA/02-WOTS.md"] },
+  { "q": "SM9 的密钥封装机制", "expect": ["docs/standards/gbt38635-SM9/01-SM9.md"] },
+  { "q": "DRBG 的 reseed 怎么执行", "expect": ["docs/standards/sp800-90a-drbg/01-DRBG.md"] },
+  { "q": "XTS 的数据单元怎么处理", "expect": ["docs/standards/sp800-38e-xts/03-Data-Unit.md"] },
+  { "q": "PBKDF2 的 PRF 怎么用", "expect": ["docs/standards/sp800-132-pbkdf2/02-PRF-and-Block.md"] },
+  { "q": "CCM 的 CBC-MAC 怎么算", "expect": ["docs/standards/sp800-38c-ccm/03-CBC-MAC.md"] },
+  { "q": "SHA-3 的 ρ 步怎么算", "expect": ["docs/standards/fips202-SHA3/02-Rho.md"] },
+  { "q": "ECDSA 的验签怎么算", "expect": ["docs/standards/fips186-5-ecdsa/04-Verify.md"] },
+  { "q": "React 的 useEffect 怎么用", "expect": [] },
+  { "q": "如何做红烧肉", "expect": [] }
+]

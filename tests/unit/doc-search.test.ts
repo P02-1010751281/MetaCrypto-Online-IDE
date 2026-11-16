@@ -178,6 +178,12 @@ describe('doc search', () => {
 
   it('点名实体时归属页排第一（主题归属 + 文档级选择，2026-11-16 修 8 条反例）', () => {
     const top1 = (query: string): string => firstPaths(query, 1)[0] ?? '';
+    // 标准号 ↔ 算法名别名：目录名是标准号/族名，用户按算法名或成员名提问。
+    // 这几条钉住别名表本身（不是留出集），改名或删表项时要在这里红。
+    expect(top1('HMAC 的密钥处理规则')).toMatch(/^docs\/standards\/fips198-1-hmac\//);
+    expect(top1('RSA 的 PKCS#1 v1.5 加密怎么做')).toMatch(/^docs\/standards\/rfc8017-pkcs1\//);
+    expect(top1('SHA-224 的消息填充规则')).toMatch(/^docs\/standards\/fips180-4-SHA2\//);
+    expect(top1('Base32 的编码规则')).toMatch(/^docs\/standards\/rfc4648-base64\//);
     // 反例的共同形态：另一篇文档里恰好有一节把共用词写得更密（SM3 ← SHA-2 压缩函数页、
     // ML-KEM ← 能力地图、Ed25519 ← 块参考页）。归属判据只看路径词元，不看标题与正文词频。
     expect(top1('SM3 的压缩函数结构')).toMatch(/^docs\/standards\/gbt32905-SM3\//);
@@ -191,7 +197,7 @@ describe('doc search', () => {
     expect(top1('How is the SM4 round function defined')).toMatch(/^docs\/standards\/gbt32907-SM4\//);
   });
 
-  it('检索泛化基线：三套集 top1 = 29/30、10/20、6/12（不许为了调参集媕低）', () => {
+  it('检索泛化基线：五套集 top1 = 29、10、7、6、8（不许为了调参集媕低）', () => {
     const rank = (query: string, expect: string[]): number => {
       const paths = firstPaths(query, 60);
       for (let i = 0; i < paths.length; i += 1) {
@@ -206,10 +212,13 @@ describe('doc search', () => {
     const count = (cases: Array<{ q: string; expect: string[] }>): number =>
       cases.filter((item) => item.expect.length > 0 && rank(item.q, item.expect) === 1).length;
     expect(count(load('docsearch-eval.json'))).toBe(29);
-    // 两套留出集必须一起钉：2026-11-16 实测新旧排序在混合留出集上 10/20 → 10/20（零收益），
-    // 新造的标准页留出集 5/12 → 6/12。只钉调参集会把「泛化」当成已解决（RESULTS §25.2）。
+    // 四套非调参集必须一起钉：混合留出集 10/20；标准页留出集 6/12 → 7/12（别名表只修好
+    // HMAC 一条，其余是语料缺页或同族互压）；holdout3 首轮 6/12（其后修掉 dsa 误命中
+    // 与文件级加成 bug）；holdout4 是**代码冻结后**才写的验收集，首跑 8/12，未再调参。
     expect(count(load('docsearch-holdout.json'))).toBe(10);
-    expect(count(load('docsearch-holdout2.json'))).toBe(6);
+    expect(count(load('docsearch-holdout2.json'))).toBe(7);
+    expect(count(load('docsearch-holdout3.json'))).toBe(6);
+    expect(count(load('docsearch-holdout4.json'))).toBe(8);
   });
 
   it('同一查询结果确定（可用作回归判据）', () => {
