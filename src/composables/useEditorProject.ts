@@ -369,6 +369,16 @@ export function useEditorProject<TLanguage extends string>(
       navigationPending.value = false;
       navigationTarget = null;
     }
+    /* 路由落在某个项目上、编辑器却没加载它：最典型的是「页面上原本停在
+       /editor/1（例如深链指向一个本地不存在的项目，加载失败），随后新建的项目
+       恰好拿到 id 1」——此时 router.push('/editor/1') 会被判定为重复导航，
+       参数没有变化，上面那个 watch 不会触发，projectId 一直是 null，
+       下一次保存就会把同一个项目再写一份（实测 DB 里出现两个项目）。
+       这里按「路由 id ≠ 已加载 id」兜底加载一次；相等时什么都不做。 */
+    const targetId = to.name === 'Editor' ? Number(to.params.id) : 0;
+    if (targetId && workspaceReady && !loadingProject && targetId !== projectId.value) {
+      void loadProject(to.params.id);
+    }
   });
   cleanupOnError = router.onError((_error, to) => {
     if (navigationPending.value && to.fullPath === navigationTarget) {

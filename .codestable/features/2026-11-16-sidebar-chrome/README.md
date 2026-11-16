@@ -118,6 +118,57 @@ scoped 样式的作用域只覆盖本组件模板，跨不过 slot 边界——`
 
 
 
+## 改名链路：项目靠面包屑、文件靠行内 ✎（第五段）
+
+owner 问「Projects 的改名呢？」，所以这一段把两条改名链路在真浏览器里跑通并固化成断言：
+
+| 对象 | 入口 | 落库时机 | 真浏览器实测 |
+|---|---|---|---|
+| 项目 | 顶栏面包屑输入框（`.crumb-project-input`） | **点保存**（自动保存默认关闭） | 改名 + 保存后 IndexedDB 该记录 name 更新、`updatedAt` 前移、记录数不变；真刷新后仍在 |
+| 项目 | 面板行内**没有** ✎（改名不走面板） | — | 行内只有 ✕（删除），与文件面板不同 |
+| 文件 | 文件行悬浮 / 聚焦后 ✎ → 内联输入 → Enter | 同样要点保存 | 改名 + 保存后 `files[].name` 更新；真刷新后仍在 |
+
+两个细节值得记住：
+
+- **自动保存默认关闭**（`autoSaveEnabled = ref(false)`），所以「改完名直接关页面」不会保存，
+  状态栏会显示 `· Unsaved`。这是既有设计，不是这次改动引入的。
+- 保存后**面板列表会跟着更新**（保存层调 `useProjectList` 的刷新），不需要重开面板；
+  改名前列表里仍是旧名字——列表展示的是已保存状态，不是输入框里的草稿。
+
+### 顺带修掉的深链缺陷（我的新断言把它打出来了）
+
+给门禁加「改名 + 保存后 IndexedDB 里只有一个项目」这条时，它第一次跑就是红的：
+
+```
+dbBefore:        [{ id: 1, name: 'Untitled', files: [] }]
+dbAfterProject:  [{ id: 1, name: 'Untitled' }, { id: 2, name: '改名验收-项目' }]
+```
+
+复现条件是「路由停在 `/editor/1`、但编辑器里 `projectId` 还是 null」——典型场景是全页
+加载时深链指向一个本地不存在的项目（新浏览器打开别人发来的 `/editor/1` 链接）。此时：
+
+1. `loadProject` 找不到记录，走 catch，`projectId` 保持 null，状态栏显示 **`Save failed`**；
+2. 用户点「＋ 新建项目」，自动增量拿到的 id 恰好是 1；
+3. `router.push('/editor/1')` 与当前路由相同，被判成重复导航 → 参数没变化 → 那个
+   `watch(route.params.id)` 不触发 → `projectId` 仍是 null；
+4. 下一次保存按「新项目」处理，于是同一个项目在库里出现两份。
+
+修法不是补丁式地改 push，而是在 `router.afterEach` 里做一次状态对账：路由落在 Editor 上、
+而 `projectId` 与路由 id 不一致时兜底加载一次；相等时什么都不做，所以正常导航零开销。
+
+```ts
+const targetId = to.name === 'Editor' ? Number(to.params.id) : 0;
+if (targetId && workspaceReady && !loadingProject && targetId !== projectId.value) {
+  void loadProject(to.params.id);
+}
+```
+
+变异验证：把这三行注释掉重跑，红的正是这两条（记录数 1→2、两个文件行都没有入口标记），
+其余断言仍绿——说明它们咬的是这个缺陷。
+
+**已知但未改**：加载失败时状态栏写的是 `Save failed`（复用 `updateSaveStatus('error')`），
+而实际失败的是**加载**。要改得引入一个独立状态值与中英文案，属独立议题，没混进这次改动。
+
 ## 验收
 
 脚本：`scripts/verify-sidebar-chrome.mjs`（无头 Firefox + WebDriver BiDi，自起停）。
@@ -152,8 +203,12 @@ scoped 样式的作用域只覆盖本组件模板，跨不过 slot 边界——`
 | 窄屏：五个标题字体与停靠态逐项一致；四个可见标题贴左（文件面板按设计隐藏标题） | 通过 |
 | 窄屏：五个头部各 1 个 24×24 图标按钮且都有可访问名称 | 通过 |
 | 窄屏：函数面板浮层的 ✕ 点了真的关掉面板（换类名没断线） | 通过 |
+| 项目改名 + 保存写进 IndexedDB，且**不会多出第二个项目** | 通过 |
+| 项目改名保存后，面板列表行名跟着更新（不用重开面板） | 通过 |
+| 文件 ✎ 改名 + 保存写进 IndexedDB（`files[].name`） | 通过 |
+| 文件行：非入口行是 ◎ / ✎ / ✕；入口行按设计不显示 ◎ | 通过 |
 
-`SUMMARY total=58 pass=58 fail=0`。
+`SUMMARY total=62 pass=62 fail=0`。
 
 ## 回归：函数面板标题曾靠右（已修）
 

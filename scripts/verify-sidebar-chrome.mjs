@@ -261,7 +261,13 @@ check('查块面板的关闭按钮仍然生效（换类名没断线）',
 // 造数据：新 profile 里没有项目与文件，行内动作至少各要一行才量得到。
 const ROWPROBE = `JSON.stringify((()=>{
   const host = document.querySelector('.side-panel');
-  const row = host ? host.querySelector('.project-row, .file-row') : null;
+  /* 取「动作最全」的一行：入口文件按设计不显示「设为入口」◎，只取第一行会在
+     项目正常加载后量到 2 个按钮，把设计误判成缺失（本项目曾因编辑器加载失败
+     量不到入口标记而恰好一直是 3 个）。 */
+  const allRows = host ? [...host.querySelectorAll('.project-row, .file-row')] : [];
+  const row = allRows.sort(
+    (a, b) => b.querySelectorAll('.row-btn').length - a.querySelectorAll('.row-btn').length,
+  )[0] ?? null;
   if (!row) return { row: false };
   const acts = row.querySelector('.row-actions');
   const btn = acts ? acts.querySelector('.row-btn') : null;
@@ -363,15 +369,29 @@ check('两个面板的行内按钮外观一致（次级色 / 20×20 / 11px）', 
   projectsBox: rowsProjects.before.btnBox, filesBox: rowsFiles.before.btnBox,
 });
 
-// 设为入口 / 改名 / 删除 三件在文件面板齐备，项目面板目前只有删除
-check('files: 行内动作是 ◎ / ✎ / ✕ 三件', rowsFiles.before.btnCount === 3, rowsFiles.before.btnCount);
+// 设为入口 / 改名 / 删除 三件在文件面板齐备，项目面板目前只有删除。
+// 入口文件按设计不显示「设为入口」◎（它已经是入口），所以按行聚合：
+// 非入口行三件、入口行两件。
+const fileRowActions = JSON.parse(await evaluate(`JSON.stringify((()=>{
+  const rows = [...document.querySelectorAll('.file-row')];
+  return rows.map((r) => ({
+    entry: !!r.querySelector('.entry-badge'),
+    icons: [...r.querySelectorAll('.row-btn')].map((b) => (b.textContent || '').trim()),
+  }));
+})())`));
+const fullRow = fileRowActions.find((r) => !r.entry);
+const entryRow = fileRowActions.find((r) => r.entry);
+check('files: 非入口行的行内动作是 ◎ / ✎ / ✕ 三件', JSON.stringify(fullRow?.icons) === JSON.stringify(['◎', '✎', '✕']), fileRowActions);
+check('files: 入口行按设计不显示「设为入口」，只剩 ✎ / ✕',
+  entryRow !== undefined && JSON.stringify(entryRow.icons) === JSON.stringify(['✎', '✕']), fileRowActions);
 check('projects: 行内动作目前只有 ✕（改名走顶栏面包屑）', rowsProjects.before.btnCount === 1, rowsProjects.before.btnCount);
 
 // 键盘可达：不悬浮，直接把焦点给 ✎，动作层必须因 :focus-within 浮出
 const kb = JSON.parse(await evaluate(`JSON.stringify((()=>{
-  const row = document.querySelector('.file-row');
-  const btns = row ? [...row.querySelectorAll('.row-btn')] : [];
-  const rename = btns[1] || null;
+  /* 按文字找 ✎：入口文件行少了 ◎，按索引取会点到 ✕（删除，会弹确认框）。 */
+  const rename = [...document.querySelectorAll('.file-row .row-btn')]
+    .find((b) => (b.textContent || '').trim() === '✎') || null;
+  const row = rename ? rename.closest('.file-row') : null;
   if (!rename) return { ok: false };
   rename.focus();
   const acts = row.querySelector('.row-actions');
@@ -387,9 +407,8 @@ check('文件面板：键盘聚焦到 ✎ 时动作层浮出（不是只在悬�
 
 // 改名流程：✎ → 内联输入框 → Esc 取消（不真的改名，避免影响后续断言）
 const renameUi = JSON.parse(await evaluate(`JSON.stringify((()=>{
-  const row = document.querySelector('.file-row');
-  const btns = row ? [...row.querySelectorAll('.row-btn')] : [];
-  const rename = btns[1] || null;
+  const rename = [...document.querySelectorAll('.file-row .row-btn')]
+    .find((b) => (b.textContent || '').trim() === '✎') || null;
   if (!rename) return { opened: false };
   rename.click();
   return { opened: true };
@@ -409,6 +428,86 @@ check('文件面板：✎ 打开内联改名输入框且自动聚焦', renameUi.
 await sleep(500);
 const renameClosed = await evaluate('!document.querySelector(".rename-input")');
 check('文件面板：Esc 取消改名后输入框消失', renameClosed === true, renameClosed);
+
+// 10b. 改名落库：项目改名在顶栏面包屑、文件改名在行内 ✎，两者都必须真的写进
+//      IndexedDB——只看界面文字会漏掉「改了名但没保存」这一整类问题。
+//      自动保存默认关闭，所以这里按真实路径点一次保存。
+const DB_DUMP = `(async () => {
+  const db = await new Promise((res, rej) => {
+    const r = indexedDB.open('blockly-crypto-editor', 1);
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+  const rows = await new Promise((res, rej) => {
+    const tx = db.transaction('projects', 'readonly');
+    const rq = tx.objectStore('projects').getAll();
+    rq.onsuccess = () => res(rq.result);
+    rq.onerror = () => rej(rq.error);
+  });
+  db.close();
+  return JSON.stringify(rows.map((r) => ({ id: r.id, name: r.name, files: (r.files || []).map((f) => f.name) })));
+})()`;
+const dumpDb = async () => JSON.parse(await evaluate(DB_DUMP));
+const clickToolbarSave = async () => {
+  await evaluate('(()=>{const b=document.querySelector(".toolbar .toolbar-btn"); if(b) b.click(); return !!b;})()');
+  await sleep(2000);
+};
+
+const dbBefore = await dumpDb();
+await openPanel(0, '.project-panel');
+const renamedProject = await evaluate(`(()=>{
+  const i = document.querySelector('.crumb-project-input');
+  if (!i) return 'no-input';
+  i.focus();
+  i.value = '改名验收-项目';
+  i.dispatchEvent(new Event('input', { bubbles: true }));
+  i.blur();
+  return 'typed';
+})()`);
+await sleep(600);
+await clickToolbarSave();
+const dbAfterProject = await dumpDb();
+check('项目面板：面包屑改名 + 保存后写进 IndexedDB，且不会多出第二个项目',
+  renamedProject === 'typed'
+    && dbAfterProject.length === dbBefore.length
+    && dbAfterProject.some((r) => r.name === '改名验收-项目'),
+  { renamedProject, dbBefore, dbAfterProject });
+
+/* 保存层必须把新名字推回面板列表，否则用户以为没改成（改前只在新建时 refresh）。 */
+const rowsAfterRename = JSON.parse(await evaluate(`JSON.stringify(
+  [...document.querySelectorAll('.project-row')].map((r) => r.querySelector('.project-row-name')?.innerText?.trim() ?? null)
+)`));
+check('项目面板：保存后列表行名跟着更新（不用重开面板）',
+  rowsAfterRename.includes('改名验收-项目'), rowsAfterRename);
+
+// 文件改名同样要落库：✎ → 输入 → Enter → 保存
+await openPanel(1, '.files-section');
+const fileRenameClicked = await evaluate(`(()=>{
+  const row = document.querySelector('.file-row');
+  if (!row) return 'no-row';
+  const btns = [...row.querySelectorAll('.row-btn')];
+  const rename = btns.find((b) => (b.getAttribute('title') || '').includes('Rename')) || btns[1];
+  if (!rename) return 'no-button';
+  rename.click();
+  return 'clicked';
+})()`);
+await sleep(500);
+const fileRenameTyped = await evaluate(`(()=>{
+  const i = document.querySelector('.rename-input');
+  if (!i) return 'no-input';
+  i.focus();
+  i.value = 'gate-renamed-block.json';
+  i.dispatchEvent(new Event('input', { bubbles: true }));
+  i.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+  return 'typed';
+})()`);
+await sleep(600);
+await clickToolbarSave();
+const dbAfterFile = await dumpDb();
+check('文件面板：✎ 改名 + 保存后写进 IndexedDB',
+  fileRenameClicked === 'clicked' && fileRenameTyped === 'typed'
+    && dbAfterFile.some((r) => (r.files || []).includes('gate-renamed-block.json')),
+  { fileRenameClicked, fileRenameTyped, dbAfterFile });
 
 // 11. 窄屏（≤1200px）检索面板切成浮层：同一套头部规则在浮层里也必须成立，
 //     否则「统一」只证明了停靠态这一半。
