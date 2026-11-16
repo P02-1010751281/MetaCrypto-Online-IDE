@@ -152,14 +152,14 @@ const files = await settle(1);
 await shoot('files');
 const functions = await settle(2);
 await shoot('functions');
-const docSearch = await settle(3);
-await shoot('docSearch');
-const blockSearch = await settle(4);
-await shoot('blockSearch');
+/* 查文档 / 查块已合并成「AI 助手」一个入口（两个 tab 共用一套头部），
+   activity bar 从 5 个按钮变成 4 个：下标 3 就是助手。 */
+const assistant = await settle(3);
+await shoot('assistant');
 
-const panels = [['projects', projects], ['files', files], ['functions', functions], ['docSearch', docSearch], ['blockSearch', blockSearch]];
+const panels = [['projects', projects], ['files', files], ['functions', functions], ['assistant', assistant]];
 
-// 1. 五个面板都有头，且高度同一条基线
+// 1. 四个面板都有头，且高度同一条基线
 for (const [name, p] of panels) {
   check(`${name}: 有面板头且高度 = 38px（--panel-head-h）`, p.headH === 38, p);
 }
@@ -172,21 +172,21 @@ check('三个面板标题计算样式完全一致', sameTitle, {
 });
 check('标题字重为 600（不是 400 与 600 混用）', projects.titleCss?.weight === '600', projects.titleCss);
 
-// 2b. 检索面板并入后，五个面板的标题必须仍是同一组计算样式
+// 2b. AI 助手并入后，四个面板的标题必须仍是同一组计算样式
 const allSameTitle = panels.every(([, p]) => JSON.stringify(p.titleCss) === JSON.stringify(projects.titleCss));
-check('五个面板标题计算样式完全一致（含查文档 / 查块）', allSameTitle,
+check('四个面板标题计算样式完全一致（含 AI 助手）', allSameTitle,
   panels.map(([name, p]) => [name, p.titleCss]));
 
-// 2c. 五个面板共用同一个 .section-head 定义，而不是各留一份同名副本
+// 2c. 四个面板共用同一个 .section-head 定义，而不是各留一份同名副本
 const headsUnified = panels.every(([, p]) => (p.headClass || '').split(' ').includes('section-head'));
-check('五个面板头部都取 .section-head（无 dsp-header / bsp-header 副本）', headsUnified,
+check('四个面板头部都取 .section-head（无 dsp-header / bsp-header 副本）', headsUnified,
   panels.map(([name, p]) => [name, p.headClass]));
 
 // 2d. 标题必须贴左。「只有标题一个子元素」的头部（函数面板停靠态）曾被
 //     `.section-head > :last-child { margin-left: auto }` 整条推到栏右边缘——
 //     只验样式的断言看不出来，必须量位置。
 const leftAligned = panels.every(([, p]) => p.titleLeft - p.headLeft === Math.round(parseFloat(p.headPadL)));
-check('五个面板标题都贴左（左边缘 = 头部左边缘 + 头部内边距）', leftAligned,
+check('四个面板标题都贴左（左边缘 = 头部左边缘 + 头部内边距）', leftAligned,
   panels.map(([name, p]) => [name, { headLeft: p.headLeft, titleLeft: p.titleLeft, padL: p.headPadL }]));
 
 // 3. 文件面板不再有返回按钮：头部只有一个按钮（＋），且首元素是标题
@@ -210,8 +210,8 @@ check('projects / files: 侧栏保持 248px', projects.sidebarW === 248 && files
   projects: projects.sidebarW, files: files.sidebarW,
 });
 
-// 6. 检索面板并入后：头部只剩一个关闭图标，且是 24×24 透明底
-for (const [name, p] of [['docSearch', docSearch], ['blockSearch', blockSearch]]) {
+// 6. 助手面板：头部只剩一个关闭图标，且是 24×24 透明底（tab 行在头部之外）
+for (const [name, p] of [['assistant', assistant]]) {
   check(`${name}: 头部只有 1 个按钮`, p.headButtons === 1, p.headButtons);
   check(`${name}: 关闭按钮是 24×24 透明底（同 .ghost-btn）`,
     p.closeBox?.w === 24 && p.closeBox?.h === 24 && p.closeBox?.bg === 'rgba(0, 0, 0, 0)',
@@ -222,22 +222,20 @@ for (const [name, p] of [['docSearch', docSearch], ['blockSearch', blockSearch]]
 }
 
 // 7. 「包含 PDF」是检索条件不是面板动作：必须离开头部、落在查询行
-check('docSearch: 头部不含 checkbox（带文字控件下沉）', docSearch.checkboxInHead === false, docSearch);
-check('docSearch: 「包含 PDF」在查询行内', docSearch.checkboxInQuery === true, docSearch);
-check('docSearch: 查询行仍是一行（增高 < 8px 视为同一行）', (docSearch.queryRowH ?? 0) < 52, docSearch.queryRowH);
+check('assistant: 头部不含 checkbox（带文字控件下沉）', assistant.checkboxInHead === false, assistant);
+check('assistant: 「包含 PDF」在查询行内', assistant.checkboxInQuery === true, assistant);
+check('assistant: 查询行仍是一行（增高 < 8px 视为同一行）', (assistant.queryRowH ?? 0) < 52, assistant.queryRowH);
 
-// 8. 检索面板本来就在「按内容展宽」名单里，并入时不能丢掉
-check('docSearch / blockSearch: 侧栏展宽到 400px',
-  docSearch.sidebarW === 400 && blockSearch.sidebarW === 400,
-  { docSearch: docSearch.sidebarW, blockSearch: blockSearch.sidebarW });
+// 8. 助手面板本来就在「按内容展宽」名单里，合并入口时不能丢掉
+check('assistant: 侧栏展宽到 400px', assistant.sidebarW === 400, assistant.sidebarW);
 
 // 9. 关闭按钮接线未因换类名断开：点一下必须真的关掉面板（回到默认面板）
 // 注意不能在这里再 settle(4)：activity 按钮是「点一次开、再点一次关」，
 // 前一次 settle(4) 已经把面板打开，再点等于把它关掉，后面就找不到按钮了。
 await evaluate(`(()=>{
   const s = document.querySelector('.side-panel');
-  if (!s || !s.querySelector('.bsp')) {
-    const b = document.querySelectorAll('.activity-bar .activity-btn')[4];
+  if (!s || !s.querySelector('.aip')) {
+    const b = document.querySelectorAll('.activity-bar .activity-btn')[3];
     if (b) b.click();
   }
   return true;
@@ -254,8 +252,8 @@ const afterClose = await evaluate(`(()=>{
   const s = document.querySelector('.side-panel');
   return s ? (s.firstElementChild?.className ?? s.firstElementChild?.tagName ?? 'empty') : 'no-side-panel';
 })()`);
-check('查块面板的关闭按钮仍然生效（换类名没断线）',
-  clicked === 'clicked' && !String(afterClose).includes('bsp'), { clicked, afterClose });
+check('AI 助手的关闭按钮仍然生效（换成合并入口后没断线）',
+  clicked === 'clicked' && !String(afterClose).includes('aip'), { clicked, afterClose });
 
 // 10. 行内动作（改名 / 删除 / 设为入口）：两个面板必须共用一套，且隐藏时不可点。
 // 造数据：新 profile 里没有项目与文件，行内动作至少各要一行才量得到。
@@ -727,7 +725,8 @@ check('再点一下复原：侧栏回来、中间栏回到 248、宽度与收起
   { back: sbBack, before: sbBefore });
 
 // 10g. 窄屏没有「侧栏」可收：侧栏此时折成顶部横条，而横条里的活动条是**唯一**的
-//      面板入口——收掉它等于把五个入口一起藏了（实测 5 → 0，只能靠顶栏那颗按钮回来）。
+//      面板入口——收掉它等于把四个入口一起藏了（查文档/查块合并后 4 → 0，
+//      只能靠顶栏那颗按钮回来）。
 //      所以窄屏隐藏这颗开关并强制显示横条；陷阱态是「宽屏收起后缩窄」，状态不能把
 //      窄屏的入口一起带走。
 const NARROW_SIDEBAR = `JSON.stringify((()=>{
@@ -799,7 +798,7 @@ check('窄屏 560px：顶栏不横向溢出（多出的开关不挤破换行后�
 await send('browsingContext.setViewport', { context, viewport: { width: 1366, height: 800 } });
 await sleep(700);
 
-// 11. 窄屏（≤1200px）检索面板切成浮层：同一套头部规则在浮层里也必须成立，
+// 11. 窄屏（≤1200px）助手切成浮层：同一套头部规则在浮层里也必须成立，
 //     否则「统一」只证明了停靠态这一半。
 await send('browsingContext.setViewport', { context, viewport: { width: 1024, height: 700 } });
 await sleep(1000);
@@ -809,15 +808,15 @@ await evaluate(`(()=>{
   return true;
 })()`);
 await sleep(800);
-await shoot('docSearch-overlay');
+await shoot('assistant-overlay');
 const overlay = JSON.parse(await evaluate(`JSON.stringify((()=>{
-  const host = document.querySelector('.dsp-overlay');
+  const host = document.querySelector('.aip-overlay');
   const head = host ? host.querySelector('.section-head') : null;
   const title = head ? head.querySelector('.section-title') : null;
   const btns = head ? [...head.querySelectorAll('button')] : [];
   const s = title ? getComputedStyle(title) : null;
   return {
-    host: host ? 'dsp-overlay' : null,
+    host: host ? 'aip-overlay' : null,
     headH: head ? Math.round(head.getBoundingClientRect().height) : null,
     titleCss: s ? { size: s.fontSize, weight: s.fontWeight, ls: s.letterSpacing, tt: s.textTransform, color: s.color } : null,
     buttons: btns.length,
@@ -828,8 +827,8 @@ const overlay = JSON.parse(await evaluate(`JSON.stringify((()=>{
     checkboxInHead: head ? !!head.querySelector('input[type="checkbox"]') : null,
   };
 })())`));
-check('窄屏浮层：查文档是 .dsp-overlay，头部仍 38px',
-  overlay.host === 'dsp-overlay' && overlay.headH === 38, overlay);
+check('窄屏浮层：AI 助手是 .aip-overlay，头部仍 38px',
+  overlay.host === 'aip-overlay' && overlay.headH === 38, overlay);
 check('窄屏浮层：标题计算样式与停靠态逐项一致',
   JSON.stringify(overlay.titleCss) === JSON.stringify(projects.titleCss),
   { overlay: overlay.titleCss, projects: projects.titleCss });
@@ -837,7 +836,7 @@ check('窄屏浮层：头部只有 1 个按钮且 24×24',
   overlay.buttons === 1 && overlay.closeBox?.w === 24 && overlay.closeBox?.h === 24, overlay);
 check('窄屏浮层：头部不含 checkbox', overlay.checkboxInHead === false, overlay);
 
-// 12. 窄屏（≤1200px）五个面板的头部：四个在浮层 / 弹出层里，文件面板留在横条里。
+// 12. 窄屏（≤1200px）四个面板的头部：三个在浮层 / 弹出层里，文件面板留在横条里。
 //     这一段是补出来的：此前窄屏只验了查文档浮层，而函数面板浮层当时另写了一份
 //     `.cfp-header`（14px 标题、48px 高、无标签的 ✕），49 条断言一条都没红。
 const NARROW_PROBE = `JSON.stringify((()=>{
@@ -874,8 +873,7 @@ for (const [idx, name, marker] of [
   [0, 'projects', '.project-panel'],
   [1, 'files', '.files-section'],
   [2, 'functions', '.cfp-panel'],
-  [3, 'docSearch', '.dsp'],
-  [4, 'blockSearch', '.bsp'],
+  [3, 'assistant', '.aip'],
 ]) {
   await openPanel(idx, marker);
   narrow.push([name, JSON.parse(await evaluate(NARROW_PROBE))]);
@@ -883,20 +881,20 @@ for (const [idx, name, marker] of [
   if (name === 'functions') await shoot('functions-overlay');
 }
 
-check('窄屏：五个面板各自只有一个头部',
+check('窄屏：四个面板各自只有一个头部',
   narrow.every(([, p]) => p.headCount === 1), narrow.map(([n, p]) => [n, p.headCount]));
-check('窄屏：五个头部都取 .section-head（函数面板浮层的 .cfp-header 已不存在）',
+check('窄屏：四个头部都取 .section-head（函数面板浮层的 .cfp-header 已不存在）',
   narrow.every(([, p]) => (p.headClass || '').split(' ').includes('section-head') && p.hasOldCfpHheader === false),
   narrow.map(([n, p]) => [n, p.headClass, p.hasOldCfpHheader]));
 /* 横条里的文件面板头只有一颗 ＋，高度收到按钮高（24）——横条只有一行高，
    保住 38px 会把活动条与文件行顶开。浮层/弹出层的四个头必须仍是 38px 基线。 */
-check('窄屏：四个浮层/弹出面板的头部高度都是 38px',
+check('窄屏：三个浮层/弹出面板的头部高度都是 38px',
   narrow.filter(([n]) => n !== 'files').every(([, p]) => p.h === 38),
   narrow.map(([n, p]) => [n, p.h]));
 check('窄屏：横条里的文件面板头收成按钮高（24px），不撑高横条',
   narrow.find(([n]) => n === 'files')[1].h === 24,
   narrow.find(([n]) => n === 'files')[1].h);
-check('窄屏：五个标题的字体与停靠态逐项一致',
+check('窄屏：四个标题的字体与停靠态逐项一致',
   narrow.every(([, p]) => JSON.stringify(p.titleCss) === JSON.stringify(projects.titleCss)),
   narrow.map(([n, p]) => [n, p.titleCss]));
 check('窄屏：四个浮层/弹出面板显示标题，横条里的文件面板按设计隐藏标题',
@@ -908,7 +906,7 @@ const narrowAligned = narrow.filter(([n]) => n !== 'files')
   .every(([, p]) => p.titleLeft - p.headLeft === Math.round(parseFloat(p.padL)));
 check('窄屏：四个可见标题都贴左（左边缘 = 头部左边缘 + 头部内边距）', narrowAligned,
   narrow.map(([n, p]) => [n, { headLeft: p.headLeft, titleLeft: p.titleLeft, padL: p.padL }]));
-check('窄屏：五个头部都只有 1 个 24×24 图标按钮且有可访问名称',
+check('窄屏：四个头部都只有 1 个 24×24 图标按钮且有可访问名称',
   narrow.every(([, p]) => p.buttons === 1 && p.btnBox?.w === 24 && p.btnBox?.h === 24 && (p.btnLabel || '').length > 0),
   narrow.map(([n, p]) => [n, p.buttons, p.btnBox, p.btnLabel]));
 
