@@ -15,9 +15,7 @@
       </button>
       <h1 class="docs-title">{{ ui('docsTitle') }}</h1>
       <div class="header-spacer" />
-      <button class="header-btn lang-btn" @click="toggleLocale">
-        {{ blocklyLocale.getCurrentLocale() === 'zh-hans' ? 'EN' : '中文' }}
-      </button>
+      <LocaleToggleButton class="header-btn lang-btn" @toggle="toggleLocale" />
     </header>
 
     <!-- 预填词没命中任何分类/标题时说明一句：否则用户会对着一个被清空的搜索框猜原因。 -->
@@ -64,6 +62,7 @@ import {
 } from '@/utils/docs-search-entry';
 import DocsSidebar from '@/components/docs/DocsSidebar.vue';
 import DocsContent from '@/components/docs/DocsContent.vue';
+import LocaleToggleButton from '@/components/editor/LocaleToggleButton.vue';
 
 const {
   docLoaders,

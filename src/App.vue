@@ -63,7 +63,6 @@
         :save-status="saveStatus"
         :last-save-time="lastSaveTime"
         :auto-save-enabled="autoSaveEnabled"
-        :locale-label="localeLabel"
         :open-menu="openMenu"
         :export-format="exportFormat"
         :import-format="importFormat"
@@ -309,10 +308,6 @@ const {
 });
 
 const currentWorkspace = computed(() => blocklyEditor.value?.workspaceRef || null);
-
-const localeLabel = computed(() =>
-  blocklyLocale.getCurrentLocale() === 'zh-hans' ? 'EN' : '中文',
-);
 
 /** 状态栏显示的语言名（与代码栏下拉一致的标签）。 */
 const languageLabel = computed(

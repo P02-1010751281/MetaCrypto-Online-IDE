@@ -172,6 +172,8 @@ defineExpose({
 });
 </script>
 
+<style scoped src="./editor-toolbar-button.css"></style>
+
 <style scoped>
 /* ---- 右侧代码区 ---- */
 .view-right {
@@ -264,34 +266,7 @@ defineExpose({
   min-width: 0;
 }
 
-.toolbar-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 32px;
-  padding: 0 10px;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  background: var(--color-bg-card);
-  color: var(--color-text);
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.15s;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.toolbar-btn svg {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-}
-
-.toolbar-btn:hover {
-  background: var(--color-bg-hover);
-  border-color: var(--color-border-hover);
-}
-
+/* 基础外观（.toolbar-btn / svg / hover）来自共用样式，见文件末尾的 scoped src。 */
 .toolbar-btn.primary {
   background: var(--color-primary);
   border-color: var(--color-primary);
