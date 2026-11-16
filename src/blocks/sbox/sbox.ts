@@ -1,6 +1,6 @@
 import * as Blockly from 'blockly/core';
-import { TYPE_SBOX } from '@/constants/block-types';
-import { SBOX_PRESETS } from '@/constants/sbox-presets';
+import { TYPE_SBOX } from '@cc/constants/block-types';
+import { SBOX_PRESETS } from '@cc/constants/sbox-presets';
 import {
   GRID_ICONS,
   downloadCsv,
@@ -10,7 +10,7 @@ import {
   type GridHost,
   svgRoot,
   type GridPopupHandle,
-} from '@/blocks/grid/grid-editor';
+} from '@cc/blocks/grid/grid-editor';
 
 export const SBOX_BLOCK_TYPES = ['sbox', 'sbox_sub'] as const;
 

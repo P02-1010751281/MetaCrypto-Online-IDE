@@ -9,7 +9,7 @@
  *   互操作测试不等于标准符合性测试或正式认证。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_BOOLEAN, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_BOOLEAN, TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const RSA_BLOCK_TYPES = ['rsa_keygen',
   'rsa_encrypt',

@@ -34,7 +34,7 @@ import './sm9';
 
 import { Block } from 'blockly/core';
 import { javascriptGenerator, Order } from 'blockly/javascript';
-import { getMigrationMap } from '@/utils/migration';
+import { getMigrationMap } from '@cc/migration';
 
 javascriptGenerator.forBlock['data_int_list'] = function (
   block: Block,

@@ -4,7 +4,7 @@
  * - pad: 消息填充 (1 || 0* || len), 对齐 512-bit 块
  * - compress: CF 压缩函数 (64 轮)
  */
-import { TYPE_BYTES, TYPE_INT_LIST } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_INT_LIST } from '@cc/constants/block-types';
 import * as Blockly from 'blockly/core';
 
 export const SM3_BLOCK_TYPES = [

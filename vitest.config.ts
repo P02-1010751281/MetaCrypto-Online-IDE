@@ -5,6 +5,14 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      // 包内别名（与 vite.config.ts 保持一致）
+      '@cc/blocks': fileURLToPath(new URL('./src/blocks', import.meta.url)),
+      '@cc/generators': fileURLToPath(new URL('./src/generators', import.meta.url)),
+      '@cc/constants': fileURLToPath(new URL('./src/constants', import.meta.url)),
+      '@cc/migration': fileURLToPath(new URL('./src/utils/migration', import.meta.url)),
+      '@cc/locale': fileURLToPath(new URL('./src/composables/locale', import.meta.url)),
+      '@cc/runtime': fileURLToPath(new URL('./src/runtime', import.meta.url)),
+      '@cc/utils': fileURLToPath(new URL('./src/utils', import.meta.url)),
     },
   },
   test: {

@@ -4,7 +4,7 @@
 import { pythonGenerator, Order } from 'blockly/python';
 import type { Block } from 'blockly/core';
 
-import { PY_MAX_SAFE_INTEGER, registerSafeIntegers } from '@/generators/python/safe-int';
+import { PY_MAX_SAFE_INTEGER, registerSafeIntegers } from '@cc/generators/python/safe-int';
 
 function registerPolyMul(): string {
   const require_safe = registerSafeIntegers();

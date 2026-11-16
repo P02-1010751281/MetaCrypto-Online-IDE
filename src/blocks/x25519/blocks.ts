@@ -7,7 +7,7 @@
  *   官方向量：RFC 7748 §5.2 Test Vectors（V1/V2）。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_INT_LIST } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_INT_LIST } from '@cc/constants/block-types';
 
 export const X25519_BLOCK_TYPES = ['x25519'] as const;
 export type X25519BlockType = (typeof X25519_BLOCK_TYPES)[number];

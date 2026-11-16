@@ -1,6 +1,6 @@
 import { javascriptGenerator, Order } from 'blockly/javascript';
 import type { Block } from 'blockly/core';
-import { requireVariableName } from '@/generators/assignment-target';
+import { requireVariableName } from '@cc/generators/assignment-target';
 
 javascriptGenerator.forBlock['bit_rotate_left'] = function(block: Block): string {
   const input = javascriptGenerator.valueToCode(block, 'Input', Order.ATOMIC) || '0';

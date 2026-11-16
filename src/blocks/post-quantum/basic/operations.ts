@@ -14,7 +14,7 @@
  *
  * 参考: FIPS 203 — https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.203.pdf
  */
-import { TYPE_BYTES, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_NUMBER } from '@cc/constants/block-types';
 import * as Blockly from 'blockly/core';
 
 export const BASIC_OPERATIONS_BLOCK_TYPES = [

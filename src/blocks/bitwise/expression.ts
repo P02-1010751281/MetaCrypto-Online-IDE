@@ -1,6 +1,6 @@
 import * as Blockly from 'blockly/core';
 
-import { TYPE_BOOLEAN, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_BOOLEAN, TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const EXPRESSION_BLOCK_TYPES = [
   'bit_expr_infix'

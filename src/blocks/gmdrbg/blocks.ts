@@ -2,7 +2,7 @@
  * Deterministic SM3-HMAC teaching example. It is not a complete or conformant RNG.
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const GMDRBG_BLOCK_TYPES = ['gm_rng'] as const;
 export type GmDrbgBlockType = (typeof GMDRBG_BLOCK_TYPES)[number];

@@ -9,7 +9,7 @@
  *   仓库内暂未包含该向量的独立实现复算；容器契约与拒绝路径由单测覆盖。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_INT_LIST } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_INT_LIST } from '@cc/constants/block-types';
 
 export const XTS_BLOCK_TYPES = ['xts_encrypt', 'xts_tweak_mul'] as const;
 export type XtsBlockType = (typeof XTS_BLOCK_TYPES)[number];

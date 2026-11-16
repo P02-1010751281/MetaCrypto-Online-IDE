@@ -1,6 +1,6 @@
 import { pythonGenerator, Order } from 'blockly/python';
 import type { Block } from 'blockly/core';
-import { requireVariableName } from '@/generators/assignment-target';
+import { requireVariableName } from '@cc/generators/assignment-target';
 
 pythonGenerator.forBlock['arr_partition_to_array'] = function(block: Block): string {
   const source = pythonGenerator.valueToCode(block, 'SRC', Order.ATOMIC) || '[]';

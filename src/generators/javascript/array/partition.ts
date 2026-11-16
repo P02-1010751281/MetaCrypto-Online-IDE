@@ -1,6 +1,6 @@
 import { javascriptGenerator, Order } from 'blockly/javascript';
 import type { Block } from 'blockly/core';
-import { requireVariableName } from '@/generators/assignment-target';
+import { requireVariableName } from '@cc/generators/assignment-target';
 
 javascriptGenerator.forBlock['arr_partition_to_array'] = function(block: Block): string {
   const source = javascriptGenerator.valueToCode(block, 'SRC', Order.ATOMIC) || '[]';

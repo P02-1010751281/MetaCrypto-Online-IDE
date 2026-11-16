@@ -10,7 +10,7 @@
  * 双线性对为 BN 曲线 R-ate pairing（Fp12 塔域 u²=-2, s³=u, t²=s）。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_BOOLEAN } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_BOOLEAN } from '@cc/constants/block-types';
 
 export const SM9_BLOCK_TYPES = [
   'sm9_master_key',

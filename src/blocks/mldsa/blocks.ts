@@ -13,7 +13,7 @@
  *     因此不声明其为官方 ACVP 证据，也不包含完整 ACVP 套件
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BOOLEAN, TYPE_BYTES } from '@/constants/block-types';
+import { TYPE_BOOLEAN, TYPE_BYTES } from '@cc/constants/block-types';
 
 export const MLDSA_BLOCK_TYPES = ['mldsa_sign', 'mldsa_verify'] as const;
 export type MldsaBlockType = (typeof MLDSA_BLOCK_TYPES)[number];

@@ -7,6 +7,14 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(import.meta.dirname, 'src'),
+      // 包内别名（core 家庭之间只走 @cc/*，不依赖应用级 @/）
+      '@cc/blocks': resolve(import.meta.dirname, 'src/blocks'),
+      '@cc/generators': resolve(import.meta.dirname, 'src/generators'),
+      '@cc/constants': resolve(import.meta.dirname, 'src/constants'),
+      '@cc/migration': resolve(import.meta.dirname, 'src/utils/migration'),
+      '@cc/locale': resolve(import.meta.dirname, 'src/composables/locale'),
+      '@cc/runtime': resolve(import.meta.dirname, 'src/runtime'),
+      '@cc/utils': resolve(import.meta.dirname, 'src/utils'),
     },
   },
   server: {

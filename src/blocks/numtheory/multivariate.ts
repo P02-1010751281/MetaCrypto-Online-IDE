@@ -12,7 +12,7 @@
  * 系数展平 = 二次上三角 n(n+1)/2 项（i≤j，行优先）‖ 一次 n 项 ‖ 常数 1。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_INT_LIST, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_INT_LIST, TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const MULTIVARIATE_BLOCK_TYPES = [
   'gauss_elim',

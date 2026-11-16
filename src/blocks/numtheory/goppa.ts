@@ -17,7 +17,7 @@
  * 验证：GF(16) 子域 [14,6,5] Goppa 码往返（无错/单错/双错）双语言性质向量 PASS。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_INT_LIST } from '@/constants/block-types';
+import { TYPE_INT_LIST } from '@cc/constants/block-types';
 
 export const GOPPA_BLOCK_TYPES = ['goppa_decode'] as const;
 export type GoppaBlockType = (typeof GOPPA_BLOCK_TYPES)[number];

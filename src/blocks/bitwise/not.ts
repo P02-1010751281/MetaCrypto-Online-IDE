@@ -1,5 +1,5 @@
 import * as Blockly from 'blockly/core';
-import { TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const NOT_BLOCK_TYPES = [
   'bit_not32'

@@ -17,7 +17,7 @@
  */
 
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_INT_LIST, TYPE_BITS } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_INT_LIST, TYPE_BITS } from '@cc/constants/block-types';
 
 export const ENCODING_BLOCK_TYPES = [
   'pq_bytes_to_bits',

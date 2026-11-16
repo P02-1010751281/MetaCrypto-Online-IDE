@@ -8,7 +8,7 @@
  *   SP 800-38C §6.2 decryption-verification 路径：先 CTR 解出明文，再重算标签并逐字节比对。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_INT_LIST, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_INT_LIST, TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const CCM_BLOCK_TYPES = [
   'ccm_encrypt',

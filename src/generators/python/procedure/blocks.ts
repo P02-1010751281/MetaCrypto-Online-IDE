@@ -3,8 +3,8 @@
  */
 import { pythonGenerator, Order } from 'blockly/python';
 import type { Block } from 'blockly/core';
-import { TYPE_MAP } from '@/constants/block-types';
-import { TEMPLATE_TYPES } from '@/blocks/procedure/blocks';
+import { TYPE_MAP } from '@cc/constants/block-types';
+import { TEMPLATE_TYPES } from '@cc/blocks/procedure/blocks';
 
 pythonGenerator.forBlock['crypto_return'] = function (
   block: Block,

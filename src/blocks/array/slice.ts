@@ -5,7 +5,7 @@
  * 通用数组工具（解析多项式扩展欧几里得展平输出 [len_u, u…, len_v, v…, g…]）。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_INT_LIST, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_INT_LIST, TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const SLICE_BLOCK_TYPES = ['arr_slice'] as const;
 export type SliceBlockType = (typeof SLICE_BLOCK_TYPES)[number];

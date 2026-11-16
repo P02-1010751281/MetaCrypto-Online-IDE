@@ -1,6 +1,6 @@
 import { javascriptGenerator, Order } from 'blockly/javascript';
 import type { Block } from 'blockly/core';
-import { requireVariableName } from '@/generators/assignment-target';
+import { requireVariableName } from '@cc/generators/assignment-target';
 
 function registerConvertToInt(): string {
   return javascriptGenerator.provideFunction_('cryptoConvertToInt', [

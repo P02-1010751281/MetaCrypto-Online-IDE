@@ -1,4 +1,4 @@
-import { TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_NUMBER } from '@cc/constants/block-types';
 
 import * as Blockly from 'blockly/core';
 

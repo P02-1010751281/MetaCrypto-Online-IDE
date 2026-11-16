@@ -10,7 +10,7 @@
  *   ZA/e/r/s 中间值全部与向量一致，JS/Python 双语言全 PASS。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_STRING, TYPE_BOOLEAN } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_STRING, TYPE_BOOLEAN } from '@cc/constants/block-types';
 
 export const SM2SIG_BLOCK_TYPES = ['sm2_sign', 'sm2_verify'] as const;
 export type Sm2SigBlockType = (typeof SM2SIG_BLOCK_TYPES)[number];

@@ -1,6 +1,6 @@
 import { pythonGenerator, Order } from 'blockly/python';
 import type { Block } from 'blockly/core';
-import { requireVariableName } from '@/generators/assignment-target';
+import { requireVariableName } from '@cc/generators/assignment-target';
 
 function registerConvertToInt(): string {
   return pythonGenerator.provideFunction_('crypto_convert_to_int', [

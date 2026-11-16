@@ -8,7 +8,7 @@
  *   Demo 回归运行 RFC 9106 §5.1-5.3 的 Argon2d/i/id 最终 Tag 样例；不覆盖 RFC 全量测试集。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const ARGON2_BLOCK_TYPES = ['argon2_hash', 'argon2_g'] as const;
 export type Argon2BlockType = (typeof ARGON2_BLOCK_TYPES)[number];

@@ -8,7 +8,7 @@
  *   官方向量：RFC 6979 A.2.5（P-256/SHA-256，"sample"/"test"）双语言验证通过。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_BOOLEAN } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_BOOLEAN } from '@cc/constants/block-types';
 
 export const ECDSA_BLOCK_TYPES = ['ecdsa_sign', 'ecdsa_verify', 'ecdsa_k_rfc6979'] as const;
 export type EcdsaBlockType = (typeof ECDSA_BLOCK_TYPES)[number];

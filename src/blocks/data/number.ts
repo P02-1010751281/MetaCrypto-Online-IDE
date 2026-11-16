@@ -5,7 +5,7 @@
  * 生成器原样透传，不做数值转换和引号包裹。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_INT_LIST } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_INT_LIST } from '@cc/constants/block-types';
 
 export const NUMBER_BLOCK_TYPES = [
   'cipher_key_from_seed',

@@ -5,7 +5,7 @@
  * GCM:  m=128, irreducible = x¹²⁸+x⁷+x²+x+1
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_INT_LIST } from '@/constants/block-types';
+import { TYPE_INT_LIST } from '@cc/constants/block-types';
 
 export const GF2M_BLOCK_TYPES = ['gf2m_mul', 'gf2m_add', 'gf2m_inv'] as const;
 export type Gf2mBlockType = (typeof GF2M_BLOCK_TYPES)[number];

@@ -9,7 +9,7 @@
  *   内嵌 drbgGenerate/drbgReseed 状态函数支持连续 generate 与 reseed 流程。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const DRBG_BLOCK_TYPES = ['drbg_generate', 'drbg_update'] as const;
 export type DrbgBlockType = (typeof DRBG_BLOCK_TYPES)[number];

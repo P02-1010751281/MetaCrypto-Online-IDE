@@ -8,7 +8,7 @@
  *   并由 tests/unit/demo-vector-crosscheck.test.ts 用 python3 cryptography ECDH 独立复算一致。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_STRING } from '@/constants/block-types';
+import { TYPE_STRING } from '@cc/constants/block-types';
 
 export const ECDH_BLOCK_TYPES = ['ecdh_shared_secret'] as const;
 export type EcdhBlockType = (typeof ECDH_BLOCK_TYPES)[number];

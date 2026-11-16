@@ -10,7 +10,7 @@
  * - zuc_keystream: 完整密钥流生成（LFSR + 比特重组 + F，32 轮初始化 + 工作模式）
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_INT_LIST, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_INT_LIST, TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const ZUC_BLOCK_TYPES = [
   'zuc_s0',

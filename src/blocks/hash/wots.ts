@@ -11,7 +11,7 @@
  * 性质向量：全 0 → csum 最大编码、全 15 → [0,0]、单调性。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_INT_LIST } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_INT_LIST } from '@cc/constants/block-types';
 
 export const WOTS_BLOCK_TYPES = ['wots_checksum'] as const;
 export type WotsBlockType = (typeof WOTS_BLOCK_TYPES)[number];

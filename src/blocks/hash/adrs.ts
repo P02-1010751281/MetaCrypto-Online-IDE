@@ -14,7 +14,7 @@
  * 性质向量：固定输入下的字节位置和双语言一致性。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES } from '@/constants/block-types';
+import { TYPE_BYTES } from '@cc/constants/block-types';
 
 export const ADRS_BLOCK_TYPES = ['slh_adrs_full'] as const;
 export type AdrsBlockType = (typeof ADRS_BLOCK_TYPES)[number];

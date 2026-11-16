@@ -1,6 +1,6 @@
 import { pythonGenerator } from 'blockly/python';
 
-import { registerSafeIntegers } from '@/generators/python/safe-int';
+import { registerSafeIntegers } from '@cc/generators/python/safe-int';
 
 export function registerSeedWithNonce(): string {
   return pythonGenerator.provideFunction_('seed_with_nonce', [

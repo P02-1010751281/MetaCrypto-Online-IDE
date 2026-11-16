@@ -13,7 +13,7 @@
  *   FIPS 202 — https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf
  *   FIPS 203 — https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.203.pdf
  */
-import { TYPE_BYTES, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_NUMBER } from '@cc/constants/block-types';
 import * as Blockly from 'blockly/core';
 
 export const SHAKE_BLOCK_TYPES = ['pq_xof', 'pq_prf'] as const;

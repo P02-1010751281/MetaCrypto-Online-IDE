@@ -6,7 +6,7 @@
  *   官方向量：RFC 5869 §A.1（SHA-256，L=42）。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_INT_LIST, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_INT_LIST, TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const HKDF_BLOCK_TYPES = ['hkdf', 'hkdf_extract', 'hkdf_expand'] as const;
 export type HkdfBlockType = (typeof HKDF_BLOCK_TYPES)[number];

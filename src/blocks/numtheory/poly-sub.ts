@@ -6,7 +6,7 @@
  *
  * 参考: FIPS 203 — https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.203.pdf
  */
-import { TYPE_INT_LIST } from '@/constants/block-types';
+import { TYPE_INT_LIST } from '@cc/constants/block-types';
 import * as Blockly from 'blockly/core';
 
 export const POLY_SUB_BLOCK_TYPES = [

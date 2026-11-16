@@ -1,5 +1,5 @@
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_INT_LIST, TYPE_NUMBER, TYPE_STRING } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_INT_LIST, TYPE_NUMBER, TYPE_STRING } from '@cc/constants/block-types';
 
 type B = Blockly.Block;
 

@@ -5,7 +5,7 @@
  * - pad_zero: 零填充
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const PADDING_BLOCK_TYPES = [
   'pad_pkcs7',

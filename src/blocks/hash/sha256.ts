@@ -6,7 +6,7 @@
  *
  * 参考: https://csrc.nist.gov/pubs/fips/180-4/upd1/final
  */
-import { TYPE_BYTES, TYPE_INT_LIST } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_INT_LIST } from '@cc/constants/block-types';
 import * as Blockly from 'blockly/core';
 
 export const SHA256_BLOCK_TYPES = [

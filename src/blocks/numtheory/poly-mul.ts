@@ -9,7 +9,7 @@
  * 性质向量：结合律 / 交换律 / 分配律 (a+b)·c = a·c + b·c。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_INT_LIST } from '@/constants/block-types';
+import { TYPE_INT_LIST } from '@cc/constants/block-types';
 
 export const POLY_MUL_BLOCK_TYPES = ['pq_poly_mul'] as const;
 export type PolyMulBlockType = (typeof POLY_MUL_BLOCK_TYPES)[number];

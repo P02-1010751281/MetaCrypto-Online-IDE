@@ -6,7 +6,7 @@
  *   little-endian 字节序；仓库登记少量固定样例，未运行完整官方 KAT 集。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_INT_LIST, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_INT_LIST, TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const ASCON_BLOCK_TYPES = [
   'ascon_encrypt',

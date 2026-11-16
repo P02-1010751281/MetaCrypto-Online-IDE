@@ -1,6 +1,6 @@
 import * as Blockly from 'blockly/core';
 import { toolboxTemplates } from '../toolbox-state';
-import { getActiveProjectFileId, getProjectSymbols } from '@/utils/project-context';
+import { getActiveProjectFileId, getProjectSymbols } from '@cc/utils/project-context';
 import { argsExtraState, buildCallOptions, invalidateCallOptions, loadArgsExtraState, parseArgsFromDom, procedureGetVarModels, renameVarByIdCommon, serializeArgsToDom, syncCallParams, updateVarNameCommon } from './shared';
 import type { AnyBlock } from './shared';
 import { TEMPLATE_PREFILL } from './template-prefill';

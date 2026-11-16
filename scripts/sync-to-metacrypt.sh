@@ -25,47 +25,18 @@
 
 set -e
 
-# 导入别名 sed 转换函数（CipherCat 别名 → metacrypt features/blockly/core 别名）
-# 两类转换：
-#   a) @/ 绝对别名：CipherCat @/constants/... → metacrypt @/features/blockly/core/...
-#   b) 相对目录名（仅 generators/）：CipherCat bit/ → metacrypt bitwise/，postquantum/ → post-quantum/
-#      （blocks/ 目录两边同名，不需要；但 generators/ 目录名两边不同，镜像后 index.ts 等
-#      相对导入会指向不存在的 ./bit 或 ./postquantum，必须映射）
+# 导入改写函数：只剩「相对目录名」一条规则。
+# 包内别名（@cc/*）由两仓各自的 vite / vitest / tsconfig 解析，同步时原样保留——
+# 镜像文件不再被 sed 改写导入语句。这是 2026-11-16 包边界改造的结果：
+# 之前这里是 14 条手工枚举的文件级映射，新增块引用新的 @/blocks/* 时会静默漏配。
+# 相对目录名：CipherCat 的 generators/bit、generators/postquantum 在 metacrypt 叫
+# bitwise / post-quantum，目录内相对导入（'./bit'、'../postquantum/'）必须跟着改。
 fix_imports() {
   sed -i \
-    -e "s|@/constants/block-types|@/features/blockly/core/constants/block-types|g" \
-    -e "s|@/constants/sbox-presets|@/features/blockly/core/constants/sbox-presets|g" \
-    -e "s|@/constants/grid-shape|@/features/blockly/core/constants/grid-shape|g" \
-    -e "s|@/constants/list-bridge|@/features/blockly/core/constants/list-bridge|g" \
-    -e "s|@/blocks/grid/grid-editor|@/features/blockly/core/blocks/grid/grid-editor|g" \
-    -e "s|@/blocks/procedure/blocks|@/features/blockly/core/blocks/procedure/blocks|g" \
-    -e "s|@/blocks/procedure/toolbox-state|@/features/blockly/core/blocks/procedure/toolbox-state|g" \
-    -e "s|@/utils/migration|@/features/blockly/core/utils/migration|g" \
-    -e "s|@/utils/project-context|@/features/blockly/core/utils/project-context|g" \
-    -e "s|@/utils/toolbox-config|@/features/blockly/core/utils/toolbox-config|g" \
-    -e "s|@/generators/assignment-target|@/features/blockly/core/generators/assignment-target|g" \
-    -e "s|@/generators/python/safe-int|@/features/blockly/core/generators/python/safe-int|g" \
     -e "s|'\./bit'|'./bitwise'|g" \
     -e "s|'\./postquantum'|'./post-quantum'|g" \
     -e "s|'\.\./postquantum/|'../post-quantum/|g" \
     -e "s|'\.\./bit/|'../bitwise/|g" \
-    "$1"
-}
-
-# 仅 blocks/ 目录不需要相对目录映射（目录名两边一致）；generators/ 需要。
-# 调用方按需决定：blocks 文件传 false（跳过相对映射），generators 文件传 true。
-fix_imports_blocks() {
-  sed -i \
-    -e "s|@/constants/block-types|@/features/blockly/core/constants/block-types|g" \
-    -e "s|@/constants/sbox-presets|@/features/blockly/core/constants/sbox-presets|g" \
-    -e "s|@/constants/grid-shape|@/features/blockly/core/constants/grid-shape|g" \
-    -e "s|@/constants/list-bridge|@/features/blockly/core/constants/list-bridge|g" \
-    -e "s|@/blocks/grid/grid-editor|@/features/blockly/core/blocks/grid/grid-editor|g" \
-    -e "s|@/blocks/procedure/blocks|@/features/blockly/core/blocks/procedure/blocks|g" \
-    -e "s|@/utils/migration|@/features/blockly/core/utils/migration|g" \
-    -e "s|@/utils/project-context|@/features/blockly/core/utils/project-context|g" \
-    -e "s|@/utils/toolbox-config|@/features/blockly/core/utils/toolbox-config|g" \
-    -e "s|@/generators/assignment-target|@/features/blockly/core/generators/assignment-target|g" \
     "$1"
 }
 
@@ -301,7 +272,6 @@ cd "$CIPHER/src/blocks"
 find . -name "*.ts" | while read -r f; do
   mkdir -p "$CORE/blocks/$(dirname "$f")"
   cp "$f" "$CORE/blocks/$f"
-  fix_imports_blocks "$CORE/blocks/$f"
 done
 # 删除 metacrypt 残留但 CipherCat 已不存在的块文件
 (cd "$CORE/blocks" && find . -name "*.ts" | while read -r f; do
@@ -341,14 +311,10 @@ done
 # ─── 3. constants/ 镜像（保留 metacrypt 专属 mcl-highlight.ts）───
 echo "[3/4] constants/"
 cp "$CIPHER/src/constants/block-types.ts" "$CORE/constants/block-types.ts"
-fix_imports_blocks "$CORE/constants/block-types.ts"
 cp "$CIPHER/src/constants/sbox-presets.ts" "$CORE/constants/sbox-presets.ts"
-fix_imports_blocks "$CORE/constants/sbox-presets.ts"
 # IntList / grid 编辑弹层引进的两个常量表：块与生成器都直接 import，缺一个就整包解析失败
 cp "$CIPHER/src/constants/grid-shape.ts" "$CORE/constants/grid-shape.ts"
-fix_imports_blocks "$CORE/constants/grid-shape.ts"
 cp "$CIPHER/src/constants/list-bridge.ts" "$CORE/constants/list-bridge.ts"
-fix_imports_blocks "$CORE/constants/list-bridge.ts"
 
 # ─── 3.5 Function Manager 面板（CipherCat 单源 → metacrypt features/blockly/components）───
 echo "[3.5/4] Function Manager 面板（CryptoFunctionPanel.vue）"
@@ -379,14 +345,10 @@ sync_runtime() {
   for f in "$CIPHER"/src/runtime/*.ts; do
     base=$(basename "$f")
     cp "$f" "$RUNTIME/$base"
-    # 别名转换：CipherCat @/runtime/… → metacrypt @/features/blockly/runtime/…
-    # worker 内的 ./contracts/run-chain 是相对路径，两侧目录结构一致，无需改写。
-    sed -i 's|@/runtime/|@/features/blockly/runtime/|g' "$RUNTIME/$base"
   done
   for f in "$CIPHER"/src/runtime/contracts/*.ts; do
     base=$(basename "$f")
     cp "$f" "$RUNTIME/contracts/$base"
-    sed -i 's|@/runtime/|@/features/blockly/runtime/|g' "$RUNTIME/contracts/$base"
   done
 }
 
@@ -440,16 +402,32 @@ for f in "$CORE"/utils/locale*.ts "$CORE"/utils/migration*.ts; do
   rm "$f"
 done
 
-# 别名回归：镜像区不允许残留 CipherCat 侧的裸别名。
-# fix_imports 的映射表是手工枚举的，新增块若引用了新的 @/blocks/* 、@/constants/* 条目
-# 而这里没跟上，同步本身不会报错，只会让 metacrypt 的 type-check / 打包在别人机器上炸
-# （2026-11-15 的 grid-shape、list-bridge、grid-editor 就是这么漏的）。宁可在同步时红。
-BARE_ALIAS=$(grep -rnE "from '@/(blocks|constants|generators|utils|runtime)/" "$CORE" --include='*.ts' 2>/dev/null || true)
+# 包边界回归：只查「镜像文件」——它们必须只含 @cc/ 家族别名与相对导入。
+# 不扫整个 core：utils/workspace、utils/generator、generators/mcl、mcl-highlight 是
+# metacrypt 自有代码，用 @/features/... 是它们的正确写法，不该被这条门禁误伤。
+BARE_ALIAS=$(grep -rnE "from '@/" \
+  "$CORE/blocks" "$CORE/generators/python" "$CORE/generators/javascript" \
+  "$CORE/constants/block-types.ts" "$CORE/constants/sbox-presets.ts" \
+  "$CORE/constants/grid-shape.ts" "$CORE/constants/list-bridge.ts" \
+  "$CORE/utils/locale" "$CORE/utils/migration" "$RUNTIME" \
+  --include='*.ts' 2>/dev/null || true)
 if [ -n "$BARE_ALIAS" ]; then
-  echo "  FAIL 镜像区仍有未转换的裸别名（fix_imports 漏配，需补映射）："
-  printf '%s\n' "$BARE_ALIAS" | sed "s|$CORE/|    |" | head -10
+  echo "  FAIL 镜像文件仍有应用级 @/ 别名（应为 @cc/* 家族别名）："
+  printf '%s\n' "$BARE_ALIAS" | sed "s|$CORE/||;s|$RUNTIME/|runtime/|" | head -10
 else
-  echo "  OK 镜像区别名已全部转换"
+  echo "  OK 镜像文件只用 @cc 家族别名"
+fi
+
+UNKNOWN_CC=$(grep -rhoE "from '@cc/[a-z]+" \
+  "$CORE/blocks" "$CORE/generators/python" "$CORE/generators/javascript" \
+  "$CORE/utils/locale" "$CORE/utils/migration" "$RUNTIME" \
+  --include='*.ts' 2>/dev/null \
+  | sed "s|from '@cc/||" | sort -u \
+  | grep -vE '^(blocks|generators|constants|migration|locale|runtime|utils)$' || true)
+if [ -n "$UNKNOWN_CC" ]; then
+  echo "  FAIL 未知 @cc 家族（metacrypt 侧 vite/tsconfig 未配该别名）：$UNKNOWN_CC"
+else
+  echo "  OK @cc 家族别名全部已知"
 fi
 
 # ─── 4. 核对清单 ───

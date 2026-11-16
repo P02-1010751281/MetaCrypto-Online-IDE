@@ -11,7 +11,7 @@
  *   - 官方向量：RFC 8032 §7.1 TEST 1/2/3（sign + verify 双语言全 PASS）
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BOOLEAN, TYPE_BYTES } from '@/constants/block-types';
+import { TYPE_BOOLEAN, TYPE_BYTES } from '@cc/constants/block-types';
 
 export const EDDSA_BLOCK_TYPES = ['eddsa_sign', 'eddsa_verify'] as const;
 export type EddsaBlockType = (typeof EDDSA_BLOCK_TYPES)[number];

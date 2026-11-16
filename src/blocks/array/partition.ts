@@ -1,5 +1,5 @@
 import * as Blockly from 'blockly/core';
-import { TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const PARTITION_BLOCK_TYPES = [
   'arr_partition_to_array'

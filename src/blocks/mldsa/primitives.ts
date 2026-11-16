@@ -14,7 +14,7 @@
  *       TAU=39（SampleInBall），对应 ML-DSA-44；65/87 变体参数见 FIPS 204 Table 1。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_INT_LIST } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_INT_LIST } from '@cc/constants/block-types';
 
 export const MLDSA_PRIMITIVE_BLOCK_TYPES = [
   'pq_power2round',

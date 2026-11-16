@@ -1,5 +1,5 @@
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_NUMBER } from '@cc/constants/block-types';
 
 // ─────────────────────────────────────────────────────────
 // crypto_return — 独立返回块

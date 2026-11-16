@@ -9,7 +9,7 @@
  *   官方向量：NIST ACVP SLH-DSA-keyGen-FIPS205（SHAKE 参数集）的 pk 根字段。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const SLH_XMSS_BLOCK_TYPES = ['slh_xmss_root', 'slh_msg_randomness', 'slh_sign'] as const;
 export type SlhXmssBlockType = (typeof SLH_XMSS_BLOCK_TYPES)[number];

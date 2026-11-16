@@ -11,7 +11,7 @@
  *   加密输出 C1C3C2 与官方一致、解密还原 M，JS/Python 双语言全 PASS。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_NUMBER, TYPE_STRING } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_NUMBER, TYPE_STRING } from '@cc/constants/block-types';
 
 export const SM2ENC_BLOCK_TYPES = [
   'sm2_encrypt',

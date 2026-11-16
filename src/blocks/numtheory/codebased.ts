@@ -10,7 +10,7 @@
  * 与 pq_poly_add/sub 数组语义一致）；二进制矩阵 = 按行优先展平 IntList + 阶数 n。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_INT_LIST, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_INT_LIST, TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const CODEBASED_BLOCK_TYPES = [
   'gf2_poly_mul',

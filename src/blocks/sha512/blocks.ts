@@ -4,7 +4,7 @@
  * 补齐 SHA-2 系列缺失：SHA-512（8×64-bit 状态、1024-bit 块、80 轮）。
  * SHA-384 复用同一 64 位核（不同 IV + 截断到 48 字节），由 demo/模板完成。
  */
-import { TYPE_BYTES, TYPE_INT_LIST } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_INT_LIST } from '@cc/constants/block-types';
 import * as Blockly from 'blockly/core';
 
 export const SHA512_BLOCK_TYPES = ['hash_sha512_pad', 'hash_sha512_compress', 'hash_sha512_hash'] as const;

@@ -17,7 +17,7 @@
  * 参考: FIPS 203 — https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.203.pdf
  *       NTT 教程 — https://higashi.blog/2023/12/15/ntt-03/
  */
-import { TYPE_INT_LIST } from '@/constants/block-types';
+import { TYPE_INT_LIST } from '@cc/constants/block-types';
 import * as Blockly from 'blockly/core';
 
 export const NTT_BLOCK_TYPES = [

@@ -8,7 +8,7 @@
  *   hashlib.pbkdf2_hmac 独立复算；RFC 6070 只给 HMAC-SHA1 附录值，不适用于 SHA-256 变体。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_INT_LIST, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_INT_LIST, TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const PBKDF2_BLOCK_TYPES = ['pbkdf2', 'pbkdf2_f'] as const;
 export type Pbkdf2BlockType = (typeof PBKDF2_BLOCK_TYPES)[number];

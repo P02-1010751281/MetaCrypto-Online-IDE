@@ -16,7 +16,7 @@
  * (a·b) mod b = 0、Bezout 恒等式、Goppa 多项式在 α_i 处求值为 0。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_INT_LIST, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_INT_LIST, TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const GF2MPOLY_BLOCK_TYPES = [
   'gf2m_poly_add',

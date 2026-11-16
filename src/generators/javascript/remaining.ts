@@ -6,7 +6,7 @@ import { javascriptGenerator, Order } from 'blockly/javascript';
 import { registerHmacSha256 } from './hash/hmac-sha256';
 import { registerUtf8ToBytes } from './data/helpers';
 import { registerSm3LengthField } from './hash/sm3';
-import { getTypeCoercion, TYPE_INT_LIST, TYPE_BYTES } from '@/constants/block-types';
+import { getTypeCoercion, TYPE_INT_LIST, TYPE_BYTES } from '@cc/constants/block-types';
 import type { Block } from 'blockly/core';
 
 // ═══════════════════════════════════════════════════════════

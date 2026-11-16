@@ -1,6 +1,6 @@
 import { pythonGenerator, Order } from 'blockly/python';
 import type { Block } from 'blockly/core';
-import { requireVariableName } from '@/generators/assignment-target';
+import { requireVariableName } from '@cc/generators/assignment-target';
 import { uint32Expression } from './uint32';
 
 pythonGenerator.forBlock['bit_rotate_left'] = function(block: Block): string {

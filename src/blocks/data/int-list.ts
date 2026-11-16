@@ -14,17 +14,17 @@
 
 import * as Blockly from 'blockly/core';
 
-import { GRID_ICONS, downloadCsv, openGridPopup, parseCsv, pickCsvFile } from '@/blocks/grid/grid-editor';
-import type { GridHost, GridPopupHandle } from '@/blocks/grid/grid-editor';
-import { svgRoot } from '@/blocks/grid/grid-editor';
-import { TYPE_INT_LIST } from '@/constants/block-types';
+import { GRID_ICONS, downloadCsv, openGridPopup, parseCsv, pickCsvFile } from '@cc/blocks/grid/grid-editor';
+import type { GridHost, GridPopupHandle } from '@cc/blocks/grid/grid-editor';
+import { svgRoot } from '@cc/blocks/grid/grid-editor';
+import { TYPE_INT_LIST } from '@cc/constants/block-types';
 import {
   SHAPE_LIMITS_TEXT,
   auditShape,
   formatShape,
   parseShape,
   shapeSize,
-} from '@/constants/grid-shape';
+} from '@cc/constants/grid-shape';
 
 export const INT_LIST_BLOCK_TYPES = ['data_int_list'] as const;
 

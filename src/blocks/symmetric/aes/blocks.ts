@@ -3,7 +3,7 @@
  * FIPS 197 §5.1.1
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_INT_LIST } from '@/constants/block-types';
+import { TYPE_INT_LIST } from '@cc/constants/block-types';
 export const AES_BLOCK_TYPES = [
   'aes_sub_bytes',
   'aes_shift_rows',

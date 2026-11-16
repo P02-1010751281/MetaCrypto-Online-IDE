@@ -5,7 +5,7 @@
  *   CIPHER 下拉：AES-128（官方向量）/ SM4（GB/T 15852 同类结构）
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_INT_LIST } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_INT_LIST } from '@cc/constants/block-types';
 
 export const CMAC_BLOCK_TYPES = ['cmac_mac', 'cmac_double', 'cmac_subkeys'] as const;
 export type CmacBlockType = (typeof CMAC_BLOCK_TYPES)[number];

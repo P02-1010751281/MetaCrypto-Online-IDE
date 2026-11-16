@@ -1,6 +1,6 @@
 import * as Blockly from 'blockly/core';
 import { toolboxTemplates } from '../toolbox-state';
-import { findProjectSymbol, getProjectSymbols, projectSymbolLabel } from '@/utils/project-context';
+import { findProjectSymbol, getProjectSymbols, projectSymbolLabel } from '@cc/utils/project-context';
 
 export const PROCEDURE_BLOCK_TYPES = [
   'crypto_return',

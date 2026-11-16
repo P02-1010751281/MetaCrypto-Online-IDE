@@ -8,7 +8,7 @@
  * 固定教学参数 n=32/k=4/a=4。项目 SHAKE 拼接代替标准 PRF/F/T_k 调用；性质测试只证明项目内自洽。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BOOLEAN, TYPE_BYTES } from '@/constants/block-types';
+import { TYPE_BOOLEAN, TYPE_BYTES } from '@cc/constants/block-types';
 
 export const FORS_BLOCK_TYPES = ['fors_sign', 'fors_verify', 'fors_pk_from_sk'] as const;
 export type ForsBlockType = (typeof FORS_BLOCK_TYPES)[number];

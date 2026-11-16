@@ -1,5 +1,5 @@
 import * as Blockly from 'blockly/core';
-import { TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const MEASUREMENT_BLOCK_TYPES = [
   'data_bit_length',

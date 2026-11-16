@@ -11,7 +11,7 @@
  * - slh_addr:      ADRS 前缀教学编码（layer/tree/type/keypair；最后 8 字节置零）
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_NUMBER } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_NUMBER } from '@cc/constants/block-types';
 
 export const HASHBASED_BLOCK_TYPES = [
   'hash_chain',

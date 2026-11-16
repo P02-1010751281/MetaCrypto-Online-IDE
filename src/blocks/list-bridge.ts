@@ -21,7 +21,7 @@ import {
   LIST_BRIDGE_CHECKS,
   LIST_BRIDGE_INPUT_WIDEN,
   LIST_BRIDGE_LIST_OUTPUT,
-} from '@/constants/list-bridge';
+} from '@cc/constants/list-bridge';
 
 const LIST_OUTPUT = new Set(LIST_BRIDGE_LIST_OUTPUT);
 

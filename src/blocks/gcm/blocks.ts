@@ -7,7 +7,7 @@
  *   用独立实现复算）；TC3 未覆盖，也不存在 pycryptodome 交叉验证。
  */
 import * as Blockly from 'blockly/core';
-import { TYPE_BYTES, TYPE_INT_LIST } from '@/constants/block-types';
+import { TYPE_BYTES, TYPE_INT_LIST } from '@cc/constants/block-types';
 
 export const GCM_BLOCK_TYPES = [
   'gcm_encrypt',
