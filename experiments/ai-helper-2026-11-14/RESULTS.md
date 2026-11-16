@@ -1303,7 +1303,7 @@ D 线两个内核在各自判据上已经打满（文档 recall@5 30/30、积木
 
 ### 23.3 真浏览器验收
 
-`scripts/verify-ai-assistant.mjs`（CDP + Chromium，1440×900，全新 profile）**20/20 PASS**：
+`scripts/verify-ai-assistant.mjs`（CDP + Chromium，1440×900，全新 profile）**23/23 PASS**：
 
 | 判据 | 实测 |
 |---|---|
@@ -1315,6 +1315,8 @@ D 线两个内核在各自判据上已经打满（文档 recall@5 30/30、积木
 | 点「查文档」→ 切回 + 灌块标签 + 文档有结果 | 查询词非空，文档结果 6 行 |
 | 手点 tab 清空种子 | 两侧输入框都为空 |
 | 指南页不出「查积木」（无交集） | `SETUP` 行 `setupHasLink=false` |
+| 点命中行本身仍「打开文档」（open 事件经壳中转没断） | `window.open` 收到 docs 链接 |
+| 重开助手回到文档 tab 且输入框为空 | `docsActive=true`、查询词 `''` |
 | 关闭按钮回到文件面板 | `.aip` 消失，面板回 `files-section` |
 | 页面未捕获异常 | 0 |
 
