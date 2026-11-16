@@ -56,11 +56,12 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ui, uiLocaleRef, useBlocklyLocale } from '@/composables/locale';
 import { useDocsCatalog } from '@/composables/useDocsCatalog';
+import { renderMarkdown, type DocCategory } from '@/utils/markdown';
 import {
-  getCategoryLabel,
-  renderMarkdown,
-  type DocCategory,
-} from '@/utils/markdown';
+  decideLocaleSwitch,
+  decidePrefill,
+  filterCategories,
+} from '@/utils/docs-search-entry';
 import DocsSidebar from '@/components/docs/DocsSidebar.vue';
 import DocsContent from '@/components/docs/DocsContent.vue';
 
@@ -99,26 +100,6 @@ let docRequestId = 0;
 const sourceLocaleFallback = computed(() =>
   isSourceLocaleFallback(activeDoc.value, currentLocale.value),
 );
-
-/** 文档中心的语言域：'zh' | 'en'。不是 BlocklyLocale（'en' | 'zh-hans'），后者在分类表里查不到。 */
-type DocsLocale = 'zh' | 'en';
-
-/**
- * 侧栏过滤：与原 computed 逐字等价——不 trim、q 为空返回全部分类、分类名命中时保留该分类全部文件。
- * 抽成纯函数是为了预填前先试算（见 applyQueryPrefill），避免把用户丢进空侧栏。
- */
-function filterCategories(list: DocCategory[], q: string, locale: DocsLocale): DocCategory[] {
-  if (!q) return list;
-  const needle = q.toLowerCase();
-  return list
-    .map((cat) => ({
-      ...cat,
-      files: getCategoryLabel(cat.id, locale).toLowerCase().includes(needle)
-        ? cat.files
-        : cat.files.filter((f) => f.title.toLowerCase().includes(needle)),
-    }))
-    .filter((cat) => cat.files.length > 0);
-}
 
 const filteredCategories = computed(() =>
   filterCategories(categories.value, searchQuery.value, currentLocale.value),
@@ -262,29 +243,12 @@ function applyDeepLink(): void {
   void selectDoc(path, Number.isFinite(sourceLine) ? sourceLine : undefined);
 }
 
-/** 预填词是否还能命中任何分类名或文档标题（用与侧栏同一个过滤函数试算）。 */
-function matches(q: string): boolean {
-  return filterCategories(categories.value, q, currentLocale.value).length > 0;
-}
-
-/**
- * 把 ?q= 带进来的查询词预填到侧栏搜索框。
- * 先试算：命中分类名或文档标题才预填，算不出内容就不预填、只留一行说明——
- * 预填一个必然筛空的词，等于把用户送进空侧栏，与「浏览全部文档」的目的相反。
- */
+/** 把 ?q= 带进来的查询词预填到侧栏搜索框（决策在 utils/docs-search-entry.ts，那里有单测）。 */
 function applyQueryPrefill(): void {
-  // 只有来自 URL 的值才 trim；用户自己敲的搜索保持原样（与原 computed 语义一致）。
-  const q = typeof route.query.q === 'string' ? route.query.q.trim() : '';
-  if (q && matches(q)) {
-    searchQuery.value = q;
-    prefilledQuery.value = q;
-    prefillNotice.value = '';
-    return;
-  }
-  // 无 q 时也要清：同一组件实例内从 /docs?q=X 走到 /docs 不清会残留旧过滤。
-  searchQuery.value = '';
-  prefilledQuery.value = '';
-  prefillNotice.value = q;
+  const { keyword, notice } = decidePrefill(route.query.q, categories.value, currentLocale.value);
+  searchQuery.value = keyword;
+  prefilledQuery.value = keyword;
+  prefillNotice.value = notice;
 }
 
 onMounted(() => {
@@ -313,12 +277,16 @@ watch(currentLocale, async () => {
 watch(
   currentLocale,
   () => {
-    const q = prefilledQuery.value;
-    if (!q || searchQuery.value !== q) return; // 用户改过搜索框就不再接管
-    if (matches(q)) return;
-    searchQuery.value = '';
-    prefilledQuery.value = '';
-    prefillNotice.value = q;
+    const decision = decideLocaleSwitch(
+      prefilledQuery.value,
+      searchQuery.value,
+      categories.value,
+      currentLocale.value,
+    );
+    if (!decision) return;
+    searchQuery.value = decision.keyword;
+    prefilledQuery.value = decision.keyword;
+    prefillNotice.value = decision.notice;
   },
   { flush: 'post' },
 );

@@ -338,15 +338,40 @@ npm run cycles:check
 
 **与 §5 估算的偏差**：新增 +126 超出估算区间 `+72~+90` 的上限约 40%；删除 −13 落在 `−13~−17` 的下沿。原因三条：① 按钮属性写成多行；② `matches`/`applyQueryPrefill`/两个 watch 都带了「为什么这么写」的注释；③ 设计稿代码块里的空行在实现中是省不掉的。两个组件仍在项目记忆的 500 行硬上限内（401 / 373），且**改动前就**已越过 R-FILE-01 的 300 行审查线（见 D4：本次不拆）。
 
+### 9.1b 第二次提交：清掉两条残留（同日）
+
+第一次提交时登记了两条残留（没进仓库的单测、没进仓库的浏览器验收脚本）。第二次提交把它们清掉：
+
+| 文件 | 变化 | 说明 |
+|---|---|---|
+| `src/utils/docs-search-entry.ts` | **新增 71 行** | 把 `filterCategories` / `readQuery` / `decidePrefill` / `decideLocaleSwitch` / `buildDocsLocation` 抽成纯函数；刻意不 import `markdown.ts`，避免把 marked / DOMPurify / highlight.js 拉进测试 |
+| `src/views/DocsView.vue` | 401 → **369** 行 | 只留调用：`filteredCategories` 仍是一行 computed，预填与语言切换重判各变成「取决策 → 赋值」 |
+| `src/App.vue` | 440 行（+2 / −2） | `openDocs` 改调 `buildDocsLocation(q)` |
+| `tests/unit/docs-search-entry.test.ts` | **新增 143 行 / 17 条** | 覆盖三个原变异点：必然筛空的词不预填、去 q 不残留、切语言只接管预填值；另含「不 trim」与中英标签差异 |
+| `scripts/verify-docs-entry-bidi.mjs` | **新增 250 行** | 把一次性 BiDi 驱动收进仓库：自己起停无头 Firefox 与临时 profile、18 条断言、`DOCS_ENTRY_BIDI_SUMMARY` 汇总、退出码 0/1/2 |
+| `package.json` | +1 | 新增 `npm run verify:docs-entry`（默认 `BASE_URL=http://localhost:3001`） |
+
+**抽出的收益不是行数，而是可测性与行为的单一出处**：原来三个分支内联在视图里，只能靠浏览器验；现在决策逻辑在纯函数里，浏览器只验「接线是否正确」。
+
+**新单测自己也做了变异验证**（不是只跑一次绿）：
+
+| 变异 | 实测 |
+|---|---|
+| U1 删掉 `decidePrefill` 的试算守卫 | 2 条失败 |
+| U2 `decideLocaleSwitch` 不再检查「用户是否改过搜索框」 | 1 条失败 |
+| U3 `buildDocsLocation` 恒返回 `/docs`（不传 q） | 1 条失败 |
+
+三轮回合都先备份、跑完立即还原，`md5sum` 与变异前一致（`cda7b9d1…`），还原后 17/17 绿。
+
 ### 9.2 静态门禁（`RULES.md` R-TEST-01 九条，逐条 exit 0）
 
 | 门禁 | 结果 |
 |---|---|
 | `lint:check` | exit 0（0 error / 0 warning，未改 ESLint 规则、未加 eslint-disable） |
 | `type-check` | exit 0（`vue-tsc --noEmit`） |
-| `test:unit` | **85 文件 / 987 通过 / 1 跳过 / exit 0**（与基线一致） |
+| `test:unit` | **86 文件 / 1004 通过 / 1 跳过 / exit 0**（第一次提交时 85/987；本次新增 1 个文件 17 条） |
 | `build` | exit 0（`vue-tsc --noEmit && vite build`） |
-| `build:check-bundle` | exit 0 —— `entry=index-D_WNrDkc.js bytes=41149 budget=65536` |
+| `build:check-bundle` | exit 0 —— `entry=index-BSaUeBWy.js bytes=41194 budget=65536`（模块拆分后 +45 字节） |
 | `verify:all` | exit 0 —— 模板 **29/29 PASS**、`DEMO_SUMMARY total=60 pass=60 fail=0` |
 | `docs:check-links` | exit 0 —— `files=443 broken=0` |
 | `standards:check` | exit 0 —— `entries=40 directories=40 artifacts=66 source_layers=27 structured=229 errors=0` |
@@ -385,7 +410,15 @@ npm run cycles:check
 
 四轮变异均先备份原文件、跑完立即还原，还原后 `md5sum` 与变异前逐字节一致；还原后又重跑一遍完整 27 条，仍全绿（排除「变异后恰好也绿」）。
 
-### 9.5 未做 / 残留
+### 9.5 残留与边界
 
-- **没有新增永久单测**：仓库 vitest 环境是 `node`、未装 `@vue/test-utils`，加组件测试要引入新依赖，超出本次范围（F17「无覆盖」仍成立）。替代证据是上述 31 条浏览器断言 + 4 条变异。
-- **负对照未固化成仓库门禁**：BiDi 脚本是本次一次性驱动（放在 `/tmp`），没进 `scripts/` 也没接 CI。要长期防回归，需要把它收进仓库并接到流水线。
+**已清（第二次提交）**
+
+- **永久单测**：`tests/unit/docs-search-entry.test.ts`（17 条，node 环境，不新增依赖），并用 U1/U2/U3 三次变异证明它会开火。F17「`DocSearchPanel`/`DocsView` 无组件级单测」仍然成立——组件挂载测试要引入 `@vue/test-utils`，本次没做，视图的接线由下面的浏览器脚本覆盖。
+- **浏览器验收脚本进仓库**：`scripts/verify-docs-entry-bidi.mjs` + `npm run verify:docs-entry`，18 条断言，自己起停无头 Firefox（默认 9223 端口）与临时 profile，不改动桌面会话。本次实跑 `pass=18 fail=0`。
+
+**仍然是残留**
+
+- `verify:docs-entry` **没有接进 `verify:all`**：它需要真实浏览器与一个在跑的 dev server（默认 3001），属于专项门禁，只能手动/CI 单独触发；`verify:all` 仍是纯静态 + harness 门禁。
+- 脚本依赖本机 `firefox`（可 `FIREFOX_BIN` 覆盖）与 node ≥ 22 的全局 `WebSocket`；两者缺一时脚本以退出码 2 明示环境不满足，不会假绿。
+- 负对照（4 条代码变异）是人工跑的过程，没有固化成自动化变异门禁（如 Stryker）；`docs-search-entry` 的三条变异已在单测层手工验证过。

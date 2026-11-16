@@ -56,6 +56,7 @@
     "verify:templates": "npm run verify:build && node dist-verify/verify-templates.js",
     "verify:demos": "npm run verify:build && node scripts/verify-demos.mjs",
     "verify:all": "npm run standards:check && npm run standards:split-check && npm run standards:formula-check && npm run coverage:check && npm run standards:inventory && npm run spec:validate && npm run spec:anchors && npm run spec:runs && npm run spec:candidates && node scripts/spec-scaffold.mjs --selftest && npm run spec:matrix && npm run contract:check && npm run docs:titles:check && npm run build-guide:check && npm run docs:check-links && npm run docs:mermaid:check && npm run docs:index:check && npm run verify:build && node dist-verify/verify-templates.js && node scripts/verify-demos.mjs",
+    "verify:docs-entry": "node scripts/verify-docs-entry-bidi.mjs",
     "tauri": "tauri",
     "tauri:dev": "WEBKIT_DISABLE_COMPOSITING_MODE=1 tauri dev",
     "tauri:build": "tauri build",

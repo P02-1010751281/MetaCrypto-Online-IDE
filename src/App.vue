@@ -133,6 +133,7 @@ import CodePanel from '@/components/editor/CodePanel.vue';
 import { useEditorSplit } from '@/components/editor/useEditorSplit';
 import { useEditorFileActions } from '@/components/editor/useEditorFileActions';
 import { useEditorPanels } from '@/components/editor/useEditorPanels';
+import { buildDocsLocation } from '@/utils/docs-search-entry';
 import { useEditorWorkspaceActions } from '@/components/editor/useEditorWorkspaceActions';
 // 编辑器专属注册只在 /editor 路由加载，避免污染项目列表首屏。
 import '@/blocks';
@@ -200,8 +201,7 @@ const router = useRouter();
 function openDocs(q?: unknown): void {
   closeMenus();
   // 两个调用点：工具栏 open-docs 零载荷（`'open-docs': []`），面板 browse-all 传 string。
-  const keyword = typeof q === 'string' ? q.trim() : '';
-  void router.push(keyword ? { path: '/docs', query: { q: keyword } } : '/docs');
+  void router.push(buildDocsLocation(q));
 }
 const currentProjectId = computed(() => Number(route.params.id) || null);
 
