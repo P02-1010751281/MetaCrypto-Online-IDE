@@ -1,0 +1,16 @@
+[
+  { "q": "HMAC 的密钥处理规则", "expect": ["docs/standards/fips198-1-hmac/"] },
+  { "q": "GB/T 15852 的 MAC 怎么计算", "expect": ["docs/standards/gbt15852-mac/"] },
+  { "q": "SM9 的私钥提取流程", "expect": ["docs/standards/gbt38635-SM9/"] },
+  { "q": "RSA 的 OAEP 编码怎么做", "expect": ["docs/standards/rfc8017-pkcs1/"] },
+  { "q": "ECDH 的静态密钥与临时密钥有什么区别", "expect": ["docs/standards/rfc5903-ecdh/"] },
+  { "q": "分组密码 ECB 与 CBC 模式有什么区别", "expect": ["docs/standards/sp800-38a-modes/"] },
+  { "q": "GB/T 17964 的分组链接模式", "expect": ["docs/standards/gbt17964-modes/"] },
+  { "q": "GM/T 0103 的随机数发生器结构", "expect": ["docs/standards/gmt0103-rng/"] },
+  { "q": "ECDSA 的密钥对怎么生成", "expect": ["docs/standards/fips186-5-ecdsa/"] },
+  { "q": "RSA 的 PSS 签名填充怎么算", "expect": ["docs/standards/rfc8017-pkcs1/"] },
+  { "q": "SM9 的数字签名算法", "expect": ["docs/standards/gbt38635-SM9/"] },
+  { "q": "HMAC 与 CMAC 的区别", "expect": ["docs/standards/fips198-1-hmac/", "docs/standards/sp800-38b-cmac/"] },
+  { "q": "如何用 TensorFlow 训练卷积神经网络", "expect": [] },
+  { "q": "CipherCat 的 Kubernetes 部署清单在哪", "expect": [] }
+]

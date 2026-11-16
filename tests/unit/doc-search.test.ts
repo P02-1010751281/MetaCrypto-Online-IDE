@@ -176,6 +176,42 @@ describe('doc search', () => {
     expect(hits.some((hit) => hit.path.startsWith('docs/standards/rfc8032-eddsa/'))).toBe(true);
   });
 
+  it('点名实体时归属页排第一（主题归属 + 文档级选择，2026-11-16 修 8 条反例）', () => {
+    const top1 = (query: string): string => firstPaths(query, 1)[0] ?? '';
+    // 反例的共同形态：另一篇文档里恰好有一节把共用词写得更密（SM3 ← SHA-2 压缩函数页、
+    // ML-KEM ← 能力地图、Ed25519 ← 块参考页）。归属判据只看路径词元，不看标题与正文词频。
+    expect(top1('SM3 的压缩函数结构')).toMatch(/^docs\/standards\/gbt32905-SM3\//);
+    expect(top1('SHA-3 的海绵结构吸收与挤压')).toMatch(/^docs\/standards\/fips202-SHA3\//);
+    expect(top1('ML-KEM 密钥封装的三步')).toMatch(/^docs\/standards\/fips203-ML-KEM\//);
+    expect(top1('Ed25519 的签名与验签流程')).toMatch(/^docs\/standards\/rfc8032-eddsa\//);
+    expect(top1('X25519 的密钥协商怎么算共享密钥')).toMatch(/^docs\/standards\/rfc7748-x25519\//);
+    expect(top1('确定性 ECDSA 的随机数 k 怎么来')).toMatch(/^docs\/standards\/rfc6979-ecdsa\//);
+    expect(top1('PBKDF2 的迭代次数要求')).toMatch(/^docs\/standards\/sp800-132-pbkdf2\//);
+    // 英文问句不再落到教程页（demos 是「怎么点」，不是「怎么定义」）。
+    expect(top1('How is the SM4 round function defined')).toMatch(/^docs\/standards\/gbt32907-SM4\//);
+  });
+
+  it('检索泛化基线：三套集 top1 = 29/30、10/20、6/12（不许为了调参集媕低）', () => {
+    const rank = (query: string, expect: string[]): number => {
+      const paths = firstPaths(query, 60);
+      for (let i = 0; i < paths.length; i += 1) {
+        if (expect.some((prefix) => paths[i].startsWith(prefix))) return i + 1;
+      }
+      return -1;
+    };
+    const load = (file: string): Array<{ q: string; expect: string[] }> =>
+      JSON.parse(
+        readFileSync(resolve(ROOT, `experiments/ai-helper-2026-11-14/${file}`), 'utf8'),
+      ) as Array<{ q: string; expect: string[] }>;
+    const count = (cases: Array<{ q: string; expect: string[] }>): number =>
+      cases.filter((item) => item.expect.length > 0 && rank(item.q, item.expect) === 1).length;
+    expect(count(load('docsearch-eval.json'))).toBe(29);
+    // 两套留出集必须一起钉：2026-11-16 实测新旧排序在混合留出集上 10/20 → 10/20（零收益），
+    // 新造的标准页留出集 5/12 → 6/12。只钉调参集会把「泛化」当成已解决（RESULTS §25.2）。
+    expect(count(load('docsearch-holdout.json'))).toBe(10);
+    expect(count(load('docsearch-holdout2.json'))).toBe(6);
+  });
+
   it('同一查询结果确定（可用作回归判据）', () => {
     const a = searchDocs(index, 'GCM 认证', { limit: 5 });
     const b = searchDocs(index, 'GCM 认证', { limit: 5 });

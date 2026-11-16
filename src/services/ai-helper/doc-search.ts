@@ -63,6 +63,52 @@ const NAMED_DF = 150;
 /** 扩展词允许的最大 df：再常见就没有区分度。 */
 const EXPANSION_DF_MAX = 400;
 const LATIN = /[a-z]/;
+/**
+ * 「主题归属」加成：查询点名的稀有拉丁标识符（`ml-kem` / `sm3` / `x25519`）出现在**文档路径**里时，
+ * 这篇文档就是该实体在仓库里的归属页，而不只是「某一段恰好出现过这个词」。
+ *
+ * 为什么段落级不够：`meta.path.has(term)` 只给命中段 ×2.2，压不过「另一篇里有一节把共用词
+ * 写得更密」——问「SM3 的压缩函数结构」，SHA-2 的压缩函数页 75.7 分排第一，SM3 自己的拆分页
+ * 66.8 分排第二（RESULTS §25 实测），差的就是「谁是这个实体的家」这一层。
+ */
+const TOPIC_BOOST = 1.5;
+/**
+ * 主题归属只认「只写进少数文档路径」的拉丁标识符：`sm3` 在正文里出现上千次，
+ * 但它只落在十来个文档的路径上——路径命中才是「这篇讲的就是它」，正文词频不是。
+ */
+const TOPIC_DOC_SPAN = 40;
+/**
+ * 实体别名：标准目录用**算法族名**做目录名，用户按**具体成员**提问。
+ * `rfc8032-eddsa` 的目录里没有 `ed25519` 这个词，但 RFC 8032 就是 Ed25519/Ed448 的 EdDSA。
+ * 只收「同一实体的两个标准写法」，不收上下位关系。
+ */
+export const ENTITY_ALIAS: Record<string, string[]> = {
+  ed25519: ['eddsa'],
+  ed448: ['eddsa'],
+};
+/** 教程页的折扣：问「是什么 / 怎么定义」时，demo 页（怎么点）让位于标准页（是什么）。 */
+const DEMO_WEIGHT = 0.9;
+/** 定义型问句；显式要演示/教程/步骤的除外——那时 demo 页就是答案。 */
+const DEFINITION_ASK = /是什么|定义|怎么定义|指什么|how is|what is/i;
+const DEMO_ASK = /演示|demo|教程|tutorial|步骤/i;
+/** 路径归一化：索引里是 `fips203-ML-KEM`，查询词是 `ml-kem`，去分隔符后才能对齐。 */
+function pathIdent(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
+
+/**
+ * 路径词元：按分隔符切出的词 + 相邻两词的拼接（`ML-KEM` 切开后是 `ml`/`kem`，拼接才等于 `mlkem`）。
+ * 用词元而不是子串，避免 `blocks/hash.md` 这种 `sha` 误伤。
+ */
+function pathTokens(path: string): Set<string> {
+  const words = path
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
+  const set = new Set(words);
+  for (let index = 0; index + 1 < words.length; index += 1) set.add(words[index] + words[index + 1]);
+  return set;
+}
 
 /** FNV-1a 64：与索引脚本共用，保证「语料没变」可复算。 */
 export function corpusDigest(entries: Array<[path: string, text: string]>): string {
@@ -162,7 +208,9 @@ export function searchDocs(index: DocIndex, query: string, options: DocSearchOpt
   }
   // 条件扩展：用户已经点名了稀有拉丁标识符（argon2 / ecdsa / drbg / base64）时，
   // 同义扩展只会把兄弟标准页拉进来稀释信号，干脆不扩。
-  const namedIdentifier = [...termWeights.keys()].some((term) => LATIN.test(term) && dfOf(term) > 0 && dfOf(term) <= NAMED_DF);
+  /** 用户原话里的词：主题归属只认这些，扩展词（压缩函数 → compression）不算点名。 */
+  const originalTerms = [...termWeights.keys()];
+  const namedIdentifier = originalTerms.some((term) => LATIN.test(term) && dfOf(term) > 0 && dfOf(term) <= NAMED_DF);
   if (!namedIdentifier) {
     // 同义词/中英术语扩展：只扩查询，不改索引（「带认证的加密」→ aead/ccm/gcm，round function → 轮函数）。
     // 权重再乘 0.55：扩展词是补充信号，不与用户原话平权。
@@ -279,11 +327,37 @@ export function searchDocs(index: DocIndex, query: string, options: DocSearchOpt
   const docIndexOf = new Map<string, number>();
   index.docs.forEach((entry, position) => docIndexOf.set(entry[0], position));
 
+  // 主题归属：路径里直接写着查询点名实体的文档（`fips203-ML-KEM` ← `ml-kem`；
+  // `ed25519` 经别名表落到 `rfc8032-eddsa`）。判据是「这个标识符只写进了哪些文档的路径」，
+  // 不是正文词频；且只认原话里的实体——扩展词（`压缩函数 → compression`）会把兄弟标准页
+  // 也认成归属页（第一版就是这么错的）。
+  const topicTerms = originalTerms.filter((term) => LATIN.test(term) && pathIdent(term).length >= 3);
+  const homeDocs = new Set<number>();
+  if (topicTerms.length) {
+    // 归属只看**路径词元**：`fips203-ML-KEM` 的 `ml`+`kem`、`rfc8032-eddsa` 的 `eddsa`。
+    // 不做子串匹配——`docs/blocks/hash.md` 的 `blockshash` 里含 `sha`，会把整页散列目录
+    // 当成 SHA 的归属页；也不看标题——对照式标题（「SHA-2 压缩函数，与 SM3 对比」）会把
+    // 兄弟标准页也认成归属页。
+    const pathWords = index.docs.map((entry) => pathTokens(entry[0]));
+    for (const term of topicTerms) {
+      const idents = [pathIdent(term), ...(ENTITY_ALIAS[pathIdent(term)] ?? []).map(pathIdent)];
+      for (const ident of idents) {
+        const named = index.docs
+          .map((entry, position) => (pathWords[position].has(ident) ? position : -1))
+          .filter((v) => v >= 0);
+        if (named.length === 0 || named.length > TOPIC_DOC_SPAN) continue;
+        for (const position of named) homeDocs.add(position);
+      }
+    }
+  }
+
   const best = new Map<string, DocHit & { docScore: number }>();
   for (const hit of hits) {
     const docIndex = docIndexOf.get(hit.path) ?? -1;
     const coverage = (covered.get(docIndex) ?? 0) / Math.max(idfSum, 1e-9);
-    const docScore = hit.score + COVERAGE_WEIGHT * idfSum * coverage;
+    const demoWeight = hit.path.startsWith('docs/demos/') && DEFINITION_ASK.test(text) && !DEMO_ASK.test(text) ? DEMO_WEIGHT : 1;
+    const topic = homeDocs.has(docIndex) ? TOPIC_BOOST : 1;
+    const docScore = (hit.score + COVERAGE_WEIGHT * idfSum * coverage) * topic * demoWeight;
     const existing = best.get(hit.path);
     if (!existing || docScore > existing.docScore) best.set(hit.path, { ...hit, docScore, score: Number(docScore.toFixed(4)) });
   }

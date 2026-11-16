@@ -17,8 +17,8 @@
  * 纯函数：不读 fs、不碰 DOM、不知道 Vue。异步只在「取正文」这一层（由调用方注入 loader）。
  */
 
-import type { DocHit } from './doc-search';
-import { queryTerms, stripMarkdown } from './doc-tokenize';
+import { ENTITY_ALIAS, type DocHit } from './doc-search';
+import { queryPlan, stripMarkdown } from './doc-tokenize';
 
 export interface AnswerSentence {
   /** 原文句子（已去 Markdown 标记；不改写、不改写序）。 */
@@ -82,7 +82,10 @@ const BOILERPLATE = /本页|本卡片|该定位|概览\/组合页|可搜索证�
  *   有哪些    → 列举句（、/以及/包括）
  */
 const QUESTION_PATTERNS: Array<{ test: RegExp; sentence: RegExp }> = [
-  { test: /怎么|如何|怎样|步骤|流程/, sentence: /步骤|流程|首先|然后|再|先|调用|执行|使用|通过|构造|计算/ },
+  // 「几步 / 步骤 / 流程」问的是**序列**，判据要严：含「使用/计算」不算步骤句，
+  // 否则「按算法使用 i=1…127」这种实现说明会冒充三步流程（RESULTS §25 实测踩到）。
+  { test: /步骤|流程|[一两二三四五六七八九十]步/, sentence: /步骤|流程|第一步|第[一二三四五六七八九十]步|首先|然后|Step|①|\b1\./ },
+  { test: /怎么|如何|怎样/, sentence: /步骤|流程|首先|然后|再|先|调用|执行|使用|通过|构造|计算/ },
   { test: /多少|几个|几轮|长度|大小|位数/, sentence: /\d/ },
   { test: /区别|不同|差异|对比/, sentence: /相比|区别|不同|差异|而|但/ },
   { test: /是什么|什么是|定义|含义|指什么/, sentence: /是|指|称为|定义为|即/ },
@@ -94,6 +97,37 @@ function questionPatternBoost(question: string, sentence: string): number {
     if (rule.test.test(question) && rule.sentence.test(sentence)) return 1.25;
   }
   return 1;
+}
+
+/** 拉丁/数字与中文混写的二元组（`f的` / `0里` / `g需`）是切词副产物，不是内容词。 */
+const MIXED_SCRIPT = /^(?:[a-z0-9]+[\u4e00-\u9fff]|[\u4e00-\u9fff]+[a-z0-9]+)[\u4e00-\u9fff a-z0-9]*$/;
+
+/**
+ * 答案层的「内容词」：剔掉切词副产物，只留真正能当答案句的词。
+ *
+ * 不剔掉的后果实测很硬：覆盖度分母被接缝二元组撑大，正确答案也判成「证据不足」——
+ * XTS 0.48、CCM 0.45、DRBG 0.35 全部卡在阈值下，而它们缺的词里没有一个是真的内容词。
+ * 三类噪音：跨词边界二元组（`步各`/`收怎`）、中英混写二元组（`f的`/`g需`）、以及
+ * df 明显低于左右真实词的接缝（与 `doc-search.ts` 同一条判据）。
+ */
+function answerTerms(question: string, stats?: TermStats): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const item of queryPlan(question)) {
+    if (seen.has(item.term)) continue;
+    // 跨词边界的二元组一律不算：「步各」「收怎」「少熵」这种是「两步 各做」「验收 怎么做」
+    // 切出来的接缝，既不可能是答案里的一句，也不该占覆盖度的分母。
+    if (item.bridging) continue;
+    if (MIXED_SCRIPT.test(item.term)) continue;
+    // 兜底：中文里跨词接缝的二元组 df 会明显低于左右的真实词（与检索层同一判据）。
+    if (stats && item.left && item.right) {
+      const df = stats.df(item.term);
+      if (df > 0 && (df < stats.df(item.left) || df < stats.df(item.right))) continue;
+    }
+    seen.add(item.term);
+    out.push(item.term);
+  }
+  return out;
 }
 
 /** 英文问句里的功能词：它们不是实体，不能当「点名对象」。 */
@@ -108,7 +142,7 @@ const MAX_ANSWER_SENTENCE = 260;
 export interface AnswerOptions {
   /** 最多选几句（默认 3）。 */
   maxSentences?: number;
-  /** 覆盖度阈值（默认 0.5，实测见 tests/unit/doc-answer.test.ts 与 RESULTS §24）。 */
+  /** 覆盖度阈值（默认 0.6，两套集实测见 RESULTS §25）。 */
   minCoverage?: number;
   /** 词统计（缺省平权，仅用于测试夹具；产品路径必传，见 `answerHits` 调用方）。 */
   stats?: TermStats;
@@ -118,7 +152,7 @@ export interface AnswerOptions {
   maxSectionLines?: number;
 }
 
-const DEFAULTS = { maxSentences: 3, minCoverage: 0.5, maxSections: 4, maxSectionLines: 400 };
+const DEFAULTS = { maxSentences: 3, minCoverage: 0.6, maxSections: 4, maxSectionLines: 400 };
 
 /** 句末标点：中文用全角，英文用「. + 空白 + 大写/行尾」。 */
 const SENTENCE_END = /[。！？；]/;
@@ -287,8 +321,8 @@ export async function answerHits(
   options: AnswerOptions = {},
 ): Promise<AnswerResult> {
   const config = { ...DEFAULTS, ...options };
-  const terms = queryTerms(question);
   const stats = config.stats;
+  const terms = answerTerms(question, stats);
   /**
    * 「点名标识符」：问题里出现 df ≤ 150 的拉丁标识符（sm4 / zuc / ml-kem / hmac），
    * 答案句必须含它——否则会出现「问 ML-KEM 三步、答到能力总览」这种看似有覆盖度、
@@ -306,12 +340,17 @@ export async function answerHits(
   const anchorPhrases = (question.match(/[A-Za-z][A-Za-z0-9-]{2,}/g) ?? [])
     .map((phrase) => phrase.toLowerCase())
     .filter((phrase) => !ANCHOR_STOPWORDS.has(phrase) && (!stats || stats.df(phrase) > 0));
-  const identityOf = (draft: AnswerDraft): string =>
-    `${draft.evidence.path} ${draft.evidence.title}`.toLowerCase();
+  // 归一化后比较：出处标识里写的是 `fips202-sha3`、`rfc8032-eddsa`，问题里写的是 `SHA-3`、
+  // `Ed25519`——去掉分隔符再比，并按实体别名表认 `Ed25519 → EdDSA` 这类同实体的两种写法。
+  const ident = (value: string): string => value.toLowerCase().replace(/[^a-z0-9]+/g, '');
   const aboutAnchor = (draft: AnswerDraft): boolean => {
     if (!anchorPhrases.length) return true;
-    const identity = identityOf(draft);
-    return anchorPhrases.some((phrase) => identity.includes(phrase));
+    const identity = ident(`${draft.evidence.path} ${draft.evidence.title}`);
+    return anchorPhrases.some((phrase) => {
+      const key = ident(phrase);
+      if (key && identity.includes(key)) return true;
+      return (ENTITY_ALIAS[key] ?? []).some((alias) => identity.includes(ident(alias)));
+    });
   };
 
   const drafts: AnswerDraft[] = [];
@@ -328,19 +367,42 @@ export async function answerHits(
   }
   if (!drafts.length) return { best: null, others: [], terms, missing: terms };
 
-  // 降序：覆盖度 → 点名标识符覆盖数 → 命中顺序（稳定排序保留检索名次）。
-  drafts.sort((a, b) => {
-    if (b.coverage !== a.coverage) return b.coverage - a.coverage;
-    const anchorHit = (draft: AnswerDraft): number => (aboutAnchor(draft) ? 1 : 0);
-    return anchorHit(b) - anchorHit(a);
-  });
-  const [head, ...rest] = drafts;
-  const namedMissed = aboutAnchor(head) ? [] : anchorPhrases;
-  const acceptable = head.coverage >= config.minCoverage && namedMissed.length === 0;
-  const missing = namedMissed.length ? namedMissed : head.missing;
+  /**
+   * 选「答哪一篇」用**检索名次**，覆盖度只当资格闸门。
+   *
+   * 为什么不在候选之间比覆盖度：一篇文档越长、段落越多，能凑出的高覆盖句子就越多，
+   * 于是「用户指南 / 能力地图」这类大而全的页会系统性压过专题页（实测：问「怎么把工作区
+   * 导出成代码」答到能力地图，问「环境搭建」答到开发指南）。检索层已经用 BM25 与路径归属
+   * 判过「哪篇在讲这件事」，答案层再跨文档比覆盖度是在拿一个会偏向长文的指标覆盖它。
+   * 闸门仍然保留：名次靠前的文档里如果凑不出覆盖度够的句子，就顺延到下一条命中。
+   */
+  const anchored = drafts.filter(aboutAnchor);
+  // 点名了实体却没有任何一篇出处在讲它 → 直接拒答。这一条不能省：候选为空时若回退到
+  // 全部草稿，「CipherCat 支持哪些区块链共识算法」会答到教程页、「CSS 毛玻璃」会答到
+  // 研究综述页——两题正文里都没有它们，只是共用词凑出了覆盖度（RESULTS §25 阴性对照）。
+  const head =
+    anchorPhrases.length === 0
+      ? (drafts.find((draft) => draft.coverage >= config.minCoverage) ?? null)
+      : (anchored.find((draft) => draft.coverage >= config.minCoverage) ?? null);
+  /**
+   * 问句类型必须有对应句式才算答上：问「三步 / 流程」却给出一句「当前实现不支持」，
+   * 覆盖度再高也不是答案（实测 ML-KEM 那题覆盖度 0.63，两句都是实现范围说明，缺的正是「三步」）。
+   * 软加权（`questionPatternBoost`）只影响选句，这一条是硬闸门：整篇里找不到对应句式就拒答。
+   */
+  const askedPattern = QUESTION_PATTERNS.find((rule) => rule.test.test(question));
+  const patternMissed =
+    head !== null && askedPattern && !head.sentences.some((sentence) => askedPattern.sentence.test(sentence.text));
+  const accepted = head !== null && !patternMissed ? head : null;
+  const namedMissed = anchorPhrases.length > 0 && anchored.length === 0 ? anchorPhrases : [];
+  const fallback = anchored.reduce<AnswerDraft | null>(
+    (best, draft) => (best === null || draft.coverage > best.coverage ? draft : best),
+    null,
+  );
+  const missing = namedMissed.length ? namedMissed : (accepted ? accepted.missing : (fallback?.missing ?? terms));
+  const rest = accepted ? anchored.filter((draft) => draft !== accepted) : anchored;
   return {
-    best: acceptable ? head : null,
-    others: acceptable ? rest : drafts,
+    best: accepted,
+    others: rest,
     terms,
     missing,
   };

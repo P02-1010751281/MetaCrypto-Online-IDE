@@ -7,11 +7,13 @@
  *
  *   1. 逐字可回链：每条答案句必须能在 cited 行上原样找到（不是改写、不是拼接）；
  *   2. 不换话题：问题点名的拉丁实体必须出现在出处的文档标识里（问 ML-KEM 不能答到能力总览）；
- *   3. 答不出就明说：覆盖度不够或缺点名实体时返回 null + missing，不拿最近段落冒充答案。
+ *   3. 答不出就明说：覆盖度不够、缺点名实体、或整篇凑不出对应句式时返回 null + missing。
  *
- * 基线数字是 2026-11-16 在真实索引与文档树上实测的（RESULTS §24）：30 条评测题里
- * 13 条敢回答、12 条的出处落在评测期望的文档上，3 条负例全部拒答。语料或索引更新后
- * 数字会变，改这里必须同步改 RESULTS，不许为了让测试变绿而放宽断言。
+ * 基线数字是 2026-11-16 在真实索引与文档树上实测的（RESULTS §25）：
+ *   - 调参集 30 题：15 条敢回答，14 条出处落在评测期望的文档上；5 条负例全部拒答；
+ *   - 留出集 12 题（未参与调参）：top1 6/12，作答 6 条、答对 4 条（出处正确率 67%）。
+ * 留出集的数字明显低于调参集，这是真实泛化差距，不许为了让调参集变绿去调它的阈值。
+ * 语料或索引更新后数字会变，改这里必须同步改 RESULTS。
  */
 
 import { readFileSync } from 'node:fs';
@@ -96,7 +98,7 @@ describe('句子切分', () => {
 });
 
 describe('答案层（真实索引与文档树）', () => {
-  it('30 条评测题：13 条敢回答，其中 12 条出处落在期望文档', async () => {
+  it('调参集 30 题：15 条敢回答，其中 14 条出处落在期望文档', async () => {
     let answered = 0;
     let inExpected = 0;
     const wrong: string[] = [];
@@ -109,10 +111,10 @@ describe('答案层（真实索引与文档树）', () => {
       if (ok) inExpected += 1;
       else wrong.push(`${testCase.q} → ${result.best.evidence.path}`);
     }
-    expect({ answered, inExpected }).toEqual({ answered: 13, inExpected: 12 });
-    // 唯一一条「答了但出处不在期望集」的题必须登记在案，不能悄悄多出来。
+    expect({ answered, inExpected }).toEqual({ answered: 15, inExpected: 14 });
+    // 「答了但出处不在期望集」的题必须逐条登记，不能悄悄多出来。
     expect(wrong).toEqual([
-      'How is the SM4 round function defined → docs/demos/sm4.en.md',
+      '积木之间的类型检查与转换规则 → docs/guides/USER-GUIDE.md',
     ]);
   });
 
@@ -130,7 +132,7 @@ describe('答案层（真实索引与文档树）', () => {
         checked += 1;
       }
     }
-    expect(checked).toBeGreaterThanOrEqual(13); // 每条答案至少 1 句，13 条答案 ≥ 13 句
+    expect(checked).toBeGreaterThanOrEqual(15); // 每条答案至少 1 句，15 条答案 ≥ 15 句
   });
 
   it('负例（语料里没有依据）必须拒答，并给出缺的词', async () => {
@@ -138,6 +140,10 @@ describe('答案层（真实索引与文档树）', () => {
       '量子退火怎么破解 SM4',
       '如何用 CSS 实现毛玻璃效果',
       'CipherCat 支持哪些区块链共识算法',
+      // 后两条是本轮新增：问题里的实体在语料里根本不是主题，靠共用词能凑到 0.5 覆盖度，
+      // 曾分别答到研究综述页与教程页（RESULTS §25 阴性对照）。
+      '如何用 TensorFlow 训练卷积神经网络',
+      'CipherCat 的 Kubernetes 部署清单在哪',
     ];
     for (const question of negatives) {
       const hits = searchDocs(index, question, { limit: 6 });
@@ -151,9 +157,34 @@ describe('答案层（真实索引与文档树）', () => {
     const question = 'ML-KEM 密钥封装的三步';
     const hits = searchDocs(index, question, { limit: 6 });
     const result = await answerHits(question, hits, loadText, { stats });
-    // 期望文档排第 6 开外 → 宁可拒答，也不拿 guides/CAPABILITY-MAP 之类的页冒充答案。
+    // 检索已把标准页排到第一，但那一页整篇没有「三步」的句式（都是实现范围说明）：
+    // 覆盖度 0.63 ≥ 0.6 也照样拒答——问句类型闸门不认「有词无句」的答案。
     expect(result.best).toBeNull();
-    expect(result.missing.join(' ')).toContain('ml-kem');
+    expect(hits[0].path.startsWith('docs/standards/fips203-ML-KEM/')).toBe(true);
+  });
+
+  it('留出集2（未参与调参）：top1 6/12，作答 6 条里 4 条出处正确', async () => {
+    const holdout = JSON.parse(
+      readFileSync(resolve(ROOT, 'experiments/ai-helper-2026-11-14/docsearch-holdout2.json'), 'utf8'),
+    ) as Array<{ q: string; expect: string[] }>;
+    let top1 = 0;
+    let answered = 0;
+    let correct = 0;
+    for (const testCase of holdout) {
+      const hits = searchDocs(index, testCase.q, { limit: 60 });
+      const docs = [...new Set(hits.map((hit) => hit.path))];
+      if (!testCase.expect.length) {
+        const result = await answerHits(testCase.q, hits.slice(0, 6), loadText, { stats });
+        expect(result.best, testCase.q).toBeNull();
+        continue;
+      }
+      if (testCase.expect.some((prefix) => docs[0]?.startsWith(prefix))) top1 += 1;
+      const result = await answerHits(testCase.q, hits.slice(0, 6), loadText, { stats });
+      if (!result.best) continue;
+      answered += 1;
+      if (testCase.expect.some((prefix) => result.best!.evidence.path.startsWith(prefix))) correct += 1;
+    }
+    expect({ top1, answered, correct }).toEqual({ top1: 6, answered: 6, correct: 4 });
   });
 
   it('覆盖度阈值挡住「只有实体、没有问题」的答案', async () => {
