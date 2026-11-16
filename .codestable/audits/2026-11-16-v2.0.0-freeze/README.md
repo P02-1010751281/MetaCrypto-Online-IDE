@@ -1,0 +1,76 @@
+# v2.0.0 冻结记录（SoftwareX 更新稿对应版本）
+
+日期：2026-11-16
+冻结对象：tag `v2.0.0` → 提交 `f7f6bc0`
+门禁：CipherCat type-check 0 / lint 0 / 单测 1018 通过 1 跳过 / `verify:all` RC=0
+（metacrypt 镜像侧同期基线：type-check 0 / lint 0 / 单测 978 / build:prod 0）
+
+## 1. 为什么重指 tag
+
+冻结前实测：`v2.0.0` 原指 `3e95af1`（2026-11-13 13:59），而 HEAD 已在其后 **53 个提交**、另有 93 个未提交文件。稿件写的结构数字却是按 11-15 的工作树算的，两者不是一棵树：
+
+| 项 | 旧 tag `3e95af1` | 冻结前工作树 | 稿件原写 |
+|---|---|---|---|
+| 演示工作区 | **59** | 60 | 60 |
+| BLOCK-IO 积木键 | **220** | 222 | 222 |
+| 单测文件 | 72 | 89 | — |
+| 运行面板（`src/runtime/*`） | **不存在** | 存在 | 「v2.0.0 已内置」 |
+
+第三行是最硬的一条：`src/runtime/python-runner.worker.ts` 等运行链是 11-15 才加的（`2ffbfe3`），旧 tag 树里没有。也就是说稿件 11-15 写的「v2.0.0 已内置运行面板」在旧 tag 上**不成立**，审稿人按 C2 链接复现会拿不到该面板。
+
+处理：把未提交的 89 个文件按性质落成 4 个提交，`v2.0.0` 重指到这条链的末端。该 tag **从未推送**（`git ls-remote --tags origin` 空），重指不破坏任何外部引用。
+
+## 2. 冻结提交链
+
+```
+f7f6bc0 docs(codestable): 归档包边界、chrome i18n 与发表版基线审计
+db679bf test(locale): 覆盖 ui() 键引用与中英键集一致性
+494a4b0 feat(locale): 导出 uiFormat，面板 chrome 文案统一走 ui()
+3ee4c5a refactor(core): 核内导入统一走 @cc/* 包内别名，去掉应用级 @/ 依赖
+```
+
+`git describe --tags` = `v2.0.0`；`git diff v2.0.0 HEAD` 为空（本记录提交前）。旧指向 `3e95af1` 仍在历史里可达。
+
+## 3. 结构数字（AE8 口径，全部实跑）
+
+| 项 | 实测值 | 来源 |
+|---|---|---|
+| 活动自定义积木 | **222** | `docs/blocks/BLOCK-IO-CONTRACT.json` 键数 222 + `contract:check` 绿 |
+| 按身份去重类型 | **248** | 222 + 29 − 3（口径见 `docs/standards/CONFORMANCE-INVENTORY.md:21`） |
+| 过程模板 | **29** | `verify:all`：模板 29/29 PASS |
+| 演示工作区 | **60** | `DEMO_SUMMARY total=60 pass=60 fail=0` |
+| 单元测试 | **1018 通过 / 1 跳过（89 文件）** | `npx vitest run` |
+| `docs/` Markdown | **443** | `DOC_LINK_SUMMARY files=443 broken=0` |
+| 标准目录 / 条目 / 制品 | **40 / 229 / 66** | `STANDARD_METADATA_SUMMARY entries=40 directories=40 artifacts=66 source_layers=27 structured=229 errors=0` |
+| 行锚点 / PDF 页锚点 | **181 / 41** | `STANDARD_INVENTORY_CHECK_OK … line_anchors=181 pdf_page_anchors=41` |
+| 源码文件（`src/`）| 444 | 现场统计 |
+| 超 500 行源文件 | **0** | 拆分收尾后现场统计 |
+
+## 4. 稿件待改清单（下一步）
+
+| 项 | 稿件现值（11-15 快照） | 冻结树实测 | 动作 |
+|---|---|---|---|
+| 单元测试 | 968（967 通过 1 跳过） | **1018（1017 通过 1 跳过）** | 改正文 + 表 1 + 图 1 `c_ev1` |
+| `docs/` Markdown | 435 | **443** | 改正文 |
+| 链接检查覆盖 | 441 | **443** | 改正文 |
+| 演示工作区 / 积木 / 去重类型 / 模板 / 标准三项 | 60 / 222 / 248 / 29 / 40·229·66 | 同值 | 核对后不改 |
+| 证据类别分布（原 32·13·12·3） | 32·13·12·3 | **待实测** | 重算后同步图 1 `c_ev2` |
+| 未被 Demo 执行的块（原 89） | 89 | **待实测** | 重算 |
+| 可复现性段落 | 「提交 3e95af1 + tag v2.0.0」 | 应为 `f7f6bc0` + `v2.0.0` | 改（在 DRAFT-NOTES 与正文如引用） |
+
+## 5. 复跑命令
+
+```bash
+cd /run/media/user/6b058d20-a617-484d-b7c6-cd7146baf77c/Projects/CipherCat
+git describe --tags                     # v2.0.0
+npm run type-check && npm run lint:check
+npx vitest run                          # 1018 passed | 1 skipped
+npm run verify:all                      # 模板 29/29、demo 60/60、DOC_LINK_SUMMARY broken=0
+git archive v2.0.0 | tar -x -C /tmp/v200 && cd /tmp/v200 && npm ci && npm run verify:all
+```
+
+## 6. 未决
+
+- **推送**：本地领先 `origin/main` 15 个提交（含本次 4 个），tag 未推送；C2/C7 的 `/tree/v2.0.0`、`/blob/v2.0.0` 链接要推送后才生效。需 owner 批准。
+- **版本号**：C1 现为 v2.0.0，冻结后未动；若 owner 决定改为 v2.1.0，需同改标题 / C1 / C2 / C7 / `package.json` / tag 六处。
+- **证据类别与「未进 Demo 的块」两项**尚未重算，属论文数字同步的一步。
