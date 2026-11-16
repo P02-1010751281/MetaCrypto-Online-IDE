@@ -41,31 +41,18 @@
           <polyline points="8 6 2 12 8 18" />
         </svg>
       </button>
+      <!-- AI 助手：查文档 / 查积木两个 tab 共用这一个入口，图标用「放大镜 + 文本行」。 -->
       <button
         class="activity-btn"
-        :class="{ active: activePanel === 'docSearch' }"
-        :title="ui('docSearch')"
-        :aria-pressed="activePanel === 'docSearch'"
-        @click="$emit('toggle-panel', 'docSearch')"
+        :class="{ active: activePanel === 'assistant' }"
+        :title="ui('assistant')"
+        :aria-pressed="activePanel === 'assistant'"
+        @click="$emit('toggle-panel', 'assistant')"
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M5 4h9l4 4v12H5z" />
-          <path d="M14 4v4h4" />
-          <circle cx="16.5" cy="16.5" r="2.5" />
-          <path d="M18.5 18.5 21 21" />
-        </svg>
-      </button>
-      <button
-        class="activity-btn"
-        :class="{ active: activePanel === 'blockSearch' }"
-        :title="ui('blockSearch')"
-        :aria-pressed="activePanel === 'blockSearch'"
-        @click="$emit('toggle-panel', 'blockSearch')"
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <rect x="3" y="5" width="10" height="8" rx="2" />
-          <circle cx="16.5" cy="16.5" r="2.5" />
-          <path d="M18.5 18.5 21 21" />
+          <circle cx="10.5" cy="10.5" r="5.5" />
+          <path d="M14.6 14.6 20 20" />
+          <path d="M8 9h5M8 12h3" />
         </svg>
       </button>
     </nav>

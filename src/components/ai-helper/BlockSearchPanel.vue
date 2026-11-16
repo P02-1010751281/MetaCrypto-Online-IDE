@@ -1,8 +1,9 @@
 <template>
-  <div v-if="visible" :class="docked ? 'bsp bsp-docked' : 'bsp-overlay'" @click.self="docked ? undefined : emit('close')">
+  <div v-if="visible" :class="shellClass" @click.self="docked || embedded ? undefined : emit('close')">
     <div class="bsp">
-      <!-- 头部只有「标题 + 图标动作」，样式取全局 panel-chrome.css 的一套。 -->
-      <div class="section-head section-head--divided">
+      <!-- 头部只有「标题 + 图标动作」，样式取全局 panel-chrome.css 的一套。
+           嵌进 AI 助手（tab 容器）时头部由助手壳提供，这里让位。 -->
+      <div v-if="!embedded" class="section-head section-head--divided">
         <span class="section-title">{{ t('CRYPTO_BLOCK_SEARCH_TITLE', '查块') }}</span>
         <div class="section-actions">
           <button class="ghost-btn" :title="t('CRYPTO_CLOSE', '关闭')" :aria-label="t('CRYPTO_CLOSE', '关闭')" @click="emit('close')">×</button>
@@ -58,6 +59,14 @@
           <div class="bsp-item-head">
             <span class="bsp-item-label">{{ labelOf(hit) }}</span>
             <code class="bsp-item-type">{{ hit.blockType }}</code>
+            <!-- 跨域联动：反查「文档里怎么说这个块」。积木侧不预判有没有文档页——
+                 这类块多是共享数学原语，文档里本来就没有单独页面，空结果也是答案。 -->
+            <button
+              type="button"
+              class="bsp-link"
+              :title="ui('linkToDocs')"
+              @click.stop="emit('cross-search', blockToDocQuery(hit))"
+            >{{ ui('linkToDocs') }}</button>
           </div>
           <div class="bsp-item-meta">
             <span v-for="type in hit.outputCheck ?? []" :key="`out-${type}`" class="bsp-tag bsp-tag-out">→ {{ type }}</span>
@@ -79,17 +88,35 @@ import { computed, nextTick, ref, watch } from 'vue';
 
 // `?raw` + 手工解析：索引是构建期产物（288 KB），走 JSON 模块会让 vue-tsc 推断一个巨大的字面量类型。
 import rawIndex from '@/services/ai-helper/block-index.json?raw';
+import { ui } from '@/composables/locale';
 import { search } from '@/services/ai-helper/block-search';
 import type { BlockIndex, SearchHit } from '@/services/ai-helper/block-search';
+import { blockToDocQuery } from '@/services/ai-helper/linkage';
 
 const props = defineProps<{
   visible: boolean;
   workspace: Blockly.WorkspaceSvg | null;
   /** docked：停靠进某一栏（不遮挡画布）；缺省是全屏遮罩。 */
   docked?: boolean;
+  /** embedded：由宿主（AI 助手）提供头部与 tab，本组件只保留查询行与结果。 */
+  embedded?: boolean;
+  /** 宿主带过来的初始查询词：只在 `visible` 翻成 true 的那一次生效（跨域联动用）。 */
+  seed?: string;
 }>();
 
-const emit = defineEmits<{ (e: 'close'): void }>();
+const emit = defineEmits<{
+  (e: 'close'): void;
+  /** 跨域联动：把派生好的文档查询词交给宿主，由宿主切到文档 tab 并灌进输入框。 */
+  (e: 'cross-search', query: string): void;
+}>();
+
+/** 外层的三种形态：悬浮遮罩 / 停靠进栏 / 嵌进助手的 tab 容器（样式同停靠）。 */
+const shellClass = computed(() => {
+  if (props.embedded || props.docked) {
+    return props.embedded ? 'bsp bsp-docked bsp-embedded' : 'bsp bsp-docked';
+  }
+  return 'bsp-overlay';
+});
 
 const INDEX = JSON.parse(rawIndex) as BlockIndex;
 
@@ -163,8 +190,12 @@ watch(
   () => props.visible,
   async (visible) => {
     if (!visible) return;
+    // 先清空再灌种子：种子可能与上一次的查询词相同（反复点同一处联动），
+    // 直接赋值不会让 hits 计算属性重算。
     query.value = '';
     active.value = 0;
+    await nextTick();
+    query.value = props.seed ?? '';
     await nextTick();
     inputEl.value?.focus();
   },
@@ -219,6 +250,15 @@ watch(hits, () => {
   border: 0;
   border-radius: 0;
   box-shadow: none;
+}
+/* 嵌进 AI 助手的 tab 容器：占满助手壳的剩余高度，头部由助手壳提供。 */
+.bsp-embedded {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  /* 停靠态给的是 height:100%；在助手的 flex 列里改由 flex-grow 决定高度，
+     否则 100% 解析到父级高度后会与 tab 栏叠加溢出。 */
+  height: auto;
 }
 /* 头部（.section-head / .section-title / .section-actions / .ghost-btn）在全局
    panel-chrome.css：侧栏各面板共用一套，本组件不再维护 bsp-header/bsp-title 副本。 */
@@ -305,6 +345,24 @@ watch(hits, () => {
 .bsp-item-type {
   color: var(--color-text-secondary);
   font-size: 11px;
+}
+/* 跨域联动动作：行内小按钮，靠右；点击只切到文档 tab，不插入这个块。 */
+.bsp-link {
+  margin-left: auto;
+  padding: 0 6px;
+  border: 0;
+  border-radius: var(--radius-control, 4px);
+  background: var(--color-bg-hover);
+  color: var(--color-primary, #2563eb);
+  font: inherit;
+  font-size: 11px;
+  line-height: 16px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.bsp-link:hover {
+  background: var(--color-primary, #2563eb);
+  color: #fff;
 }
 .bsp-item-meta {
   display: flex;

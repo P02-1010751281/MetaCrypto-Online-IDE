@@ -1,9 +1,10 @@
 <template>
-  <div v-if="visible" :class="docked ? 'dsp-host dsp-docked' : 'dsp-overlay'" @click.self="docked ? undefined : emit('close')">
+  <div v-if="visible" :class="shellClass" @click.self="docked || embedded ? undefined : emit('close')">
     <div class="dsp">
       <!-- 头部只有「标题 + 图标动作」：样式取全局 panel-chrome.css 的 section-head
-           一套（同侧栏其余面板），不再自带 dsp-header 副本。 -->
-      <div class="section-head section-head--divided">
+           一套（同侧栏其余面板），不再自带 dsp-header 副本。
+           嵌进 AI 助手（tab 容器）时头部由助手壳提供，这里让位。 -->
+      <div v-if="!embedded" class="section-head section-head--divided">
         <span class="section-title">{{ ui('docSearch') }}</span>
         <div class="section-actions">
           <button class="ghost-btn" :title="ui('docSearchClose')" :aria-label="ui('docSearchClose')" @click="emit('close')">×</button>
@@ -50,6 +51,14 @@
             <span :class="['dsp-kind', `dsp-kind-${hit.kind}`]">{{ hit.kind === 'pdf' ? 'PDF' : 'MD' }}</span>
             <span class="dsp-item-title">{{ hit.title }}</span>
             <span v-if="hit.heading && hit.heading !== hit.title" class="dsp-item-heading">{{ hit.heading }}</span>
+            <!-- 跨域联动：只有能派生到积木词的文档才给这个动作（实测无交集的文档必然空点）。 -->
+            <button
+              v-if="linkFor(hit)"
+              type="button"
+              class="dsp-link"
+              :title="ui('linkToBlocks')"
+              @click.stop="emit('cross-search', linkFor(hit) as string)"
+            >{{ ui('linkToBlocks') }}</button>
           </div>
           <div class="dsp-item-loc">
             {{ hit.path }}<template v-if="hit.kind === 'pdf'"> · {{ ui('docSearchPdfPage').replace('{n}', String(hit.line)) }}</template><template v-else>:{{ hit.line }}</template>
@@ -73,16 +82,29 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 
 import { ui } from '@/composables/locale';
 import { mergeIndexes, parseDocIndex, searchDocs } from '@/services/ai-helper/doc-search';
 import type { DocHit, DocIndex } from '@/services/ai-helper/doc-search';
+import { docToBlockLink } from '@/services/ai-helper/linkage';
 
 const props = defineProps<{
   visible: boolean;
   /** docked：停靠进某一栏；缺省是全屏遮罩。 */
   docked?: boolean;
+  /** embedded：由宿主（AI 助手）提供头部与 tab，本组件只保留查询行与结果。 */
+  embedded?: boolean;
+  /**
+   * 宿主带过来的初始查询词：只在 `visible` 翻成 true 的那一次生效。
+   * 用于跨域联动——另一侧点了「查积木」就把派生词灌进来，不用用户再打一遍。
+   */
+  seed?: string;
+  /**
+   * 块索引标识符词表（由宿主从 block-index.json 建一次传入）。
+   * 缺省 null = 不提供跨域联动按钮，面板保持「查文档」单一职责。
+   */
+  blockVocabulary?: ReadonlySet<string> | null;
 }>();
 
 const emit = defineEmits<{
@@ -94,7 +116,17 @@ const emit = defineEmits<{
    * 词为空也发——宿主据空串直接进 /docs，不带 q。
    */
   (e: 'browse-all', query: string): void;
+  /** 跨域联动：把派生好的积木查询词交给宿主，由宿主切到积木 tab 并灌进输入框。 */
+  (e: 'cross-search', query: string): void;
 }>();
+
+/** 外层的三种形态：悬浮遮罩 / 停靠进栏 / 嵌进助手的 tab 容器（样式同停靠）。 */
+const shellClass = computed(() => {
+  if (props.embedded || props.docked) {
+    return props.embedded ? 'dsp-host dsp-docked dsp-embedded' : 'dsp-host dsp-docked';
+  }
+  return 'dsp-overlay';
+});
 
 /** 两份索引都是构建期产物（Markdown 3.9 MB / PDF 3.4 MB），按需动态加载，不进主包。 */
 let markdownIndex: DocIndex | null = null;
@@ -172,14 +204,36 @@ watch([query, withPdf], () => {
   }, 120);
 });
 
+/**
+ * 跨域联动按钮的查询词：只有与块词表有交集的文档才返回（`linked`），否则返回 undefined。
+ *
+ * 用 WeakMap 按命中对象缓存：模板里 v-if / title / click 三处都要读它，
+ * 不缓存的话每次渲染都会重新跑一遍派生。
+ */
+const linkCache = new WeakMap<DocHit, string>();
+function linkFor(hit: DocHit): string | undefined {
+  const vocabulary = props.blockVocabulary;
+  if (!vocabulary) return undefined;
+  const cached = linkCache.get(hit);
+  if (cached !== undefined) return cached;
+  const link = docToBlockLink(hit, vocabulary);
+  if (!link.linked) return undefined;
+  linkCache.set(hit, link.query);
+  return link.query;
+}
+
 watch(
   () => props.visible,
   async (visible) => {
     if (!visible) return;
+    // 先清空再灌种子：种子可能与上一次的查询词相同（反复点同一处联动），
+    // 直接赋值不会触发防抖 watcher，面板会停在「有查询词但没有结果」的假空态。
     query.value = '';
     hits.value = [];
     status.value = '';
     active.value = 0;
+    await nextTick();
+    query.value = props.seed ?? '';
     await nextTick();
     inputEl.value?.focus();
   },
@@ -247,6 +301,15 @@ function open(hit: DocHit): void {
 }
 .dsp-host.dsp-docked {
   height: 100%;
+}
+/* 嵌进 AI 助手的 tab 容器：占满助手壳的剩余高度，头部由助手壳提供。 */
+.dsp-host.dsp-embedded {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  /* 停靠态给的是 height:100%；在助手的 flex 列里改由 flex-grow 决定高度，
+     否则 100% 解析到父级高度后会与 tab 栏叠加溢出。 */
+  height: auto;
 }
 /* 头部（.section-head / .section-title / .section-actions / .ghost-btn）在全局
    panel-chrome.css：侧栏各面板共用一套，本组件不再维护 dsp-header/dsp-title 副本。 */
@@ -326,6 +389,24 @@ function open(hit: DocHit): void {
 }
 .dsp-item-heading {
   color: var(--color-text);
+}
+/* 跨域联动动作：行内小按钮，靠右；点击只切到积木 tab，不打开这条文档。 */
+.dsp-link {
+  margin-left: auto;
+  padding: 0 6px;
+  border: 0;
+  border-radius: var(--radius-control, 4px);
+  background: var(--color-bg-hover);
+  color: var(--color-primary, #2563eb);
+  font: inherit;
+  font-size: 11px;
+  line-height: 16px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.dsp-link:hover {
+  background: var(--color-primary, #2563eb);
+  color: #fff;
 }
 .dsp-item-loc {
   margin-top: 2px;

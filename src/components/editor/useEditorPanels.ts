@@ -13,8 +13,13 @@ import type { DocHit } from '@/services/ai-helper/doc-search';
 
 const NARROW_VIEWPORT_QUERY = '(max-width: 1200px)';
 
-/** 侧栏可展开的面板；`files` 是缺省页，再点一次当前图标回到它。 */
-export type EditorPanel = 'projects' | 'files' | 'functions' | 'docSearch' | 'blockSearch';
+/**
+ * 侧栏可展开的面板；`files` 是缺省页，再点一次当前图标回到它。
+ *
+ * `assistant` 是 AI 助手（查文档 / 查积木两个 tab 共用一个入口）：两个检索内核在壳里，
+ * activity bar 上只留一个图标，切 tab 由 `AssistantPanel` 自己管。
+ */
+export type EditorPanel = 'projects' | 'files' | 'functions' | 'assistant';
 
 const DEFAULT_PANEL: EditorPanel = 'files';
 

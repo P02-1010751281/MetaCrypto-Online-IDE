@@ -34,20 +34,14 @@
         :docked="!isNarrowViewport"
         @close="closePanel"
       />
-      <DocSearchPanel
-        v-else-if="activePanel === 'docSearch'"
-        :visible="true"
-        :docked="!isNarrowViewport"
-        @close="closePanel"
-        @open="onOpenDocHit"
-        @browse-all="openDocs"
-      />
-      <BlockSearchPanel
-        v-else-if="activePanel === 'blockSearch'"
+      <AssistantPanel
+        v-else-if="activePanel === 'assistant'"
         :visible="true"
         :workspace="currentWorkspace"
         :docked="!isNarrowViewport"
         @close="closePanel"
+        @open="onOpenDocHit"
+        @browse-all="openDocs"
       />
     </EditorSidebar>
 
@@ -137,9 +131,8 @@ import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import BlocklyEditor from '@/components/BlocklyEditor.vue';
 import CryptoFunctionPanel from '@/components/CryptoFunctionPanel.vue';
-import DocSearchPanel from '@/components/ai-helper/DocSearchPanel.vue';
 import ProjectPanel from '@/components/editor/ProjectPanel.vue';
-import BlockSearchPanel from '@/components/ai-helper/BlockSearchPanel.vue';
+import AssistantPanel from '@/components/ai-helper/AssistantPanel.vue';
 import EditorSidebar from '@/components/editor/EditorSidebar.vue';
 import EditorToast from '@/components/editor/EditorToast.vue';
 import EditorBreadcrumb from '@/components/editor/EditorBreadcrumb.vue';
@@ -169,7 +162,7 @@ import { useEditorToast } from '@/composables/useEditorToast';
 /**
  * /editor 的壳：只做绑定与装配，编排在 src/components/editor/useEditor* 里。
  * - useEditorFileActions：多文件切换 / 新建 / 删除 / 入口（含回写顺序）
- * - useEditorPanels：函数模板与文档检索面板、窄屏判定
+ * - useEditorPanels：侧栏面板（含 AI 助手）、窄屏判定
  * - useEditorWorkspaceActions：菜单、导入导出、清空、生成
  * 壳里保留的是三者共享的引用（编辑器与代码面板实例）和路由级动作。
  */
@@ -222,10 +215,10 @@ function openDocs(q?: unknown): void {
 }
 const currentProjectId = computed(() => Number(route.params.id) || null);
 
-/** 检索面板要读路径与摘录、函数面板是「名字 + 参数 + 两枚动作」的密排行，
+/** AI 助手（文档/积木检索）要读路径与摘录、函数面板是「名字 + 参数 + 两枚动作」的密排行，
  *  248px 都不够用；进这些面板自动展宽，回文件/项目收回 CSS 缺省宽度。 */
 watch(activePanel, (panel) => {
-  const wide = panel === 'docSearch' || panel === 'blockSearch' || panel === 'functions';
+  const wide = panel === 'assistant' || panel === 'functions';
   setLeftWidth(wide ? 400 : undefined);
 });
 
