@@ -448,6 +448,103 @@ check('窄屏浮层：头部只有 1 个按钮且 24×24',
   overlay.buttons === 1 && overlay.closeBox?.w === 24 && overlay.closeBox?.h === 24, overlay);
 check('窄屏浮层：头部不含 checkbox', overlay.checkboxInHead === false, overlay);
 
+// 12. 窄屏（≤1200px）五个面板的头部：四个在浮层 / 弹出层里，文件面板留在横条里。
+//     这一段是补出来的：此前窄屏只验了查文档浮层，而函数面板浮层当时另写了一份
+//     `.cfp-header`（14px 标题、48px 高、无标签的 ✕），49 条断言一条都没红。
+const NARROW_PROBE = `JSON.stringify((()=>{
+  const head = document.querySelector('.section-head');
+  const hs = head ? getComputedStyle(head) : null;
+  const t = head ? head.querySelector('.section-title') : null;
+  const ts = t ? getComputedStyle(t) : null;
+  const r = head ? head.getBoundingClientRect() : null;
+  const tr = t ? t.getBoundingClientRect() : null;
+  const btns = head ? [...head.querySelectorAll('button')] : [];
+  const b = btns[0] ?? null;
+  const br = b ? b.getBoundingClientRect() : null;
+  return {
+    headCount: document.querySelectorAll('.section-head').length,
+    headClass: head ? head.className : null,
+    h: r ? Math.round(r.height) : null,
+    padL: hs ? hs.paddingLeft : null,
+    border: hs ? hs.borderBottomWidth : null,
+    headLeft: r ? Math.round(r.left) : null,
+    titleText: t ? t.innerText.trim() : null,
+    /* display:none 的元素仍能读到计算样式，所以字体判据对隐藏的文件标题同样成立。 */
+    titleCss: ts ? { size: ts.fontSize, weight: ts.fontWeight, ls: ts.letterSpacing, tt: ts.textTransform, color: ts.color } : null,
+    titleVisible: !!(tr && tr.width > 0 && tr.height > 0),
+    titleLeft: tr && tr.width > 0 ? Math.round(tr.left) : null,
+    buttons: btns.length,
+    btnBox: br ? { w: Math.round(br.width), h: Math.round(br.height) } : null,
+    btnLabel: b ? (b.getAttribute('aria-label') || b.getAttribute('title') || '') : null,
+    hasOldCfpHheader: !!document.querySelector('.cfp-header'),
+  };
+})())`;
+
+const narrow = [];
+for (const [idx, name, marker] of [
+  [0, 'projects', '.project-panel'],
+  [1, 'files', '.files-section'],
+  [2, 'functions', '.cfp-panel'],
+  [3, 'docSearch', '.dsp'],
+  [4, 'blockSearch', '.bsp'],
+]) {
+  await openPanel(idx, marker);
+  narrow.push([name, JSON.parse(await evaluate(NARROW_PROBE))]);
+  /* 截图必须在面板还开着的时候拍：循环结束后面板上停的是最后一个（查块）。 */
+  if (name === 'functions') await shoot('functions-overlay');
+}
+
+check('窄屏：五个面板各自只有一个头部',
+  narrow.every(([, p]) => p.headCount === 1), narrow.map(([n, p]) => [n, p.headCount]));
+check('窄屏：五个头部都取 .section-head（函数面板浮层的 .cfp-header 已不存在）',
+  narrow.every(([, p]) => (p.headClass || '').split(' ').includes('section-head') && p.hasOldCfpHheader === false),
+  narrow.map(([n, p]) => [n, p.headClass, p.hasOldCfpHheader]));
+/* 横条里的文件面板头只有一颗 ＋，高度收到按钮高（24）——横条只有一行高，
+   保住 38px 会把活动条与文件行顶开。浮层/弹出层的四个头必须仍是 38px 基线。 */
+check('窄屏：四个浮层/弹出面板的头部高度都是 38px',
+  narrow.filter(([n]) => n !== 'files').every(([, p]) => p.h === 38),
+  narrow.map(([n, p]) => [n, p.h]));
+check('窄屏：横条里的文件面板头收成按钮高（24px），不撑高横条',
+  narrow.find(([n]) => n === 'files')[1].h === 24,
+  narrow.find(([n]) => n === 'files')[1].h);
+check('窄屏：五个标题的字体与停靠态逐项一致',
+  narrow.every(([, p]) => JSON.stringify(p.titleCss) === JSON.stringify(projects.titleCss)),
+  narrow.map(([n, p]) => [n, p.titleCss]));
+check('窄屏：四个浮层/弹出面板显示标题，横条里的文件面板按设计隐藏标题',
+  narrow.filter(([n]) => n !== 'files').every(([, p]) => p.titleVisible === true)
+    && narrow.find(([n]) => n === 'files')[1].titleVisible === false,
+  narrow.map(([n, p]) => [n, p.titleVisible]));
+/* 贴左判据同停靠态：标题左边缘 = 头部左边缘 + 头部内边距（文件面板标题隐藏，跳过）。 */
+const narrowAligned = narrow.filter(([n]) => n !== 'files')
+  .every(([, p]) => p.titleLeft - p.headLeft === Math.round(parseFloat(p.padL)));
+check('窄屏：四个可见标题都贴左（左边缘 = 头部左边缘 + 头部内边距）', narrowAligned,
+  narrow.map(([n, p]) => [n, { headLeft: p.headLeft, titleLeft: p.titleLeft, padL: p.padL }]));
+check('窄屏：五个头部都只有 1 个 24×24 图标按钮且有可访问名称',
+  narrow.every(([, p]) => p.buttons === 1 && p.btnBox?.w === 24 && p.btnBox?.h === 24 && (p.btnLabel || '').length > 0),
+  narrow.map(([n, p]) => [n, p.buttons, p.btnBox, p.btnLabel]));
+
+// 12b. 浮层里的关闭按钮必须真的能关（函数面板浮层此前那个 ✕ 没有可访问名称，
+//      换类名之后更容易断线，所以这里点一次，而不是只量盒模型）。
+await openPanel(2, '.cfp-panel');
+const cfpClicked = await evaluate(`(()=>{
+  const b = document.querySelector('.cfp-overlay .section-head .ghost-btn');
+  if (!b) return 'no-button';
+  b.click();
+  return 'clicked';
+})()`);
+await sleep(700);
+const cfpAfterClose = JSON.parse(await evaluate(`JSON.stringify((()=>{
+  const s = document.querySelector('.side-panel');
+  return {
+    overlayGone: !document.querySelector('.cfp-overlay'),
+    nextPanel: s ? (s.firstElementChild?.className ?? null) : null,
+  };
+})())`));
+check('窄屏：函数面板浮层的 ✕ 点了真的关掉面板',
+  cfpClicked === 'clicked' && cfpAfterClose.overlayGone === true
+    && String(cfpAfterClose.nextPanel || '').includes('files-section'),
+  { cfpClicked, cfpAfterClose });
+
 await send('browsingContext.close', { context });
 ff.kill('SIGTERM');
 

@@ -93,12 +93,35 @@ scoped 样式的作用域只覆盖本组件模板，跨不过 slot 边界——`
 
 顺带删掉 `.icon-btn`：它是个全仓已无使用者的别名，留着只会成为下一份抄本的起点。
 
+## 函数面板浮层头部：第五种头（第四段）
+
+前一段统一的都是面板**停靠态**。窄屏（≤1200px）把面板切成浮层，函数面板在浮层里用的是
+另写的 `.cfp-header`——同一个面板在两种形态下是两套头，且与另外四个面板都对不上
+（真浏览器 1024×700 实测）：
+
+| 观测点 | 函数面板浮层（改前） | 其余四个面板 |
+|---|---|---|
+| 头部高度 | **48px** | 38px |
+| 标题 | `14px` / 600 / **不改大写** / 字距 normal / 正文色 | 11px / 600 / 大写 / 0.66px / 次级色 |
+| 关闭按钮 | `✕` **25×27**、font 16px、**无 title 也无 aria-label** | 24×24 `.ghost-btn`，有可访问名称 |
+| 横向内边距 | 10px / 14px | 0 / 8（`--divided` 取 `--panel-pad-x`） |
+
+改法：停靠与浮层共用同一个 `.section-head`，浮层多一个 `--divided`。横向内边距仍要 14px
+（对话框里的 `.cfp-actions` 是 14px、`.cfp-item` 是 12px），用双类规则
+`.section-head.cfp-head { padding: 0 14px }` 覆盖 `--divided` 的 8px，而不是再复制一份头部。
+
+有一处副作用是有意的：停靠态也拿到了同一个 ×（原来停靠态没有关闭按钮）。查文档 / 查块
+的停靠态本来就有 ×，三者的 × 都发 `close`，父组件 `closePanel` 切回默认面板。
+
+**为什么之前 49 条断言没抓到**：窄屏那一段只验了查文档浮层这一例。要证明「统一」，
+窄屏必须五个面板都量一遍——补上之后，五面板窄屏断言共 9 条。
+
 
 
 ## 验收
 
 脚本：`scripts/verify-sidebar-chrome.mjs`（无头 Firefox + WebDriver BiDi，自起停）。
-证据：本目录 `evidence/`（projects / files / functions / docSearch / blockSearch / docSearch-overlay / row-actions-projects / row-actions-files 八张）。
+证据：本目录 `evidence/`（projects / files / functions / docSearch / blockSearch / docSearch-overlay / functions-overlay / row-actions-projects / row-actions-files 九张）。
 
 改后实测：
 
@@ -124,8 +147,13 @@ scoped 样式的作用域只覆盖本组件模板，跨不过 slot 边界——`
 | 文件面板行内是 ◎ / ✎ / ✕；项目面板目前只有 ✕（改名走顶栏面包屑） | 通过 |
 | 键盘聚焦到 ✎ 时动作层浮出（不只在悬浮时可用） | 通过 |
 | ✎ 打开内联改名输入框且自动聚焦，Esc 取消后输入框消失 | 通过 |
+| 窄屏：五个面板各自只有一个头部，且都取 `.section-head`（`cfp-header` 已不存在） | 通过 |
+| 窄屏：四个浮层/弹出面板头部 38px；横条里的文件面板头收成 24px 不撑高横条 | 通过 |
+| 窄屏：五个标题字体与停靠态逐项一致；四个可见标题贴左（文件面板按设计隐藏标题） | 通过 |
+| 窄屏：五个头部各 1 个 24×24 图标按钮且都有可访问名称 | 通过 |
+| 窄屏：函数面板浮层的 ✕ 点了真的关掉面板（换类名没断线） | 通过 |
 
-`SUMMARY total=49 pass=49 fail=0`。
+`SUMMARY total=58 pass=58 fail=0`。
 
 ## 回归：函数面板标题曾靠右（已修）
 

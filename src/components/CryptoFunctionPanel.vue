@@ -2,14 +2,20 @@
   <Transition name="panel">
     <div v-if="visible" :class="docked ? 'cfp-dock' : 'cfp-overlay'" @click.self="onBackdrop">
       <div class="cfp-panel" :class="{ 'cfp-panel-docked': docked }">
-        <div v-if="!docked" class="cfp-header">
-          <h3>{{ msg.CRYPTO_FUNCTIONS_PANEL_TITLE || 'Crypto Functions' }}</h3>
-          <button class="cfp-close" @click="$emit('close')">✕</button>
-        </div>
-        <!-- 停靠进左栏也要有面板头：项目 / 文件面板都有 38px 标题行，
-             缺了它，同一列里只有函数面板是「没有名字」的那一个。 -->
-        <div v-else class="section-head cfp-head">
+        <!-- 面板头只取全局 panel-chrome.css 的 .section-head 一套：停靠态与浮层态
+             共用同一个头（曾经浮层另写了一份 .cfp-header：14px 标题、48px 高、
+             无标签的 ✕，与其余四个面板全不一致）。浮层多一条底边线（--divided），
+             停靠态不画线——与项目 / 文件面板的停靠头一致。 -->
+        <div class="section-head cfp-head" :class="{ 'section-head--divided': !docked }">
           <span class="section-title">{{ msg.CRYPTO_FUNCTIONS_PANEL_TITLE || 'Crypto Functions' }}</span>
+          <div class="section-actions">
+            <button
+              class="ghost-btn"
+              :title="msg.CRYPTO_CLOSE || '关闭'"
+              :aria-label="msg.CRYPTO_CLOSE || '关闭'"
+              @click="$emit('close')"
+            >✕</button>
+          </div>
         </div>
         <div class="cfp-actions">
           <button class="cfp-btn cfp-btn-new" @click="insertTemplate('procedures_defreturn')">{{ msg.CRYPTO_FUNCTIONS_NEW_BUTTON || '＋ 新建' }}</button>
@@ -328,13 +334,11 @@ function download(content: string, filename: string) {
 /* 停靠态：占满左栏剩余空间，不带遮罩、不带浮层装饰。 */
 .cfp-dock { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .cfp-panel-docked { width: 100%; max-height: none; height: 100%; border: none; border-radius: 0; box-shadow: none; }
-.cfp-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--color-border); }
-.cfp-header h3 { margin: 0; font-size: 14px; font-weight: 600; color: var(--color-text); }
-.cfp-close { background: none; border: none; color: var(--color-text-secondary); font-size: 16px; cursor: pointer; padding: 2px 6px; border-radius: 4px; }
-.cfp-close:hover { background: var(--color-bg-hover); color: var(--color-text); }
 .cfp-actions { display: flex; gap: 4px; padding: 8px 14px; border-bottom: 1px solid var(--color-border); }
-/* 停靠态面板头：横向内边距与 .cfp-cat-header / .cfp-actions 的 14px 对齐。 */
-.cfp-head { padding: 0 14px; }
+/* 面板头的横向内边距：与 .cfp-cat-header / .cfp-actions 的 14px 对齐（全局
+   .section-head 不带内边距；.section-head--divided 给的是 --panel-pad-x=8px，
+   对话框的内容边距是 14px，所以这里用双类覆盖它）。 */
+.section-head.cfp-head { padding: 0 14px; }
 .cfp-btn { flex: 1; padding: 6px 8px; border: 1px solid var(--color-border); border-radius: 5px; background: var(--color-bg-hover); color: var(--color-text); font-size: 12px; cursor: pointer; }
 .cfp-btn:hover { background: var(--color-border); }
 .cfp-btn-new { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
