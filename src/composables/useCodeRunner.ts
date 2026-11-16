@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue';
+import { computed, onScopeDispose, ref } from 'vue';
 import { ui } from '@/composables/locale';
 import type { CodeLanguage } from '@/constants/code-languages';
 import {
@@ -37,6 +37,18 @@ export function useCodeRunner() {
   /** 运行时已就绪，此后只是执行代码，不再显示下载进度 */
   const runtimeReady = ref(false);
 
+  /** 组件卸载或路由切走后，迟到的输出不再写回一个已经没人看的状态。 */
+  let disposed = false;
+  /**
+   * 离开编辑器时取消当次试运行。不取消的话，运行器的忙标志最长要等到
+   * 运行超时（10s）或装载超时（45s）才复位，用户立刻返回再点运行会撞上 busy。
+   */
+  const abortController = new AbortController();
+  onScopeDispose(() => {
+    disposed = true;
+    abortController.abort();
+  });
+
   /** 0–99 的确定百分比；分母未知时为 null，界面显示不确定进度。 */
   const loadingPercent = computed<number | null>(() => {
     const info = download.value;
@@ -62,7 +74,7 @@ export function useCodeRunner() {
   });
 
   function appendOutput(text: string): void {
-    if (!text) return;
+    if (disposed || !text) return;
     output.value += text;
   }
 
@@ -92,6 +104,7 @@ export function useCodeRunner() {
    * 「已下载 91%」（asm.js 走动态 import、不经 fetch）冒充执行进度。
    */
   function handleProgress(progress: RunProgress): void {
+    if (disposed) return;
     if (progress.ready) {
       runtimeReady.value = true;
       download.value = null;
@@ -113,8 +126,18 @@ export function useCodeRunner() {
     try {
       const result =
         language === 'python'
-          ? await runPythonInBrowser(code, appendOutput, handleProgress)
-          : await runJavaScriptInBrowser(code, appendOutput);
+          ? await runPythonInBrowser(
+              code,
+              appendOutput,
+              handleProgress,
+              undefined,
+              abortController.signal,
+            )
+          : await runJavaScriptInBrowser(code, appendOutput, {
+              signal: abortController.signal,
+            });
+      // 已被取消（或组件已卸载）：结果无人接收，别把它写进已释放的状态。
+      if (disposed) return;
       if (result.ok) {
         if (!output.value) output.value = ui('runNoOutput');
       } else {
@@ -123,11 +146,15 @@ export function useCodeRunner() {
       }
     } catch (error) {
       // run-code 内部已把可预期的失败转成 errorCode；这里兜住意外抛出，保证按钮状态复位。
-      failed.value = true;
-      appendOutput(failureText({ ok: false, error: String(error) }));
+      if (!disposed) {
+        failed.value = true;
+        appendOutput(failureText({ ok: false, error: String(error) }));
+      }
     } finally {
-      running.value = false;
-      download.value = null;
+      if (!disposed) {
+        running.value = false;
+        download.value = null;
+      }
     }
   }
 

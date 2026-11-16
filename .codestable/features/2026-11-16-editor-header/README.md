@@ -32,6 +32,10 @@
 | `src/components/editor/CodePanel.vue` | 删掉与共用样式重复的 `.toolbar-btn` 基础规则 | 370 → 345 |
 | `src/views/DocsView.vue` | 语言按钮改用共用组件 | 369 → 368 |
 | `src/composables/locale/ui-messages.ts` | 新增 `switchLanguageTo` / `exportFormatLabel` / `importFormatLabel` | +6 |
+| `src/runtime/run-code.ts` | 两个运行器接受可选 `AbortSignal`，取消走与超时相同的收尾路径 | 257 → 278 |
+| `src/composables/useCodeRunner.ts` | 作用域结束时取消当次运行，并挡住迟到输出写回已释放状态 | 147 → 174 |
+| `tests/unit/run-code-cancel.test.ts` | 新增：取消后 Promise 必须 settle、Python 的 busy 必须复位 | 87 |
+| `tests/unit/use-code-runner-cancel.test.ts` | 新增：作用域结束后交出取消信号、卸载后迟到输出被丢弃 | 96 |
 
 布局结果（与左侧 `FILES` 头、右侧代码栏头同一条 38px 基线）：
 
@@ -54,6 +58,28 @@ Untitled / main.block.json Entry          [中文] │ [Docs] [More] │ [面板
 - 内联 `<svg>` 图标共 17 枚分布在 4 个文件，其中 `<>` 一枚被「函数」「生成」「面板开关」三处复用。抽成 `AppIcon` 是值得的下一步，但它要逐枚目检字形与视觉重量，混在本次版式改动里回滚成本高，留作独立改动；
 - `EditorToolbar` 与 `CodePanel` 的 `.toolbar-select` 等控件样式仍有小重复，未动。
 
+## 收起 / 卸载时的运行器生命周期
+
+三席原始建议是「给 `useCodeRunner` 加 `onUnmounted` 调 `terminate()`」。回代码核对后**否掉**这个写法：
+
+- `pythonWorker` 是 `run-code.ts` 里的**模块级单例**，复用的是已装载的 Pyodide 运行时；卸载就 terminate，等于每次切路由都扔掉约 10MB 运行时，下次重下——那是回归，不是修复；
+- 野杀 worker **不会**让 `run()` 的 Promise settle（`terminate()` 不触发任何事件），`finish()` 里的 `pythonBusy = false` 于是永远不执行 → 运行器**永久卡在 busy**，比原缺陷更严重；
+- 真正的可观测缺陷是：**离开编辑器时 busy 不复位**，用户很快返回再点「运行」会拿到 `busy`，最长要等运行超时（10s）或装载超时（45s）。
+
+因此做成**取消通道**而不是卸载即杀：两个运行器接受可选 `AbortSignal`，取消走与超时完全相同的 `finish` 路径（终止线程、复位 busy、resolve）。JS 侧每次运行本来就是一个独立 worker，终止无副作用；Python 侧终止后把单例置空，下次靠浏览器 HTTP 缓存重新装载。
+
+接线在 `useCodeRunner`：`onScopeDispose` 里 `abort()`，并用 `disposed` 守卫挡住迟到的输出写回一个已经没人看的状态。`contracts/run-chain.ts`（与 metacrypt 逐字节一致）**未改**，取消语义只在宿主实现里，不动契约。
+
+## 提交拆分
+
+| 提交 | 性质 | 内容 |
+|---|---|---|
+| `3199731` | 等价重构 | 拆出 `EditorHeaderActions` / `WorkspaceMenu` / `LocaleToggleButton` / 共用 CSS；按钮位置、`v-if`、菜单行为一律不动 |
+| `7655812` | 行为变化 | 动作组上移顶栏、`v-if`→`v-show`、a11y、激活态拆类、菜单三病 |
+| 本提交 | 行为变化 | 收起 / 卸载时的运行器取消通道 |
+
+顺序说明：原计划「先版式、再提取」做不出来——版式要求按钮搬到顶栏，而承载它们的组件必须先存在；`App.vue` 已 465 行，内联进顶栏会破 500 行死线（`e22`）。所以等价重构在前、行为变化在后，两个提交的对照关系不变。
+
 ## 验收
 
 脚本：`scripts/verify-editor-header.mjs`（无头 Firefox + WebDriver BiDi，自起停、不抢桌面焦点）。
@@ -71,10 +97,10 @@ Untitled / main.block.json Entry          [中文] │ [Docs] [More] │ [面板
 
 ## 门禁
 
-`lint:check` 0 error / 0 warning（未改规则、无 disable）· `type-check` · `test:unit` 86 文件 1004 通过 1 跳过 · `build` · `build:check-bundle` entry=41431 ≤ 65536 · `cycles:check` 0 违规 · `verify:all` 模板 29/29、demo 60/60。
+`lint:check` 0 error / 0 warning（未改规则、无 disable）· `type-check` · `test:unit` 88 文件 1010 通过 1 跳过（新增 6 条取消语义断言） · `build` · `build:check-bundle` entry=41431 ≤ 65536 · `cycles:check` 0 违规 · `verify:all` 模板 29/29、demo 60/60。
 
 ## 残留
 
 - 图标集未抽（见上）；
 - 窄屏（≤1200px）下代码栏在底部，面板开关的图标仍按「右栏」语义画，未做朝向翻转；
-- `useCodeRunner` 无 `onUnmounted`：收起不再丢状态，但若在运行中卸载组件（如切路由），worker 仍靠自身超时收尾——属既有问题，本次未动。
+- 取消通道只做了「离开即取消」；没有做「暂停/续跑」，也没有给运行中的输出加保留缓冲。

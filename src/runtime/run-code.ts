@@ -32,8 +32,14 @@ export async function runPythonInBrowser(
   onOutput: (text: string) => void,
   onProgress?: (progress: RunProgress) => void,
   assets?: RuntimeAssets,
+  /**
+   * 取消信号：调用方离开编辑器时用。取消走正常收尾路径（复位 busy、终止共享 worker），
+   * 而不是把 worker 野杀——野杀不会让 Promise settle，busy 会永久卡住。
+   */
+  signal?: AbortSignal,
 ): Promise<RunResult> {
   if (pythonBusy) return { ok: false, errorCode: 'busy' };
+  if (signal?.aborted) return { ok: false, error: 'cancelled' };
   pythonBusy = true;
   let worker: Worker;
   try {
@@ -69,6 +75,7 @@ export async function runPythonInBrowser(
       if (runTimer) clearTimeout(runTimer);
       worker.removeEventListener('message', onMessage);
       worker.removeEventListener('error', onError);
+      signal?.removeEventListener('abort', onAbort);
       pythonBusy = false;
     };
 
@@ -82,6 +89,10 @@ export async function runPythonInBrowser(
       }
       resolve(result);
     };
+
+    /** 取消：终止共享 worker 并置空，下次使用重新装载运行时（热缓存仍在浏览器里）。 */
+    const onAbort = (): void => finish({ ok: false, error: 'cancelled' }, true);
+    signal?.addEventListener('abort', onAbort);
 
     const onMessage = (event: MessageEvent): void => {
       const message = event.data as
@@ -186,9 +197,15 @@ export async function runPythonInBrowser(
 export async function runJavaScriptInBrowser(
   code: string,
   onOutput: (text: string) => void,
-  options?: { timeoutMs?: number },
+  options?: {
+    timeoutMs?: number;
+    /** 取消信号：离开编辑器时终止当次 worker（每次运行各自一个，终止没有副作用）。 */
+    signal?: AbortSignal;
+  },
 ): Promise<RunResult> {
   const timeoutMs = options?.timeoutMs ?? 10_000;
+  const signal = options?.signal;
+  if (signal?.aborted) return { ok: false, error: 'cancelled' };
   let worker: Worker;
   try {
     worker = new Worker(new URL('./js-runner.worker.ts', import.meta.url), { type: 'module' });
@@ -209,9 +226,13 @@ export async function runJavaScriptInBrowser(
       if (settled) return; // 超时之后到达的消息一律丢弃
       settled = true;
       clearTimeout(timer);
+      signal?.removeEventListener('abort', onAbort);
       worker.terminate();
       resolve(result);
     };
+
+    const onAbort = (): void => finish({ ok: false, error: 'cancelled' });
+    signal?.addEventListener('abort', onAbort);
 
     timer = window.setTimeout(() => {
       finish({ ok: false, errorCode: 'timeout' });
