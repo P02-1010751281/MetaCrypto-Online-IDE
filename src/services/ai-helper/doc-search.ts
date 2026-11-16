@@ -4,6 +4,8 @@
  * 口径：
  * - 检索单元是「标题切出的段落」（`secs`），排序用 BM25（k1=1.2, b=0.75）；
  * - 命中理由可解释：返回命中的查询词与所属文档、标题、行号、摘录；
+ * - 提问点名的稀有实体（df ≤ 20 的拉丁标识符 / 希腊单字母）必须出现在命中段里：
+ *   只按「sha/步/算」命中的段讲的是整篇，不是那一步（RESULTS §29）；筛空时退回未筛集合；
  * - 默认按文档去重（同一篇只留最高分段落），界面点一条就是一篇文档的一个锚点。
  *
  * 索引由 `scripts/ai-helper-docindex.ts` 在构建期生成；`corpus.hash` 是全部语料
@@ -58,6 +60,8 @@ const COVERAGE_WEIGHT = 0.35;
 const EXPANSION_SCALE = 0.55;
 /** PDF 页的固定折扣：原始标准整页信息密度低，作为补充证据，不压过拆分好的章节页。 */
 const PDF_WEIGHT = 0.6;
+/** 稀有词（提问的主语）的 df 上限：命中段必须包含它，否则不算这一段在讲这件事。 */
+const ANCHOR_DF = 20;
 /** 认定「用户已点名具体对象」的拉丁词 df 上限。 */
 const NAMED_DF = 150;
 /** 扩展词允许的最大 df：再常见就没有区分度。 */
@@ -322,7 +326,21 @@ export function searchDocs(index: DocIndex, query: string, options: DocSearchOpt
     }
   }
 
-  const hits: DocHit[] = [];
+  // 稀有词必须在命中段里出现：问「SHA-3 的 π 步怎么算」时，只匹配到 sha/步/算 的段
+  // 讲的是 SHA-3 整体，不是 π 这一步。稀有词（df 很小）就是提问的主语，缺了它这段
+  // 只能算「顺带提到这个话题」。
+  // 只认「点名实体」：拉丁标识符与希腊单字母。中文词不做硬闸门——问句里的
+  // 稀有二元组大多是切词噪音（`什`/`么`），当闸门会把整库筛空。
+  const mustHave = originalTerms.filter((term) => {
+    const df = dfOf(term);
+    if (df === 0 || df > ANCHOR_DF) return false;
+    // 拉丁词至少 4 个字符：`rk` 这类两三个字母的片段常是块的输入槽名/表列名（
+    // `AES AddRoundKey(, rk:)` 派生出的查询），不是用户在点名的算法实体。
+    if (/^[\u0370-\u03ff]$/.test(term)) return true;
+    return /^[a-z][a-z0-9-]{3,}$/.test(term);
+  });
+
+  const entries: Array<{ hit: DocHit; gated: boolean }> = [];
   for (let section = 0; section < index.secs.length; section += 1) {
     if (scores[section] <= 0) continue;
     const [docIdx, line, , heading, excerpt] = index.secs[section];
@@ -331,17 +349,26 @@ export function searchDocs(index: DocIndex, query: string, options: DocSearchOpt
     if (options.lang && docLang(path) !== options.lang) continue;
     const isPdf = path.toLowerCase().endsWith('.pdf');
     if (isPdf) scores[section] *= PDF_WEIGHT;
-    hits.push({
-      path,
-      title,
-      heading,
-      line,
-      score: Number(scores[section].toFixed(4)),
-      excerpt,
-      kind: path.toLowerCase().endsWith('.pdf') ? 'pdf' : 'md',
-      terms: [...matched[section]].slice(0, 6),
+    entries.push({
+      gated: mustHave.every((term) => matched[section].has(term)),
+      hit: {
+        path,
+        title,
+        heading,
+        line,
+        score: Number(scores[section].toFixed(4)),
+        excerpt,
+        kind: path.toLowerCase().endsWith('.pdf') ? 'pdf' : 'md',
+        terms: [...matched[section]].slice(0, 6),
+      },
     });
   }
+
+  // 闸门是「筛掉顺带提到」，不是「没命中就无结果」：一个被点名实体如果只写在
+  // 标题/路径里（正文从未出现），硬筛会把本该有的结果全清空——此时退回未筛集合，
+  // 让排序自己说话（fail-open 只发生在闸门会清库的情况）。
+  let hits: DocHit[] = entries.filter((entry) => entry.gated).map((entry) => entry.hit);
+  if (!hits.length) hits = entries.map((entry) => entry.hit);
 
   hits.sort((a, b) => b.score - a.score || a.path.localeCompare(b.path) || a.line - b.line);
   if (options.dedupe === 'section') return hits.slice(0, limit);

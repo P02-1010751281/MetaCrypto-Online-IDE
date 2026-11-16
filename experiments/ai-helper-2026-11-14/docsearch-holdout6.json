@@ -1,0 +1,14 @@
+[
+  { "q": "SHA-3 的 χ 步怎么做", "expect": ["docs/standards/fips202-SHA3/04-Chi.md"] },
+  { "q": "GCM 的 inc32 怎么递增计数器", "expect": ["docs/standards/sp800-38d-gcm/10-inc32.md"] },
+  { "q": "ML-DSA 的 w1Encode 怎么编码", "expect": ["docs/standards/fips204-ML-DSA/28-w1Encode.md"] },
+  { "q": "ML-DSA 的 SampleInBall 怎么采样", "expect": ["docs/standards/fips204-ML-DSA/29-SampleInBall.md"] },
+  { "q": "ML-KEM 的 K-PKE.Encrypt 有哪些输入", "expect": ["docs/standards/fips203-ML-KEM/14-K-PKE-Encrypt.md"] },
+  { "q": "SHA-3 的 pad10*1 怎么填充", "expect": ["docs/standards/fips202-SHA3/09-pad10star1.md"] },
+  { "q": "ML-DSA 的 BitPack 怎么打包", "expect": ["docs/standards/fips204-ML-DSA/17-BitPack.md"] },
+  { "q": "McEliece 的 Patterson 译码怎么纠错", "expect": ["docs/standards/mceliece-goppa/02-Patterson.md"] },
+  { "q": "数论块里的模逆怎么用", "expect": ["docs/blocks/numtheory.md"] },
+  { "q": "AES 单轮变换的演示怎么走", "expect": ["docs/demos/aes.md"] },
+  { "q": "CipherCat 支持哪些 MQTT 物联网设备", "expect": [] },
+  { "q": "如何用 Rust 写 WebAssembly 固件", "expect": [] }
+]

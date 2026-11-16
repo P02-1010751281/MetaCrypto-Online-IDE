@@ -197,7 +197,39 @@ describe('doc search', () => {
     expect(top1('How is the SM4 round function defined')).toMatch(/^docs\/standards\/gbt32907-SM4\//);
   });
 
-  it('检索泛化基线：五套集 top1 = 29、10、7、6、8（不许为了调参集媕低）', () => {
+  it('点名的稀有实体必须在命中段里：π / ι 不再被总览页压过', () => {
+    // 病灶：总览页的 H1 段（只有标题、正文为空）靠「标题命中 ×1.8 + 路径 ×2.2 + 段短」
+    // 拿到比真正拆分页更高的分。闸门要求提问点名的稀有实体（df ≤ 20 的拉丁词或希腊单字母）
+    // 出现在**命中段**里，只匹配到 sha / 步 / 算 的段不再能代表「π 这一步」。
+    expect(firstPaths('SHA-3 的 π 步怎么算', 1)[0]).toBe('docs/standards/fips202-SHA3/03-Pi.md');
+    expect(firstPaths('SHA-3 的 ι 步是什么', 1)[0]).toBe('docs/standards/fips202-SHA3/06-Iota.md');
+  });
+
+  it('闸门只筛「顺带提到」：筛空时退回未筛集合（fail-open）', () => {
+    // 合成索引：稀有实体只在 std 页的段里；guide 页的段只匹配到中文词。
+    // 加 prefix 过滤把 std 页排除后，闸门会筛空——此时必须退回未筛集合而不是返回空结果。
+    const tiny = parseDocIndex(
+      JSON.stringify({
+        v: 1,
+        corpus: { files: 2, sections: 2, tokens: 20, hash: 'test' },
+        docs: [
+          ['std/a.md', '算法 A'],
+          ['guide/b.md', '操作指南'],
+        ],
+        secs: [
+          [0, 1, 2, 'Algorithm xyzzy(A)', 'xyzzy 的正文说明', 10],
+          [1, 1, 2, '操作', '本指南讲怎么操作', 10],
+        ],
+        // xyzzy 只出现在 std 页；指南的整词/单字/二元组都只出现在 guide 页。
+        post: { xyzzy: [0, 1], 指: [1, 1], 指南: [1, 1], 南: [1, 1], 本: [1, 1], 操作: [1, 1] },
+      }),
+    );
+    expect(searchDocs(tiny, 'xyzzy 指南', { limit: 5 })[0]?.path).toBe('std/a.md');
+    const filtered = searchDocs(tiny, 'xyzzy 指南', { limit: 5, prefix: 'guide/' });
+    expect(filtered.map((hit) => hit.path)).toEqual(['guide/b.md']);
+  });
+
+  it('检索泛化基线：调参集 29，六套留出 12/8/8/8/9/7（不许为了调参集降低）', () => {
     const rank = (query: string, expect: string[]): number => {
       const paths = firstPaths(query, 60);
       for (let i = 0; i < paths.length; i += 1) {
@@ -212,14 +244,16 @@ describe('doc search', () => {
     const count = (cases: Array<{ q: string; expect: string[] }>): number =>
       cases.filter((item) => item.expect.length > 0 && rank(item.q, item.expect) === 1).length;
     expect(count(load('docsearch-eval.json'))).toBe(29);
-    // 五套非调参集必须一起钉（2026-11-16 §27：希腊字母 + 标题命中后）：
-    // 混合留出 10→12；标准页留出 7→8；holdout3 6→7；holdout4 8（未动）；
-    // holdout5 是希腊字母与标题信号落地**之后**才写的验收集，首跑 7/12，此后未再调参。
+    // 六套非调参集必须一起钉（2026-11-17 §29：点名实体闸门后）：
+    // 混合留出 12（未动）；标准页留出 8（未动）；holdout3 7→8（θ 步归位）；
+    // holdout4 8（未动）；holdout5 7→9（π / ι 归位）；holdout6 是闸门落地后才写的
+    // 验收集，首跑 7/10，此后不得为它调参。
     expect(count(load('docsearch-holdout.json'))).toBe(12);
     expect(count(load('docsearch-holdout2.json'))).toBe(8);
-    expect(count(load('docsearch-holdout3.json'))).toBe(7);
+    expect(count(load('docsearch-holdout3.json'))).toBe(8);
     expect(count(load('docsearch-holdout4.json'))).toBe(8);
-    expect(count(load('docsearch-holdout5.json'))).toBe(7);
+    expect(count(load('docsearch-holdout5.json'))).toBe(9);
+    expect(count(load('docsearch-holdout6.json'))).toBe(7);
   });
 
   it('同一查询结果确定（可用作回归判据）', () => {
