@@ -1,0 +1,31 @@
+--- 变异 A：en 侧删掉 filesUnit（缺键 + 键集不一致）
+   × ui() 键位契约 > 每个 ui() 引用的键在中英两个语言包里都存在 6ms
+   × ui() 键位契约 > 两个语言包的键集一致 1ms
+     → expected { zhOnly: [ 'filesUnit' ], enOnly: [] } to deeply equal { zhOnly: [], enOnly: [] }
++   "src/features/blockly/views/editor/EditorProjectOverview.vue:8 ui('filesUnit') 缺 en",
++   "src/features/blockly/views/editor/EditorSidebar.vue:171 ui('filesUnit') 缺 en",
++   "src/features/blockly/views/editor/EditorSidebar.vue:246 ui('filesUnit') 缺 en",
+  已逐字节还原 src/features/blockly/core/utils/locale/ui-messages.ts
+--- 变异 B：源码引用一个字典里没有的键
+   × ui() 键位契约 > 每个 ui() 引用的键在中英两个语言包里都存在 6ms
++   "src/features/blockly/views/EditorView.vue:78 ui('bogusChromeKey') 缺 zh+en",
+      Tests  1 failed | 5 passed (6)
+  已逐字节还原 src/features/blockly/views/EditorView.vue
+--- 变异 C：英文文案写进中文
+   × ui() 键位契约 > 英文文案里没有残留中文 6ms
+     → expected [ 'statusReady' ] to deeply equal []
+AssertionError: expected [ 'statusReady' ] to deeply equal []
++   "statusReady",
+      Tests  1 failed | 5 passed (6)
+  已逐字节还原 src/features/blockly/core/utils/locale/ui-messages.ts
+--- 变异 D：状态条文案退回硬编码（渲染门禁）
+   × EditorStatusBar 文案跟随语言 > 中文显示译文，不露键名；切英文后逐项换成英文 18ms
+     → expected '文件未打开命令面板保存就绪 自动保存' to contain '未打开文件'
+AssertionError: expected '文件未打开命令面板保存就绪 自动保存' to contain '未打开文件'
+Expected: "未打开文件"
+     60|     expect(host.textContent).toContain('未打开文件')
+      Tests  1 failed | 3 passed (4)
+  已逐字节还原 src/features/blockly/views/editor/EditorStatusBar.vue
+--- 还原后复跑两条门禁
+ Test Files  2 passed (2)
+      Tests  10 passed (10)

@@ -1,0 +1,42 @@
+# 本轮终态门禁输出（lint/tsc 无输出 = 0 error / 0 warning；命令回显来自 npm notice，未省略）（2026-11-16 18:48–18:50，两仓实跑，非手抄）
+
+## CipherCat（工作目录 /run/media/user/6b058d20-a617-484d-b7c6-cd7146baf77c/Projects/CipherCat）
+### lint:check
+npm notice run ciphercat@2.0.0 lint:check
+npm notice run eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx
+### type-check
+npm notice run ciphercat@2.0.0 type-check
+npm notice run vue-tsc --noEmit
+### test:unit
+ Test Files  89 passed (89)
+      Tests  1017 passed | 1 skipped (1018)
+### verify:all
+PASS  proc_aes_key_schedule
+PASS  proc_sm4_key_schedule
+PASS  proc_md_iterate
+
+模板: 29/29 PASS
+DEMO_SUMMARY total=60 pass=60 fail=0
+
+## metacrypt_server/frontend
+### lint:check
+npm notice run metacrypt-frontend@3.9.2 lint:check
+npm notice run eslint src --ext .ts,.vue
+### type-check
+npm notice run metacrypt-frontend@3.9.2 type-check
+npm notice run vue-tsc --noEmit
+### test:unit
+ Test Files  111 passed (111)
+      Tests  970 passed (970)
+### build:prod
+dist/static/js/EditorView-ClxQYNU6.js                                                            1,102.64 kB │ gzip: 257.83 kB
+dist/static/js/vendor-framework-BsdWY_bk.js                                                      1,314.64 kB │ gzip: 430.72 kB
+✓ built in 32.85s
+### verify:chrome
+PASS  六个面板头的高度契约是 38px   <<< {"A":38,"B":38,"C":38,"D":38}
+PASS  头部图标按钮 24×24   <<< {"l":227,"r":251,"w":24,"h":24}
+PASS  标题排版逐项一致（11px / 600 / 大写 / 字距 / 次级色）   <<< {"fs":"11px","fw":"600","ls":"0.66px","tt":"uppercase","color":"rgb(144, 147, 153)"}
+PASS  标题 + 动作组：动作组贴右（不被拉成居中）   <<< {"btnRight":251,"expect":252}
+PASS  只有标题的头部：标题贴左（不被 :last-child 推到最右）   <<< {"titleLeft":528,"expect":528}
+PASS  长标题不撑破头部（头部不溢出、标题被截断）   <<< {"headScrollWidth":243,"headClientWidth":243,"titleWidth":213,"titleScrollWidth":452}
+SUMMARY total=6 pass=6 fail=0
