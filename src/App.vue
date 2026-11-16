@@ -115,7 +115,6 @@
       :entry-badge="activeProjectFileId === entryProjectFileId"
       @update:language="selectedLanguage = $event"
       @generate="generateCode"
-      @collapse="toggleCodePane"
     />
 
     <EditorToast :visible="toastVisible" :message="toastMessage" />

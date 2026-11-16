@@ -6,13 +6,11 @@
         {{ activeFileName || ui("code") }}
       </span>
       <span v-if="entryBadge" class="code-head-badge">{{ ui("entryFile") }}</span>
+      <!-- 栏头不再放「收起」按钮：顶栏动作组里已经有一个同动作的面板开关
+           （aria-label 与 title 都是「收起代码栏」）。两处开关做同一件事时，
+           用户在栏头点掉面板，回头找不到「再打开」的那颗按钮（收起后栏头一起消失），
+           所以隐藏动作只留在顶栏这一处。 -->
       <span class="code-head-lang">{{ languageLabel }}</span>
-      <button
-        class="code-head-collapse"
-        :title="ui('collapseCodePane')"
-        :aria-label="ui('collapseCodePane')"
-        @click="emit('collapse')"
-      >»</button>
     </div>
     <div class="code-toolbar">
       <div class="code-toolbar-left">
@@ -119,7 +117,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:language': [value: CodeLanguage];
   generate: [];
-  collapse: [];
 }>();
 
 const codePreviewer = ref<InstanceType<typeof CodePreviewer> | null>(null);
@@ -227,20 +224,6 @@ defineExpose({
   line-height: 16px;
 }
 
-.code-head-collapse {
-  margin-left: auto;
-  border: none;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-  padding: 0 2px;
-  font-size: 14px;
-  line-height: 1;
-  opacity: 0.6;
-}
-.code-head-collapse:hover {
-  opacity: 1;
-}
 .code-head-lang {
   margin-left: auto;
   flex-shrink: 0;
@@ -251,7 +234,10 @@ defineExpose({
 .code-toolbar {
   display: flex;
   align-items: center;
-  padding: 8px 12px;
+  /* 与左栏「保存 / 自动保存」行同一基线：左栏是 min-height(--editor-bar-h) + 2px 内边距
+     + 32px 按钮；这里原来是 8px 内边距，把行撑到 49px，两栏的第二行错开 11px。 */
+  min-height: var(--editor-bar-h);
+  padding: 2px 12px;
   background: var(--color-bg-card);
   border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;

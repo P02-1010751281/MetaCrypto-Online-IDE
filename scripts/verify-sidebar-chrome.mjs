@@ -550,6 +550,60 @@ check('文件面板：✎ 改名 + 保存后写进 IndexedDB',
     && dbAfterFile.some((r) => (r.files || []).includes('gate-renamed-block.json')),
   { fileRenameClicked, fileRenameTyped, dbAfterFile });
 
+// 10c. 右栏（代码栏）：栏头不许再放一个与顶栏重复的「收起」按钮；
+//      栏头与左栏面包屑同高、工具行与左栏保存行同高。
+//      改前实测：栏头里那颗 » 与顶栏面板开关都发同一个 toggleCodePane；
+//      右栏工具行 49px、左栏保存行 38px，两栏第二行错开 11px。
+const RIGHT = JSON.parse(await evaluate(`JSON.stringify((()=>{
+  const box = (el) => el ? (() => {
+    const r = el.getBoundingClientRect();
+    const s = getComputedStyle(el);
+    return {
+      t: Math.round(r.top), l: Math.round(r.left), r: Math.round(r.right),
+      h: Math.round(r.height), padR: parseFloat(s.paddingRight),
+    };
+  })() : null;
+  const head = document.querySelector('.code-head');
+  const lang = document.querySelector('.code-head-lang');
+  const actions = document.querySelector('.header-actions');
+  const toggles = actions ? [...actions.querySelectorAll('button')]
+    .filter((b) => /代码栏|code pane/i.test(b.getAttribute('aria-label') || '')) : [];
+  const tbBtns = [...document.querySelectorAll('.code-toolbar .toolbar-btn')];
+  return {
+    head: box(head),
+    headButtons: head ? head.querySelectorAll('button').length : null,
+    lang: box(lang),
+    crumb: box(document.querySelector('.editor-breadcrumb')),
+    leftToolbar: box(document.querySelector('.toolbar')),
+    codeToolbar: box(document.querySelector('.code-toolbar')),
+    paneToggles: toggles.length,
+    toggleLabel: toggles[0] ? toggles[0].getAttribute('aria-label') : null,
+    tvBtnBoxes: tbBtns.map((b) => Math.round(b.getBoundingClientRect().height)),
+  };
+})())`));
+
+check('代码栏栏头与左栏面包屑等高、同顶（38px）',
+  RIGHT.head?.h === 38 && RIGHT.crumb?.h + 1 === 38 && RIGHT.head?.t === RIGHT.crumb?.t,
+  { head: RIGHT.head, crumb: RIGHT.crumb });
+check('代码栏栏头里没有第二个「收起」按钮（隐藏动作只在顶栏一处）',
+  RIGHT.headButtons === 0, RIGHT.headButtons);
+check('顶栏：代码栏开关恰好 1 个且带可访问名称',
+  RIGHT.paneToggles === 1 && (RIGHT.toggleLabel || '').length > 0,
+  { paneToggles: RIGHT.paneToggles, toggleLabel: RIGHT.toggleLabel });
+/* 语言标签贴右：右边缘 = 栏头右边缘 - 栏头右内边距。
+   改前 lang 与 » 都写了 margin-left:auto，自由空间被劈成两半（各 105.5px），
+   「Python」于是浮在栏头中间偏左，右边还空出一大块。 */
+check('代码栏栏头：语言标签贴右（右边缘 = 栏头右边缘 - 内边距）',
+  RIGHT.lang && RIGHT.head && Math.abs(RIGHT.head.r - RIGHT.head.padR - RIGHT.lang.r) <= 1,
+  { head: RIGHT.head, lang: RIGHT.lang });
+check('右栏工具行与左栏保存行等高、同顶（38px）',
+  RIGHT.codeToolbar?.h === 38 && RIGHT.leftToolbar?.h === 38
+    && RIGHT.codeToolbar?.t === RIGHT.leftToolbar?.t,
+  { codeToolbar: RIGHT.codeToolbar, leftToolbar: RIGHT.leftToolbar });
+check('右栏工具行的按钮仍是 32px 高（只收行高，不压按钮）',
+  RIGHT.tvBtnBoxes.length === 3 && RIGHT.tvBtnBoxes.every((h) => h === 32),
+  RIGHT.tvBtnBoxes);
+
 // 11. 窄屏（≤1200px）检索面板切成浮层：同一套头部规则在浮层里也必须成立，
 //     否则「统一」只证明了停靠态这一半。
 await send('browsingContext.setViewport', { context, viewport: { width: 1024, height: 700 } });
