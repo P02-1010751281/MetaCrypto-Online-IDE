@@ -31,6 +31,9 @@ export interface EditorSplit {
   /** 右栏是否显示；窄屏时由调用方按需收起。 */
   codePaneVisible: Ref<boolean>;
   toggleCodePane: () => void;
+  /** 左栏（activity bar + 面板）是否显示。收起后只剩中间与右栏。 */
+  sidebarVisible: Ref<boolean>;
+  toggleSidebar: () => void;
   onSplitDragStart: (event: MouseEvent) => void;
   onLeftDragStart: (event: MouseEvent) => void;
 }
@@ -47,6 +50,8 @@ export function useEditorSplit(options: EditorSplitOptions = {}): EditorSplit {
   /** 用户手动拖过左栏后，不再按面板类型自动改宽度。 */
   let leftWidthPinned = false;
   const codePaneVisible = ref(true);
+  /** 默认展开；收起后中间栏吃掉整行宽度（Blockly 需要重绘，见 toggleSidebar）。 */
+  const sidebarVisible = ref(true);
 
   type SplitMode = 'right' | 'top' | 'left';
   let splitMode: SplitMode | null = null;
@@ -189,6 +194,12 @@ export function useEditorSplit(options: EditorSplitOptions = {}): EditorSplit {
     nextTick(() => options.onResize?.());
   }
 
+  /** 左栏收起/展开：画布横向空间变了，必须让 Blockly 重算尺寸，否则积木区留白。 */
+  function toggleSidebar(): void {
+    sidebarVisible.value = !sidebarVisible.value;
+    nextTick(() => options.onResize?.());
+  }
+
   // 响应式布局切换时重置尺寸（nextTick 等 DOM 更新完）
   const onBreakpointChange = (): void => {
     if (narrowMedia.matches) {
@@ -223,6 +234,8 @@ export function useEditorSplit(options: EditorSplitOptions = {}): EditorSplit {
     setLeftWidth,
     codePaneVisible,
     toggleCodePane,
+    sidebarVisible,
+    toggleSidebar,
     onSplitDragStart,
     onLeftDragStart,
   };

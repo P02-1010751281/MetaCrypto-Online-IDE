@@ -569,6 +569,17 @@ const RIGHT = JSON.parse(await evaluate(`JSON.stringify((()=>{
   const toggles = actions ? [...actions.querySelectorAll('button')]
     .filter((b) => /代码栏|code pane/i.test(b.getAttribute('aria-label') || '')) : [];
   const tbBtns = [...document.querySelectorAll('.code-toolbar .toolbar-btn')];
+  /* chrome 层的控件名：活动条、顶栏动作组、代码栏栏头、当前面板头。列表行里的
+     ✎/✕ 天然同名，不属于这里——它们的身份由所在行决定，不在这一层判。 */
+  const nameOf = (b) => (b.getAttribute('aria-label') || b.getAttribute('title')
+    || (b.textContent || '').trim() || '').trim();
+  const chromeBtns = [...document.querySelectorAll(
+    '.activity-bar button, .editor-head button, .code-head button, .side-panel .section-head button',
+  )].filter((b) => b.offsetWidth > 0 && b.offsetHeight > 0);
+  const chromeNames = chromeBtns.map((b) => ({
+    name: nameOf(b),
+    cls: typeof b.className === 'string' ? b.className : '',
+  })).filter((x) => x.name);
   return {
     head: box(head),
     headButtons: head ? head.querySelectorAll('button').length : null,
@@ -579,6 +590,7 @@ const RIGHT = JSON.parse(await evaluate(`JSON.stringify((()=>{
     paneToggles: toggles.length,
     toggleLabel: toggles[0] ? toggles[0].getAttribute('aria-label') : null,
     tvBtnBoxes: tbBtns.map((b) => Math.round(b.getBoundingClientRect().height)),
+    chromeNames,
   };
 })())`));
 
@@ -603,6 +615,189 @@ check('右栏工具行与左栏保存行等高、同顶（38px）',
 check('右栏工具行的按钮仍是 32px 高（只收行高，不压按钮）',
   RIGHT.tvBtnBoxes.length === 3 && RIGHT.tvBtnBoxes.every((h) => h === 32),
   RIGHT.tvBtnBoxes);
+/* chrome 层同名控件：英文版曾把侧栏「查文档」和顶栏「文档」都翻成 Docs，
+   两个控件同名不同事（一个开检索面板、一个跳文档中心），用户分不出点哪个。
+   判据放在这一层而不是「全页无重名」：列表行的 ✎/✕ 天然同名，身份由所在行决定。 */
+const dupNames = Object.entries(
+  RIGHT.chromeNames.reduce((acc, x) => ({ ...acc, [x.name]: [...(acc[x.name] || []), x.cls] }), {}),
+).filter(([, v]) => v.length > 1).map(([name, cls]) => ({ name, cls }));
+check('编辑器 chrome 里没有两个控件共用同一个可访问名称',
+  RIGHT.chromeNames.length >= 6 && dupNames.length === 0,
+  { count: RIGHT.chromeNames.length, dupNames });
+
+// 10e. 左右分界条：几何必须落在两栏之间，hover 必须真的高亮。
+//      改前三处缺陷叠在一起：① .split-handle 的负 margin 左右都是 -5px，宽 8px 时
+//      净占位 -2px，右邻栏被拽进侧栏（实测中间栏左缘 244 < 侧栏右缘 248，压 4px）；
+//      ② 分割线因此画在侧栏内部 2px；③ Blockly 工具箱是 z-index:70 的绝对定位元素，
+//      压住 z-index:20 的分界条 —— hover 配色规则一直是好的，是根本收不到鼠标事件
+//      （elementFromPoint 在 244…250 全部命中 blocklyToolboxCategory）。
+const SEAM = JSON.parse(await evaluate(`JSON.stringify((()=>{
+  const box = (el) => { if (!el) return null; const b = el.getBoundingClientRect();
+    return { l: +b.left.toFixed(1), r: +b.right.toFixed(1), t: +b.top.toFixed(1), h: +b.height.toFixed(1) }; };
+  const side = document.querySelector('.editor-sidebar');
+  const leftHandle = document.querySelector('.split-handle-left');
+  const leftLine = leftHandle ? leftHandle.querySelector('.split-line') : null;
+  const viewLeft = document.querySelector('.view-left');
+  const rightHandle = [...document.querySelectorAll('.split-handle')]
+    .find((h) => !h.classList.contains('split-handle-left'));
+  const rightLine = rightHandle ? rightHandle.querySelector('.split-line') : null;
+  const viewRight = document.querySelector('.view-right');
+  const hit = (x) => { const el = document.elementFromPoint(x, 400);
+    return el ? (typeof el.className === 'string' ? el.className : el.tagName) : null; };
+  const lh = leftHandle ? leftHandle.getBoundingClientRect() : null;
+  const mid = lh ? Math.round((lh.left + lh.right) / 2) : 0;
+  const token = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  return { side: box(side), leftHandle: box(leftHandle), leftLine: box(leftLine), viewLeft: box(viewLeft),
+           rightHandle: box(rightHandle), rightLine: box(rightLine), viewRight: box(viewRight), mid,
+           hits: [mid - 2, mid, mid + 2].map((x) => ({ x, cls: hit(x) })),
+           primary: token('--color-primary'), primaryLight: token('--color-primary-light') };
+})())`));
+check('左缝：中间栏左缘与侧栏右缘相接，不再压在侧栏上',
+  SEAM.side && SEAM.viewLeft && Math.abs(SEAM.viewLeft.l - SEAM.side.r) <= 1,
+  { viewLeftL: SEAM.viewLeft?.l, sideR: SEAM.side?.r });
+check('左缝：分割线中心落在边界上（±1px，不再画进侧栏）',
+  SEAM.leftLine && SEAM.side
+    && Math.abs((SEAM.leftLine.l + SEAM.leftLine.r) / 2 - SEAM.side.r) <= 1,
+  { lineCenter: SEAM.leftLine ? (SEAM.leftLine.l + SEAM.leftLine.r) / 2 : null, sideR: SEAM.side?.r });
+check('左缝：边界处命中分界条（不是被积木工具箱盖住）',
+  SEAM.hits.every((h) => /split-(handle|line)/.test(h.cls || '')), SEAM.hits);
+check('右缝：代码栏左缘与中间栏右缘相接，分割线落在边界上',
+  SEAM.viewRight && SEAM.viewLeft && SEAM.rightLine
+    && Math.abs(SEAM.viewRight.l - SEAM.viewLeft.r) <= 1
+    && Math.abs((SEAM.rightLine.l + SEAM.rightLine.r) / 2 - SEAM.viewLeft.r) <= 1,
+  { paneL: SEAM.viewRight?.l, leftR: SEAM.viewLeft?.r, line: SEAM.rightLine });
+
+// 真的把鼠标移到分界带上——配色规则存在不等于会生效，必须验 hover 后的计算样式。
+await point(SEAM.mid, 400);
+await sleep(250);
+const SEAM_HOVER = JSON.parse(await evaluate(`JSON.stringify((()=>{
+  const h = document.querySelector('.split-handle-left');
+  const l = h ? h.querySelector('.split-line') : null;
+  return { hovered: !!h && h.matches(':hover'),
+           bg: h ? getComputedStyle(h).backgroundColor : null,
+           line: l ? getComputedStyle(l).backgroundColor : null };
+})())`));
+const hexToRgb = (hex) => {
+  const v = hex.replace('#', '');
+  return `rgb(${parseInt(v.slice(0, 2), 16)}, ${parseInt(v.slice(2, 4), 16)}, ${parseInt(v.slice(4, 6), 16)})`;
+};
+check('左缝：hover 时手柄底色与分割线真的高亮（收得到鼠标事件）',
+  SEAM_HOVER.hovered
+    && SEAM_HOVER.bg === hexToRgb(SEAM.primaryLight)
+    && SEAM_HOVER.line === hexToRgb(SEAM.primary),
+  { hover: SEAM_HOVER, expectBg: hexToRgb(SEAM.primaryLight), expectLine: hexToRgb(SEAM.primary) });
+
+// 10f. 左栏收起开关：与右侧代码栏开关成对，收起后中间栏顶到窗口左边、
+//      分界条一并消失，且重新展开的入口始终在顶栏（不随侧栏消失）。
+const SIDEBAR_STATE = `JSON.stringify((()=>{
+  const side = document.querySelector('.editor-sidebar');
+  const left = document.querySelector('.view-left');
+  const handle = document.querySelector('.split-handle-left');
+  const btn = [...document.querySelectorAll('.header-actions button')]
+    .find((b) => /sidebar|侧栏/i.test(b.getAttribute('aria-label') || ''));
+  return { visible: !!side && side.offsetWidth > 0,
+           display: side ? getComputedStyle(side).display : null,
+           leftL: left ? Math.round(left.getBoundingClientRect().left) : null,
+           leftW: left ? Math.round(left.getBoundingClientRect().width) : null,
+           handle: !!handle,
+           label: btn ? btn.getAttribute('aria-label') : null,
+           pressed: btn ? btn.getAttribute('aria-pressed') : null };
+})())`;
+const clickSidebarToggle = `(()=>{ const b = [...document.querySelectorAll('.header-actions button')]
+  .find((x) => /sidebar|侧栏/i.test(x.getAttribute('aria-label') || '')); if (b) b.click(); return !!b; })()`;
+const sbBefore = JSON.parse(await evaluate(SIDEBAR_STATE));
+check('顶栏有左栏收起开关，且带可访问名称',
+  (sbBefore.label || '').length > 0 && sbBefore.pressed === 'true', sbBefore);
+await evaluate(clickSidebarToggle);
+await sleep(500);
+const sbAfter = JSON.parse(await evaluate(SIDEBAR_STATE));
+check('收起后：侧栏从布局里消失、中间栏顶到窗口左边、左侧分界条一并消失',
+  sbAfter.visible === false && sbAfter.display === 'none' && sbAfter.leftL === 0 && sbAfter.handle === false,
+  sbAfter);
+check('收起后：按钮文案与 aria-pressed 翻转（重新展开的入口在顶栏，不会找不到）',
+  sbAfter.pressed === 'false' && /expand|展开/i.test(sbAfter.label || '')
+    && sbAfter.label !== sbBefore.label,
+  { before: sbBefore.label, after: sbAfter.label, pressed: sbAfter.pressed });
+await evaluate(clickSidebarToggle);
+await sleep(500);
+const sbBack = JSON.parse(await evaluate(SIDEBAR_STATE));
+check('再点一下复原：侧栏回来、中间栏回到 248、宽度与收起前一致',
+  sbBack.visible === true && sbBack.leftL === 248 && sbBack.leftW === sbBefore.leftW
+    && sbBack.pressed === 'true',
+  { back: sbBack, before: sbBefore });
+
+// 10g. 窄屏没有「侧栏」可收：侧栏此时折成顶部横条，而横条里的活动条是**唯一**的
+//      面板入口——收掉它等于把五个入口一起藏了（实测 5 → 0，只能靠顶栏那颗按钮回来）。
+//      所以窄屏隐藏这颗开关并强制显示横条；陷阱态是「宽屏收起后缩窄」，状态不能把
+//      窄屏的入口一起带走。
+const NARROW_SIDEBAR = `JSON.stringify((()=>{
+  const q = (s) => document.querySelector(s);
+  const btn = [...document.querySelectorAll('.header-actions button')]
+    .find((b) => /sidebar|侧栏/i.test(b.getAttribute('aria-label') || ''));
+  const side = q('.editor-sidebar');
+  const acts = q('.activity-bar') ? [...document.querySelectorAll('.activity-bar .activity-btn')] : [];
+  return {
+    vw: innerWidth,
+    togglePresent: !!btn,
+    toggleVisible: btn ? btn.getBoundingClientRect().width > 0 : false,
+    toggleLabel: btn ? btn.getAttribute('aria-label') : null,
+    display: side ? getComputedStyle(side).display : null,
+    stripH: side ? Math.round(side.getBoundingClientRect().height) : 0,
+    actTotal: acts.length,
+    actVisible: acts.filter((b) => b.getBoundingClientRect().width > 0).length,
+    scrollW: document.documentElement.scrollWidth,
+    leftL: q('.view-left') ? Math.round(q('.view-left').getBoundingClientRect().left) : null,
+  };
+})())`;
+
+await send('browsingContext.setViewport', { context, viewport: { width: 1024, height: 700 } });
+await sleep(900);
+const narrowSide = JSON.parse(await evaluate(NARROW_SIDEBAR));
+check('窄屏：左栏开关隐藏（没有侧栏可收，且它会藏掉唯一的面板入口）',
+  narrowSide.togglePresent === true && narrowSide.toggleVisible === false,
+  narrowSide);
+check('窄屏：横条与全部活动条入口都在、无横向溢出',
+  narrowSide.display !== 'none' && narrowSide.stripH > 0
+    && narrowSide.actTotal > 0 && narrowSide.actVisible === narrowSide.actTotal
+    && narrowSide.scrollW === narrowSide.vw,
+  narrowSide);
+
+// 陷阱态：宽屏收起 → 缩窄，横条必须自己回来；再回宽屏，收起态应原样保留。
+await send('browsingContext.setViewport', { context, viewport: { width: 1366, height: 800 } });
+await sleep(700);
+await evaluate(clickSidebarToggle);
+await sleep(400);
+const trapWide = JSON.parse(await evaluate(SIDEBAR_STATE));
+await send('browsingContext.setViewport', { context, viewport: { width: 1024, height: 700 } });
+await sleep(900);
+const trapNarrow = JSON.parse(await evaluate(NARROW_SIDEBAR));
+check('陷阱态：宽屏收起后缩窄，横条与活动条入口必须回来',
+  trapWide.display === 'none' && trapNarrow.display !== 'none'
+    && trapNarrow.actVisible === trapNarrow.actTotal && trapNarrow.actVisible > 0,
+  { trapWide, trapNarrow });
+await send('browsingContext.setViewport', { context, viewport: { width: 1366, height: 800 } });
+await sleep(700);
+const trapBack = JSON.parse(await evaluate(SIDEBAR_STATE));
+check('回到宽屏：收起态原样保留，顶栏仍能展开（窄屏不改写宽屏状态）',
+  trapBack.display === 'none' && trapBack.pressed === 'false'
+    && /expand|展开/i.test(trapBack.label || ''),
+  trapBack);
+await evaluate(clickSidebarToggle);
+await sleep(400);
+const trapRestored = JSON.parse(await evaluate(SIDEBAR_STATE));
+check('陷阱态复原：侧栏回到 248',
+  trapRestored.visible === true && trapRestored.leftL === 248, trapRestored);
+
+// 10h. 顶栏多出的这颗按钮不能在 560 宽（动作组换行的宽度）把顶栏挤破。
+await send('browsingContext.setViewport', { context, viewport: { width: 560, height: 800 } });
+await sleep(900);
+const narrow560 = JSON.parse(await evaluate(NARROW_SIDEBAR));
+check('窄屏 560px：顶栏不横向溢出（多出的开关不挤破换行后的动作组）',
+  narrow560.scrollW === narrow560.vw && narrow560.toggleVisible === false
+    && narrow560.display !== 'none' && narrow560.actVisible === narrow560.actTotal,
+  narrow560);
+await send('browsingContext.setViewport', { context, viewport: { width: 1366, height: 800 } });
+await sleep(700);
 
 // 11. 窄屏（≤1200px）检索面板切成浮层：同一套头部规则在浮层里也必须成立，
 //     否则「统一」只证明了停靠态这一半。

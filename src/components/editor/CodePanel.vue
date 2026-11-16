@@ -181,7 +181,8 @@ defineExpose({
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
-  border-left: 1px solid var(--color-border);
+  /* 边线由 App.vue 的 .split-line 画（hover 高亮），这里不再画第二条：
+     两条紧挨着的线里总有一条永远不变色，读起来就是「分界没有高亮」。 */
   background: var(--color-bg-card);
 }
 
@@ -296,12 +297,6 @@ defineExpose({
 
 .copy-btn {
   margin-left: auto;
-}
-
-.toolbar-sep {
-  color: var(--color-border-hover);
-  font-size: 14px;
-  flex-shrink: 0;
 }
 
 .lang-select {

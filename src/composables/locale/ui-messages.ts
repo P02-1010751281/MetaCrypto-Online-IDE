@@ -208,8 +208,11 @@ export const UI_MESSAGES: Record<BlocklyLocale, Record<string, string>> = {
     entryFile: 'Entry',
     panels: 'Panels',
     functionsPanel: 'Function Manager',
-    docSearch: 'Docs',
-    blockSearch: 'Blocks',
+    /* 这一对是「在仓库里查」的动作（检索面板），与顶栏的 docs（文档中心，跳路由）
+       必须是两个不同的名字：英文版曾把两个都写成 Docs，页面上出现两个同名不同事的
+       控件。中文侧本来就是「查文档 / 查块」对「文档」，按同一区分落英文。 */
+    docSearch: 'Doc search',
+    blockSearch: 'Block search',
     projects: 'Projects',
     searchProjects: 'Search projects',
     loading: 'Loading…',

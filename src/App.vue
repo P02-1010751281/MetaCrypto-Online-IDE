@@ -2,7 +2,11 @@
   <div ref="editorViewRef" class="editor-view" :inert="navigationPending" @click="closeMenus">
     <!-- 窄屏侧栏被折成顶部横条：leftStyle 里的 `flex: 0 0 400px` 在纵向布局里
          会变成「高度 400px」，一开检索面板顶栏就长成一大块，所以只在宽屏钉宽度。 -->
+    <!-- 窄屏的侧栏是顶部横条，也是唯一的面板入口（活动条），没有「侧栏」可收：
+         此时强制显示，不看 sidebarVisible，否则在宽屏收起后缩窄窗口会连入口一起没了。
+         对应地，顶栏那颗左栏开关在窄屏隐藏（EditorHeaderActions 的媒体查询）。 -->
     <EditorSidebar
+      v-show="isNarrowViewport || sidebarVisible"
       :style="isNarrowViewport ? undefined : leftStyle"
       :files="projectFileList"
       :active-file-id="activeProjectFileId"
@@ -47,7 +51,12 @@
       />
     </EditorSidebar>
 
-    <div class="split-handle split-handle-left" @mousedown="onLeftDragStart">
+    <!-- 侧栏收起时这条分界也没有意义（左边已经没有面板可拖），一并撤掉。 -->
+    <div
+      v-if="isNarrowViewport || sidebarVisible"
+      class="split-handle split-handle-left"
+      @mousedown="onLeftDragStart"
+    >
       <div class="split-line" />
     </div>
 
@@ -61,11 +70,13 @@
         />
         <EditorHeaderActions
           :code-pane-visible="codePaneVisible"
+          :sidebar-visible="sidebarVisible"
           :open-menu="openMenu"
           :export-format="exportFormat"
           :import-format="importFormat"
           @toggle-locale="toggleBlocklyLocale"
           @toggle-code-pane="toggleCodePane"
+          @toggle-sidebar="toggleSidebar"
           @toggle-menu="toggleMenu"
           @update:export-format="exportFormat = $event"
           @update:import-format="importFormat = $event"
@@ -347,7 +358,7 @@ async function onManualSave(): Promise<void> {
 }
 
 // ---- 拖拽分割条 ----
-const { editorViewRef, codeStyle, editorStyle, leftStyle, setLeftWidth, codePaneVisible, toggleCodePane, onSplitDragStart, onLeftDragStart } =
+const { editorViewRef, codeStyle, editorStyle, leftStyle, setLeftWidth, codePaneVisible, toggleCodePane, sidebarVisible, toggleSidebar, onSplitDragStart, onLeftDragStart } =
   useEditorSplit({
     onResize: () => blocklyEditor.value?.resizeWorkspace(),
   });
@@ -373,6 +384,11 @@ const { editorViewRef, codeStyle, editorStyle, leftStyle, setLeftWidth, codePane
   min-width: 0;
   min-height: 0;
   overflow: hidden;
+  /* Blockly 工具箱是 z-index:70 的绝对定位元素，与 .split-handle 的 z-index:20 在同一个
+     层叠上下文里比大小——结果是工具箱压住分界条，hover 高亮永远不触发（实测
+     elementFromPoint 在分界处命中 blocklyToolboxCategory）。这里建一个独立层叠上下文，
+     把算法内部的 z-index 全关在中间栏里：应用自己的 chrome 永远在它上面。 */
+  isolation: isolate;
 }
 
 /* 顶栏：面包屑占满剩余宽度，应用级动作组钉在右端（紧邻代码栏分隔线）。
@@ -397,10 +413,11 @@ const { editorViewRef, codeStyle, editorStyle, leftStyle, setLeftWidth, codePane
 }
 
 /* ---- 分割条 ---- */
-/* 负 margin 向两侧面板各延伸 5px 点击热区，视觉宽度不变。
-   即使 Blockly SVG 缩放后溢出，也无法盖住中心区域。 */
+/* 负 margin 让 8px 的条子跨在边界两侧（每侧 4px 热区），但**左右必须对称**：
+   写成 -5px/-5px 时净占位是 8-10=-2px，会把右邻栏往左拽进侧栏 2px，分割线也落在
+   侧栏内部。对称值净占位为 0，边界位置不动，线正好画在边界上。 */
 .split-handle {
-  width: 6px;
+  width: 8px;
   flex-shrink: 0;
   cursor: col-resize;
   background: transparent;
@@ -408,9 +425,10 @@ const { editorViewRef, codeStyle, editorStyle, leftStyle, setLeftWidth, codePane
   align-items: center;
   justify-content: center;
   position: relative;
+  /* 要压住 Blockly 工具箱（它是 z-index:70 的绝对定位元素），见 .view-left 的 isolation。 */
   z-index: 20;
-  margin-left: -5px;
-  margin-right: -5px;
+  margin-left: -4px;
+  margin-right: -4px;
   transition: background 0.15s;
 }
 
@@ -448,10 +466,11 @@ const { editorViewRef, codeStyle, editorStyle, leftStyle, setLeftWidth, codePane
 
   .split-handle {
     width: 100%;
-    height: 6px;
+    height: 8px;
     flex-shrink: 0;
     cursor: row-resize;
-    margin: -5px 0;
+    /* 纵向同样是「对称负 margin」：净占位为 0，中间栏不会被拉进上/下邻栏。 */
+    margin: -4px 0;
   }
 
   .split-line {

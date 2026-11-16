@@ -41,6 +41,30 @@
 
     <div class="actions-divider" />
 
+    <!-- 左栏开关：与右侧的代码栏开关并排，两颗成对——左栏在画面左边，所以放在前面。
+         收起后不留在侧栏里的按钮（侧栏整个消失），重新展开的入口始终在顶栏，不会
+         出现「点了以后找不到怎么开回来」。 -->
+    <button
+      type="button"
+      class="toolbar-btn sidebar-toggle"
+      :class="{ 'is-on': sidebarVisible }"
+      :aria-pressed="sidebarVisible"
+      :aria-label="sidebarLabel"
+      :title="sidebarLabel"
+      @click="$emit('toggle-sidebar')"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        aria-hidden="true"
+      >
+        <rect x="3" y="4" width="18" height="16" rx="2" />
+        <line x1="9" y1="4" x2="9" y2="20" />
+      </svg>
+    </button>
+
     <button
       type="button"
       class="toolbar-btn"
@@ -75,6 +99,7 @@ import WorkspaceMenu from './WorkspaceMenu.vue';
 
 const props = defineProps<{
   codePaneVisible: boolean;
+  sidebarVisible: boolean;
   openMenu: string;
   exportFormat: 'json' | 'xml';
   importFormat: 'auto' | 'json' | 'xml';
@@ -83,6 +108,7 @@ const props = defineProps<{
 defineEmits<{
   'toggle-locale': [];
   'toggle-code-pane': [];
+  'toggle-sidebar': [];
   'toggle-menu': [menu: string];
   'update:export-format': [value: 'json' | 'xml'];
   'update:import-format': [value: 'auto' | 'json' | 'xml'];
@@ -95,6 +121,9 @@ defineEmits<{
 
 const paneLabel = computed(() =>
   props.codePaneVisible ? ui('collapseCodePane') : ui('expandCodePane'),
+);
+const sidebarLabel = computed(() =>
+  props.sidebarVisible ? ui('sidebarCollapse') : ui('sidebarExpand'),
 );
 </script>
 
@@ -121,6 +150,14 @@ const paneLabel = computed(() =>
   background: var(--color-bg-hover);
   border-color: var(--color-border-hover);
   color: var(--color-text);
+}
+
+/* 窄屏没有侧栏可收：侧栏已折成顶部横条，而横条里的活动条是唯一的面板入口，
+   收掉它等于把所有面板入口一起藏了（实测 5 个活动条 → 0）。这颗开关只在宽屏有意义。 */
+@media (max-width: 1200px) {
+  .sidebar-toggle {
+    display: none;
+  }
 }
 
 /* 560px 以下动作组允许换行，避免溢出顶栏右边界。 */
