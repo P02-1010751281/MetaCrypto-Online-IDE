@@ -74,7 +74,6 @@
       <div class="side-panel">
         <section v-if="activePanel === 'files'" class="files-section">
           <div class="section-head">
-            <button class="ghost-btn" :title="ui('back')" @click="$emit('back')">←</button>
             <span class="section-title">{{ ui('files') }}</span>
             <button class="ghost-btn" :title="ui('newFile')" @click="$emit('add-file')">＋</button>
           </div>
@@ -142,7 +141,6 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'back'): void;
   (e: 'select-file', fileId: string): void;
   (e: 'add-file'): void;
   (e: 'rename-file', fileId: string, name: string): void;

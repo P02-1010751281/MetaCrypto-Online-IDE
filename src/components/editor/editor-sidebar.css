@@ -100,33 +100,8 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-.section-head {
-  display: flex;
-  align-items: center;
-  /* 左对齐；右侧的动作按钮用 margin-left:auto 顶到最右，
-     否则三子元素会被 space-between 拉成「标题居中」的怪样子。 */
-  justify-content: flex-start;
-  height: var(--panel-head-h);
-  gap: 6px;
-}
-
-.section-head > :last-child {
-  margin-left: auto;
-}
-
-.section-title {
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
-}
-
-.section-hint {
-  margin: 6px 2px 0;
-  font-size: 11px;
-  line-height: 1.5;
-  color: var(--color-text-secondary);
-}
+/* 面板头 / 标题 / 提示 / 图标按钮的规则在 styles/panel-chrome.css（全局）：
+   面板是 slot 子组件，scoped 样式穿不过去。这里只留窄屏覆盖。 */
 
 .file-list {
   list-style: none;
@@ -255,29 +230,6 @@
   border: 1px solid var(--color-primary);
   border-radius: var(--radius-sm);
   outline: none;
-}
-
-.ghost-btn,
-.icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  line-height: 1;
-}
-
-.ghost-btn:hover,
-.icon-btn:hover {
-  background: var(--color-bg-hover);
-  color: var(--color-text);
 }
 
 /* 窄屏（≤1200px）：编辑器纵向堆叠，侧栏收成一行紧凑横条：

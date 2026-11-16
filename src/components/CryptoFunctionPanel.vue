@@ -6,6 +6,11 @@
           <h3>{{ msg.CRYPTO_FUNCTIONS_PANEL_TITLE || 'Crypto Functions' }}</h3>
           <button class="cfp-close" @click="$emit('close')">✕</button>
         </div>
+        <!-- 停靠进左栏也要有面板头：项目 / 文件面板都有 38px 标题行，
+             缺了它，同一列里只有函数面板是「没有名字」的那一个。 -->
+        <div v-else class="section-head cfp-head">
+          <span class="section-title">{{ msg.CRYPTO_FUNCTIONS_PANEL_TITLE || 'Crypto Functions' }}</span>
+        </div>
         <div class="cfp-actions">
           <button class="cfp-btn cfp-btn-new" @click="insertTemplate('procedures_defreturn')">{{ msg.CRYPTO_FUNCTIONS_NEW_BUTTON || '＋ 新建' }}</button>
           <button class="cfp-btn" @click="handleImport">{{ msg.CRYPTO_FUNCTIONS_IMPORT_BUTTON || '📥 导入' }}</button>
@@ -328,6 +333,8 @@ function download(content: string, filename: string) {
 .cfp-close { background: none; border: none; color: var(--color-text-secondary); font-size: 16px; cursor: pointer; padding: 2px 6px; border-radius: 4px; }
 .cfp-close:hover { background: var(--color-bg-hover); color: var(--color-text); }
 .cfp-actions { display: flex; gap: 4px; padding: 8px 14px; border-bottom: 1px solid var(--color-border); }
+/* 停靠态面板头：横向内边距与 .cfp-cat-header / .cfp-actions 的 14px 对齐。 */
+.cfp-head { padding: 0 14px; }
 .cfp-btn { flex: 1; padding: 6px 8px; border: 1px solid var(--color-border); border-radius: 5px; background: var(--color-bg-hover); color: var(--color-text); font-size: 12px; cursor: pointer; }
 .cfp-btn:hover { background: var(--color-border); }
 .cfp-btn-new { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }

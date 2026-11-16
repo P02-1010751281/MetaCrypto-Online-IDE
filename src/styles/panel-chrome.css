@@ -1,0 +1,64 @@
+/* 侧栏面板的公共 chrome：面板头、标题、提示、图标按钮。
+ *
+ * 为什么这些规则必须放在全局层而不是 editor-sidebar.css：
+ * EditorSidebar 里的面板是 slot 子组件（ProjectPanel / CryptoFunctionPanel …），
+ * 而 `<style scoped>` 的作用域只覆盖本组件模板，跨不过 slot 边界。样式留在
+ * EditorSidebar 里，每个面板就只能各抄一份，抄完很快漂移——ProjectPanel 就抄成了
+ * font-weight: 600，并且漏掉了 .ghost-btn，导致它的「＋」退回浏览器默认按钮外观。
+ *
+ * 面板头只从这一份定义取值：字体（11px / 600 / 字距 0.06em / 大写 / 次级色）、
+ * 高度（--panel-head-h，与面包屑同一基线）、图标按钮（24×24 透明底）。
+ */
+.section-head {
+  display: flex;
+  align-items: center;
+  /* 左对齐；右侧动作按钮用 margin-left:auto 顶到最右，
+     否则三子元素会被 space-between 拉成「标题居中」的怪样子。 */
+  justify-content: flex-start;
+  height: var(--panel-head-h);
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.section-head > :last-child {
+  margin-left: auto;
+}
+
+/* 字重显式写 600：不吃祖先继承，四个面板的标题才会长得一样。 */
+.section-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.section-hint {
+  margin: 6px 2px 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.ghost-btn,
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.ghost-btn:hover,
+.icon-btn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+}

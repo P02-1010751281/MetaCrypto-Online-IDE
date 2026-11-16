@@ -8,7 +8,6 @@
       :active-file-id="activeProjectFileId"
       :entry-file-id="entryProjectFileId"
       :active-panel="activePanel"
-      @back="goBack"
       @select-file="onSelectProjectFile"
       @add-file="onAddProjectFile"
       @rename-file="onRenameProjectFile"
@@ -213,9 +212,10 @@ function openDocs(q?: unknown): void {
 }
 const currentProjectId = computed(() => Number(route.params.id) || null);
 
-/** 检索面板需要读路径与摘录，248px 不够；进检索自动展宽，回文件/项目收窄。 */
+/** 检索面板要读路径与摘录、函数面板是「名字 + 参数 + 两枚动作」的密排行，
+ *  248px 都不够用；进这些面板自动展宽，回文件/项目收回 CSS 缺省宽度。 */
 watch(activePanel, (panel) => {
-  const wide = panel === 'docSearch' || panel === 'blockSearch';
+  const wide = panel === 'docSearch' || panel === 'blockSearch' || panel === 'functions';
   setLeftWidth(wide ? 400 : undefined);
 });
 
@@ -337,11 +337,6 @@ function onWorkspaceChanged(): void {
 async function onManualSave(): Promise<void> {
   if (!(await doSave())) return;
   showToast(ui('saved'));
-}
-
-function goBack(): void {
-  // 项目列表已收进侧栏（与 metacrypt 一致），返回键展开「项目」面板而不是跳页。
-  activePanel.value = 'projects';
 }
 
 // ---- 拖拽分割条 ----

@@ -156,20 +156,8 @@ onUnmounted(() => {
   min-height: 0;
   overflow: auto;
 }
-.section-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: var(--panel-head-h);
-  gap: 6px;
-}
-.section-title {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
+/* 面板头 / 标题 / 图标按钮由 styles/panel-chrome.css 统一提供，
+   这里不再各写一份——之前的副本把字重写成 600 且漏了 .ghost-btn。 */
 .side-search {
   width: 100%;
   height: var(--control-h);
@@ -259,12 +247,6 @@ onUnmounted(() => {
 }
 .row-btn.danger:hover {
   color: var(--color-danger);
-}
-.section-hint {
-  margin: 2px;
-  font-size: 11px;
-  line-height: 1.5;
-  color: var(--color-text-secondary);
 }
 
 /* 窄屏（≤1200px）把项目面板改成下拉浮层；宽屏仍是常驻面板。 */
