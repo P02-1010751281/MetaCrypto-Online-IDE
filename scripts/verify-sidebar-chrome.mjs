@@ -110,6 +110,11 @@ const PROBE = `JSON.stringify((()=>{
     headButtons: buttons.length,
     headClass: head?.className ?? null,
     headPadL: head ? getComputedStyle(head).paddingLeft : null,
+    /* 标题必须贴左：左边缘 = 头部左边缘 + 头部内边距。曾漏掉这条判据，
+       结果「只有标题一个子元素」的函数面板头部被 margin-left:auto 推到最右。 */
+    headLeft: head ? Math.round(head.getBoundingClientRect().left) : null,
+    titleLeft: title ? Math.round(title.getBoundingClientRect().left) : null,
+    titleMarginLeft: title ? getComputedStyle(title).marginLeft : null,
     headBorder: head ? getComputedStyle(head).borderBottomWidth : null,
     titleCss: css(title),
     titleText: title?.innerText?.trim() ?? null,
@@ -176,6 +181,13 @@ check('五个面板标题计算样式完全一致（含查文档 / 查块）', a
 const headsUnified = panels.every(([, p]) => (p.headClass || '').split(' ').includes('section-head'));
 check('五个面板头部都取 .section-head（无 dsp-header / bsp-header 副本）', headsUnified,
   panels.map(([name, p]) => [name, p.headClass]));
+
+// 2d. 标题必须贴左。「只有标题一个子元素」的头部（函数面板停靠态）曾被
+//     `.section-head > :last-child { margin-left: auto }` 整条推到栏右边缘——
+//     只验样式的断言看不出来，必须量位置。
+const leftAligned = panels.every(([, p]) => p.titleLeft - p.headLeft === Math.round(parseFloat(p.headPadL)));
+check('五个面板标题都贴左（左边缘 = 头部左边缘 + 头部内边距）', leftAligned,
+  panels.map(([name, p]) => [name, { headLeft: p.headLeft, titleLeft: p.titleLeft, padL: p.headPadL }]));
 
 // 3. 文件面板不再有返回按钮：头部只有一个按钮（＋），且首元素是标题
 check('files: 头部无返回按钮（首元素是标题）', files.headFirst === 'section-title', files);

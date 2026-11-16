@@ -20,7 +20,12 @@
   flex-shrink: 0;
 }
 
-.section-head > :last-child {
+/* 右侧动作用 margin-left:auto 顶到最右，否则三子元素会被 space-between 拉成
+   「标题居中」的怪样子。
+   必须排除「只有标题一个子元素」的头部（函数面板停靠态就是这种）：那时标题既是
+   首元素也是尾元素，条件写成 `:last-child` 会把标题自己推到最右——实测表现为
+   FUNCTION MANAGER 贴在栏右边缘，而下面 BASE / SYMMETRIC 各级标题在左侧。 */
+.section-head > :last-child:not(:first-child) {
   margin-left: auto;
 }
 
