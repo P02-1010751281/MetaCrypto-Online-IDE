@@ -100,7 +100,10 @@ function normalizeLabelQuery(text: string): string {
 export function blockToDocQuery(block: BlockLinkSource): string {
   const zh = block.labels.zh.filter(Boolean).join(' ').trim();
   const en = block.labels.en.filter(Boolean).join(' ').trim();
-  const fromLabels = normalizeLabelQuery(zh || en);
+  // 希腊符号是公式记号，不是词：`GaussPMF σ=` 只拿 σ 去查会命中任意含 σ 的公式段
+  // （实测落到 Patterson 的 σ′ 推导页）。检索侧支持希腊字母是为了「θ 步」这类提问，
+  // 联动派生不需要它。
+  const fromLabels = normalizeLabelQuery((zh || en).replace(/[\u0370-\u03ff]/g, ' '));
   if (fromLabels) return fromLabels;
   return normalizeLabelQuery(block.blockType.replace(/_/g, ' '));
 }

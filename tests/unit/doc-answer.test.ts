@@ -9,9 +9,9 @@
  *   2. 不换话题：问题点名的拉丁实体必须出现在出处的文档标识里（问 ML-KEM 不能答到能力总览）；
  *   3. 答不出就明说：覆盖度不够、缺点名实体、或整篇凑不出对应句式时返回 null + missing。
  *
- * 基线数字是 2026-11-16 在真实索引与文档树上实测的（RESULTS §25）：
- *   - 调参集 30 题：15 条敢回答，14 条出处落在评测期望的文档上；5 条负例全部拒答；
- *   - 留出集 12 题（未参与调参）：top1 6/12，作答 6 条、答对 4 条（出处正确率 67%）。
+ * 基线数字是 2026-11-16 在真实索引与文档树上实测的（RESULTS §25 / §27）：
+ *   - 调参集 30 题：16 条敢回答，15 条出处落在评测期望的文档上；7 条负例全部拒答；
+ *   - 留出集 12 题（未参与调参）：top1 8/12，作答 6 条、答对 5 条（出处正确率 83%）。
  * 留出集的数字明显低于调参集，这是真实泛化差距，不许为了让调参集变绿去调它的阈值。
  * 语料或索引更新后数字会变，改这里必须同步改 RESULTS。
  */
@@ -144,6 +144,10 @@ describe('答案层（真实索引与文档树）', () => {
       // 曾分别答到研究综述页与教程页（RESULTS §25 阴性对照）。
       '如何用 TensorFlow 训练卷积神经网络',
       'CipherCat 的 Kubernetes 部署清单在哪',
+      // 本轮新增：`Go` 只有 2 个字符，旧的锚点正则（≥3）漏掉它，于是靠「服务/执行」凑到
+      // 0.65 覆盖度答到 GM/T 0005 的后端测评页（RESULTS §27.5）。
+      '如何用 Go 写 gRPC 服务',
+      '明天会下雨吗',
     ];
     for (const question of negatives) {
       const hits = searchDocs(index, question, { limit: 6 });
@@ -184,9 +188,9 @@ describe('答案层（真实索引与文档树）', () => {
       answered += 1;
       if (testCase.expect.some((prefix) => result.best!.evidence.path.startsWith(prefix))) correct += 1;
     }
-    // 2026-11-16 别名表后：HMAC 一条由「答在 SM3 的 HMAC 节」改为答在 fips198，
-    // top1 6→7、正确 4→5；作答条数不变（其余仍是覆盖度/句式闸门拒答）。
-    expect({ top1, answered, correct }).toEqual({ top1: 7, answered: 6, correct: 5 });
+    // 2026-11-16 §27：希腊字母 + 标题命中后 top1 7→8（ECDH 落到 rfc5903），
+    // 作答条数与正确条数不变（其余仍被覆盖度/句式闸门拒答）。
+    expect({ top1, answered, correct }).toEqual({ top1: 8, answered: 6, correct: 5 });
   });
 
   it('覆盖度阈值挡住「只有实体、没有问题」的答案', async () => {

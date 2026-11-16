@@ -337,7 +337,9 @@ export async function answerHits(
    * 代价是 `Ed25519`/`SHA-256` 这类「文档标识换了写法」的问题会拒答——宁可少答，
    * 不可答错（拒答给「找不到依据」，答错是错误答案）。
    */
-  const anchorPhrases = (question.match(/[A-Za-z][A-Za-z0-9-]{2,}/g) ?? [])
+  // 最短 2 个字符：`Go` / `C#` 这类短实体也是实体；此前 `Go` 被漏掉，导致「如何用 Go 写 gRPC 服务」
+  // 在没有任何出处提到 Go 的情况下靠「服务/执行」凑够覆盖度答了出来（RESULTS §27.5 阴性对照）。
+  const anchorPhrases = (question.match(/[A-Za-z][A-Za-z0-9-]{1,}/g) ?? [])
     .map((phrase) => phrase.toLowerCase())
     .filter((phrase) => !ANCHOR_STOPWORDS.has(phrase) && (!stats || stats.df(phrase) > 0));
   // 归一化后比较：出处标识里写的是 `fips202-sha3`、`rfc8032-eddsa`，问题里写的是 `SHA-3`、

@@ -212,13 +212,14 @@ describe('doc search', () => {
     const count = (cases: Array<{ q: string; expect: string[] }>): number =>
       cases.filter((item) => item.expect.length > 0 && rank(item.q, item.expect) === 1).length;
     expect(count(load('docsearch-eval.json'))).toBe(29);
-    // 四套非调参集必须一起钉：混合留出集 10/20；标准页留出集 6/12 → 7/12（别名表只修好
-    // HMAC 一条，其余是语料缺页或同族互压）；holdout3 首轮 6/12（其后修掉 dsa 误命中
-    // 与文件级加成 bug）；holdout4 是**代码冻结后**才写的验收集，首跑 8/12，未再调参。
-    expect(count(load('docsearch-holdout.json'))).toBe(10);
-    expect(count(load('docsearch-holdout2.json'))).toBe(7);
-    expect(count(load('docsearch-holdout3.json'))).toBe(6);
+    // 五套非调参集必须一起钉（2026-11-16 §27：希腊字母 + 标题命中后）：
+    // 混合留出 10→12；标准页留出 7→8；holdout3 6→7；holdout4 8（未动）；
+    // holdout5 是希腊字母与标题信号落地**之后**才写的验收集，首跑 7/12，此后未再调参。
+    expect(count(load('docsearch-holdout.json'))).toBe(12);
+    expect(count(load('docsearch-holdout2.json'))).toBe(8);
+    expect(count(load('docsearch-holdout3.json'))).toBe(7);
     expect(count(load('docsearch-holdout4.json'))).toBe(8);
+    expect(count(load('docsearch-holdout5.json'))).toBe(7);
   });
 
   it('同一查询结果确定（可用作回归判据）', () => {

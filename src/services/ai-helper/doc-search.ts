@@ -78,6 +78,9 @@ const TOPIC_BOOST = 1.5;
  * 同名章节则完全不加成：SM3 标准里的一节「HMAC」不是 HMAC 的家（RESULTS §26）。
  */
 const TOPIC_FILE_BOOST = 1.25;
+/** 文档标题里写着查询词的加成。 */
+const TITLE_BOOST = 1.2;
+/** 文档标题命中的加成：标题里写着查询词，说明这一页就是讲这件事，而不是顺带提到。 */
 /**
  * 主题归属只认「只写进少数文档路径」的拉丁标识符：`sm3` 在正文里出现上千次，
  * 但它只落在十来个文档的路径上——路径命中才是「这篇讲的就是它」，正文词频不是。
@@ -413,13 +416,29 @@ export function searchDocs(index: DocIndex, query: string, options: DocSearchOpt
     }
   }
 
+  // 文档标题命中：查询词（索引里真实存在）出现在该文档的 H1 里，说明这一页就是讲这件事。
+  // 固定一次加成而不是逐词累加——标题通常只有一句，累加会偏爱长标题页；也不再叠加
+  // 「最稀有词」二次加成：实测它把 WOTS+ 从第 12 拉到第 2，但同时把留出集的
+  // SHA-3 θ / 项目架构等题顶掉（RESULTS §27.3），净收益为 0。
+  const titleTermCache = new Map<number, Set<string>>();
+  const titleFactorOf = (doc: number): number => {
+    if (doc < 0) return 1;
+    let set = titleTermCache.get(doc);
+    if (!set) {
+      set = new Set(queryTerms(index.docs[doc][1]));
+      titleTermCache.set(doc, set);
+    }
+    return terms.some((term) => dfOf(term) > 0 && set.has(term)) ? TITLE_BOOST : 1;
+  };
+
   const best = new Map<string, DocHit & { docScore: number }>();
   for (const hit of hits) {
     const docIndex = docIndexOf.get(hit.path) ?? -1;
     const coverage = (covered.get(docIndex) ?? 0) / Math.max(idfSum, 1e-9);
     const demoWeight = hit.path.startsWith('docs/demos/') && DEFINITION_ASK.test(text) && !DEMO_ASK.test(text) ? DEMO_WEIGHT : 1;
     const topic = homeDocs.get(docIndex) ?? 1;
-    const docScore = (hit.score + COVERAGE_WEIGHT * idfSum * coverage) * topic * demoWeight;
+    const titleFactor = titleFactorOf(docIndex);
+    const docScore = (hit.score + COVERAGE_WEIGHT * idfSum * coverage) * topic * demoWeight * titleFactor;
     const existing = best.get(hit.path);
     if (!existing || docScore > existing.docScore) best.set(hit.path, { ...hit, docScore, score: Number(docScore.toFixed(4)) });
   }

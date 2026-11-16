@@ -122,9 +122,16 @@ function buildCorpus(): Corpus {
       const heading = section.heading || title;
       const body = plain(section.body);
       const excerpt = body.slice(0, EXCERPT_LIMIT);
-      const freq = termFreq(`${heading}\n${body}`);
+      // 标题里的希腊字母不参与建段：`Algorithm 12 BaseCaseMultiply(…, γ)` 这类只有标题、
+      // 没有正文的段不应因为多了一个希腊符号就跨过「≥4 个词」的门槛；正文里的 θ/ρ 照常索引。
+      const freq = termFreq(`${heading.replace(/[\u0370-\u03ff]/g, ' ')}\n${body}`);
       let length = 0;
-      for (const count of freq.values()) length += count;
+      for (const [term, count] of freq) {
+        // 希腊符号不参与长度归一：θ/ρ 这类单字母是「公式里的指代」，不增加文章篇幅；
+        // 计入长度会让含公式的段整体降权，把 ML-DSA 这类近并列的排序翻掉（RESULTS §27）。
+        if (/^[\u0370-\u03ff]$/.test(term)) continue;
+        length += count;
+      }
       if (length < 4) continue;
       corpus.sections.push({
         doc: docIndex,

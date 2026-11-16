@@ -1,0 +1,16 @@
+[
+  { "q": "SHA-3 的 π 步怎么算", "expect": ["docs/standards/fips202-SHA3/03-Pi.md"] },
+  { "q": "SHA-3 的 ι 步是什么", "expect": ["docs/standards/fips202-SHA3/06-Iota.md"] },
+  { "q": "ML-KEM 的 SampleNTT 怎么采样", "expect": ["docs/standards/fips203-ML-KEM/07-SampleNTT.md"] },
+  { "q": "AES 的 ShiftRows 怎么做", "expect": ["docs/standards/fips197-AES/02-ShiftRows.md"] },
+  { "q": "CCM 的 CTR 部分怎么生成密钥流", "expect": ["docs/standards/sp800-38c-ccm/04-CTR.md"] },
+  { "q": "SHA-2 的摘要输出怎么截断", "expect": ["docs/standards/fips180-4-SHA2/05-Digest.md"] },
+  { "q": "GM/T 0091 的口令派生流程", "expect": ["docs/standards/gmt0091-kdf/01-kdf.md"] },
+  { "q": "GB/T 32915 的适用范围是什么", "expect": ["docs/standards/gbt32915-randomness/README.md"] },
+  { "q": "AES 的密钥扩展里 RotWord 怎么用", "expect": ["docs/standards/fips197-AES/04-KeyExpansion.md"] },
+  { "q": "GCM 的 GCTR 怎么迭代", "expect": ["docs/standards/sp800-38d-gcm/07-GCTR.md"] },
+  { "q": "ML-DSA 的 UseHint 怎么用", "expect": ["docs/standards/fips204-ML-DSA/40-UseHint.md"] },
+  { "q": "CCM 的 AAD 长度怎么编码", "expect": ["docs/standards/sp800-38c-ccm/02-Formatting.md"] },
+  { "q": "如何用 Go 写 gRPC 服务", "expect": [] },
+  { "q": "明天会下雨吗", "expect": [] }
+]

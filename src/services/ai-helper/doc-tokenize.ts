@@ -12,6 +12,10 @@
 
 /** CJK 统一表意文字 + 日文假名 + 谚文：按字切词即可。 */
 const CJK = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af]/;
+/** 希腊字母：密码标准用 θ / ρ / σ / λ 指代轮函数、扩展函数等，单个字母就是检索词。 */
+const GREEK = /[\u0370-\u03ff]/;
+/** 问句语气字：`怎么算` 切出的 `怎`/`么` 与 `ml-kem 的` 造出的 `m的` 都是提问噪音。 */
+const QUESTION_CHARS = new Set(['的', '怎', '么', '什', '哪', '谁', '啥', '呢', '吧', '吗', '啊', '呀', '嘛']);
 
 /** 去掉 Markdown 标记但保留文字内容（链接留文字、代码留内容）。 */
 export function stripMarkdown(input: string): string {
@@ -88,6 +92,12 @@ export function rawTerms(input: string): RawTerm[] {
       }
     }
   }
+
+  // 希腊字母不落在拉丁或 CJK 区段，`θ` / `ρ` 这类单字母此前被整句丢弃，
+  // 含它们的页面只能靠标题里的 SHA-3 转回来。按单字母出词即可（σ / λ 同理）。
+  for (const char of chars) {
+    if (GREEK.test(char)) out.push({ term: char, bridging: false });
+  }
   return out;
 }
 
@@ -122,6 +132,11 @@ const STOPWORDS = new Set([
   'might', 'must', 'this', 'that', 'these', 'those', 'it', 'its', 'as', 'from', 'about', 'defined',
 ]);
 
+/** 查询侧剔掉「字母 + 语气字」的合成词（`m的` / `t怎`）；索引里仍保留，长度口径不变。 */
+function queryNoise(term: string): boolean {
+  return term.length === 2 && /[a-z0-9]/.test(term[0]) && QUESTION_CHARS.has(term[1]);
+}
+
 /** 查询侧去重（保留首次出现顺序），同一个词只贡献一次 idf。 */
 export function queryTerms(query: string): string[] {
   const seen = new Set<string>();
@@ -129,6 +144,7 @@ export function queryTerms(query: string): string[] {
   for (const entry of rawTerms(query)) {
     const term = entry.term;
     if (STOPWORDS.has(term)) continue;
+    if (queryNoise(term)) continue;
     if (seen.has(term)) continue;
     // 二元组里只要有停用字（的签 / 商怎 / 么共），就不算检索意图。
     // 交叉二元组（密钥协商 的 钥协）由检索层按语料 df 判掉，这里不动。
@@ -148,6 +164,7 @@ export function queryPlan(query: string): RawTerm[] {
   const out: RawTerm[] = [];
   for (const entry of rawTerms(query)) {
     if (STOPWORDS.has(entry.term)) continue;
+    if (queryNoise(entry.term)) continue;
     if (seen.has(entry.term)) continue;
     if (entry.term.length === 2 && CJK.test(entry.term[0]) && CJK.test(entry.term[1])) {
       if (STOPWORDS.has(entry.term[0]) || STOPWORDS.has(entry.term[1])) continue;
