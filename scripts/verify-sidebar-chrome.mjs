@@ -257,7 +257,160 @@ const afterClose = await evaluate(`(()=>{
 check('查块面板的关闭按钮仍然生效（换类名没断线）',
   clicked === 'clicked' && !String(afterClose).includes('bsp'), { clicked, afterClose });
 
-// 10. 窄屏（≤1200px）检索面板切成浮层：同一套头部规则在浮层里也必须成立，
+// 10. 行内动作（改名 / 删除 / 设为入口）：两个面板必须共用一套，且隐藏时不可点。
+// 造数据：新 profile 里没有项目与文件，行内动作至少各要一行才量得到。
+const ROWPROBE = `JSON.stringify((()=>{
+  const host = document.querySelector('.side-panel');
+  const row = host ? host.querySelector('.project-row, .file-row') : null;
+  if (!row) return { row: false };
+  const acts = row.querySelector('.row-actions');
+  const btn = acts ? acts.querySelector('.row-btn') : null;
+  const name = row.querySelector('.project-row-name, .file-name');
+  const as = acts ? getComputedStyle(acts) : null;
+  const bs = btn ? getComputedStyle(btn) : null;
+  const ab = acts ? acts.getBoundingClientRect() : null;
+  const nb = name ? name.getBoundingClientRect() : null;
+  const rb = row.getBoundingClientRect();
+  return {
+    row: true,
+    btnCount: row.querySelectorAll('.row-btn').length,
+    acts: as ? { position: as.position, opacity: as.opacity, pe: as.pointerEvents, bg: as.backgroundColor } : null,
+    btn: bs ? { color: bs.color, size: bs.fontSize } : null,
+    btnBox: btn ? { w: Math.round(btn.getBoundingClientRect().width), h: Math.round(btn.getBoundingClientRect().height) } : null,
+    coversName: !!(ab && nb) && nb.right > ab.left,
+    center: { x: Math.round(rb.x + rb.width / 2), y: Math.round(rb.y + rb.height / 2) },
+  };
+})())`;
+
+const point = (x, y) => send('input.performActions', {
+  context,
+  actions: [{
+    type: 'pointer',
+    id: 'mouse',
+    parameters: { pointerType: 'mouse' },
+    actions: [{ type: 'pointerMove', x, y, origin: 'viewport' }],
+  }],
+});
+
+/* 面板切换必须幂等：activity 按钮是「点一次开、再点一次关」，
+   已经打开的目标面板再点一次反而会关掉它（本脚本曾因此量不到项目行）。 */
+const openPanel = async (panelIndex, marker) => {
+  await evaluate(`(()=>{
+    const s = document.querySelector('.side-panel');
+    if (s && s.querySelector(${JSON.stringify(marker)})) return true;
+    const b = document.querySelectorAll('.activity-bar .activity-btn')[${panelIndex}];
+    if (b) b.click();
+    return true;
+  })()`);
+  await sleep(700);
+};
+
+/* 点当前面板头部的 ＋（项目面板是新建项目，文件面板是新建文件）。 */
+const clickHeadPlus = async () => evaluate(`(()=>{
+  const b = document.querySelector('.side-panel .section-head .ghost-btn');
+  if (b) b.click();
+  return !!b;
+})()`);
+
+const measureRow = async (panelIndex, marker, shotName) => {
+  await openPanel(panelIndex, marker);
+  const before = JSON.parse(await evaluate(ROWPROBE));
+  if (!before.row) return { before, hovered: before };
+  await point(before.center.x, before.center.y);
+  await sleep(400);
+  const hovered = JSON.parse(await evaluate(ROWPROBE));
+  if (shotName) await shoot(shotName);
+  await point(5, 780);
+  await sleep(250);
+  return { before, hovered };
+};
+
+// 先造一个项目（项目面板的 ＋ ）。这一步也会顺带把「＋ 真的能建项目」验掉。
+// 打开面板要幂等：activity 按钮是「点一次开、再点一次关」，直接点会在已打开时关掉。
+await evaluate(`(()=>{
+  const s = document.querySelector('.side-panel');
+  if (!s || !s.querySelector('.project-panel')) {
+    const b = document.querySelectorAll('.activity-bar .activity-btn')[0];
+    if (b) b.click();
+  }
+  return true;
+})()`);
+await sleep(800);
+await clickHeadPlus();
+await sleep(1600);
+const rowsProjects = await measureRow(0, '.project-panel', 'row-actions-projects');
+
+// 再在文件面板造两个文件（进了项目才有文件面板可用）
+await measureRow(1, '.file-list');
+for (let i = 0; i < 2; i += 1) {
+  await clickHeadPlus();
+  await sleep(1200);
+}
+const rowsFiles = await measureRow(1, '.file-list', 'row-actions-files');
+
+for (const [name, m] of [['projects', rowsProjects], ['files', rowsFiles]]) {
+  check(`${name}: 行内动作层是绝对定位（不占行内宽度）`, m.before.acts?.position === 'absolute', m.before);
+  check(`${name}: 行内动作隐藏时 opacity 0 且 pointer-events none（看不见也点不到）`,
+    m.before.acts?.opacity === '0' && m.before.acts?.pe === 'none', m.before);
+  check(`${name}: 悬浮后浮出且可点`, m.hovered.acts?.opacity === '1' && m.hovered.acts?.pe === 'auto', m.hovered);
+  check(`${name}: 动作层盖在行文字上（不再挤压名称列）`, m.before.coversName === true, m.before);
+}
+
+const sameBtn = JSON.stringify(rowsProjects.before.btn) === JSON.stringify(rowsFiles.before.btn)
+  && JSON.stringify(rowsProjects.before.btnBox) === JSON.stringify(rowsFiles.before.btnBox);
+check('两个面板的行内按钮外观一致（次级色 / 20×20 / 11px）', sameBtn, {
+  projects: rowsProjects.before.btn, files: rowsFiles.before.btn,
+  projectsBox: rowsProjects.before.btnBox, filesBox: rowsFiles.before.btnBox,
+});
+
+// 设为入口 / 改名 / 删除 三件在文件面板齐备，项目面板目前只有删除
+check('files: 行内动作是 ◎ / ✎ / ✕ 三件', rowsFiles.before.btnCount === 3, rowsFiles.before.btnCount);
+check('projects: 行内动作目前只有 ✕（改名走顶栏面包屑）', rowsProjects.before.btnCount === 1, rowsProjects.before.btnCount);
+
+// 键盘可达：不悬浮，直接把焦点给 ✎，动作层必须因 :focus-within 浮出
+const kb = JSON.parse(await evaluate(`JSON.stringify((()=>{
+  const row = document.querySelector('.file-row');
+  const btns = row ? [...row.querySelectorAll('.row-btn')] : [];
+  const rename = btns[1] || null;
+  if (!rename) return { ok: false };
+  rename.focus();
+  const acts = row.querySelector('.row-actions');
+  const s = acts ? getComputedStyle(acts) : null;
+  return {
+    ok: document.activeElement === rename,
+    opacity: s ? s.opacity : null,
+    pe: s ? s.pointerEvents : null,
+  };
+})())`));
+check('文件面板：键盘聚焦到 ✎ 时动作层浮出（不是只在悬浮时可用）',
+  kb.ok === true && kb.opacity === '1' && kb.pe === 'auto', kb);
+
+// 改名流程：✎ → 内联输入框 → Esc 取消（不真的改名，避免影响后续断言）
+const renameUi = JSON.parse(await evaluate(`JSON.stringify((()=>{
+  const row = document.querySelector('.file-row');
+  const btns = row ? [...row.querySelectorAll('.row-btn')] : [];
+  const rename = btns[1] || null;
+  if (!rename) return { opened: false };
+  rename.click();
+  return { opened: true };
+})())`));
+await sleep(400);
+const renameInput = JSON.parse(await evaluate(`JSON.stringify((()=>{
+  const input = document.querySelector('.rename-input');
+  if (!input) return { input: false };
+  const focused = document.activeElement === input;
+  const w = Math.round(input.getBoundingClientRect().width);
+  input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+  return { input: true, focused, w };
+})())`));
+check('文件面板：✎ 打开内联改名输入框且自动聚焦', renameUi.opened && renameInput.input && renameInput.focused, {
+  renameUi, renameInput,
+});
+await sleep(500);
+const renameClosed = await evaluate('!document.querySelector(".rename-input")');
+check('文件面板：Esc 取消改名后输入框消失', renameClosed === true, renameClosed);
+
+// 11. 窄屏（≤1200px）检索面板切成浮层：同一套头部规则在浮层里也必须成立，
 //     否则「统一」只证明了停靠态这一半。
 await send('browsingContext.setViewport', { context, viewport: { width: 1024, height: 700 } });
 await sleep(1000);

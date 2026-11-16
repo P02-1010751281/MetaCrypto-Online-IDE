@@ -123,18 +123,13 @@
   padding: 0 8px;
   border-radius: var(--radius-control);
   cursor: pointer;
-  /* 行底色用变量承载：悬浮操作按钮要盖在行上，必须和行同色才不会透出下面的文字。 */
-  --row-bg: transparent;
-}
-
-.file-row:hover {
-  --row-bg: var(--color-bg-hover);
-  background: var(--row-bg);
+  /* 行底色用变量承载：悬浮操作按钮要盖在行上，必须和行同色才不会透出下面的文字。
+     变量本身与 :hover 状态由全局 .panel-row 提供，这里只声明「行底色 = 变量」。 */
+  background: var(--row-bg, transparent);
 }
 
 .file-row.active {
   --row-bg: color-mix(in srgb, var(--color-primary) 12%, var(--color-bg-card));
-  background: var(--row-bg);
 }
 
 .file-row.active:hover {
@@ -168,57 +163,8 @@
   border: 1px solid color-mix(in srgb, var(--color-primary) 45%, transparent);
 }
 
-.file-actions {
-  /* 绝对定位：用 opacity 隐藏但保留布局会让文件名被永久挤窄（实测只剩 85px）。
-     悬浮展示时铺一层与行同色的底，盖住底下的文件名而不是叠字。
-     opacity 而非 display:none：display:none 的按钮不可 Tab 聚焦，键盘用户够不到。 */
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  gap: 2px;
-  padding-left: 8px;
-  background: var(--row-bg);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.file-row:hover .file-actions,
-.file-row:focus-within .file-actions {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.row-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  border-radius: var(--radius-sm);
-  font-size: 11px;
-  line-height: 1;
-}
-
-.row-btn:hover {
-  background: var(--color-bg);
-  color: var(--color-text);
-}
-
-.row-btn.danger:hover {
-  color: var(--color-danger);
-}
-
-.row-btn.confirming {
-  color: var(--color-danger);
-  font-weight: 700;
-}
+/* 行内动作（.row-actions / .row-btn）在全局 panel-chrome.css：与面板头同一个理由，
+   面板行是 slot 子组件模板，样式只能放在全局层，否则每个面板各抄一份并很快漂移。 */
 
 .rename-input {
   flex: 1;

@@ -54,6 +54,78 @@
   color: var(--color-text-secondary);
 }
 
+/* ── 行内动作：改名 / 删除 / 设为入口 ──
+ *
+ * 与面板头同一个理由：面板行是 slot 子组件模板的一部分，样式只能放全局层，
+ * 否则每个面板各抄一份——实测文件面板与项目面板已经漂成两套：
+ *   文件：次级色 rgba(0,0,0,.6) + 容器绝对定位 + opacity 隐藏 + pointer-events:none
+ *   项目：正文色 rgba(0,0,0,.87) + 按钮自身 opacity + **隐藏时仍可点**（看不见的删除能被点中）
+ *
+ * .panel-row 是行容器标记，管两件事：给绝对定位的动作层提供参照；提供 --row-bg
+ * （动作层盖在行上，必须与行同色，否则下面的文件名会透出来）。
+ */
+.panel-row {
+  position: relative;
+  --row-bg: transparent;
+}
+
+.panel-row:hover {
+  --row-bg: var(--color-bg-hover);
+}
+
+.row-actions {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 2px;
+  padding-left: 8px;
+  background: var(--row-bg, transparent);
+  /* opacity 而不是 display:none：display:none 的按钮不可 Tab 聚焦，键盘用户够不到。
+     但只关透明度不够——pointer-events 必须一起关，否则看不见的按钮仍能被鼠标点中。 */
+  opacity: 0;
+  pointer-events: none;
+}
+
+.panel-row:hover > .row-actions,
+.panel-row:focus-within > .row-actions,
+.row-actions:focus-within {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.row-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex: none;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  line-height: 1;
+}
+
+.row-btn:hover {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.row-btn.danger:hover {
+  color: var(--color-danger);
+}
+
+.row-btn.confirming {
+  color: var(--color-danger);
+  font-weight: 700;
+}
+
 .section-hint {
   margin: 6px 2px 0;
   font-size: 11px;
@@ -61,8 +133,9 @@
   color: var(--color-text-secondary);
 }
 
-.ghost-btn,
-.icon-btn {
+/* 头部图标按钮。原本还并列了一个 .icon-btn 别名，全仓已无使用者，随这次统一删掉：
+   留一个没人用的别名，只会变成下一份抄本的起点。 */
+.ghost-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -78,8 +151,7 @@
   line-height: 1;
 }
 
-.ghost-btn:hover,
-.icon-btn:hover {
+.ghost-btn:hover {
   background: var(--color-bg-hover);
   color: var(--color-text);
 }

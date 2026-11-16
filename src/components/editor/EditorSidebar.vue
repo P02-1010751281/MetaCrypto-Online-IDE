@@ -81,7 +81,7 @@
             <li
               v-for="file in files"
               :key="file.fileId"
-              class="file-row"
+              class="panel-row file-row"
               :class="{ active: file.fileId === activeFileId }"
               @click="$emit('select-file', file.fileId)"
             >
@@ -101,7 +101,7 @@
                   <span class="file-name" :title="file.name">{{ file.name }}</span>
                   <span v-if="file.fileId === entryFileId" class="entry-badge">{{ ui('entryFile') }}</span>
                 </span>
-                <div class="file-actions" @click.stop>
+                <div class="row-actions" @click.stop>
                   <button
                     v-if="file.fileId !== entryFileId"
                     class="row-btn"

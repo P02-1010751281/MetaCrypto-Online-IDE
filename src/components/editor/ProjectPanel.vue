@@ -27,7 +27,7 @@
       <li
         v-for="project in filtered"
         :key="project.id"
-        class="project-row"
+        class="panel-row project-row"
         :class="{ active: project.id === currentId }"
         @click="openProject(project.id!)"
       >
@@ -37,11 +37,13 @@
           </span>
           <span class="project-row-meta">{{ formatDate(project.updatedAt) }}</span>
         </span>
-        <button
-          class="row-btn danger"
-          :title="ui('deleteProject')"
-          @click.stop="confirmDelete(project.id!, project.name)"
-        >✕</button>
+        <div class="row-actions" @click.stop>
+          <button
+            class="row-btn danger"
+            :title="ui('deleteProject')"
+            @click.stop="confirmDelete(project.id!, project.name)"
+          >✕</button>
+        </div>
       </li>
     </ul>
   </section>
@@ -191,12 +193,12 @@ onUnmounted(() => {
   padding: 3px 8px;
   border-radius: var(--radius-control);
   cursor: pointer;
-}
-.project-row:hover {
-  background: var(--color-bg-hover);
+  /* 行底色由 --row-bg 承载（全局 .panel-row 提供变量与 :hover 状态）：
+     行内动作层是绝对定位盖在行上的，必须与行同色，否则下面的项目名会透出来。 */
+  background: var(--row-bg, transparent);
 }
 .project-row.active {
-  background: var(--color-bg-active);
+  --row-bg: var(--color-bg-active);
 }
 .project-row-main {
   display: flex;
@@ -220,34 +222,8 @@ onUnmounted(() => {
   line-height: 14px;
   color: var(--color-text-tertiary);
 }
-.row-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  flex: none;
-  padding: 0;
-  border: none;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: inherit;
-  font-size: 11px;
-  line-height: 1;
-  cursor: pointer;
-  opacity: 0;
-}
-.project-row:hover .row-btn,
-.row-btn:focus-visible {
-  opacity: 0.7;
-}
-.row-btn:hover {
-  opacity: 1;
-  background: var(--color-bg);
-}
-.row-btn.danger:hover {
-  color: var(--color-danger);
-}
+/* 行内动作（.row-actions / .row-btn）在全局 panel-chrome.css：原来这里有一份副本，
+   它与文件面板那份已经漂开（正文色 vs 次级色、隐藏时仍可点 vs 不可点）。 */
 
 /* 窄屏（≤1200px）把项目面板改成下拉浮层；宽屏仍是常驻面板。 */
 @media (max-width: 1200px) {
