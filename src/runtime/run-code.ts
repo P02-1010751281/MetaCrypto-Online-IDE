@@ -7,7 +7,7 @@
  * 两者都用 terminate() 兜住死循环。
  */
 
-import type { RunProgress, RunResult, RuntimeAssets } from '@/runtime/contracts/run-chain';
+import type { RunProgress, RunResult, RuntimeAssets } from '@cc/runtime/contracts/run-chain';
 
 const PYTHON_LOAD_TIMEOUT_MS = 45_000;
 const PYTHON_RUN_TIMEOUT_MS = 10_000;
@@ -16,13 +16,13 @@ const PYTHON_OUTPUT_LIMIT_MESSAGES = 1000;
 const JS_OUTPUT_LIMIT_CHARS = 64 * 1024;
 const JS_OUTPUT_LIMIT_MESSAGES = 1000;
 
-// 契约的权威定义在 @/runtime/contracts/run-chain（与 metacrypt 逐字节一致）。
+// 契约的权威定义在 @cc/runtime/contracts/run-chain（包内别名，两仓同源）。
 // 这里 re-export，既有调用方的 import 路径与类型名保持不变。
 export type {
   RunErrorCode,
   RunProgress,
   RunResult,
-} from '@/runtime/contracts/run-chain';
+} from '@cc/runtime/contracts/run-chain';
 
 let pythonWorker: Worker | null = null;
 let pythonBusy = false;

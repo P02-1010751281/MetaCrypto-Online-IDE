@@ -64,10 +64,10 @@ export function useEditorWorkspaceActions(options: Options) {
     try {
       const savedTo = await editor.value.downloadWorkspace(filename);
       if (!savedTo) return;
-      notify(`${ui('exported') || 'Exported'}: ${savedTo}`, 4000);
+      notify(`${ui('exported')}: ${savedTo}`, 4000);
     } catch (error) {
       const detail = error instanceof Error ? error.message : String(error);
-      notify(`${ui('exportError') || 'Export failed'}: ${detail}`, 6000);
+      notify(`${ui('exportError')}: ${detail}`, 6000);
     }
   }
 

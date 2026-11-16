@@ -14,7 +14,9 @@
               :title="msg.CRYPTO_CLOSE || '关闭'"
               :aria-label="msg.CRYPTO_CLOSE || '关闭'"
               @click="$emit('close')"
-            >✕</button>
+            >
+              ✕
+            </button>
           </div>
         </div>
         <div class="cfp-actions">
@@ -60,9 +62,9 @@
 <script setup lang="ts">
 import { ref, watch, onUnmounted } from 'vue';
 import * as Blockly from 'blockly/core';
-import { toolboxTemplates, toggleTemplate } from '@/blocks/procedure/toolbox-state';
-import { TEMPLATE_REGISTRY } from '@/blocks/procedure/blocks';
-import { createToolboxConfig } from '@/utils/toolbox-config';
+import { toolboxTemplates, toggleTemplate } from '@cc/blocks/procedure/toolbox-state';
+import { TEMPLATE_REGISTRY } from '@cc/blocks/procedure/blocks';
+import { createToolboxConfig } from '@cc/utils/toolbox-config';
 
 const msg = Blockly.Msg as Record<string, string>;
 const props = defineProps<{
