@@ -78,6 +78,7 @@
         @import-file="onImportFile"
         @new-workspace="handleNewWorkspace"
         @clear="handleClear"
+        @open-docs="openDocs"
       />
       <BlocklyEditor
         ref="blocklyEditor"
@@ -116,7 +117,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import BlocklyEditor from '@/components/BlocklyEditor.vue';
 import CryptoFunctionPanel from '@/components/CryptoFunctionPanel.vue';
 import DocSearchPanel from '@/components/ai-helper/DocSearchPanel.vue';
@@ -192,6 +193,13 @@ const {
 
 /** 项目 id 来自 /editor/:id；项目面板用它高亮当前项。 */
 const route = useRoute();
+const router = useRouter();
+
+/** 文档中心是独立路由页（不是侧栏面板）：入口在工具栏「文档」。 */
+function openDocs(): void {
+  closeMenus();
+  void router.push('/docs');
+}
 const currentProjectId = computed(() => Number(route.params.id) || null);
 
 /** 检索面板需要读路径与摘录，248px 不够；进检索自动展宽，回文件/项目收窄。 */

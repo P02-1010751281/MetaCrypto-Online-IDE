@@ -63,6 +63,23 @@
 
       <div class="toolbar-divider" />
 
+      <button
+        class="toolbar-btn"
+        :title="ui('docs')"
+        @click="$emit('open-docs')"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M4 5a2 2 0 0 1 2-2h6v18H6a2 2 0 0 1-2-2z" />
+          <path d="M20 5a2 2 0 0 0-2-2h-6v18h6a2 2 0 0 0 2-2z" />
+        </svg>
+        <span>{{ ui("docs") }}</span>
+      </button>
+
       <div class="menu-group">
         <button
           class="toolbar-btn"
@@ -198,6 +215,7 @@ const emit = defineEmits<{
   'import-file': [file: File];
   'new-workspace': [];
   clear: [];
+  'open-docs': [];
 }>();
 
 const importInputRef = ref<HTMLInputElement | null>(null);
