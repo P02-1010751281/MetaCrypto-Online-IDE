@@ -86,3 +86,9 @@ git archive v2.0.0 | tar -x -C /tmp/v200 && cd /tmp/v200 && npm ci && npm run ve
 - **证据类别与「未进 Demo 的块」两项**尚未重算，属论文数字同步的一步。
 
 以上各项已于 2026-11-16 20:46 同步落地并重出四份产物（中 7 页 / 英 8 页，旧值 0 命中，DOCX 内嵌图与 `figures/` 逐字节一致），过程记录见 `paper/softwarex-update-2026-10/DRAFT-NOTES.md` 同日一节。
+
+> **2026-11-16 23:2x 更名后重钉**：仓库更名为 `MetaCrypto-Online-IDE`（展示名 `MetaCrypto Online IDE`）后，
+> `v2.0.0` 重钉到本提交——它等于原 `841bfee` 树 + 5 个身份文件改动（`package.json` 的 repository.url、
+> `PROVENANCE.md` 的本仓库行、`README.en.md` 的产品名块、`index.html` 与 `tauri.conf.json` 的展示标题），
+> **不含**冻结之后 ai-helper 线的任何提交，故本记录第 2 节的 222 / 60 / 89 / 1018 等数字全部不变。
+> 当前指向以 `git rev-parse 'v2.0.0^{commit}'` 为准（本提交的哈希不能在自身内容里写死）。

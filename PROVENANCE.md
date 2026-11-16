@@ -9,7 +9,7 @@
 | 软件名（本版本） | MetaCrypto Online IDE |
 | 发表时题名 | *MetaCrypto online: A model-driven visual development platform for cryptographic engineering* |
 | 发表出处 | *SoftwareX*, vol. 35, 102943, 2026 — <https://doi.org/10.1016/j.softx.2026.102943> |
-| 本仓库 | `P02-1010751281/CipherCat` |
+| 本仓库 | `P02-1010751281/MetaCrypto-Online-IDE` |
 | 本版本 | v2.0.0，对应 tag `v2.0.0` |
 
 ## 2. 世系
