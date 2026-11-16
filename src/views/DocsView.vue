@@ -15,7 +15,7 @@
       </button>
       <h1 class="docs-title">{{ ui('docsTitle') }}</h1>
       <div class="header-spacer" />
-      <LocaleToggleButton class="header-btn lang-btn" @toggle="toggleLocale" />
+      <LocaleToggleButton class="header-btn" @toggle="toggleLocale" />
     </header>
 
     <!-- 预填词没命中任何分类/标题时说明一句：否则用户会对着一个被清空的搜索框猜原因。 -->

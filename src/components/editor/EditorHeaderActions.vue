@@ -1,32 +1,16 @@
 <template>
-  <!-- 工具栏右半边：语言（全局偏好）、代码栏开关、文档（跳路由）、更多（工作区动作）。
-       从 EditorToolbar 里整段搬出，标记与行为保持不变。 -->
-  <div class="toolbar-section">
-    <div class="toolbar-divider" />
+  <!-- 编辑器顶栏右侧的应用级动作组：语言（全局偏好）、文档（跳路由）、更多（工作区动作）、
+       代码栏开关。与文档动作（保存/自动保存）分行，语义各归一层。 -->
+  <div class="header-actions">
+    <LocaleToggleButton class="toolbar-btn" @toggle="$emit('toggle-locale')" />
 
-    <LocaleToggleButton
-      class="toolbar-btn lang-btn"
-      @toggle="$emit('toggle-locale')"
-    />
+    <div class="actions-divider" />
 
     <button
-      class="toolbar-btn"
-      :class="{ active: codePaneVisible }"
-      :aria-pressed="codePaneVisible"
-      :title="codePaneVisible ? ui('collapseCodePane') : ui('expandCodePane')"
-      @click="$emit('toggle-code-pane')"
-    >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="16 18 22 12 16 6" />
-        <polyline points="8 6 2 12 8 18" />
-      </svg>
-    </button>
-
-    <div class="toolbar-divider" />
-
-    <button
+      type="button"
       class="toolbar-btn"
       :title="ui('docs')"
+      :aria-label="ui('docs')"
       @click="$emit('open-docs')"
     >
       <svg
@@ -34,6 +18,7 @@
         fill="none"
         stroke="currentColor"
         stroke-width="2"
+        aria-hidden="true"
       >
         <path d="M4 5a2 2 0 0 1 2-2h6v18H6a2 2 0 0 1-2-2z" />
         <path d="M20 5a2 2 0 0 0-2-2h-6v18h6a2 2 0 0 0 2-2z" />
@@ -53,16 +38,42 @@
       @new-workspace="$emit('new-workspace')"
       @clear="$emit('clear')"
     />
+
+    <div class="actions-divider" />
+
+    <button
+      type="button"
+      class="toolbar-btn"
+      :class="{ 'is-on': codePaneVisible }"
+      :aria-pressed="codePaneVisible"
+      :aria-label="paneLabel"
+      :title="paneLabel"
+      @click="$emit('toggle-code-pane')"
+    >
+      <!-- 面板图标：右侧那一块是面板本体，与「函数」「生成」共用箭头图形的旧写法已拆开。 -->
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        aria-hidden="true"
+      >
+        <rect x="3" y="4" width="18" height="16" rx="2" />
+        <line x1="15" y1="4" x2="15" y2="20" />
+      </svg>
+    </button>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
+
 import { ui } from '@/composables/locale';
 
 import LocaleToggleButton from './LocaleToggleButton.vue';
 import WorkspaceMenu from './WorkspaceMenu.vue';
 
-defineProps<{
+const props = defineProps<{
   codePaneVisible: boolean;
   openMenu: string;
   exportFormat: 'json' | 'xml';
@@ -81,39 +92,45 @@ defineEmits<{
   clear: [];
   'open-docs': [];
 }>();
+
+const paneLabel = computed(() =>
+  props.codePaneVisible ? ui('collapseCodePane') : ui('expandCodePane'),
+);
 </script>
 
 <style scoped src="./editor-toolbar-button.css"></style>
 
 <style scoped>
-.toolbar-section {
+.header-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-width: 0;
+  align-self: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
-.toolbar-divider {
+.actions-divider {
   width: 1px;
   height: 24px;
   background: var(--color-border);
   flex-shrink: 0;
 }
 
-.toolbar-btn.active {
-  background: var(--color-primary-light);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+/* 开关的「开」用浅底表达，不再用主色边框抢走真正的主动作。 */
+.toolbar-btn.is-on {
+  background: var(--color-bg-hover);
+  border-color: var(--color-border-hover);
+  color: var(--color-text);
 }
 
-/* 560px 级窄屏：分组内容也允许换行，否则按钮会溢出工具栏右边界。 */
+/* 560px 以下动作组允许换行，避免溢出顶栏右边界。 */
 @media (max-width: 560px) {
-  .toolbar-section {
+  .header-actions {
     flex-wrap: wrap;
     gap: 6px;
   }
 
-  .toolbar-divider {
+  .actions-divider {
     display: none;
   }
 }

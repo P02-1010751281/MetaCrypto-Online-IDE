@@ -52,34 +52,40 @@
     </div>
 
     <div class="view-left" :style="editorStyle">
-      <EditorBreadcrumb
-        :project-name="projectName"
-        :file-name="activeProjectFile?.name"
-        :is-entry="activeProjectFileId === entryProjectFileId"
-        @update:project-name="projectName = $event"
-      />
+      <!-- 顶栏基线（--editor-bar-h）：左面包屑 + 右应用级动作组，与左侧面板头、右侧代码栏头同高。 -->
+      <div class="editor-head">
+        <EditorBreadcrumb
+          :project-name="projectName"
+          :file-name="activeProjectFile?.name"
+          :is-entry="activeProjectFileId === entryProjectFileId"
+          @update:project-name="projectName = $event"
+        />
+        <EditorHeaderActions
+          :code-pane-visible="codePaneVisible"
+          :open-menu="openMenu"
+          :export-format="exportFormat"
+          :import-format="importFormat"
+          @toggle-locale="toggleBlocklyLocale"
+          @toggle-code-pane="toggleCodePane"
+          @toggle-menu="toggleMenu"
+          @update:export-format="exportFormat = $event"
+          @update:import-format="importFormat = $event"
+          @export="handleExport"
+          @import-file="onImportFile"
+          @new-workspace="handleNewWorkspace"
+          @clear="handleClear"
+          @open-docs="openDocs"
+        />
+      </div>
       <EditorToolbar
         :saving="saving"
         :save-status="saveStatus"
         :last-save-time="lastSaveTime"
         :auto-save-enabled="autoSaveEnabled"
-        :open-menu="openMenu"
-        :export-format="exportFormat"
-        :import-format="importFormat"
         @save="onManualSave"
         @update:auto-save-enabled="autoSaveEnabled = $event"
-        :code-pane-visible="codePaneVisible"
-        @toggle-locale="toggleBlocklyLocale"
-        @toggle-code-pane="toggleCodePane"
-        @toggle-menu="toggleMenu"
-        @update:export-format="exportFormat = $event"
-        @update:import-format="importFormat = $event"
-        @export="handleExport"
-        @import-file="onImportFile"
-        @new-workspace="handleNewWorkspace"
-        @clear="handleClear"
-        @open-docs="openDocs"
       />
+
       <BlocklyEditor
         ref="blocklyEditor"
         :read-only="navigationPending"
@@ -96,8 +102,10 @@
       <div class="split-line" />
     </div>
 
+    <!-- 收起用 v-show 而不是 v-if：CodePanel 里的 useCodeRunner 把运行输出存在组件局部 ref，
+         v-if 卸载会连刚跑出来的输出一起丢掉（收起 ≠ 清空）。 -->
     <CodePanel
-      v-if="codePaneVisible"
+      v-show="codePaneVisible"
       ref="codePanel"
       :workspace="currentWorkspace"
       :language="selectedLanguage"
@@ -126,6 +134,7 @@ import BlockSearchPanel from '@/components/ai-helper/BlockSearchPanel.vue';
 import EditorSidebar from '@/components/editor/EditorSidebar.vue';
 import EditorToast from '@/components/editor/EditorToast.vue';
 import EditorBreadcrumb from '@/components/editor/EditorBreadcrumb.vue';
+import EditorHeaderActions from '@/components/editor/EditorHeaderActions.vue';
 import EditorStatusBar from '@/components/editor/EditorStatusBar.vue';
 import EditorToolbar from '@/components/editor/EditorToolbar.vue';
 import CodePanel from '@/components/editor/CodePanel.vue';
@@ -362,6 +371,27 @@ const { editorViewRef, codeStyle, editorStyle, leftStyle, setLeftWidth, codePane
   min-width: 0;
   min-height: 0;
   overflow: hidden;
+}
+
+/* 顶栏：面包屑占满剩余宽度，应用级动作组钉在右端（紧邻代码栏分隔线）。
+   下边框放在这一层，面包屑自己的那条去掉，否则会画两条线。 */
+.editor-head {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  min-width: 0;
+  height: var(--editor-bar-h);
+  padding-right: var(--bar-pad-x);
+  background: var(--color-bg-card);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.editor-head :deep(.editor-breadcrumb) {
+  flex: 1;
+  min-width: 0;
+  height: auto;
+  border-bottom: none;
 }
 
 /* ---- 分割条 ---- */
