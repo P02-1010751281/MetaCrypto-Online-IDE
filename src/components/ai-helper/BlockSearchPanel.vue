@@ -1,9 +1,12 @@
 <template>
   <div v-if="visible" :class="docked ? 'bsp bsp-docked' : 'bsp-overlay'" @click.self="docked ? undefined : emit('close')">
     <div class="bsp">
-      <div class="bsp-header">
-        <span class="bsp-title">{{ t('CRYPTO_BLOCK_SEARCH_TITLE', '查块') }}</span>
-        <button class="bsp-close" :aria-label="t('CRYPTO_CLOSE', '关闭')" @click="emit('close')">×</button>
+      <!-- 头部只有「标题 + 图标动作」，样式取全局 panel-chrome.css 的一套。 -->
+      <div class="section-head section-head--divided">
+        <span class="section-title">{{ t('CRYPTO_BLOCK_SEARCH_TITLE', '查块') }}</span>
+        <div class="section-actions">
+          <button class="ghost-btn" :title="t('CRYPTO_CLOSE', '关闭')" :aria-label="t('CRYPTO_CLOSE', '关闭')" @click="emit('close')">×</button>
+        </div>
       </div>
 
       <div class="bsp-query">
@@ -217,25 +220,8 @@ watch(hits, () => {
   border-radius: 0;
   box-shadow: none;
 }
-.bsp-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: var(--panel-head-h);
-  padding: 0 var(--panel-pad-x);
-  border-bottom: 1px solid var(--color-border);
-}
-.bsp-title {
-  font-weight: 600;
-}
-.bsp-close {
-  border: 0;
-  background: transparent;
-  font-size: 18px;
-  line-height: 1;
-  cursor: pointer;
-  color: inherit;
-}
+/* 头部（.section-head / .section-title / .section-actions / .ghost-btn）在全局
+   panel-chrome.css：侧栏各面板共用一套，本组件不再维护 bsp-header/bsp-title 副本。 */
 .bsp-query {
   display: flex;
   gap: 6px;

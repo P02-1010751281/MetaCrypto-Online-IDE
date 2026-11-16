@@ -99,17 +99,34 @@ const PROBE = `JSON.stringify((()=>{
   const plus = buttons.find(b => (b.textContent||'').includes('＋')) ?? null;
   const ps = plus ? getComputedStyle(plus) : null;
   const row = side ? side.querySelector('.project-row, .file-row, .cfp-item') : null;
+  const first = buttons[0] ?? null;
+  const fs = first ? getComputedStyle(first) : null;
+  const query = document.querySelector('.dsp-query, .bsp-query');
   return {
     panel: side?.firstElementChild?.className ?? null,
     sidebarW: Math.round(document.querySelector('.editor-sidebar').getBoundingClientRect().width),
     headH: head ? Math.round(head.getBoundingClientRect().height) : null,
     headFirst: head ? head.firstElementChild?.className ?? head.firstElementChild?.tagName ?? null : null,
     headButtons: buttons.length,
+    headClass: head?.className ?? null,
+    headPadL: head ? getComputedStyle(head).paddingLeft : null,
+    headBorder: head ? getComputedStyle(head).borderBottomWidth : null,
     titleCss: css(title),
     titleText: title?.innerText?.trim() ?? null,
     plusBox: plus ? { w: Math.round(plus.getBoundingClientRect().width), h: Math.round(plus.getBoundingClientRect().height) } : null,
     plusCss: ps ? { bg: ps.backgroundColor, radius: ps.borderRadius, size: ps.fontSize } : null,
     rowW: row ? Math.round(row.getBoundingClientRect().width) : null,
+    /* 头部「只放图标动作」的直接判据：头部里不许出现带文字的 checkbox。 */
+    checkboxInHead: head ? !!head.querySelector('input[type="checkbox"]') : null,
+    checkboxInQuery: query ? !!query.querySelector('input[type="checkbox"]') : null,
+    closeBox: first ? {
+      w: Math.round(first.getBoundingClientRect().width),
+      h: Math.round(first.getBoundingClientRect().height),
+      bg: fs.backgroundColor,
+      radius: fs.borderRadius,
+      label: first.getAttribute('aria-label'),
+    } : null,
+    queryRowH: query ? Math.round(query.getBoundingClientRect().height) : null,
   };
 })())`;
 
@@ -130,9 +147,15 @@ const files = await settle(1);
 await shoot('files');
 const functions = await settle(2);
 await shoot('functions');
+const docSearch = await settle(3);
+await shoot('docSearch');
+const blockSearch = await settle(4);
+await shoot('blockSearch');
 
-// 1. 三个面板都有头，且高度同一条基线
-for (const [name, p] of [['projects', projects], ['files', files], ['functions', functions]]) {
+const panels = [['projects', projects], ['files', files], ['functions', functions], ['docSearch', docSearch], ['blockSearch', blockSearch]];
+
+// 1. 五个面板都有头，且高度同一条基线
+for (const [name, p] of panels) {
   check(`${name}: 有面板头且高度 = 38px（--panel-head-h）`, p.headH === 38, p);
 }
 
@@ -143,6 +166,16 @@ check('三个面板标题计算样式完全一致', sameTitle, {
   projects: projects.titleCss, files: files.titleCss, functions: functions.titleCss,
 });
 check('标题字重为 600（不是 400 与 600 混用）', projects.titleCss?.weight === '600', projects.titleCss);
+
+// 2b. 检索面板并入后，五个面板的标题必须仍是同一组计算样式
+const allSameTitle = panels.every(([, p]) => JSON.stringify(p.titleCss) === JSON.stringify(projects.titleCss));
+check('五个面板标题计算样式完全一致（含查文档 / 查块）', allSameTitle,
+  panels.map(([name, p]) => [name, p.titleCss]));
+
+// 2c. 五个面板共用同一个 .section-head 定义，而不是各留一份同名副本
+const headsUnified = panels.every(([, p]) => (p.headClass || '').split(' ').includes('section-head'));
+check('五个面板头部都取 .section-head（无 dsp-header / bsp-header 副本）', headsUnified,
+  panels.map(([name, p]) => [name, p.headClass]));
 
 // 3. 文件面板不再有返回按钮：头部只有一个按钮（＋），且首元素是标题
 check('files: 头部无返回按钮（首元素是标题）', files.headFirst === 'section-title', files);
@@ -164,6 +197,91 @@ check('functions: 列表行宽 >= 320px', (functions.rowW ?? 0) >= 320, function
 check('projects / files: 侧栏保持 248px', projects.sidebarW === 248 && files.sidebarW === 248, {
   projects: projects.sidebarW, files: files.sidebarW,
 });
+
+// 6. 检索面板并入后：头部只剩一个关闭图标，且是 24×24 透明底
+for (const [name, p] of [['docSearch', docSearch], ['blockSearch', blockSearch]]) {
+  check(`${name}: 头部只有 1 个按钮`, p.headButtons === 1, p.headButtons);
+  check(`${name}: 关闭按钮是 24×24 透明底（同 .ghost-btn）`,
+    p.closeBox?.w === 24 && p.closeBox?.h === 24 && p.closeBox?.bg === 'rgba(0, 0, 0, 0)',
+    p.closeBox);
+  check(`${name}: 关闭按钮有可访问名称`, (p.closeBox?.label || '').length > 0, p.closeBox);
+  check(`${name}: 头部自带内边距与底边线（--divided 变体）`,
+    p.headPadL === '8px' && p.headBorder === '1px', { padL: p.headPadL, border: p.headBorder });
+}
+
+// 7. 「包含 PDF」是检索条件不是面板动作：必须离开头部、落在查询行
+check('docSearch: 头部不含 checkbox（带文字控件下沉）', docSearch.checkboxInHead === false, docSearch);
+check('docSearch: 「包含 PDF」在查询行内', docSearch.checkboxInQuery === true, docSearch);
+check('docSearch: 查询行仍是一行（增高 < 8px 视为同一行）', (docSearch.queryRowH ?? 0) < 52, docSearch.queryRowH);
+
+// 8. 检索面板本来就在「按内容展宽」名单里，并入时不能丢掉
+check('docSearch / blockSearch: 侧栏展宽到 400px',
+  docSearch.sidebarW === 400 && blockSearch.sidebarW === 400,
+  { docSearch: docSearch.sidebarW, blockSearch: blockSearch.sidebarW });
+
+// 9. 关闭按钮接线未因换类名断开：点一下必须真的关掉面板（回到默认面板）
+// 注意不能在这里再 settle(4)：activity 按钮是「点一次开、再点一次关」，
+// 前一次 settle(4) 已经把面板打开，再点等于把它关掉，后面就找不到按钮了。
+await evaluate(`(()=>{
+  const s = document.querySelector('.side-panel');
+  if (!s || !s.querySelector('.bsp')) {
+    const b = document.querySelectorAll('.activity-bar .activity-btn')[4];
+    if (b) b.click();
+  }
+  return true;
+})()`);
+await sleep(700);
+const clicked = await evaluate(`(()=>{
+  const b = document.querySelector('.section-head .section-actions .ghost-btn');
+  if (!b) return 'no-button';
+  b.click();
+  return 'clicked';
+})()`);
+await sleep(700);
+const afterClose = await evaluate(`(()=>{
+  const s = document.querySelector('.side-panel');
+  return s ? (s.firstElementChild?.className ?? s.firstElementChild?.tagName ?? 'empty') : 'no-side-panel';
+})()`);
+check('查块面板的关闭按钮仍然生效（换类名没断线）',
+  clicked === 'clicked' && !String(afterClose).includes('bsp'), { clicked, afterClose });
+
+// 10. 窄屏（≤1200px）检索面板切成浮层：同一套头部规则在浮层里也必须成立，
+//     否则「统一」只证明了停靠态这一半。
+await send('browsingContext.setViewport', { context, viewport: { width: 1024, height: 700 } });
+await sleep(1000);
+await evaluate(`(()=>{
+  const b = document.querySelectorAll('.activity-bar .activity-btn')[3];
+  if (b) b.click();
+  return true;
+})()`);
+await sleep(800);
+await shoot('docSearch-overlay');
+const overlay = JSON.parse(await evaluate(`JSON.stringify((()=>{
+  const host = document.querySelector('.dsp-overlay');
+  const head = host ? host.querySelector('.section-head') : null;
+  const title = head ? head.querySelector('.section-title') : null;
+  const btns = head ? [...head.querySelectorAll('button')] : [];
+  const s = title ? getComputedStyle(title) : null;
+  return {
+    host: host ? 'dsp-overlay' : null,
+    headH: head ? Math.round(head.getBoundingClientRect().height) : null,
+    titleCss: s ? { size: s.fontSize, weight: s.fontWeight, ls: s.letterSpacing, tt: s.textTransform, color: s.color } : null,
+    buttons: btns.length,
+    closeBox: btns[0] ? {
+      w: Math.round(btns[0].getBoundingClientRect().width),
+      h: Math.round(btns[0].getBoundingClientRect().height),
+    } : null,
+    checkboxInHead: head ? !!head.querySelector('input[type="checkbox"]') : null,
+  };
+})())`));
+check('窄屏浮层：查文档是 .dsp-overlay，头部仍 38px',
+  overlay.host === 'dsp-overlay' && overlay.headH === 38, overlay);
+check('窄屏浮层：标题计算样式与停靠态逐项一致',
+  JSON.stringify(overlay.titleCss) === JSON.stringify(projects.titleCss),
+  { overlay: overlay.titleCss, projects: projects.titleCss });
+check('窄屏浮层：头部只有 1 个按钮且 24×24',
+  overlay.buttons === 1 && overlay.closeBox?.w === 24 && overlay.closeBox?.h === 24, overlay);
+check('窄屏浮层：头部不含 checkbox', overlay.checkboxInHead === false, overlay);
 
 await send('browsingContext.close', { context });
 ff.kill('SIGTERM');

@@ -24,7 +24,23 @@
   margin-left: auto;
 }
 
-/* 字重显式写 600：不吃祖先继承，四个面板的标题才会长得一样。 */
+/* 自带底边线的面板头：检索面板与函数面板直接坐在栏顶，没有 .files-section
+   那样的外层留白，内边距与分隔线得由头部自己给。 */
+.section-head--divided {
+  padding: 0 var(--panel-pad-x);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* 头部右侧的动作组。约定：头部只放「一个标题 + 一个动作组」，动作组里只放
+   24×24 图标按钮（.ghost-btn）；带文字的条件类控件（如「包含 PDF」开关、
+   筛选下拉）属于查询条件，放进面板体里，不占头部。 */
+.section-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 字重显式写 600：不吃祖先继承，各面板的标题才会长得一样。 */
 .section-title {
   font-size: 11px;
   font-weight: 600;

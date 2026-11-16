@@ -1,14 +1,12 @@
 <template>
   <div v-if="visible" :class="docked ? 'dsp-host dsp-docked' : 'dsp-overlay'" @click.self="docked ? undefined : emit('close')">
     <div class="dsp">
-      <div class="dsp-header">
-        <span class="dsp-title">{{ ui('docSearch') }}</span>
-        <div class="dsp-actions">
-          <label class="dsp-pdf">
-            <input v-model="withPdf" type="checkbox" />
-            {{ ui('docSearchIncludePdf') }}
-          </label>
-          <button class="dsp-close" :aria-label="ui('docSearchClose')" @click="emit('close')">×</button>
+      <!-- 头部只有「标题 + 图标动作」：样式取全局 panel-chrome.css 的 section-head
+           一套（同侧栏其余面板），不再自带 dsp-header 副本。 -->
+      <div class="section-head section-head--divided">
+        <span class="section-title">{{ ui('docSearch') }}</span>
+        <div class="section-actions">
+          <button class="ghost-btn" :title="ui('docSearchClose')" :aria-label="ui('docSearchClose')" @click="emit('close')">×</button>
         </div>
       </div>
 
@@ -24,6 +22,12 @@
           @keydown.enter.prevent="pickSelected"
           @keydown.esc.prevent="emit('close')"
         />
+        <!-- 「包含 PDF」是检索范围（查询条件），不是面板动作：从头部下沉到查询行，
+             与查块面板把筛选折叠在面板体里是同一条规则。 -->
+        <label class="dsp-pdf-toggle">
+          <input v-model="withPdf" type="checkbox" />
+          <span>{{ ui('docSearchIncludePdf') }}</span>
+        </label>
       </div>
 
       <p v-if="status" class="dsp-hint">{{ status }}</p>
@@ -244,43 +248,18 @@ function open(hit: DocHit): void {
 .dsp-host.dsp-docked {
   height: 100%;
 }
-.dsp-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: var(--panel-head-h);
-  padding: 0 var(--panel-pad-x);
-  border-bottom: 1px solid var(--color-border);
-}
-.dsp-title {
-  font-weight: 600;
-}
-.dsp-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.dsp-pdf {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--color-text);
-  cursor: pointer;
-}
-.dsp-close {
-  border: 0;
-  background: transparent;
-  font-size: 18px;
-  line-height: 1;
-  cursor: pointer;
-  color: var(--color-text-secondary);
-}
+/* 头部（.section-head / .section-title / .section-actions / .ghost-btn）在全局
+   panel-chrome.css：侧栏各面板共用一套，本组件不再维护 dsp-header/dsp-title 副本。 */
 .dsp-query {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 6px var(--panel-pad-x);
   border-bottom: 1px solid var(--color-border, #d0d3d9);
 }
 .dsp-input {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   height: var(--control-h);
   padding: 0 8px;
   border: 1px solid var(--color-border, #d0d3d9);
@@ -288,6 +267,20 @@ function open(hit: DocHit): void {
   background: var(--color-bg-card);
   color: var(--color-text);
   font: inherit;
+}
+/* 检索范围开关：与输入框同一行右端，不占头部也不单起一行。 */
+.dsp-pdf-toggle {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+.dsp-pdf-toggle input {
+  margin: 0;
 }
 .dsp-hint {
   margin: 0;

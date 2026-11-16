@@ -42,33 +42,60 @@ scoped 样式的作用域只覆盖本组件模板，跨不过 slot 边界——`
 | `src/components/editor/EditorSidebar.vue` | Files 头部去掉 `←` 返回按钮 |
 | `src/App.vue` | 去掉 `@back` 接线与 `goBack()`；函数面板并入「按内容展宽」列表（400px） |
 | `src/components/CryptoFunctionPanel.vue` | 停靠态补 `.section-head` 标题（`v-else`），横向内边距与 `.cfp-cat-header` 的 14px 对齐 |
+| `src/components/ai-helper/DocSearchPanel.vue` | 头部并入 `.section-head`（第二段提交）：删 `dsp-header/dsp-title/dsp-actions/dsp-close`，「包含 PDF」从头部下沉到查询行 |
+| `src/components/ai-helper/BlockSearchPanel.vue` | 同上：删 `bsp-header/bsp-title/bsp-close` |
 
 为什么不把返回按钮改成别的位置：`goBack()` 原来的语义就是「切到项目面板」，而项目面板是
 活动条第一格、恒可达，这颗 ← 是冗余入口；留着还会把 Files 的标题推离左边缘，正是第 2 条
 观察到的错位。
 
+## 查文档 / 查块的并入（第二段提交）
+
+这两个面板是同一个问题的第二、三份抄本：`dsp-header` / `bsp-header` 各自写了一遍
+`height: var(--panel-head-h)` + `0 var(--panel-pad-x)` + 底边线，结构已经同构，只有标题排版
+没对齐（它们的 `.dsp-title` / `.bsp-title` 只写了 `font-weight: 600`，缺 11px 字号、0.06em
+字距、大写与次级色，所以在同一列里比 Projects / Files 大一号）。
+
+并入时先定了一条头部约定，写进 `panel-chrome.css` 的注释里：
+
+> 头部只放「一个标题 + 一个动作组」；动作组里只放 24×24 图标按钮（`.ghost-btn`）；
+> 带文字的条件类控件属于查询条件，放进面板体，不占头部。
+
+按这条约定，「包含 PDF」是检索范围而不是面板动作，从头部移到查询行（与输入框同行右端），
+跨查块面板已有的「筛选折叠在 body」是同一条规则。关闭按钮从 `font-size: 18px` 的无名按钮
+改成 24×24 透明底的 `.ghost-btn`，并补上 `title`（原来只有 `aria-label`）。
+
+新增两个样式件：`.section-head--divided`（检索面板直接坐在栏顶，没有 `.files-section` 那样
+的外层留白，内边距与底边线得由头部自己给）与 `.section-actions`（动作组容器）。
+
 ## 验收
 
 脚本：`scripts/verify-sidebar-chrome.mjs`（无头 Firefox + WebDriver BiDi，自起停）。
-证据：本目录 `evidence/`（projects / files / functions 三张）。
+证据：本目录 `evidence/`（projects / files / functions / docSearch / blockSearch 五张）。
 
 改后实测：
 
 | 断言 | 结果 |
 |---|---|
-| 三个面板都有 `.section-head`，高度 38px（与面包屑同基线） | 通过 |
-| 三个面板标题计算样式**逐项相同**（11px / 600 / 0.06em / 大写 / 次级色） | 通过 |
+| 五个面板都有 `.section-head`，高度 38px（与面包屑同基线） | 通过 |
+| 五个面板标题计算样式**逐项相同**（11px / 600 / 0.06em / 大写 / 次级色） | 通过 |
+| 五个面板头部都取 `.section-head`，`dsp-header` / `bsp-header` 副本已不存在 | 通过 |
 | Files 头部首元素是标题、只有 1 个按钮（无返回按钮） | 通过 |
 | Projects 与 Files 的 ＋ 盒模型与背景一致，24×24 透明底圆角 4px | 通过 |
 | Functions 有标题文本（`FUNCTION MANAGER`） | 通过 |
 | Functions 侧栏 400px、列表行宽 343px（原 191px） | 通过 |
 | Projects / Files 侧栏保持 248px | 通过 |
+| 查文档 / 查块：头部只有 1 个按钮，24×24 透明底、有可访问名称 | 通过 |
+| 查文档 / 查块：头部自带内边距与底边线（`--divided` 变体） | 通过 |
+| 查文档：头部不含 checkbox，「包含 PDF」落在查询行、查询行仍是一行 | 通过 |
+| 查文档 / 查块：侧栏展宽到 400px | 通过 |
+| 查块的关闭按钮点了真的关掉面板（换类名没断线） | 通过 |
 
-`SUMMARY total=13 pass=13 fail=0`。
+`SUMMARY total=30 pass=30 fail=0`。
 
 ## 残留
 
-- `DocSearchPanel` / `BlockSearchPanel` 仍用各自的 `dsp-header` / `bsp-header`：它们头部里有
-  额外控件（PDF 开关、关闭按钮），本次没并入统一 chrome；
 - 侧栏宽度仍是「按面板类型自动设宽」的启发式（`App.vue` 的 watch），不是按内容测量；
-  用户手动拖过之后不再自动改（既有行为）。
+  用户手动拖过之后不再自动改（既有行为）；
+- 面板头的「动作组」目前只用到关闭一种；若以后要加第二个动作（如刷新、全屏），
+  按 `.section-actions` 的约定加 24×24 图标按钮即可，不需要再动布局。
