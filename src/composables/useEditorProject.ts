@@ -8,6 +8,14 @@ import {
 import { indexedDbProjectStore } from '@/services/projects/indexedDbProjectStore';
 import type { ProjectFileRecord, ProjectRecord, ProjectStore } from '@/services/projects/ProjectStore';
 import { ui } from '@/composables/locale';
+
+/** 编辑器的文档级状态：保存成功 / 有未保存改动 / 保存失败 / 加载失败。
+ *
+ *  'load-error' 与 'error' 必须分开：加载不到项目时红字写「保存失败」会让用户
+ *  去查保存，而真正失败的是打开（典型场景：深链指向本地不存在的项目）。
+ */
+export type EditorStatus = 'saved' | 'unsaved' | 'error' | 'load-error';
+
 interface EditorProjectDeps<TLanguage extends string> {
   getWorkspaceXml: () => string;
   language: Ref<TLanguage>;
@@ -39,7 +47,7 @@ export function useEditorProject<TLanguage extends string>(
   const projectName = ref('');
   const autoSaveEnabled = ref(false);
   const saving = ref(false);
-  const saveStatus = ref<'saved' | 'unsaved' | 'error'>('saved');
+  const saveStatus = ref<EditorStatus>('saved');
   const lastSaveTime = ref('');
   const navigationPending = ref(false);
 
@@ -64,7 +72,7 @@ export function useEditorProject<TLanguage extends string>(
   let loadVersion = 0;
   let navigationTarget: string | null = null;
 
-  function updateSaveStatus(status: 'saved' | 'unsaved' | 'error') {
+  function updateSaveStatus(status: EditorStatus) {
     saveStatus.value = status;
     if (status === 'saved') {
       const now = new Date();
@@ -87,6 +95,22 @@ export function useEditorProject<TLanguage extends string>(
     filesChangeVersion += 1;
     updateSaveStatus('unsaved');
     scheduleAutoSave();
+  }
+
+  /** 侧栏「项目」面板已把改名写进存储：这里只把新名字接过来。
+   *
+   *  两件事必须一起做：把名字换成新值，并把「已保存的名字版本」对齐。
+   *  只改名字不对齐，下一次保存会拿旧名字把刚改好的覆盖回去；只对齐不改名字，
+   *  面包屑就停在旧名上。整个过程不能标脏——库里已经是新名字了。
+   */
+  function applyExternalRename(name: string): void {
+    applyingProjectWorkspace = true;
+    try {
+      projectName.value = name;
+      lastSavedNameChangeVersion = projectNameChangeVersion;
+    } finally {
+      applyingProjectWorkspace = false;
+    }
   }
 
   function confirmBeforeUnload(event: BeforeUnloadEvent) {
@@ -250,7 +274,7 @@ export function useEditorProject<TLanguage extends string>(
     const id = Number(routeId);
     if (!id || isNaN(id)) {
       createdAt = null;
-      updateSaveStatus('error');
+      updateSaveStatus('load-error');
       loadingProject = false;
       navigationPending.value = false;
       navigationTarget = null;
@@ -337,7 +361,7 @@ export function useEditorProject<TLanguage extends string>(
           applyingProjectWorkspace = false;
         }
       }
-      updateSaveStatus('error');
+      updateSaveStatus('load-error');
     } finally {
       if (version === loadVersion) {
         loadingProject = false;
@@ -426,5 +450,6 @@ export function useEditorProject<TLanguage extends string>(
     handleWorkspaceChange,
     handleNewWorkspace,
     markFilesChanged,
+    applyExternalRename,
   };
 }

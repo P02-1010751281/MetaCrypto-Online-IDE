@@ -126,6 +126,21 @@
   font-weight: 700;
 }
 
+/* 行内改名输入框：替换行里那一行文字，必须是 .panel-row 的直接子元素，
+   所以 flex:1 / min-width:0 由这里给，两个面板共用一份。
+   （它和行内动作同一个理由：面板行是 slot 子组件模板，样式只能放全局层。） */
+.rename-input {
+  flex: 1;
+  min-width: 0;
+  height: 24px;
+  font: inherit;
+  font-size: 13px;
+  padding: 0 4px;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+
 .section-hint {
   margin: 6px 2px 0;
   font-size: 11px;

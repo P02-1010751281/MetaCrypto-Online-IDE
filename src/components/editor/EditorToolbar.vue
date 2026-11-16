@@ -40,15 +40,21 @@
     <span v-if="saveStatus === 'error'" class="save-status error">{{
       ui("saveError") || ""
     }}</span>
+    <!-- 加载失败与保存失败必须分开报：把「打不开这个项目」写成「保存失败」，
+         用户会去查保存路径，而问题在打开那一步（典型：深链指向不存在的项目）。 -->
+    <span v-if="saveStatus === 'load-error'" class="save-status error">{{
+      ui("loadError")
+    }}</span>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ui } from '@/composables/locale';
+import type { EditorStatus } from '@/composables/useEditorProject';
 
 defineProps<{
   saving: boolean;
-  saveStatus: 'saved' | 'unsaved' | 'error';
+  saveStatus: EditorStatus;
   lastSaveTime: string;
   autoSaveEnabled: boolean;
 }>();

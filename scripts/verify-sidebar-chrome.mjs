@@ -280,6 +280,9 @@ const ROWPROBE = `JSON.stringify((()=>{
   return {
     row: true,
     btnCount: row.querySelectorAll('.row-btn').length,
+    /* 动作图标必须在这一行渲染时取：面板切到「文件」后 .project-row 就不存在了，
+       事后再查只会得到空数组，把「有按钮」误判成「没有改名入口」。 */
+    icons: [...row.querySelectorAll('.row-btn')].map((b) => (b.textContent || '').trim()),
     acts: as ? { position: as.position, opacity: as.opacity, pe: as.pointerEvents, bg: as.backgroundColor } : null,
     btn: bs ? { color: bs.color, size: bs.fontSize } : null,
     btnBox: btn ? { w: Math.round(btn.getBoundingClientRect().width), h: Math.round(btn.getBoundingClientRect().height) } : null,
@@ -384,7 +387,12 @@ const entryRow = fileRowActions.find((r) => r.entry);
 check('files: 非入口行的行内动作是 ◎ / ✎ / ✕ 三件', JSON.stringify(fullRow?.icons) === JSON.stringify(['◎', '✎', '✕']), fileRowActions);
 check('files: 入口行按设计不显示「设为入口」，只剩 ✎ / ✕',
   entryRow !== undefined && JSON.stringify(entryRow.icons) === JSON.stringify(['✎', '✕']), fileRowActions);
-check('projects: 行内动作目前只有 ✕（改名走顶栏面包屑）', rowsProjects.before.btnCount === 1, rowsProjects.before.btnCount);
+/* 项目行与文件行同一套动作：改名 ✎ + 删除 ✕。面包屑的项目名已改成只读文本，
+   改名入口只剩这一处——这里必须真的存在，否则项目名在界面上无处可改。 */
+const projectIcons = rowsProjects.before.icons;
+check('projects: 行内动作是 ✎ / ✕ 两件（改名入口唯一，面包屑只读）',
+  rowsProjects.before.btnCount === 2 && projectIcons.includes('✎') && projectIcons.includes('✕'),
+  { btnCount: rowsProjects.before.btnCount, projectIcons });
 
 // 键盘可达：不悬浮，直接把焦点给 ✎，动作层必须因 :focus-within 浮出
 const kb = JSON.parse(await evaluate(`JSON.stringify((()=>{
@@ -455,30 +463,63 @@ const clickToolbarSave = async () => {
 
 const dbBefore = await dumpDb();
 await openPanel(0, '.project-panel');
-const renamedProject = await evaluate(`(()=>{
-  const i = document.querySelector('.crumb-project-input');
+
+/* 改名入口只有面板行内 ✎：面包屑的项目名必须是只读文本，不是输入框。 */
+const crumb = JSON.parse(await evaluate(`JSON.stringify((()=>{
+  const input = document.querySelector('.crumb-project-input');
+  const text = document.querySelector('.crumb-project');
+  return {
+    inputExists: !!input,
+    textTag: text ? text.tagName : null,
+    text: text ? text.textContent.trim() : null,
+  };
+})())`));
+check('面包屑：项目名是只读文本（不是输入框）',
+  crumb.inputExists === false && crumb.textTag === 'SPAN', crumb);
+
+const renameProjectClicked = await evaluate(`(()=>{
+  const b = [...document.querySelectorAll('.project-row .row-btn')]
+    .find((x) => (x.textContent || '').trim() === '✎');
+  if (!b) return 'no-button';
+  b.click();
+  return 'clicked';
+})()`);
+await sleep(400);
+const renameProjectTyped = await evaluate(`(()=>{
+  const i = document.querySelector('.project-row .rename-input');
   if (!i) return 'no-input';
-  i.focus();
+  const focused = document.activeElement === i;
   i.value = '改名验收-项目';
   i.dispatchEvent(new Event('input', { bubbles: true }));
-  i.blur();
-  return 'typed';
+  i.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+  return focused ? 'typed' : 'not-focused';
 })()`);
-await sleep(600);
-await clickToolbarSave();
+await sleep(900);
 const dbAfterProject = await dumpDb();
-check('项目面板：面包屑改名 + 保存后写进 IndexedDB，且不会多出第二个项目',
-  renamedProject === 'typed'
+check('项目面板：✎ 改名直接写进 IndexedDB（不靠保存按钮），且不会多出第二个项目',
+  renameProjectClicked === 'clicked' && renameProjectTyped === 'typed'
     && dbAfterProject.length === dbBefore.length
     && dbAfterProject.some((r) => r.name === '改名验收-项目'),
-  { renamedProject, dbBefore, dbAfterProject });
+  { renameProjectClicked, renameProjectTyped, dbBefore, dbAfterProject });
 
-/* 保存层必须把新名字推回面板列表，否则用户以为没改成（改前只在新建时 refresh）。 */
-const rowsAfterRename = JSON.parse(await evaluate(`JSON.stringify(
-  [...document.querySelectorAll('.project-row')].map((r) => r.querySelector('.project-row-name')?.innerText?.trim() ?? null)
-)`));
-check('项目面板：保存后列表行名跟着更新（不用重开面板）',
-  rowsAfterRename.includes('改名验收-项目'), rowsAfterRename);
+/* 改完名字再点一次保存：编辑器手里的 projectName 必须已接上新名字，
+   否则这一次保存会拿旧名字把刚写进库的新名字覆盖回去（改前正是这个风险）。 */
+await clickToolbarSave();
+const dbAfterSave = await dumpDb();
+check('项目改名后再点保存，名字不会被旧值覆盖回去',
+  dbAfterSave.some((r) => r.name === '改名验收-项目') && dbAfterSave.length === dbBefore.length,
+  dbAfterSave);
+
+/* 改名成功必须同时推回面板列表与面包屑，否则界面还停在旧名上。 */
+const rowsAfterRename = JSON.parse(await evaluate(`JSON.stringify((()=>{
+  const rows = [...document.querySelectorAll('.project-row')]
+    .map((r) => r.querySelector('.project-row-name')?.innerText?.trim() ?? null);
+  const crumbText = document.querySelector('.crumb-project')?.textContent?.trim() ?? null;
+  return { rows, crumbText };
+})())`));
+check('项目面板：改名后列表行名与面包屑都跟着更新（不用重开面板、不用刷新）',
+  rowsAfterRename.rows.includes('改名验收-项目') && rowsAfterRename.crumbText === '改名验收-项目',
+  rowsAfterRename);
 
 // 文件改名同样要落库：✎ → 输入 → Enter → 保存
 await openPanel(1, '.files-section');
@@ -643,6 +684,27 @@ check('窄屏：函数面板浮层的 ✕ 点了真的关掉面板',
   cfpClicked === 'clicked' && cfpAfterClose.overlayGone === true
     && String(cfpAfterClose.nextPanel || '').includes('files-section'),
   { cfpClicked, cfpAfterClose });
+
+// 13. 打开一个本地不存在的项目：状态栏必须报「加载失败」，不能沿用「保存失败」——
+//     报错指向错了那一步，用户会去查保存路径，而问题在打开。
+const statusBeforeNav = await evaluate(`(()=>{
+  const el = document.querySelector('.toolbar .save-status');
+  return el ? el.className.trim() + '|' + el.textContent.trim() : null;
+})()`);
+await evaluate("location.hash = '#/editor/999999'");
+await sleep(1500);
+const loadError = JSON.parse(await evaluate(`JSON.stringify((()=>{
+  const el = document.querySelector('.toolbar .save-status.error');
+  const text = el ? el.textContent.trim() : null;
+  return {
+    text,
+    saysSaveFailed: text ? /保存失败|Save failed/.test(text) : null,
+    saysLoadFailed: text ? /加载失败|Load failed/.test(text) : null,
+  };
+})())`));
+check('加载不存在的项目时状态栏报「加载失败」而不是「保存失败」',
+  loadError.saysLoadFailed === true && loadError.saysSaveFailed === false,
+  { statusBeforeNav, loadError });
 
 await send('browsingContext.close', { context });
 ff.kill('SIGTERM');

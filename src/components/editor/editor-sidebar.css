@@ -163,20 +163,9 @@
   border: 1px solid color-mix(in srgb, var(--color-primary) 45%, transparent);
 }
 
-/* 行内动作（.row-actions / .row-btn）在全局 panel-chrome.css：与面板头同一个理由，
-   面板行是 slot 子组件模板，样式只能放在全局层，否则每个面板各抄一份并很快漂移。 */
-
-.rename-input {
-  flex: 1;
-  min-width: 0;
-  height: 24px;
-  font: inherit;
-  font-size: 13px;
-  padding: 0 4px;
-  border: 1px solid var(--color-primary);
-  border-radius: var(--radius-sm);
-  outline: none;
-}
+/* 行内动作（.row-actions / .row-btn）与行内改名输入框（.rename-input）都在全局
+   panel-chrome.css：与面板头同一个理由，面板行是 slot 子组件模板，样式只能放在
+   全局层，否则每个面板各抄一份并很快漂移。 */
 
 /* 窄屏（≤1200px）：编辑器纵向堆叠，侧栏收成一行紧凑横条：
    活动条横排 + 项目名 + 横向文件列表，把高度让给画布。

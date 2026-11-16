@@ -21,6 +21,7 @@
         :current-id="currentProjectId"
         :overlay="isNarrowViewport"
         @close="closePanel"
+        @renamed="onProjectRenamed"
       />
       <CryptoFunctionPanel
         v-else-if="activePanel === 'functions'"
@@ -57,7 +58,6 @@
           :project-name="projectName"
           :file-name="activeProjectFile?.name"
           :is-entry="activeProjectFileId === entryProjectFileId"
-          @update:project-name="projectName = $event"
         />
         <EditorHeaderActions
           :code-pane-visible="codePaneVisible"
@@ -261,6 +261,7 @@ const {
   doSave,
   handleNewWorkspace,
   markFilesChanged,
+  applyExternalRename,
 } = useEditorProject({
   getWorkspaceXml: () => blocklyEditor.value?.exportWorkspace('xml') || '',
   language: selectedLanguage,
@@ -298,6 +299,13 @@ watch(saveStatus, (status) => {
 watch(currentProjectId, () => {
   void refreshProjectList();
 });
+
+/** 侧栏「项目」面板行内改名已落库：只把名字接进编辑器，不再走一次保存。
+ *  不这么做时，编辑器手里的 projectName 还是旧值，下次保存会把旧名字写回去，
+ *  把用户刚改好的名字覆盖掉。 */
+function onProjectRenamed(id: number, name: string): void {
+  if (id === currentProjectId.value) applyExternalRename(name);
+}
 
 const {
   openMenu,

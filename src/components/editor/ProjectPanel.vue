@@ -31,26 +31,45 @@
         :class="{ active: project.id === currentId }"
         @click="openProject(project.id!)"
       >
-        <span class="project-row-main">
-          <span class="project-row-name" :title="project.name">
-            {{ project.name || ui('unnamed') }}
+        <!-- 改名入口只在这里：面包屑的项目名是只读文本，同一个名字不再有两处可改。 -->
+        <template v-if="editingId === project.id">
+          <input
+            ref="renameInput"
+            v-model="editingName"
+            class="rename-input"
+            @keydown.enter.prevent="commitRename(project.id!)"
+            @keydown.esc.prevent="cancelRename"
+            @blur="commitRename(project.id!)"
+            @click.stop
+          />
+        </template>
+        <template v-else>
+          <span class="project-row-main">
+            <span class="project-row-name" :title="project.name">
+              {{ project.name || ui('unnamed') }}
+            </span>
+            <span class="project-row-meta">{{ formatDate(project.updatedAt) }}</span>
           </span>
-          <span class="project-row-meta">{{ formatDate(project.updatedAt) }}</span>
-        </span>
-        <div class="row-actions" @click.stop>
-          <button
-            class="row-btn danger"
-            :title="ui('deleteProject')"
-            @click.stop="confirmDelete(project.id!, project.name)"
-          >✕</button>
-        </div>
+          <div class="row-actions" @click.stop>
+            <button
+              class="row-btn"
+              :title="ui('renameProject')"
+              @click.stop="startRename(project.id!, project.name)"
+            >✎</button>
+            <button
+              class="row-btn danger"
+              :title="ui('deleteProject')"
+              @click.stop="confirmDelete(project.id!, project.name)"
+            >✕</button>
+          </div>
+        </template>
       </li>
     </ul>
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { ui } from '@/composables/locale';
@@ -59,7 +78,11 @@ import type { ProjectRecord } from '@/services/projects';
 import { useProjectList } from './useProjectList';
 
 const props = defineProps<{ currentId: number | null; overlay?: boolean }>();
-const emit = defineEmits<{ (_e: 'close'): void }>();
+const emit = defineEmits<{
+  (_e: 'close'): void;
+  /** 行内改名已写进存储：App 据此把编辑器的当前项目名接过来。 */
+  (_e: 'renamed', id: number, name: string): void;
+}>();
 
 /**
  * 窄屏浮层的纵向位置：横条高度随断点变（≤1200px 单行 43px，≤560px 折成两行），
@@ -92,6 +115,42 @@ const filtered = computed(() => {
 
 function onSearch(event: Event): void {
   query.value = (event.target as HTMLInputElement).value;
+}
+
+/* 行内改名：✎ → 输入框 → Enter/失焦提交，Esc 取消。
+   提交直接写存储（projectStore.rename），不经过编辑器的「保存」按钮——
+   项目名是项目自身的属性，不该因为另一个项目开着就写不进去。 */
+const editingId = ref<number | null>(null);
+const editingName = ref('');
+const renameInput = ref<HTMLInputElement[] | HTMLInputElement | null>(null);
+
+async function startRename(id: number, name: string): Promise<void> {
+  editingId.value = id;
+  editingName.value = name || '';
+  await nextTick();
+  const el = Array.isArray(renameInput.value) ? renameInput.value[0] : renameInput.value;
+  el?.focus();
+  el?.select();
+}
+
+async function commitRename(id: number): Promise<void> {
+  if (editingId.value !== id) return;
+  const name = editingName.value.trim();
+  const before = projects.value.find((p) => p.id === id)?.name ?? '';
+  editingId.value = null;
+  // 空名字或没改动都不写库：空名字会让列表行变成「未命名」，等于误删了名字。
+  if (!name || name === before) return;
+  try {
+    await projectStore.rename(id, name);
+    await refresh();
+    emit('renamed', id, name);
+  } catch (err) {
+    console.error('项目改名失败:', err);
+  }
+}
+
+function cancelRename(): void {
+  editingId.value = null;
 }
 
 async function createProject(): Promise<void> {

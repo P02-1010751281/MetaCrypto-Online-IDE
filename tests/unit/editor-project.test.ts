@@ -117,7 +117,8 @@ describe('useEditorProject saving', () => {
     mountApp(app);
     await vi.advanceTimersByTimeAsync(100);
 
-    expect(project.saveStatus.value).toBe('error');
+    // 加载失败与保存失败分开报：这里红字该说「加载失败」，进去查保存会走错路。
+    expect(project.saveStatus.value).toBe('load-error');
     expect(project.projectId.value).toBeNull();
     expect(await project.doSave()).toBe(true);
     expect(saveProject.mock.calls[0][0].id).toBeUndefined();
@@ -153,12 +154,53 @@ describe('useEditorProject saving', () => {
     mountApp(app);
     await vi.advanceTimersByTimeAsync(100);
 
-    expect(project.saveStatus.value).toBe('error');
+    expect(project.saveStatus.value).toBe('load-error');
     expect(project.projectId.value).toBeNull();
     expect(await project.doSave()).toBe(true);
     expect(saveProject.mock.calls[0][0].id).toBeUndefined();
     expect(project.projectId.value).toBe(1);
 
+  });
+
+  it('adopts an external rename without marking the project unsaved', async () => {
+    route.value!.params = { id: '7' };
+    getProject.mockResolvedValueOnce({
+      id: 7,
+      name: '旧名字',
+      workspace: '<xml>w</xml>',
+      format: 'xml',
+      language: 'python',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    });
+
+    let project!: ReturnType<typeof useEditorProject>;
+    const app = createApp({
+      setup() {
+        project = useEditorProject({
+          getWorkspaceXml: () => '<xml>w</xml>',
+          language: ref('python'),
+          loadWorkspaceXml: () => true,
+          onWorkspaceChange: () => () => {},
+          clearWorkspace: () => {},
+        });
+        return () => h('div');
+      },
+    });
+    mountApp(app);
+    await vi.advanceTimersByTimeAsync(100);
+
+    expect(project.projectName.value).toBe('旧名字');
+    expect(project.saveStatus.value).toBe('saved');
+
+    // 侧栏面板的行内改名已经写进存储，编辑器只接名字：既不能标脏，也不能
+    // 在下一次保存时拿旧名字把刚改好的覆盖回去（这两条都是曾经的风险点）。
+    project.applyExternalRename('新名字');
+    expect(project.projectName.value).toBe('新名字');
+    expect(project.saveStatus.value).toBe('saved');
+
+    await project.doSave();
+    expect(saveProject.mock.calls.at(-1)?.[0].name).toBe('新名字');
   });
 
   it('loads the new project when a reused editor route changes id', async () => {
@@ -629,7 +671,7 @@ describe('useEditorProject saving', () => {
     await Promise.resolve();
 
     expect(project.navigationPending.value).toBe(false);
-    expect(project.saveStatus.value).toBe('error');
+    expect(project.saveStatus.value).toBe('load-error');
   });
 
   it('keeps the navigation lock through a duplicate target while that project loads', async () => {
