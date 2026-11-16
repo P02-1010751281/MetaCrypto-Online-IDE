@@ -54,7 +54,16 @@
         </li>
       </ul>
 
-      <p class="dsp-foot">{{ ui('docSearchFoot') }}</p>
+      <div class="dsp-footer">
+        <button
+          type="button"
+          class="dsp-browse"
+          @click="emit('browse-all', query.trim())"
+        >
+          {{ ui('docSearchBrowseAll') }} →
+        </button>
+        <p class="dsp-foot">{{ ui('docSearchFoot') }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -76,6 +85,11 @@ const emit = defineEmits<{
   (e: 'close'): void;
   /** 选中一条结果：由宿主决定如何打开（路由到文档页并定位到 line/页码）。 */
   (e: 'open', hit: DocHit): void;
+  /**
+   * 底部第二入口（任何状态都可见）：把当前查询词交给宿主，由宿主带 ?q= 进文档中心。
+   * 词为空也发——宿主据空串直接进 /docs，不带 q。
+   */
+  (e: 'browse-all', query: string): void;
 }>();
 
 /** 两份索引都是构建期产物（Markdown 3.9 MB / PDF 3.4 MB），按需动态加载，不进主包。 */
@@ -335,10 +349,24 @@ function open(hit: DocHit): void {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+/* 页脚容器承接上边框；第二入口与说明文字同处页脚，落在 v-if 链之外所以恒可见。 */
+.dsp-footer {
+  border-top: 1px solid var(--color-border, #d0d3d9);
+}
+.dsp-browse {
+  display: block;
+  width: 100%;
+  padding: 6px 12px;
+  border: 0;
+  background: none;
+  color: var(--color-primary, #2563eb);
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
 .dsp-foot {
   margin: 0;
   padding: 6px 12px;
-  border-top: 1px solid var(--color-border, #d0d3d9);
   font-size: 12px;
   color: var(--color-text-secondary);
 }

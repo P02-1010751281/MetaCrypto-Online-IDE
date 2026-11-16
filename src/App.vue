@@ -36,6 +36,7 @@
         :docked="!isNarrowViewport"
         @close="closePanel"
         @open="onOpenDocHit"
+        @browse-all="openDocs"
       />
       <BlockSearchPanel
         v-else-if="activePanel === 'blockSearch'"
@@ -195,10 +196,12 @@ const {
 const route = useRoute();
 const router = useRouter();
 
-/** 文档中心是独立路由页（不是侧栏面板）：入口在工具栏「文档」。 */
-function openDocs(): void {
+/** 文档中心是独立路由页（不是侧栏面板）：入口在工具栏「文档」与检索面板底部的「浏览全部文档」。 */
+function openDocs(q?: unknown): void {
   closeMenus();
-  void router.push('/docs');
+  // 两个调用点：工具栏 open-docs 零载荷（`'open-docs': []`），面板 browse-all 传 string。
+  const keyword = typeof q === 'string' ? q.trim() : '';
+  void router.push(keyword ? { path: '/docs', query: { q: keyword } } : '/docs');
 }
 const currentProjectId = computed(() => Number(route.params.id) || null);
 

@@ -20,6 +20,11 @@
       </button>
     </header>
 
+    <!-- 预填词没命中任何分类/标题时说明一句：否则用户会对着一个被清空的搜索框猜原因。 -->
+    <p v-if="prefillNotice" class="docs-notice">
+      {{ ui('docsPrefillNoTitleMatch').replace('{q}', prefillNotice) }}
+    </p>
+
     <div class="docs-body">
       <!-- Sidebar navigation -->
       <DocsSidebar
@@ -83,6 +88,10 @@ const renderedHtml = ref<string>('');
 const loading = ref(false);
 const error = ref<string>('');
 const searchQuery = ref('');
+/** 非空则显示「未匹配任何分类或文档标题」说明行。 */
+const prefillNotice = ref('');
+/** 记录搜索框当前值是否由 ?q= 预填：用户自己改过就不再接管（见设计稿 §8 L1）。 */
+const prefilledQuery = ref('');
 const expandedCategories = ref<Set<string>>(new Set());
 let docRequestId = 0;
 
@@ -91,19 +100,29 @@ const sourceLocaleFallback = computed(() =>
   isSourceLocaleFallback(activeDoc.value, currentLocale.value),
 );
 
-const filteredCategories = computed(() => {
-  if (!searchQuery.value) return categories.value;
+/** 文档中心的语言域：'zh' | 'en'。不是 BlocklyLocale（'en' | 'zh-hans'），后者在分类表里查不到。 */
+type DocsLocale = 'zh' | 'en';
 
-  const q = searchQuery.value.toLowerCase();
-  return categories.value
+/**
+ * 侧栏过滤：与原 computed 逐字等价——不 trim、q 为空返回全部分类、分类名命中时保留该分类全部文件。
+ * 抽成纯函数是为了预填前先试算（见 applyQueryPrefill），避免把用户丢进空侧栏。
+ */
+function filterCategories(list: DocCategory[], q: string, locale: DocsLocale): DocCategory[] {
+  if (!q) return list;
+  const needle = q.toLowerCase();
+  return list
     .map((cat) => ({
       ...cat,
-      files: getCategoryLabel(cat.id, currentLocale.value).toLowerCase().includes(q)
+      files: getCategoryLabel(cat.id, locale).toLowerCase().includes(needle)
         ? cat.files
-        : cat.files.filter((f) => f.title.toLowerCase().includes(q)),
+        : cat.files.filter((f) => f.title.toLowerCase().includes(needle)),
     }))
     .filter((cat) => cat.files.length > 0);
-});
+}
+
+const filteredCategories = computed(() =>
+  filterCategories(categories.value, searchQuery.value, currentLocale.value),
+);
 
 function toggleCategory(id: string) {
   if (expandedCategories.value.has(id)) {
@@ -163,7 +182,12 @@ async function renderMermaid() {
 }
 
 function goBack() {
-  router.push('/');
+  // 优先回来源页：vue-router 给每个应用内条目写了 back，首屏 / 直开 URL 是 null。
+  // back 是 vue-router 的字段而非公开 API；上游改字段就退化成恒回首页（今天的行
+  // 为），不会崩。
+  const back = (window.history.state as { back?: string | null } | null)?.back;
+  if (back) router.back();
+  else void router.push('/');
 }
 
 function rebuildCategories() {
@@ -238,13 +262,40 @@ function applyDeepLink(): void {
   void selectDoc(path, Number.isFinite(sourceLine) ? sourceLine : undefined);
 }
 
+/** 预填词是否还能命中任何分类名或文档标题（用与侧栏同一个过滤函数试算）。 */
+function matches(q: string): boolean {
+  return filterCategories(categories.value, q, currentLocale.value).length > 0;
+}
+
+/**
+ * 把 ?q= 带进来的查询词预填到侧栏搜索框。
+ * 先试算：命中分类名或文档标题才预填，算不出内容就不预填、只留一行说明——
+ * 预填一个必然筛空的词，等于把用户送进空侧栏，与「浏览全部文档」的目的相反。
+ */
+function applyQueryPrefill(): void {
+  // 只有来自 URL 的值才 trim；用户自己敲的搜索保持原样（与原 computed 语义一致）。
+  const q = typeof route.query.q === 'string' ? route.query.q.trim() : '';
+  if (q && matches(q)) {
+    searchQuery.value = q;
+    prefilledQuery.value = q;
+    prefillNotice.value = '';
+    return;
+  }
+  // 无 q 时也要清：同一组件实例内从 /docs?q=X 走到 /docs 不清会残留旧过滤。
+  searchQuery.value = '';
+  prefilledQuery.value = '';
+  prefillNotice.value = q;
+}
+
 onMounted(() => {
   rebuildCategories();
   applyDeepLink();
+  applyQueryPrefill();
 });
 // doc 与 line 各自独立监听：同一篇文档换行号（跳到另一段）时只改 line，
 // 只看 doc 的话面板连续点同一文件的第二条结果不会滚动。
 watch([() => route.query.doc, () => route.query.line], applyDeepLink);
+watch(() => route.query.q, applyQueryPrefill);
 // 语言切换：优先使用对应译文；标准页暂无英文译本时保留 source 语言页面作为可见 fallback。
 watch(currentLocale, async () => {
   rebuildCategories();
@@ -255,6 +306,22 @@ watch(currentLocale, async () => {
     await selectDoc(counterpart);
   }
 });
+// 语言切换后分类标签与标题都换语言了：中文标签命中的词在英文下可能一个都匹配不到。
+// 上面的 watcher 只重建分类；这里对「由 URL 预填、且用户没改过」的词重判一次。
+// 必须 { flush: 'post' }：post 队列一定晚于上面 pre-flush watcher 里的同步 rebuildCategories()，
+// 因此 matches() 读到的 categories 已按新语言重建——与两个 watcher 的注册顺序无关。
+watch(
+  currentLocale,
+  () => {
+    const q = prefilledQuery.value;
+    if (!q || searchQuery.value !== q) return; // 用户改过搜索框就不再接管
+    if (matches(q)) return;
+    searchQuery.value = '';
+    prefilledQuery.value = '';
+    prefillNotice.value = q;
+  },
+  { flush: 'post' },
+);
 // 文档链接拦截（v-html 渲染后绑定，容器级事件委托）
 void setupDocLinks();
 </script>
@@ -315,6 +382,17 @@ void setupDocLinks();
 }
 
 /* Body layout */
+.docs-notice {
+  margin: 0;
+  padding: 8px 24px;
+  background: var(--color-bg-card);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  /* .docs-view 是 100vh 纵向 flex、.docs-body 是 flex: 1；不加会被压缩到看不见。 */
+  flex-shrink: 0;
+}
+
 .docs-body {
   display: flex;
   flex: 1;
