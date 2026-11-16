@@ -3,7 +3,7 @@
     <div class="dsp">
       <!-- 头部只有「标题 + 图标动作」：样式取全局 panel-chrome.css 的 section-head
            一套（同侧栏其余面板），不再自带 dsp-header 副本。
-           嵌进 AI 助手（tab 容器）时头部由助手壳提供，这里让位。 -->
+           嵌进 检索助手（tab 容器）时头部由助手壳提供，这里让位。 -->
       <div v-if="!embedded" class="section-head section-head--divided">
         <span class="section-title">{{ ui('docSearch') }}</span>
         <div class="section-actions">
@@ -35,10 +35,20 @@
       <p v-else-if="!query.trim()" class="dsp-hint">
         {{ ui('docSearchIdleHint') }}
       </p>
+      <!-- 空态只在「没有命中」时出现；答案卡与结果列表各用独立条件。
+           这里曾经把 AnswerCard 插进 v-if/v-else 链中间，导致 `<ul v-else>` 绑到答案卡上——
+           有答案时结果列表整块消失（真浏览器验收抓到的，单测看不到）。 -->
       <p v-else-if="!loading && !hits.length" class="dsp-hint">
         {{ ui('docSearchEmpty') }}
       </p>
-      <ul v-else class="dsp-results">
+      <!-- 答案层：有命中就先给「答案 + 出处」，答不出来时明说缺什么（不拿最近段落冒充答案）。 -->
+      <AnswerCard
+        v-if="!status && query.trim() && (answerResult || answerLoading)"
+        :result="answerResult"
+        :loading="answerLoading"
+        @open="openAnswerEvidence"
+      />
+      <ul v-if="!status && hits.length" class="dsp-results">
         <li
           v-for="(hit, index) in hits"
           :key="`${hit.path}:${hit.line}`"
@@ -82,9 +92,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue';
+import { computed, nextTick, onUnmounted, ref, watch } from 'vue';
 
 import { ui } from '@/composables/locale';
+import { useDocAnswer } from '@/composables/useDocAnswer';
+import AnswerCard from './AnswerCard.vue';
 import { mergeIndexes, parseDocIndex, searchDocs } from '@/services/ai-helper/doc-search';
 import type { DocHit, DocIndex } from '@/services/ai-helper/doc-search';
 import { docToBlockLink } from '@/services/ai-helper/linkage';
@@ -93,7 +105,7 @@ const props = defineProps<{
   visible: boolean;
   /** docked：停靠进某一栏；缺省是全屏遮罩。 */
   docked?: boolean;
-  /** embedded：由宿主（AI 助手）提供头部与 tab，本组件只保留查询行与结果。 */
+  /** embedded：由宿主（检索助手）提供头部与 tab，本组件只保留查询行与结果。 */
   embedded?: boolean;
   /**
    * 宿主带过来的初始查询词：只在 `visible` 翻成 true 的那一次生效。
@@ -137,6 +149,13 @@ let mergedIndex: DocIndex | null = null;
 const query = ref('');
 const withPdf = ref(false);
 const hits = ref<DocHit[]>([]);
+// 解构成顶层 ref：模板里只有顶层 ref 会被自动解包，挂在普通对象上的 ref 会露出 .value。
+const {
+  result: answerResult,
+  loading: answerLoading,
+  answer: runAnswer,
+  clear: clearAnswer,
+} = useDocAnswer();
 const status = ref('');
 /** PDF 索引缺失是可选降级：用标志位而不是比对提示文案前缀（文案已本地化）。 */
 const pdfUnavailable = ref(false);
@@ -174,6 +193,7 @@ async function run(): Promise<void> {
   const text = query.value.trim();
   if (!text) {
     hits.value = [];
+    clearAnswer();
     return;
   }
   loading.value = true;
@@ -191,10 +211,14 @@ async function run(): Promise<void> {
     }
     hits.value = searchDocs(index, text, { limit: 12 });
     active.value = 0;
+    void runAnswer(text, index, hits.value);
   } finally {
     loading.value = false;
   }
 }
+
+// 组件卸载时把在途的答案作废（composable 用序号挡竞态，这里只兜底清状态）。
+onUnmounted(() => clearAnswer());
 
 let timer: ReturnType<typeof setTimeout> | null = null;
 watch([query, withPdf], () => {
@@ -232,6 +256,7 @@ watch(
     hits.value = [];
     status.value = '';
     active.value = 0;
+    clearAnswer();
     await nextTick();
     query.value = props.seed ?? '';
     await nextTick();
@@ -247,6 +272,26 @@ function move(step: number): void {
 function pickSelected(): void {
   const hit = hits.value[active.value];
   if (hit) open(hit);
+}
+
+/** 答案卡里的出处：拼成一条最小可用的 DocHit，走宿主的 open 通道（不另开一套路由）。 */
+function openAnswerEvidence(payload: {
+  path: string;
+  line: number;
+  title: string;
+  heading: string;
+  kind: 'md' | 'pdf';
+}): void {
+  emit('open', {
+    path: payload.path,
+    title: payload.title,
+    heading: payload.heading,
+    line: payload.line,
+    score: 0,
+    excerpt: '',
+    kind: payload.kind,
+    terms: [],
+  });
 }
 
 function open(hit: DocHit): void {
@@ -302,7 +347,7 @@ function open(hit: DocHit): void {
 .dsp-host.dsp-docked {
   height: 100%;
 }
-/* 嵌进 AI 助手的 tab 容器：占满助手壳的剩余高度，头部由助手壳提供。 */
+/* 嵌进 检索助手的 tab 容器：占满助手壳的剩余高度，头部由助手壳提供。 */
 .dsp-host.dsp-embedded {
   display: flex;
   flex: 1;

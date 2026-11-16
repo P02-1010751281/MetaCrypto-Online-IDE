@@ -152,7 +152,7 @@ const files = await settle(1);
 await shoot('files');
 const functions = await settle(2);
 await shoot('functions');
-/* 查文档 / 查块已合并成「AI 助手」一个入口（两个 tab 共用一套头部），
+/* 查文档 / 查块已合并成「问答助手」一个入口（两个 tab 共用一套头部），
    activity bar 从 5 个按钮变成 4 个：下标 3 就是助手。 */
 const assistant = await settle(3);
 await shoot('assistant');
@@ -172,9 +172,9 @@ check('三个面板标题计算样式完全一致', sameTitle, {
 });
 check('标题字重为 600（不是 400 与 600 混用）', projects.titleCss?.weight === '600', projects.titleCss);
 
-// 2b. AI 助手并入后，四个面板的标题必须仍是同一组计算样式
+// 2b. 问答助手并入后，四个面板的标题必须仍是同一组计算样式
 const allSameTitle = panels.every(([, p]) => JSON.stringify(p.titleCss) === JSON.stringify(projects.titleCss));
-check('四个面板标题计算样式完全一致（含 AI 助手）', allSameTitle,
+check('四个面板标题计算样式完全一致（含 问答助手）', allSameTitle,
   panels.map(([name, p]) => [name, p.titleCss]));
 
 // 2c. 四个面板共用同一个 .section-head 定义，而不是各留一份同名副本
@@ -252,7 +252,7 @@ const afterClose = await evaluate(`(()=>{
   const s = document.querySelector('.side-panel');
   return s ? (s.firstElementChild?.className ?? s.firstElementChild?.tagName ?? 'empty') : 'no-side-panel';
 })()`);
-check('AI 助手的关闭按钮仍然生效（换成合并入口后没断线）',
+check('问答助手的关闭按钮仍然生效（换成合并入口后没断线）',
   clicked === 'clicked' && !String(afterClose).includes('aip'), { clicked, afterClose });
 
 // 10. 行内动作（改名 / 删除 / 设为入口）：两个面板必须共用一套，且隐藏时不可点。
@@ -827,7 +827,7 @@ const overlay = JSON.parse(await evaluate(`JSON.stringify((()=>{
     checkboxInHead: head ? !!head.querySelector('input[type="checkbox"]') : null,
   };
 })())`));
-check('窄屏浮层：AI 助手是 .aip-overlay，头部仍 38px',
+check('窄屏浮层：问答助手是 .aip-overlay，头部仍 38px',
   overlay.host === 'aip-overlay' && overlay.headH === 38, overlay);
 check('窄屏浮层：标题计算样式与停靠态逐项一致',
   JSON.stringify(overlay.titleCss) === JSON.stringify(projects.titleCss),

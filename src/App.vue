@@ -162,7 +162,7 @@ import { useEditorToast } from '@/composables/useEditorToast';
 /**
  * /editor 的壳：只做绑定与装配，编排在 src/components/editor/useEditor* 里。
  * - useEditorFileActions：多文件切换 / 新建 / 删除 / 入口（含回写顺序）
- * - useEditorPanels：侧栏面板（含 AI 助手）、窄屏判定
+ * - useEditorPanels：侧栏面板（含 问答助手）、窄屏判定
  * - useEditorWorkspaceActions：菜单、导入导出、清空、生成
  * 壳里保留的是三者共享的引用（编辑器与代码面板实例）和路由级动作。
  */
@@ -215,7 +215,7 @@ function openDocs(q?: unknown): void {
 }
 const currentProjectId = computed(() => Number(route.params.id) || null);
 
-/** AI 助手（文档/积木检索）要读路径与摘录、函数面板是「名字 + 参数 + 两枚动作」的密排行，
+/** 问答助手（文档/积木检索）要读路径与摘录、函数面板是「名字 + 参数 + 两枚动作」的密排行，
  *  248px 都不够用；进这些面板自动展宽，回文件/项目收回 CSS 缺省宽度。 */
 watch(activePanel, (panel) => {
   const wide = panel === 'assistant' || panel === 'functions';

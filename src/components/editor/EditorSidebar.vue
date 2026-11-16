@@ -41,7 +41,7 @@
           <polyline points="8 6 2 12 8 18" />
         </svg>
       </button>
-      <!-- AI 助手：查文档 / 查积木两个 tab 共用这一个入口，图标用「放大镜 + 文本行」。 -->
+      <!-- 问答助手：查文档 / 查积木两个 tab 共用这一个入口，图标用「放大镜 + 文本行」。 -->
       <button
         class="activity-btn"
         :class="{ active: activePanel === 'assistant' }"

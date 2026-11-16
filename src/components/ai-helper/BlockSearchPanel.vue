@@ -2,7 +2,7 @@
   <div v-if="visible" :class="shellClass" @click.self="docked || embedded ? undefined : emit('close')">
     <div class="bsp">
       <!-- 头部只有「标题 + 图标动作」，样式取全局 panel-chrome.css 的一套。
-           嵌进 AI 助手（tab 容器）时头部由助手壳提供，这里让位。 -->
+           嵌进 检索助手（tab 容器）时头部由助手壳提供，这里让位。 -->
       <div v-if="!embedded" class="section-head section-head--divided">
         <span class="section-title">{{ t('CRYPTO_BLOCK_SEARCH_TITLE', '查块') }}</span>
         <div class="section-actions">
@@ -98,7 +98,7 @@ const props = defineProps<{
   workspace: Blockly.WorkspaceSvg | null;
   /** docked：停靠进某一栏（不遮挡画布）；缺省是全屏遮罩。 */
   docked?: boolean;
-  /** embedded：由宿主（AI 助手）提供头部与 tab，本组件只保留查询行与结果。 */
+  /** embedded：由宿主（检索助手）提供头部与 tab，本组件只保留查询行与结果。 */
   embedded?: boolean;
   /** 宿主带过来的初始查询词：只在 `visible` 翻成 true 的那一次生效（跨域联动用）。 */
   seed?: string;
@@ -251,7 +251,7 @@ watch(hits, () => {
   border-radius: 0;
   box-shadow: none;
 }
-/* 嵌进 AI 助手的 tab 容器：占满助手壳的剩余高度，头部由助手壳提供。 */
+/* 嵌进 检索助手的 tab 容器：占满助手壳的剩余高度，头部由助手壳提供。 */
 .bsp-embedded {
   display: flex;
   flex: 1;
