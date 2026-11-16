@@ -29,7 +29,17 @@ db679bf test(locale): 覆盖 ui() 键引用与中英键集一致性
 3ee4c5a refactor(core): 核内导入统一走 @cc/* 包内别名，去掉应用级 @/ 依赖
 ```
 
-`git describe --tags` = `v2.0.0`；`git diff v2.0.0 HEAD` 为空（本记录提交前）。旧指向 `3e95af1` 仍在历史里可达。
+`git describe --tags` = `v2.0.0`。旧指向 `3e95af1` 仍在历史里可达。
+
+冻结当日随后还有三笔文档提交，一并纳入该 tag：
+
+```
+11b7b3d docs(provenance): 产品名统一为 MetaCrypto Online IDE，补来源与世系说明
+eb7818c docs(audit): 记录 v2.0.0 冻结（tag→f7f6bc0）与 AE8 口径结构数字
+f7f6bc0 docs(codestable): 归档包边界、chrome i18n 与发表版基线审计
+```
+
+tag 重指的判据始终是「与该 tag 树逐项可复现」：`git diff v2.0.0 HEAD` 为空即此刻成立。
 
 ## 3. 结构数字（AE8 口径，全部实跑）
 
@@ -46,7 +56,7 @@ db679bf test(locale): 覆盖 ui() 键引用与中英键集一致性
 | 源码文件（`src/`）| 444 | 现场统计 |
 | 超 500 行源文件 | **0** | 拆分收尾后现场统计 |
 
-## 4. 稿件待改清单（下一步）
+## 4. 稿件待改清单（2026-11-16 20:46 已完成）
 
 | 项 | 稿件现值（11-15 快照） | 冻结树实测 | 动作 |
 |---|---|---|---|
@@ -74,3 +84,5 @@ git archive v2.0.0 | tar -x -C /tmp/v200 && cd /tmp/v200 && npm ci && npm run ve
 - **推送**：本地领先 `origin/main` 15 个提交（含本次 4 个），tag 未推送；C2/C7 的 `/tree/v2.0.0`、`/blob/v2.0.0` 链接要推送后才生效。需 owner 批准。
 - **版本号**：C1 现为 v2.0.0，冻结后未动；若 owner 决定改为 v2.1.0，需同改标题 / C1 / C2 / C7 / `package.json` / tag 六处。
 - **证据类别与「未进 Demo 的块」两项**尚未重算，属论文数字同步的一步。
+
+以上各项已于 2026-11-16 20:46 同步落地并重出四份产物（中 7 页 / 英 8 页，旧值 0 命中，DOCX 内嵌图与 `figures/` 逐字节一致），过程记录见 `paper/softwarex-update-2026-10/DRAFT-NOTES.md` 同日一节。
