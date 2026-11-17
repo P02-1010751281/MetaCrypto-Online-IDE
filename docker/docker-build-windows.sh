@@ -19,7 +19,7 @@ docker run --rm \
 
 echo ""
 echo ">>> Output:"
-ls -lh "$PROJECT_DIR/src-tauri/target/x86_64-pc-windows-gnu/release/ciphercat.exe" 2>/dev/null || true
+ls -lh "$PROJECT_DIR/src-tauri/target/x86_64-pc-windows-gnu/release/metacrypto-online-ide.exe" 2>/dev/null || true
 echo ""
 echo "NOTE: Only bare .exe is produced. To bundle as .msi/.nsis installer,"
 echo "      run 'npm run tauri:build' on a Windows host."

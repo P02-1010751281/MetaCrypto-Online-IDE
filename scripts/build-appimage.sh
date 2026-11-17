@@ -25,8 +25,10 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 BUNDLE_DIR="src-tauri/target/release/bundle/appimage"
-APP_DIR="$BUNDLE_DIR/CipherCat.AppDir"
-OUTPUT="$BUNDLE_DIR/CipherCat_2.0.0_amd64.AppImage"
+# AppDir 与产物名由 productName 派生（tauri.conf.json 的 "MetaCrypto Online IDE"），
+# 改名或改 productName 时这三行必须同步，否则脚本会把旧路径当成"未生成"。
+APP_DIR="$BUNDLE_DIR/MetaCrypto Online IDE.AppDir"
+OUTPUT="$BUNDLE_DIR/MetaCrypto Online IDE_2.0.0_amd64.AppImage"
 RUNTIME_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/ciphercat-appimage"
 RUNTIME_FILE="$RUNTIME_CACHE/runtime-x86_64"
 RUNTIME_URL="https://github.com/AppImage/type2-runtime/releases/download/continuous/runtime-x86_64"
@@ -62,7 +64,7 @@ TAURI_STATUS=$?
 set -e
 
 [ -x "$APP_DIR/AppRun" ] || fail "AppDir 未生成（$APP_DIR），tauri build 在更早的阶段失败"
-[ -x "$APP_DIR/usr/bin/ciphercat" ] || fail "AppDir 内缺少主程序"
+[ -x "$APP_DIR/usr/bin/metacrypto-online-ide" ] || fail "AppDir 内缺少主程序（mainBinaryName=metacrypto-online-ide）"
 
 if [ "$TAURI_STATUS" -eq 0 ] && [ -f "$OUTPUT" ]; then
   log "tauri build 已直接出包: $OUTPUT"
