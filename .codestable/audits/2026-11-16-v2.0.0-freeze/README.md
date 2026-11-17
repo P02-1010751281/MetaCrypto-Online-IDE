@@ -92,3 +92,11 @@ git archive v2.0.0 | tar -x -C /tmp/v200 && cd /tmp/v200 && npm ci && npm run ve
 > `PROVENANCE.md` 的本仓库行、`README.en.md` 的产品名块、`index.html` 与 `tauri.conf.json` 的展示标题），
 > **不含**冻结之后 ai-helper 线的任何提交，故本记录第 2 节的 222 / 60 / 89 / 1018 等数字全部不变。
 > 当前指向以 `git rev-parse 'v2.0.0^{commit}'` 为准（本提交的哈希不能在自身内容里写死）。
+
+> **2026-11-17 08:5x 第二次前移（品牌与文档统一）**：仓库更名后，`docs/` 82 篇文档的叙述名、
+> 两份 `README` / `RULES` / `PROVENANCE` 的产品名、`productName`（`CipherCat` → `MetaCrypto Online IDE`）、
+> 两份 `LICENSE` 的版权行、两处改名后失配的脚本配置（标准小节白名单、文档同步归一化规则），
+> 以及随文档语料重建的检索索引，一并纳入 tag 树。本次仍**不含** ai-helper 线的任何提交：
+> `tests/` 目录零改动，测试文件仍 **89** 个，222 / 60 / 1018 与 `docs/` 文件数 443 均不变；
+> 改变的只是名称与产物元信息（`bundle` 增设 short/long description，deb `Description` 不再出现 `(none)`）。
+> 当前指向仍以 `git rev-parse 'v2.0.0^{commit}'` 为准。
