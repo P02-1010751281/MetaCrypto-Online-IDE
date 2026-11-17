@@ -2267,3 +2267,717 @@ owner 的要求变了：B 线不能只认「本平台生成的 Python 形态」�
   由用户勾「这几个函数是 procedure」，还是先跑启发式再让他改。
 - JS（§34）与非本项目 Python 是同一件事的两半：都要求「不依赖生成器痕迹」。所以 §34.5
   的四步里，「JS 字段变体载荷」优先级下降，「AST/独立解析器」优先级上升。
+
+## 38. B1c 归一化层落地：注释/空行/引用风格/进制/空格五类形变全部吃下（2026-11-17 下午）
+
+§37 把缺口分成三层，其中「归一化层」是唯一不动架构、收益可直接量的一层。本轮把它做完：
+新增 `normalize.ts`（输入清理）与 `tolerant.ts`（模板字面量的宽容比较），并把生成器
+docstring 的两种引号都认作题头。
+
+### 38.1 为什么不在文本上直接改引号与进制
+
+一度想用「把 `'` 全换成 `"`、把 `0x1F` 换成 `31`」的文本预处理。这个做法会**连字段取值一起改**：
+`data_value` 的 `NUM` 回填的是源码原文，文本改了，取值就变成新写法，再生成的代码不等于输入，
+§31 的逐块相等判据当场红。
+
+所以分工是：
+
+| 层 | 做什么 | 为什么在这一层 |
+|---|---|---|
+| `normalize.ts` | 剥 `#` 注释（字符串内不动）、去行尾空白、删空行 | 这些不携带字段取值；但空行会改多行块的行边界，必须在切语句之前收掉 |
+| `tolerant.ts` | 匹配时数字按值（BigInt）、字符串按内容、空格按标点边界放宽 | 只改「怎么比」，不改「存什么」，字段仍是源码原文 |
+
+`normalize.ts` 带着跨行字符串状态机（三重引号、转义引号），所以文档串里的 `#` 与空行不会被误伤；
+`layout.ts` 的 `docOpener` 同时接受 `"""` 与 `'''`，否则「引号整体换单引号」会把 procedure 判丢。
+
+### 38.2 改完的实测（同一套 60 demo × 8 形变）
+
+| 形变 | §37 修前 | 本轮修后 | 靠什么 |
+|---|---|---|---|
+| 基线 | 60 / 60 | 60 / 60 | — |
+| 语句前插注释 | **0 / 60** | **60 / 60** | `normalize.ts` 剥注释 |
+| 双引号改单引号 | **4 / 60** | **60 / 60** | `tolerant.ts` 按内容比字符串 + `docOpener` 认两种文档串 |
+| `0x1F` → `31` | 26 / 60 | **60 / 60** | `tolerant.ts` 数字按值（BigInt，256 位参数无损） |
+| `a=1` → `a = 1` | 57 / 60 | **60 / 60** | 空白放宽（仅标点旁，标识符之间不放宽） |
+| 插空行 | 59 / 60 | **60 / 60** | `normalize.ts` 删空行 |
+| 行尾补空格 | 59 / 60 | **60 / 60** | `normalize.ts` 去行尾空白 |
+| 删生成器 docstring | 4 / 60 | 4 / 60（未变） | **仍在过程识别层**，见 38.5 |
+
+### 38.3 判据换了：「再生成的文字等于输入」→「反解析结果与原文同构」
+
+前几轮比的是字符串。这一轮输入被改了写法，逐字比会把「本来就没丢失任何信息」的形变判成失败
+（注释被剥掉、引号被换掉、`0x1F` 写成 `31` 都不该算差异）。新判据保留 §31 的骨架——先按 def/顶层
+语句切块——但对块内文字做规范化后再比：数字按 BigInt 值、字符串按内容、注释行丢掉、`=` 与括号
+两侧空格折叠。两边（原文与再生成代码）都走同一规范化，因此差异只剩真正的结构差异。
+
+规范化本身有两处坑，都是实测打出来的：
+
+1. **`parseInt` 处理 256 位十六进制会掉到 `1.15e+77`**：SM2 的曲线参数是 256 位，
+   形变工具把 `0xFFFF…FFFC` 变成浮点写法，那已经不是同一个字面量了。工具与判据都改用 `BigInt`。
+2. **`matchers` 里的数字比较也换成 `BigInt`**：否则两个不同的大整数可能被 double 判成相等，
+   宽容比较就变成「随便匹配」。
+
+### 38.4 回归钉（两条新测试）
+
+- `tests/unit/ai-helper-reverse-perturb.test.ts`：60 demo × 8 形变，逐项钉住通过数
+  （7 项 60、docstring-strip 4），基线必须 60。整跑约 9 s。
+- `tests/unit/ai-helper-reverse-normalize.test.ts`：14 条用例逐条钉「允许什么、不允许什么」——
+  字符串内的 `#`、文档串内的空行与注释、转义引号、幂等性；数字 `0x1F`≡`31` 但 `31`≠`32`；
+  引号种类不计；空白可省但 `fromximporty` 不能匹配 `from x import y`；换行是硬边界。
+
+放宽错方向的代价比收紧大：把两段不同代码认成同一块会静默生成错工作区，比留一条诊断更糟。
+所以空白放宽只允许发生在标点旁边，标识符之间的空白仍然必须存在。
+
+### 38.5 仍然缺的：过程识别层（docstring-strip 4/60 未动）
+
+procedure 判别依旧 100% 押生成器 docstring。删掉它以后 `names` 为空，整份文件都被当内嵌实现
+剥掉。口子早就有（`reverseCode` 的 `options.procedureNames`），缺的是两件事：
+
+1. **界面上的确认**：用户勾「这几个函数是 procedure」，或先跑启发式再让他改；
+2. **启发式兜底**：按「body 能整体匹配成块」判。本轮顺手量了可行性——对每个 demo 的非 procedure
+   内嵌 def 统计「顶格语句里能匹配块模板的比例」：`aes_sbox` 1/1、`code_based` 1/13、
+   `aes_shift_rows` 2/5、`sm4_round_func` 15/16。**纯覆盖率阈值会误判**（`aes_sbox` 与真正的
+   procedure 一样是 1/1），需要更硬的判据（如「body 里没有任何 Python 控制流」+「被顶层语句调用」），
+   这属于设计选择，不在这轮里硬塞。
+
+### 38.6 本轮门禁（整树实跑）
+
+| 项 | 命令 | 结果 |
+|---|---|---|
+| 单测 | `npx vitest run` | **104 文件 / 1112 通过 1 跳过**（§36 是 102 / 1097：+2 文件 +15 用例） |
+| lint | `npm run lint:check` | 0 错误 / 0 警告 |
+| 类型 | `npx vue-tsc --noEmit` | 0 |
+| 构建 | `npm run build` + `npm run build:check-bundle` | rc=0；入口 55 665 / 65 536 字节（`index-DgOmdWZ7.js`） |
+| 载荷新鲜度 | `npm run reverse:templates:check` | `FIELD_CHECK ok blocks=222`（无变化：本轮没动采集器） |
+| 整树门禁 | `npm run verify:all` | **rc=0**；demos 60/60、contract 0 errors（2151 块 / 1641 checked）、docs 链接 0 broken |
+
+### 38.7 边界
+
+- 宽容比较只覆盖「字面量层面的写法差异」。标识符改名、调用改写成 `for`/推导式、助手函数与常量表
+  仍不在模板里——那要 §37.2 的 AST 路径，不在本轮。
+- 中文/emoji 标识符、f-string 插值、反斜杠续行都没有实测；`normalize.ts` 的状态机不识别 f-string
+  的 `{}` 嵌套，遇到 f-string 里的 `#` 会当注释剥掉（当前 60 demo 不产生 f-string）。
+- 空白放宽是按「模板字面量」走的，模板里连续的多个空格会被折叠；生成器不产这种写法，但
+  手写模板要注意。
+
+## 39. B1d 闭包名单：procedure 判别不再依赖 docstring，8/8 形变全绿；外来代码改大声失败（2026-11-17 下午）
+
+§38 收尾时还剩一个洞：procedure 判别 100% 押生成器题头 `"""Crypto function: X"""`，删掉它
+（或用户粘的是 LLM 代码）就 4/60。本轮把判别改成**确定性名单**，并把「外来代码」的处理从
+「逐条列未识别」改成「明确拒绝」。
+
+### 39.1 两席评审的结论与修正
+
+外聘两席（Claude Opus 5.5 / GPT-6.1 Terra）独立评审同一问题（启发式分类器 / 勾选 UI / 直接
+做 AST）后结论一致：**不在模板路径造启发式，也不做默认勾选 UI**。两席各给了一条修正：
+
+1. **`ast.FunctionDef` ≠ procedure**（Opus）：内嵌助手本身也是函数定义。正确判据是「这个名字
+   是不是生成器内嵌的闭包」——构建期从生成器采集名单，不在名单里的顶格 def 才是 procedure。
+2. **不能把「语法解析成功」当「语义还原成功」**（GPT）：无法映射的节点必须逐个报诊断，
+   不支持就整体拒绝，不能静默丢语句；最大风险是「看起来能跑但不等价」的密码代码。
+
+第 1 条本轮当场验证：60 个 demo、删光 docstring、不传任何外部名单，只用闭包名单分流 →
+**60/60**（先前 4/60）。
+
+### 39.2 采集器：`scripts/ai-helper-closures.ts`
+
+两条腿并集，避免「只跑单块会漏」：
+
+| 腿 | 做法 | 产出 |
+|---|---|---|
+| 逐块 | 对 222 个块类型各跑一次 `emit`，收 `definitions_` 里注册的 `def X(`；跑 stub（子输入换占位符）与 raw 两档取并集 | 181 名（raw 177） |
+| demo 兜底 | 60 个 demo 生成一次代码，**无题头**的 def 名并入 | 183 名 |
+
+并集 **226 名**；同时核对 124 个 procedure 名与名单**交集为 0**（交集非空直接采集失败）。
+产物 `src/services/ai-helper/reverse/closure-names.json`（4.8 KB，`?raw` 懒加载，不进入口包），
+存档同内容写 `experiments/.../out/closure-names.json`。
+
+新鲜度：`npm run reverse:closures:check`（`CLOSURE_CHECK ok names=226`），已进 `verify:all`。
+
+### 39.3 判别优先级：显式名单 > 题头 > 名单反选
+
+`reverseCode` 现在按可信度取第一个可用的来源：
+
+1. `options.procedureNames`（调用方/界面确认，最高优先级）；
+2. 生成器题头 docstring（本平台生成代码自带的痕迹，命中时行为与 B1b 完全一致）；
+3. **闭包名单反选**：`closures.size > 0` 时，名单外的顶格 def 判为 procedure。
+
+没有任何来源时退回 1/2 的老行为，不会把整份文件误判成 procedure。
+
+### 39.4 外来代码：从「逐条噪音」改成「明确拒绝」
+
+判据：**没有题头痕迹 + 有函数 + 留下未识别语句** → 返回零块、一条 `foreign-code` 诊断、
+`stats.foreignDefs` 给出函数名清单。面板换成一句说明 + 函数名（只列前 8 个），不再逐行列。
+
+这里刻意**不把「零块」当判据**：`out = []`、`SBOX = [...]` 这类行会零星匹配成块，外来代码
+常见的不是零块而是「碎块」——零块判据下测试里那段 LLM 风格 AES 产出了 3 个块（一条
+`variables_set` + 一个 `procedures_defreturn`），属于「看着像成功」的半成品，必须拒。
+
+### 39.5 实测
+
+| 口径 | 结果 |
+|---|---|
+| 8 项形变（含删 docstring） | **8 × 60/60**（§38 时是 7 项 60 + 1 项 4） |
+| 名单覆盖 | 60 demo 全部无题头 def 都在名单内、missing = 0 |
+| 名单 / procedure 重叠 | 0（采集器内置断言，重叠即失败） |
+| 外来 AES 片段 | 零块、1 条 `foreign-code`、`foreignDefs = ['sub_byte','aes_round']`、无 `procedures_defreturn` |
+| `parseClosureNames` | 结构不对时抛错（半份名单比没有名单更危险） |
+
+### 39.6 边界
+
+- 名单完整性取决于「块跑得起来」。缺输入的块在 stub/raw 两档都会被 catch 跳过，若某闭包只在
+  「两个块串起来」时才注册、且该组合不在任何 demo 里，它就不在名单中——那段代码里的该闭包会被
+  当成 procedure，结果是**诊断**（不静默）。要彻底解决得枚举块组合，不在本轮。
+- 用户在代码里把函数名起成 `aes_sbox` 这类内嵌名，会被判成内嵌实现（当前 60 demo 交集为 0，
+  但不保证任意用户代码）。可加「body 与已知闭包逐字比对」消歧，本轮未做。
+- 外来代码规则只对「没有题头」的输入生效：本平台生成代码被用户改坏时仍按老行为给逐行诊断
+  （那是编辑错误，不是外来形态）。
+- 本轮仍未动 AST 路径（P2.3）。外来代码现在的行为是「明确拒绝」，不是「能转」。
+
+### 39.7 本轮门禁（整树实跑）
+
+| 项 | 命令 | 结果 |
+|---|---|---|
+| 单测 | `npx vitest run` | **105 文件 / 1119 通过 1 跳过**（§38 是 104 / 1112：+1 文件 +7 用例） |
+| lint | `npm run lint:check` | 0 错误 / 0 警告 |
+| 类型 | `npx vue-tsc --noEmit` | 0 |
+| 构建 | `npm run build` + `build:check-bundle` | rc=0；入口 **55 665 / 65 536** 字节（名单进懒加载块，入口未涨） |
+| 模板新鲜度 | `reverse:templates:check` | `FIELD_CHECK ok blocks=222` |
+| 名单新鲜度 | `reverse:closures:check` | `CLOSURE_CHECK ok names=226` |
+| 整树门禁 | `npm run verify:all` | **rc=0**；demos 60/60、contract 0 errors（2151 块 / 1641 checked）、docs 0 broken |
+
+`verify:all` 里新增 `node dist-verify/ai-helper-closures.js check` 一步：名单与生成器脱节就红。
+
+### 39.8 真实浏览器复核（无头 Chromium）
+
+脚本 `experiments/ai-helper-2026-11-14/c2w-foreign-e2e.mjs`：粘一段 LLM 风格 AES（`SBOX` 常量 +
+`sub_byte` / `aes_round` 两个函数 + `for` 循环），走完整「更多 → 从代码生成工作区 → 解析」。
+
+| 判据 | 实测 |
+|---|---|
+| 「没有一个能映射成块」提示 | 出现 |
+| 函数名清单 | 「识别到的函数：sub_byte、aes_round」 |
+| 逐行「未识别」列表 | **0 条**（修复前会列出 3 个碎块的未识别） |
+| 「载入工作区」 | 禁用 |
+| 控制台错误 | 0 |
+
+![外来代码明确拒绝](out/c2w-foreign.png)
+
+同一 dev 实例上重跑既有脚本 `c2w-combo-fixed-e2e.mjs`（正常路径）：粘贴 524 行 ML-KEM 代码 →
+「1494 个块，1 个函数，0 条未识别」，载入成功，控制台 0 错误——本轮改动没有回退正常路径。
+
+## 40. S3 第一段：外部 Python → 语法树（AST）→ 工作区（2026-11-17 下午）
+
+§39 之后 B 线对外来实现只有一条出路：**大声拒绝**。两席强模型评审（Claude Opus 5.5 /
+GPT-6.1 Terra）结论一致——不要在模板路径上再造 procedure 分类器，改走 AST；同时纠正了
+我原先的两处说法：`ast.FunctionDef` 只说明「这是函数」，内嵌助手也是函数；语法解析成功
+也不等于语义还原成功。这一轮按这两条落地第一段。
+
+### 40.1 链路分工（四步，每步可单测）
+
+| 层 | 文件 | 职责 |
+|---|---|---|
+| Python 转储 | `reverse/ast/dump.ts` | base64 嵌源码 → `ast.parse` → JSON（含 `lineno`）；脚本里没有 `exec`/`eval` |
+| 白名单 IR | `reverse/ast/ir-shared.ts`（类型/运算表/节点工具）、`ir-expr.ts`（表达式）、`ir.ts`（语句与模块组装） | 只认列出的节点，其余逐条带行号记诊断；不做类型推断。按 ≤500 行拆三个文件 |
+| IR → 块 | `reverse/ast/blocks.ts` | 只用画布上真有的块（核心 `variables_*`/`math_*`/`logic_*`/`controls_*`/`lists_*` + 本项目 procedure 块） |
+| 总装 | `reverse/ast/index.ts` | 宿主抽象成 `PyAstRunner`，服务层不 import 浏览器 runtime |
+| 浏览器宿主 | `src/runtime/python-parse.ts` + worker `mode: 'ast'` | 只跑转储脚本；与试运行共用 worker 文件、独立的协议与实例 |
+
+入口是 `reverseCodeAuto`：**模板优先**（它能回填字段取值与变体，60/60 往返靠它），模板判成
+外来代码时 AST 才接管；没有注入宿主时行为与 §39 完全一致（零块 + `foreign-code`）。
+
+拆开写而不是塞进 `reverseCode` 的理由：`reverseCode` 是同步纯函数，被脚本与测试直接调用；
+Pyodide 是异步且只在浏览器里存在。两者混在一个函数里，单测就得背 12 MB 运行时。
+
+### 40.2 支持面（白名单，逐项实跑）
+
+| 类别 | 支持 | 明确不支持（逐条报行号） |
+|---|---|---|
+| 语句 | 函数定义、`变量 = 表达式`、`变量 op= 表达式`、语句级调用、末尾唯一 `return`、`if/elif/else`、`for ... in range(...)`（步长 1）、`while`、`break`/`continue`、`pass` 与文档串（忽略） | 下标赋值（`s[i] ^= x`）、非末尾/多处 `return`、`for` 非 `range`、步长≠1、`with`/`try`/`match`/`class`/`async`/`import`/`global`/`assert`/`raise` |
+| 表达式 | 数字/字符串/`True`/`False`/`None`、变量、算术 `+ - * / ** %`、按位 `& \| ^ << >>`、一元 `-`/`not`、比较（单个）、`and`/`or`、调用（**只认本模块定义的函数**）、列表/元组字面量（≤64 项）、常量下标、条件表达式 | 列表推导式、lambda、dict/set、切片、属性调用（`obj.method()`）、关键字实参/`*args`、链式比较 |
+
+`Pass` 与函数体首行的字符串（文档串）不记诊断：它们没有语义，丢掉不算丢东西。其余每一条
+不支持都进诊断，`text` 是**用户写的那一行原文**（不是我们转出来的描述）。
+
+### 40.3 一个有意保留的「不完整」：按位运算
+
+`^` 只有 `bit_operation` 一块可选，而这块的生成器会把操作数强制成 `crypto_to_uint32(...)`
+——对字节序列做异或时语义会变。本轮的选择是**照样出块 + 逐条诊断标成不完整**：
+
+```
+mixed = crypto_to_uint32(state) ^ crypto_to_uint32(round_key)
+```
+
+面板因此在标题下多一行「其中 N 处没能转换成块……这些地方的语义没有还原，请手工补齐」。
+另外两条路都不选：悄悄换块（相当于伪造还原）、整段拒绝（结构本来能保住）。
+
+### 40.4 实测
+
+单测 `tests/unit/ai-helper-reverse-ast.test.ts`（14 条）：转储脚本由本机 `python3 3.14`
+实跑（浏览器里是 Pyodide 的 CPython 3.12），覆盖语法错误分支、base64 嵌入（引号/换行/中文）、
+结构保真、确定性、按位警告、未支持节点的行号、两段式入口的三条分支。
+
+真实无头 Chromium（`experiments/ai-helper-2026-11-14/c2w-ast-e2e.mjs`）：
+
+| 步骤 | 实测 |
+|---|---|
+| 输入 | 外部 Python：`mix_columns(state, round_key)`（`^`、`if`、`for range(4)`、末尾 `return`）+ 顶层 `TABLE = [1, 2, 3, 4]` |
+| 解析 | 「语法树识别结果：**28 个块，1 个函数，6 条语句**」；1 条诊断（按位 uint32）；「载入工作区」可用 |
+| 载入 | 画布 **28 块**，函数块名 `mix_columns`，形参标 `state: bytes, round_key: bytes` |
+| 再生成 | 8/8 结构片段逐项对上：函数签名、`if mixed > 255:`、`mixed = mixed - 256`、`for i in range(4):`、`mixed = mixed + i`、`return mixed`、`TABLE = [1, 2, 3, 4]`、按位那行（含 `crypto_to_uint32`） |
+| 试运行回归 | 同一 worker 文件的默认分支照旧执行：「运行结束，无输出」，`is-failed` 未置位 |
+| 控制台 | 0 错误 |
+
+![外部代码经 AST 载入](out/c2w-ast.png)
+
+布局：函数与顶层语句分两列（`x=40` / `x=760`），不再让长函数把顶层语句压住——这条是
+第一版截图里肉眼看到的压块，改完重截。
+
+### 40.5 边界（别当成已支持）
+
+- **语义未验证**：AST 只还原结构；再生成的代码是否与原文等价，仍需人签核或走 P3 的差分判据。
+- **类型标签有损**：形参一律落块模型的默认值 `bytes`，与 §35.3「类型标签被抹平」同源。
+- **调用只认本模块**：`len()`、`hashlib.sha256()` 这类没有对应块，直接报；`import` 不生成块，
+  所以引用标准库的代码只能部分还原。
+- **不支持的节点不阻断**：支持的部分照常出块，缺的部分进诊断——面板必须让用户看见，这也是
+  它为什么把「N 处没能转换」放在标题下而不是诊断列表里。
+
+### 40.6 本轮门禁（整树实跑）
+
+| 项 | 命令 | 结果 |
+|---|---|---|
+| 单测 | `npx vitest run` | **106 文件 / 1133 通过 1 跳过**（§39 是 105 / 1119：+1 文件 +14 用例） |
+| lint | `npm run lint:check` | 0 错误 / 0 警告 |
+| 类型 | `npx vue-tsc --noEmit` | 0 |
+| 构建 | `npm run build` + `npm run build:check-bundle` | rc=0；入口 57 643 / 65 536 字节（`index-BC3oIBNu.js`） |
+| 整树门禁 | `npm run verify:all` | **rc=0**；demos 60/60、contract 0 errors、docs 0 broken、`FIELD_CHECK ok`、`CLOSURE_CHECK ok names=226`、模板 29/29 |
+
+### 40.7 下一步（P2.3 剩余）
+
+1. 覆盖扩展：推导式 → `controls_for`、切片 → 列表块、`import` 后的已知原语调用 → 对应密码块。
+2. **语义判据**：现在只到「结构对上」；要把「再生成 → 与原文逐块比」做成 AST 路径的判据，
+   与模板路径的 §31 口径对齐（这块不写清楚，AST 路径就只是「能出块」而已）。
+3. 多 return / 早退：块模型只有单返回值，要么给 IR 加「早退模式」，要么维持现状（报诊断）。
+
+## 41. S3 第二段：AST 路径的判据（再生有效 / 结构保真 / 差分执行）与两个真问题（2026-11-17 下午）
+
+§40.7 的第 2 条：上一轮只证到「块出来了、8 个片段对得上」。那一层判据两个方向都不严——
+片段是手挑的，而且只比文本。本轮把它换成三条能独立开火的判据，样本取 7 段 LLM 风格外部
+Python（无类型提示、带注释），每条判据各自能红。
+
+### 41.1 三条判据
+
+| # | 判据 | 问的问题 | 实现 |
+|---|---|---|---|
+| 1 | **再生有效** | 产物是不是一个合法工作区？再生成的代码还是不是合法 Python？ | `workspaces.load` 不抛 + `python3 compile()` 通过 |
+| 2 | **结构保真** | 有没有静默丢构造？ | 原文语法树 vs 工作区**按构造计数**：函数 / return / 分支（含 elif）/ for / while / 比较 / 条件表达式 / 下标 / 列表 / 调用 / 二元运算（总数 + 逐算子） |
+| 3 | **差分执行** | 再生成的代码还是不是同一段程序？ | 原文与生成代码用同一组输入各跑一遍（本机 CPython），输出逐字相等 |
+
+判据 2 的两个口径细节写进测试：`elif` 在语法树里是嵌套 `If`，工作区里是 `controls_if` 的
+`elseIfCount`，两边都折算成「分支个数」；`controls_for` 的 `TO = n - 1` 是闭区间换算，
+比较时跳过这层包装（否则每个非常量循环都凭空多一个减法）。
+
+### 41.2 差分判据抓到的真问题：`range(n)` 的空区间
+
+`for i in range(n)` 落成 `controls_for`（FROM=0，TO=n-1）。块模型的循环方向是**自适应**的：
+FROM > TO 时倒序执行；而 Python 的 `range` 在起点 ≥ 终点时**一次也不执行**。两者只在空区间上
+不同，差分一跑就露：
+
+| 输入 | 原文输出 | 块生成代码输出 |
+|---|---|---|
+| `accumulate(5)` | `10` | `10` ✅ |
+| `accumulate(0)` | `0` | **`-1`**（倒序跑了 i=0 与 i=-1） |
+
+修法按 §40.3 的同一套取舍分两档：
+
+- **常量能判定的空区间**（`range(0)`、`range(2, 2)`）：不产出循环块，只留一条 `unsupported`
+  诊断——Python 的「不执行」块模型没有对应形状，硬造一个会执行一次的块等于伪造还原。
+- **非常量终点**（`range(n)`、`range(a, b)`）：结构照出块，另记一条 `semantic-drift` 诊断，
+  面板标「语义可能不同」。
+
+为此 `SerializeDiagnostic.reason` 增加了第四个值 `semantic-drift`：它与 `unsupported`
+必须分开显示——「块没搭出来」和「块搭出来了、但语义和原文不同」是两件事，混成「未识别」
+会让用户去找一句根本没出现的语句。面板同步改了三处文案（中英各一）：标题横幅
+「其中 N 处没能完整还原……结构或语义与原文不同」、列表标题「没能完整还原的语句」、
+逐条标签「语义可能不同」。
+
+### 41.3 第二个真问题：两条路径的词汇表不相交
+
+「再生成 → 与原文逐块比」按 §31 的原样口径**今天做不到**，原因不是判据写错，而是两条路径
+认的东西没有交集：
+
+| 路径 | 认什么 | 实测（本轮样本回灌） |
+|---|---|---|
+| 模板路径 | 222 个密码块 + 赋值 / 字面量 / 变量 | 算术+if 样本留 **3** 条诊断；while+if-elif-else 留 **9** 条 |
+| AST 路径 | 控制流（if/for/while/调用/下标/条件表达式）+ 少量基础块 | 不认任何密码块；调用只认本模块定义的函数 |
+
+模板路径的 `parseStatement` 兜底只有 `X = Y` 与原子表达式，`controls_if` / `controls_whileUntil`
+/ `math_arithmetic` 在载荷里连模板都没有（载荷 222 条全是密码块）。所以：
+
+- **AST 产物喂回模板路径必然留诊断**，闭链「载入 → 生成 → 再载入」不成立；
+- 反过来，本平台生成的代码喂给 AST 路径，密码块调用一条也翻不出来。
+
+顺带一个旁证：`verify:all` 的模板采集器本来就记着 `FIELD_COLLISIONS top: 2x{bit_expr_infix,bit_operation}`
+——两块对 XOR/AND/OR 生成的 Python 逐字相同，所以「模板路径会认出哪一块」本质上不可判定
+（它按模板顺序取先命中的那个）。这正是 §41.3 这类判据必须落在**结构计数**而不是块类型上的原因。
+
+这条缺口在测试里**钉住**（`已知缺口：模板路径读不回 AST 产物`，3 / 9 两条实测值）：它不是
+验收判据，而是提醒——等模板路径长出控制流支持，这两条会红，届时应把判据升级成
+「W2 与 W1 规范化后逐块相等」，而不是放宽数字。
+
+### 41.4 实测
+
+`tests/unit/ai-helper-reverse-ast-roundtrip.test.ts`：**15 条全绿**（7 样本 × 结构/再生 +
+5 个差分样本 + range 漂移 + 2 条缺口钉住）。同一轮把 `ai-helper-reverse-ast.test.ts`
+扩到 15 条（新增 `range(4)` 常量闭合、`range(0)` 空区间两条）。
+
+真实无头 Chromium（`c2w-ast-e2e.mjs`，同一 dev 实例）：
+
+| 判据 | 实测 |
+|---|---|
+| 解析 | 28 块 / 1 函数 / 6 语句 |
+| 横幅 | 「其中 1 处没能完整还原，逐条列在下面；结构或语义与原文不同，请手工核对。」 |
+| 逐条标签 | 「第 2 行 **语义可能不同** `mixed = state ^ round_key` 按位运算映射到 bit_operation…」 |
+| 载入 / 再生成 / 试运行 | 28 块、8/8 片段、运行结束无输出，控制台 0 错误 |
+
+### 41.5 本轮门禁（整树实跑）
+
+| 项 | 命令 | 结果 |
+|---|---|---|
+| 单测 | `npx vitest run` | **107 文件 / 1149 通过 1 跳过**（§40 是 106 / 1133） |
+| lint | `npm run lint:check` | 0 错误 / 0 警告 |
+| 类型 | `npx vue-tsc --noEmit` | 0 |
+| 构建 | `npm run build` + `npm run build:check-bundle` | rc=0；入口 57 925 / 65 536 字节（`index-nk0M6GZZ.js`） |
+| 整树门禁 | `npm run verify:all` | **rc=0**；demos 60/60、contract 0 errors、docs 0 broken、mermaid 0 failed、`FIELD_CHECK ok`、`CLOSURE_CHECK ok names=226`、模板 29/29 |
+
+### 41.6 下一步
+
+1. **统一词汇表**（本轮量出来的真缺口）：让模板路径认得核心控制流，或者让 AST 路径认得密码块。
+   前者能救「闭链」，后者能救「参考实现里的原语调用」；两条都要动 222 块的模板层，不是小改。
+2. 覆盖扩展：推导式、切片、`import` 后的已知原语调用。
+3. 多 return / 早退策略。
+
+## 42. P2.3c：模板路径长出核心语法层，闭链成立（2026-11-17 下午）
+
+§41.3 量出来的缺口：模板路径只认 222 个密码块的代码字体，控制流一条也不认。后果不只是
+「AST 产物读不回」——**用户用「控制流编排 / 基础数学」搭出来的工作区，导出代码后再
+「从代码生成工作区」会整段失败**。本轮把这一层补上。
+
+### 42.1 改了什么
+
+| 文件 | 改动 |
+|---|---|
+| `reverse/core-syntax.ts`（新，22 行，只是出口） | 说明分层与纪律，转出下面三个文件 |
+| `reverse/core/types.ts`（新，22 行） | `ParsedStatement` / `CoreContext`（含漂移诊断收集器） |
+| `reverse/core/expressions.ts`（新，354 行） | 按 Python **运算符优先级**拆表达式；产出 `math_arithmetic` / `math_modulo` / `bit_operation` / `logic_compare` / `logic_operation` / `logic_negate` / `logic_ternary` / `lists_create_with` / `lists_getIndex` / `procedures_call*` |
+| `reverse/core/statements.ts`（新，295 行） | 按**缩进**拆语句：`if/elif/else`、`while`、`for ... in range(...)`、`break/continue/pass`、末尾 `return`、赋值；产出 `controls_if` / `controls_for` / `controls_whileUntil` / `controls_flow_statements` |
+| `reverse/serialize.ts` | 支持虚拟节点 `chain`（语句体 → next 链）、`extraState` 透传、`controls_for` 的变量字段 |
+| `reverse/parser.ts` | `ParsedNode` 增加可选 `extraState` / `text`；表达式与语句入口改成**前后都 trim** |
+| `reverse/matchers.ts` | 纯槽模板（无字面量骨架）不再参与匹配 |
+| `reverse/code-to-workspace.ts` | 语句层换成核心语法层；核心层的漂移诊断并进结果；外来代码判据只数「结构没搭出来」的诊断 |
+| `tests/unit/ai-helper-reverse-core.test.ts`（新，12 条） | 优先级、分支、循环、调用、return、文档串逐项钉住 |
+
+两条纪律沿用前几轮：**不猜**（拆不动就 `UNRESOLVED`，绝不换相近块）、**与 AST 路径同形**
+（字段名、输入名、`extraState` 必须逐字一致，否则闭链判据会把两边判成不同工作区）。
+
+### 42.2 两个被实测揪出来的真 bug
+
+1. **纯槽匹配器吞掉紧凑算术**：`data_value` 的通配模板 `zzfield_NUM` 没有字面量骨架，
+   `matchSegments` 的字段捕获是 `[\w.+-]+`，于是 `a-b`、`-a` 这类紧凑写法被读成
+   `data_value(NUM="a-b")`——再生成时原样吐出，代码级往返一直是绿的，所以从没暴露。
+   修法：`buildMatchers` 里跳过 `literalChars === 0` 的通配模板（代码注释本来就写着
+   「纯槽模板不参与匹配」，只是没实现）。
+2. **表达式入口只收尾部空白**：模板槽位捕获的是「逗号后那段原文」，常带一个前导空格
+   （`" 192"`）。以前靠上面那个纯槽匹配器兜住；修掉 1 之后 `[0] * 25` 里的 `192` 全部认不出，
+   ML-KEM-Encaps 的 `spaces-around-kwargs` 形变从 60/60 掉到 59/60，才顺着差分抓到这条。
+   修法：`parseExpression` / `parseStatement` 入口 `trim()`。
+
+### 42.3 表示层的一个决定：`ctrl_iterate` 与 `controls_for`
+
+`ctrl_iterate` 的模板是 `for i in range(32):` + 4 空格体，与核心 `controls_for` 生成的
+`for i in range(0, 3 + 1):` + 2 空格体只差缩进，`matchStatementSpan` 会把同一段代码读成前者。
+本轮让**结构化解析优先**：两条路径都落到 `controls_for`。语义相同（TIMES≥1 时都执行 TIMES
+次），代价是用户若用 `ctrl_iterate` 搭了工作区，重新导入后拿到的是 `controls_for`——视觉上
+换了一块，运行行为不变。要统一到 `ctrl_iterate` 需要它的 TIMES 是字段（不能接变量），
+`range(n)` 仍然表达不了，留作后续。
+
+### 42.4 实测
+
+**闭链判据**（`ai-helper-reverse-ast-roundtrip.test.ts`，取 §31 的同一把尺子）：
+AST 产物 → 生成器出代码 → **模板路径**读回 → 再生成的代码与第一次逐字相同（忽略 `X = None`
+前导行）。6/6 样本通过；`range(n)` 样本明确不在内（生成器把非常量区间展开成
+`upRange`/`downRange` + `i_end`，这段代码两条路径都读不回，对应 §41.2 的漂移）。
+
+| 判据 | 改前 | 改后 |
+|---|---|---|
+| 算术 + if 样本：模板路径读 AST 产物 | 3 条诊断 | **0 条**，闭链相等 |
+| while + if-elif-else 样本 | 9 条诊断 | **0 条**，闭链相等 |
+| 助手函数互调 / 列表下标 / 条件表达式 / for range(4) | 均留诊断 | **0 条**，闭链相等 |
+| 60 demo 形变回归（8 种形变） | 60/60 | **60/60** |
+| 60 demo 代码级往返 | 60/60 | **60/60** |
+
+**真实无头 Chromium**（同一 dev 实例，三个脚本）：
+
+| 脚本 | 结果 |
+|---|---|
+| `c2w-combo-fixed-e2e.mjs`（524 行生成代码，正常路径） | **1494 块 / 1 函数 / 0 条未识别**，载入成功，控制台 0 错误 |
+| `c2w-ast-e2e.mjs`（外部 Python + 推导式） | AST 路径 28 块 / 6 语句；2 条诊断（按位漂移 + ListComp）；载入 28 块；再生成 8/8；试运行正常 |
+| `c2w-foreign-e2e.mjs`（LLM 风格 AES） | **改口径**：不再「零块拒绝」，而是 AST 部分还原 23 块 / 2 函数、2 条带行号诊断、可载入（§39 的旧口径被 §40 取代，脚本与截图已更新；旧截图保留） |
+
+### 42.5 本轮门禁（整树实跑）
+
+| 项 | 命令 | 结果 |
+|---|---|---|
+| 单测 | `npx vitest run` | **108 文件 / 1168 通过 1 跳过**（§41 是 107 / 1149） |
+| lint / 类型 | `npm run lint:check` / `npx vue-tsc --noEmit` | 0 错误 0 警告 / 0 |
+| 构建 | `npm run build` + `npm run build:check-bundle` | rc=0；入口 57 925 / 65 536 字节（`index-lwqAS5Se.js`） |
+| 整树门禁 | `npm run verify:all` | **rc=0**；demos 60/60、contract 0 errors、docs 0 broken、`FIELD_CHECK ok`、`CLOSURE_CHECK ok names=226`、模板 29/29 |
+
+> 过程中主机 `/tmp`（16 G tmpfs）被历史临时目录吃满（15 G），门禁一度 ENOSPC 失败；
+> 清掉 `/tmp/dsh-*` 等 harness 临时目录后重跑，以上数字都是重跑结果。
+
+### 42.6 仍然缺什么
+
+1. **非常量 `range`**：`range(n)` 生成的代码用 `upRange`/`downRange`，两条路径都读不回；
+   块模型的空区间语义仍与 Python 不同（§41.2 已按常量/非常量分档提示）。
+2. **`ctrl_iterate` 的表示统一**：见 §42.3。
+3. **外来代码里的密码块调用**：AST 路径仍不认 `aes_round(...)` 这类调用（模板路径认识它们的
+   代码形态，但只在没有推导式等「读不回」构造时才接管）。
+4. 推导式/切片：两条路径都还没有对应块。
+
+## 43. P2.3d 第一刀：外来代码里的密码块调用接上块（2026-11-17 下午）
+
+§42.6 第 3 条是「两条路径真正合一」剩下的硬缺口：LLM 写的参考实现里明明调用的是我们自己的
+原语名（`sha3_absorb` / `sha3_squeeze` / `aes_sub_bytes`），AST 路径却只认「本模块定义过的
+函数」，于是这些调用被逐条报成「工作区里没有的函数」——块就在工具箱里，读不回来。
+
+### 43.1 判据：调用名 + 参数个数，逐字对得上才认
+
+模板路径认的是「块生成出来的代码形态」，AST 路径认的是「Python 语法结构」。接这两种词汇表
+不能靠相似度，只能靠**块自己吐出来的代码**：采集器采集每个块的默认模板时，顺带记下它的
+连接能力；运行时把「单行、参数只由位置槽位与字面量关键字参数组成」的模板读成调用签名：
+
+| 模板形态 | 结论 | 理由 |
+|---|---|---|
+| `sha3_squeeze(zzsigv_STATE, zzsigv_OUTLEN, rate_bytes=136)` | **认**：调用名 `sha3_squeeze`、2 个位置参数、槽位 `[STATE, OUTLEN]` | 字面量关键字参数就是块的默认字段；调用方省略它时 Python 默认值与块默认值一致 |
+| `sha3_pad(decodeHexBytes(zzsigv_INPUT), ...)` | 不认 | 参数里嵌了别的调用，位置与块输入不再一一对应 |
+| `aes_add_round_key(...)` 那种多行展开 | 不认 | 多行模板是「一条语句展开成几行」，单个调用表达式对不上它的边界 |
+| `zzfield_*` / `zzsigs_*` 槽位 | 不认 | 字段槽要回填取值、语句槽要接语句链，v1 没有这两条通道 |
+| 同一「调用名 + 参数个数」对应两个块 | **两个都不收**，记进 `ambiguous` | 先到先得会引入随机性；宁可报「没有对应块」 |
+
+### 43.2 改了什么
+
+| 文件 | 改动 |
+|---|---|
+| `scripts/ai-helper-variants.ts` | 采集时从真实块对象读 `io: {output, previous, next}`，写进载荷 |
+| `reverse/field-templates.json`（+ 存档副本） | 222 个块各多一份 `io`（+1112 行）；`FIELD_SUMMARY` 各项计数不变 |
+| `reverse/primitive-calls.ts`（新，约 170 行） | 模板 → 调用签名索引；`lookup(call, arity)` / `arities(call)` / `ambiguous` / `size` |
+| `reverse/matchers.ts` | `BlockFieldTemplate` 增加可选 `io`（老载荷没有 → 索引整体为空，退回到旧行为） |
+| `reverse/ast/ir-shared.ts` | `IrExpr` / `IrStmt` 增加 `primitive` 节点；`Ctx` 增加原语索引 |
+| `reverse/ast/ir-expr.ts` | 调用统一走 `callToIr(node, ctx, mode)`：procedure → 已知原语 → 拒绝；拒绝分三档（名字认识但参数个数不对 / 块不能当值 / 值块不能当语句） |
+| `reverse/ast/ir.ts` / `blocks.ts` | 语句位置的调用复用同一函数；原语节点按模板顺序把实参接到输入槽 |
+| `reverse/ast/index.ts` / `reverse/code-to-workspace.ts` | 两段式入口把载荷索引传给 AST 路径 |
+| `tests/unit/ai-helper-reverse-primitives.test.ts`（新，9 条） | 真载荷读数 + 合成载荷边界（撞名、多行、字段槽、语句槽、无 io） |
+| `tests/unit/ai-helper-reverse-ast.test.ts`（+3 条） | 外来代码里的原语调用出块；参数个数不对 / 带关键字参数各有可读原因 |
+| `experiments/.../c2w-primitives-e2e.mjs`（新） | 真实无头 Chromium 里的原语调用路径验收 |
+
+### 43.3 索引读数
+
+| 项 | 值 |
+|---|---|
+| 载荷块数 | 222（有模板 220） |
+| 进索引的调用 | **66** 条，覆盖 66 个块 |
+| 撞名 | **0** |
+| 形态 | 全部是**值块**（`output=true`，无前驱/后继）；语句块里没有「单行纯调用」形态 |
+| 名字 ≠ 块类型的例子 | `pq_byte_concat` 吐 `bytes_concat`、`sponge_absorb` 吐 `sha3_absorb`、`hash_hmac` 吐 `hmac_sha256` |
+
+为什么只有 66 条：约束是「**逐字**对得上」，宁可漏也不猜。`sha3_pad` 有两个块（海绵函数
+`sponge_pad` 与十六进制入口 `hash_sha3_pad_hex`），后者的模板参数里嵌了 `decodeHexBytes(...)`，
+因此只有前者进索引——`sha3_pad(x)` 不会二义。
+
+### 43.4 实测
+
+**真实无头 Chromium**（`c2w-primitives-e2e.mjs`；样本是没有生成器题头、且本模块没定义
+`sha3_*` 的外部 Python，推导式保证模板路径判成外来代码）：
+
+```python
+def expand(seed, block):
+    absorbed = sha3_absorb(seed, block)
+    squeezed = sha3_squeeze(absorbed, 32)
+    return squeezed
+
+TABLE = [v for v in range(4)]
+```
+
+| 步骤 | 结果 |
+|---|---|
+| 解析 | **10 块 / 1 函数 / 2 条语句**；1 条带行号诊断（第 6 行 `ListComp`，推导式仍没有块） |
+| 载入 | 对话框关闭，画布 **10 块**（截图 `out/c2w-primitives.png`） |
+| 再生成 | `def expand(seed: bytes, block: bytes):` / `absorbed = sha3_absorb(seed, block, rate_bytes=136)` / `squeezed = sha3_squeeze(absorbed, 32, rate_bytes=136)` |
+| 试运行 | 正常结束、无输出（原语块只在函数体里，不触发执行） |
+| 控制台 | 0 错误 |
+
+再生成那三行是关键：如果调用被丢掉，`sha3_absorb` / `sha3_squeeze` 不可能出现在产物里；
+参数顺序（`seed, block` 与 `absorbed, 32`）也证明模板槽位按原序接了线，而不是靠名字猜。
+
+**回归**（同一 dev 实例，改动后重跑）：
+
+| 脚本 | 结果 |
+|---|---|
+| `c2w-ast-e2e.mjs` | 28 块 / 1 函数 / 6 语句，2 条诊断（按位漂移 + ListComp），载入 28 块，再生成 8/8，试运行正常 |
+| `c2w-foreign-e2e.mjs` | 23 块 / 2 函数，2 条带行号诊断，可载入 |
+
+### 43.5 纪律与已知边界
+
+1. **不做类型推断**：块上的 `setCheck` 仍由 Blockly 在连接时判定，AST 侧只保证结构；
+   形参类型仍落默认 `bytes`（§35.3）。
+2. **关键字参数一律拒绝**：模板里的 `rate_bytes=136` 是**默认字段**；调用方另给关键字意味着
+   要改字段值，而 v1 没有字段回填通道，认下来会静默用默认值——宁可报出来。
+3. **语句位置的调用还没有块**：66 条里没有「单行纯调用」的语句块；像 `aes_add_round_key(state, key)`
+   单独成句的形态仍是「值块不能单独作语句」的诊断。要接上得先有「丢弃返回值」的表示，
+   或让这类块模板变成单行（属生成器/块定义层改动，不在本轮）。
+4. **识别是封闭的**：只认载荷里那 222 个块吐出的名字；LLM 改名（`sha3_squeeze_bytes`）或换顺序
+   参数都不会被硬凑。
+
+### 43.6 本轮门禁（整树实跑）
+
+| 项 | 命令 | 结果 |
+|---|---|---|
+| 单测 | `npx vitest run` | **109 文件 / 1180 通过 1 跳过**（§42 是 108 / 1168；新增 1 文件 12 条） |
+| lint / 类型 | `npm run lint:check` / `npm run type-check` | 0 错误 0 警告 / 0 |
+| 构建 | `npm run build` + `node scripts/check-bundle-budget.mjs` | rc=0；入口 57 925 / 65 536 字节（`index-Cq4Caclm.js`） |
+| 整树门禁 | `npm run verify:all` | **rc=0**；demos 60/60、contract 0 errors、docs 0 broken、`FIELD_CHECK ok blocks=222`、`CLOSURE_CHECK ok names=226` |
+
+### 43.7 仍然缺什么
+
+1. **推导式 / 切片**：`[v for v in ...]`、`a[1:2]` 两条路径都没有块（本轮样本里仍是唯一的
+   带行号诊断）。
+2. **多 return**：块模型只有一个 RETURN 口（§41）；分支里的 return 仍报不支持。
+3. **非常量 `range`** 与 `ctrl_iterate` 的表示统一（§42.3 / §42.6）。
+4. **语句位置的原语调用**（见 43.5 第 3 条）。
+
+## 44. P2.3d 收口：range(n)、切片、字面量推导式（2026-11-17 下午）
+
+§43.7 剩下的两条一起做：**一参数 `range(n)` 的表示统一**（第 2 条）与**切片 / 推导式**
+（第 1 条）。前者的价值不只是「好看」——它把 `for i in range(n)` 从「生成 upRange/downRange
+辅助函数、两条路径都读不回」变成「生成什么就能读回什么」。
+
+### 44.1 range(n)：`ctrl_iterate` 的 TIMES 改成值输入
+
+问题在块模型：`controls_for` 的 FROM/TO 是**闭区间**，起点大于终点时倒序执行，与 Python 的
+`range(n)`（n ≤ 0 时一次也不执行）语义不同；Blockly 的 Python 生成器对着非常量端点还会展开成
+`upRange`/`downRange` 两个辅助函数，模板路径不可能读回。`ctrl_iterate` 的代码形态
+`for i in range(TIMES):` 正好是 Python 原样，但它原来的 TIMES 是数字字段，接不了变量。
+
+| 文件 | 改动 |
+|---|---|
+| `src/blocks/ctrl/iterate.ts` | TIMES：数字字段 → 值输入（`setCheck('Number')`），默认 `data_value(32)` 影子块 |
+| `src/generators/{python,javascript}/ctrl/iterate.ts` | `valueToCode(TIMES)`，空着时回落 `'32'`；JS 侧同样是 `< TIMES` |
+| `src/blocks/procedure/blocks/template-prefill.ts` | BODY 预填的循环 state：`inputs.TIMES.shadow = data_value(NUM)` |
+| `scripts/verify-templates.ts` | `bodyTimes` 判据改读 `getInputTargetBlock('TIMES')` 的 NUM；期望块集合加 `data_value` |
+| `src/utils/migration/json-migrate.ts` / `xml-migrate.ts` | 旧工作区 `fields.TIMES` → `inputs.TIMES` 影子块（JSON 与 XML 两条链，幂等） |
+| `src/utils/projectCodegen.ts` | 项目生成代码前也走同一套迁移（旧项目不迁移会按默认 32 生成） |
+| `reverse/core/statements.ts` | 一参数 `range(expr)` → `ctrl_iterate`；两/三参数仍 `controls_for`（闭区间与空区间规则保留） |
+| `reverse/ast/ir.ts` / `ir-shared.ts` / `blocks.ts` | 新 IR 语句 `iterate`；一参数 `range` 直接落 `ctrl_iterate`，不再走 `TO = n - 1` |
+| `docs/blocks/ecc-sbox{,.en}.md` | `ctrl_iterate` 的「输入→输出」列改成 `Number→—` |
+| `docs/blocks/BLOCK-IO-CONTRACT.json` | `npm run block-io:write` 重生成：TIMES 是 type 1（值输入、check Number），fields 只剩 VAR |
+| `src/services/ai-helper/block-index.json`（+ 存档副本） | 重生成；`blocksearch eval` recall@5 仍 100%（30/30） |
+
+**语义判据**（两条路径同一套）：
+
+| Python | 落块 | 生成 | 说明 |
+|---|---|---|---|
+| `for i in range(4)` | `ctrl_iterate(TIMES=data_value 4)` | `for i in range(4):` | 逐字往返 |
+| `for i in range(n)` | `ctrl_iterate(TIMES=variables_get n)` | `for i in range(n):` | **不再有漂移**；n ≤ 0 一次不执行，与 Python 一致 |
+| `for i in range(0)` | `ctrl_iterate(TIMES=0)` | `for i in range(0):` | 常量空区间不再拒绝 |
+| `for i in range(2, 5)` | `controls_for(FROM 2, TO 4, BY 1)` | 闭区间代码 | 保留既有规则与漂移诊断 |
+
+迁移的验收：「迁移后的旧工作区照旧生成 `range(10)`」——把带 `fields.TIMES='10'` 的 JSON 过一遍
+迁移、`workspaces.load` 进真实工作区、Python 生成器输出里必须有 `for i in range(10):`。
+
+### 44.2 切片：`arr_slice`
+
+块的语义是 `crypto_array_slice(list, start, length)`（起点可从末尾负计、长度须非负），与
+Python 的 `a[i:j]` 只在**起终点同号且 j ≥ i** 时逐字等价：
+
+| 写法 | 结论 |
+|---|---|
+| `a[1:2]` / `a[0:4]` / `a[-2:-1]` | 出块：`arr_slice(LIST, START, LENGTH)`，两个字面量时 LENGTH 直接折成 `j - i` |
+| `a[i:j]`（非字面量） | 出块，但记 `semantic-drift`：终点小于起点时块因负长度报错，Python 返回空列表 |
+| `a[1:]` / `a[:]` | 拒绝：要长度，块模型没有 `len()` |
+| `a[1:2:3]` | 拒绝：带步长 |
+| `a[-2:2]` / `a[2:1]` | 拒绝：一正一负时 `j - i` 不是元素个数；终点小于起点块要求非负长度 |
+
+两条路径产出**同一个块**：AST 用一个合成原语节点（`{type:'arr_slice', inputs:['LIST','START','LENGTH']}`），
+模板路径在核心表达式层直接产出 `arr_slice` 节点；生成代码 `crypto_array_slice(...)` 又能被模板
+路径读回同一个块，闭链成立。
+
+### 44.3 推导式：只认字面量 `range`，展开成列表块
+
+块模型没有「映射/收集」原语，而且 `lists_setIndex` 的生成器被本项目覆盖成**只做按下标赋值**
+（`list[at] = value`），没有 append 可用——所以推导式不做「空列表 + 循环 + append」的脱糖，只做
+**字面量区间的静态展开**：
+
+- `[v for v in range(4)]` → `lists_create_with` 四项（0/1/2/3）；
+- `[v * 2 for v in range(3)]` → 三项，循环变量在表达式树里被代换成字面量；
+- `range(0)` / `range(4, 2)` → `lists_create_empty`；
+- 非字面量区间、带 `if`、多个生成器、展开超过 64 项 → 拒绝并给出具体原因（不猜次数）。
+
+两条路径同样产出 `lists_create_with` + `itemCount`：AST 走 `listCompToIr`（IR 树替换），模板路径
+在列表字面量分支先识别顶层 `for`（节点树替换）。生成代码 `[0, 1, 2, 3]` 两边一致。
+
+### 44.4 实测
+
+**真实无头 Chromium**（`c2w-range-slice-e2e.mjs`；这段代码刻意只用模板路径能读的写法）：
+
+```python
+def expand(state, n):
+    head = state[0:4]
+    table = [v * 2 for v in range(4)]
+    acc = 0
+    for i in range(n):
+        acc = acc + i
+    return acc
+```
+
+| 步骤 | 结果 |
+|---|---|
+| 解析 | **29 块 / 1 函数 / 0 条未识别**（提示与诊断都为空） |
+| 载入 | 画布 29 块；`ctrl_iterate` 的「循环」槽接的是变量 `n`（截图 `out/c2w-range-slice.png`） |
+| 再生成 | `head = crypto_array_slice(state, 0, 4)`、`table = [0 * 2, 1 * 2, 2 * 2, 3 * 2]`、`for i in range(n):` |
+
+**回归**（同一 dev 实例）：
+
+| 脚本 | 结果 |
+|---|---|
+| `c2w-ast-e2e.mjs` | 26 块（原 28：controls_for 的 FROM/TO/BY 三个数字块换成 ctrl_iterate 的一个 TIMES），再生成 8/8，试运行正常 |
+| `c2w-foreign-e2e.mjs` | 25 块（原 23），2 条带行号诊断不变，可载入 |
+| `c2w-primitives-e2e.mjs` | 16 块（原 10：推导式那行现在展开成 6 个块，诊断从 1 条降到 0），再生成与试运行正常 |
+
+**闭链与差分**（`ai-helper-reverse-ast-roundtrip.test.ts`）：
+
+- `range(n)` 样本进入闭链集合，**通过**（生成代码不再含 `upRange`，模板路径 0 诊断，再生成逐字相同）；
+- 差分执行：`accumulate(5)` 两边一致；`accumulate(0)` 两边都是 `0`（原实现生成 `[-1]`）。
+
+### 44.5 本轮门禁（整树实跑）
+
+| 项 | 命令 | 结果 |
+|---|---|---|
+| 单测 | `npx vitest run` | **110 文件 / 1197 通过 1 跳过**（§43 是 109 / 1180） |
+| lint / 类型 | `npm run lint:check` / `npm run type-check` | 0 错误 0 警告 / 0 |
+| 构建 | `npm run build` + `npm run build:check-bundle` | rc=0；入口 57 925 / 65 536 字节（`index-zl_Qy8jB.js`） |
+| 整树门禁 | `npm run verify:all` | **rc=0**；contract 0 errors（契约已按新块形状重生成）、docs 0 broken、`FIELD_CHECK ok blocks=222`、`CLOSURE_CHECK ok names=226`、模板 29/29、demos 60/60 |
+
+> 受块面文字变化影响的两个派生量：`ctrl_iterate` 的 `times` 标签随数字字段消失，块词表从
+> 455 个 token 降到 454（`ai-helper-linkage.test.ts` 已按实际读数更新）；`docs/blocks` 行改了，
+> `npm run docs:index` 重建后 `doc-search` 的语料一致性检查恢复。
+
+### 44.6 仍然缺什么
+
+1. **非字面量区间的推导式**（`[f(v) for v in range(n)]`）：块模型没有 append，不脱糖；
+2. **带 `if` 的推导式**、多个生成器：同上；
+3. **省略终点的切片**（`a[i:]`）：需要 `len()` 之类的表示；
+4. **两/三参数 `range(a, b)` 的非常量端点**：仍走 `controls_for`，空区间倒序的漂移与诊断保留；
+5. **语句位置的原语调用**（§43.5 第 3 条）与**多 return**（§41）不变。
+
+
