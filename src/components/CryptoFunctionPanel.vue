@@ -303,7 +303,7 @@ async function handleExportAll() {
     await new Promise((r) => setTimeout(r, 0));
   }
   if (!states.length) return;
-  download(JSON.stringify({ blocks: { languageVersion: 0, blocks: states } }, null, 2), 'ciphercat_templates.json');
+  download(JSON.stringify({ blocks: { languageVersion: 0, blocks: states } }, null, 2), 'function_templates.json');
 }
 
 function exportWsBlock(id: string) {

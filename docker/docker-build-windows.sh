@@ -2,7 +2,7 @@
 # Cross-compile MetaCrypto Online IDE for Windows from Linux Docker
 set -e
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-IMAGE="localhost/ciphercat:tauri"
+IMAGE="localhost/metacrypto-online-ide:tauri"
 
 echo ">>> Build Docker image..."
 docker build -t "$IMAGE" -f "$PROJECT_DIR/docker/Dockerfile" "$PROJECT_DIR"

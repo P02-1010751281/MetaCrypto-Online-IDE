@@ -40,7 +40,7 @@ const CATALOG: DocCategory[] = [
   {
     id: 'platform',
     label: 'Project index',
-    files: [file('/docs/README.md', 'CipherCat documentation entry')],
+    files: [file('/docs/README.md', 'MetaCrypto Online IDE documentation entry')],
   },
 ];
 

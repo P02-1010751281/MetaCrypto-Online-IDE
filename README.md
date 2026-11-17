@@ -100,11 +100,11 @@ src/
 ├── utils/                      # 工具函数（toolbox-config / migration / markdown）
 ├── styles/                     # 全局样式 / CSS 变量
 └── assets/                     # 静态资源
-docs/                           # 文档体系（guides/ 核心 + blocks/ 索引 + demos/ + standards/ 37 算法目录 + papers/ 文献索引）
+docs/                           # 文档体系（guides/ 核心 + blocks/ 索引 + demos/ + standards/ 40 个标准目录 + papers/ 文献索引）
 demos/                          # Blockly 工作区示例（含官方向量期望）
 ```
 
-## 支持的密码学模块（194 个自定义积木块，17 个工具箱类目）
+## 支持的密码学模块（224 个自定义积木块，17 个工具箱类目）
 
 | 类目 | 代表能力 |
 |------|----------|
@@ -120,7 +120,7 @@ demos/                          # Blockly 工作区示例（含官方向量期�
 | 后量子密码 | ML-KEM/ML-DSA 格基构件与阶段；另含 SLH-DSA、纠错码教学构件 |
 | 函数与 Blockly 原生类目 | 29 个函数模板及变量、数学、数组、逻辑等 Blockly 原生块 |
 
-> 总数按 `src/blocks/index.ts` 的 `ALL_BLOCK_TYPES` 递归展开、去重得到 195 个活动块类型。另有 29 个函数模板注册项，其中 3 个基础 `crypto_*` 块已计入这 195 个类型，26 个 `proc_*` 模板是额外类型；块与模板合并去重后共 221 个类型。此外还注册 1 个仅供存量工作区加载的兼容身份 `ctrl_assign`（不在工具箱、不计入 195 与 221）。工具箱 17 类目含 4 个 Blockly 原生类目。上表用于说明能力范围，不提供可能重叠的分类小计。
+> 总数按 `src/blocks/index.ts` 的 `ALL_BLOCK_TYPES` 递归展开、去重得到 224 个活动块类型。另有 29 个函数模板注册项，其中 3 个基础 `crypto_*` 块已计入这 224 个类型，26 个 `proc_*` 模板是额外类型；块与模板合并去重后共 250 个类型。此外还注册 1 个仅供存量工作区加载的兼容身份 `ctrl_assign`（不在工具箱、不计入 224 与 250）。工具箱 17 类目含 4 个 Blockly 原生类目。上表用于说明能力范围，不提供可能重叠的分类小计。计数口径见 [`docs/standards/CONFORMANCE-INVENTORY.md`](docs/standards/CONFORMANCE-INVENTORY.md)，由 `npm run verify:templates` 枚举全部已注册类型守住；上面四个数随主分支变动，历史版本以该版本树内的清单为准（`v2.0.0` tag 树为 222 个活动块、248 个合并类型）。
 
 ## 代码生成示例
 
@@ -190,6 +190,13 @@ function ntt(a, q = 3329, n = 256) {
     return res;
 }
 ```
+
+## 版本与引用
+
+- **版本**：2.0.0（仓库 tag [`v2.0.0`](https://github.com/P02-1010751281/MetaCrypto-Online-IDE/tree/v2.0.0)，与 `package.json` 的 `version` 一致）
+- **桌面可执行文件**：`metacrypto-online-ide`（见 [`src-tauri/tauri.conf.json`](src-tauri/tauri.conf.json) 的 `mainBinaryName`）
+- **对应文章**：L. Zhang, T. Luo, T. Ding, C. Xiao, J. Wang, "MetaCrypto online: A model-driven visual development platform for cryptographic engineering," *SoftwareX* 35 (2026) 102943, <https://doi.org/10.1016/j.softx.2026.102943>
+- **软件归档（可复现胶囊）**：v2.0.0 的 Zenodo 记录建立后在此登记
 
 ## 许可证
 

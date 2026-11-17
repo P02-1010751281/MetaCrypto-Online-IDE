@@ -105,7 +105,7 @@ src/
 └── assets/                     # Static assets
 ```
 
-## Supported Crypto Modules (194 custom blocks, 17 toolbox categories)
+## Supported Crypto Modules (224 custom blocks, 17 toolbox categories)
 
 | Category | Representative capabilities |
 |------|--------|
@@ -121,7 +121,7 @@ src/
 | Post-quantum cryptography | ML-KEM/ML-DSA lattice components and stages; SLH-DSA and code-based teaching components |
 | Functions and Blockly-native categories | 29 function-template registrations and native variables, math, arrays and logic |
 
-> The authoritative total is 194 active custom block types after recursively expanding and deduplicating `ALL_BLOCK_TYPES` in `src/blocks/index.ts`. There are 29 function-template registrations: three base `crypto_*` blocks are already included in the 194, while 26 `proc_*` templates are additional types. The deduplicated union contains 220 types. One further identity, `ctrl_assign`, is registered only so legacy workspaces still load: it is absent from the toolbox and excluded from both 194 and 220. The 17 toolbox categories include four Blockly-native categories. The table describes scope, not additive category counts. This educational surface is not a CAVP/ACVTS, CMVP/FIPS 140-3 or formal-verification claim.
+> The authoritative total is 224 active custom block types after recursively expanding and deduplicating `ALL_BLOCK_TYPES` in `src/blocks/index.ts`. There are 29 function-template registrations: three base `crypto_*` blocks are already included in the 224, while 26 `proc_*` templates are additional types. The deduplicated union contains 250 types. One further identity, `ctrl_assign`, is registered only so legacy workspaces still load: it is absent from the toolbox and excluded from both 224 and 250. The 17 toolbox categories include four Blockly-native categories. The table describes scope, not additive category counts; the counting rules are recorded in [`docs/standards/CONFORMANCE-INVENTORY.md`](docs/standards/CONFORMANCE-INVENTORY.md) and guarded by `npm run verify:templates`, which enumerates every registered type; these four counts follow the main branch, so historical versions should be read from the inventory inside that version's tree (the `v2.0.0` tag tree records 222 active blocks and 248 types after merging). This educational surface is not a CAVP/ACVTS, CMVP/FIPS 140-3 or formal-verification claim.
 
 The browser is for Blockly editing, code generation and user trials. Trusted randomness assessment, statistical testing, isolated execution and final reports belong to the `metacrypt_server` backend.
 
@@ -193,6 +193,13 @@ function ntt(a, q = 3329, n = 256) {
     return res;
 }
 ```
+
+## Version and citation
+
+- **Version**: 2.0.0 (repository tag [`v2.0.0`](https://github.com/P02-1010751281/MetaCrypto-Online-IDE/tree/v2.0.0), matching `version` in `package.json`)
+- **Desktop executable**: `metacrypto-online-ide` (see `mainBinaryName` in [`src-tauri/tauri.conf.json`](src-tauri/tauri.conf.json))
+- **Related article**: L. Zhang, T. Luo, T. Ding, C. Xiao, J. Wang, "MetaCrypto online: A model-driven visual development platform for cryptographic engineering," *SoftwareX* 35 (2026) 102943, <https://doi.org/10.1016/j.softx.2026.102943>
+- **Software deposit (reproducible capsule)**: to be recorded here once the Zenodo record for v2.0.0 exists
 
 ## License
 

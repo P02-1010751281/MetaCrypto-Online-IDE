@@ -578,7 +578,7 @@
   "provenance": {
     "extracted_by": {
       "kind": "llm",
-      "name": "CipherCat SpecCard 第二、三张卡（同一快照）",
+      "name": "MetaCrypto Online IDE SpecCard 第二、三张卡（同一快照）",
       "model": "deepseek-v4.1-flash (dsh agent)"
     },
     "review": {

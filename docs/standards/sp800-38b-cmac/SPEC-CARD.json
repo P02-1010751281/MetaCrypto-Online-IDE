@@ -173,7 +173,7 @@
   "provenance": {
     "extracted_by": {
       "kind": "llm",
-      "name": "CipherCat AI helper 调研（SpecCard 骨架首例）",
+      "name": "MetaCrypto Online IDE AI helper 调研（SpecCard 骨架首例）",
       "model": "deepseek-v4.1-flash (dsh agent)"
     },
     "review": {

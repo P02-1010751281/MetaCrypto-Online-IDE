@@ -5,7 +5,7 @@
  * 在「加载后的活工作区」上复用同一套块遍历，而不依赖 roundtrip 的其余逻辑。
  *
  * 只做三件事：
- *   1. bootBlockly()：注入 jsdom 全局并注册 Blockly 核心 / blocks / CipherCat 块 / Python 生成器
+ *   1. bootBlockly()：注入 jsdom 全局并注册 Blockly 核心 / blocks / MetaCrypto Online IDE 块 / Python 生成器
  *   2. loadWorkspace()：把 demo JSON 装进一个活的 Blockly.Workspace
  *   3. readLiveTree()：把活工作区读回与 demo JSON 同形的树（字段取活值，变量补名字）
  *

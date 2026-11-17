@@ -110,7 +110,7 @@
 | [STRUCTURED-ENTRY-SCHEMA.md](./standards/STRUCTURED-ENTRY-SCHEMA.md) | 函数、原语、公式和算法阶段的统一条目字段 |
 | [SOURCE-SPLIT-COVERAGE.md](./audits/standards/SOURCE-SPLIT-COVERAGE.md) | source 原文到结构化条目的覆盖审计与验收标准 |
 | [SOURCE-SPLIT-INVENTORY.md](./audits/standards/SOURCE-SPLIT-INVENTORY.md) | 229 个结构化条目的逐项 source 回链清单 |
-| [CONFORMANCE-INVENTORY.md](./standards/CONFORMANCE-INVENTORY.md) | 222 个活动块（另 1 个兼容身份）、29 个 Procedure 模板和 60 个 Demo 的验证对象与证据范围 |
+| [CONFORMANCE-INVENTORY.md](./standards/CONFORMANCE-INVENTORY.md) | 224 个活动块（另 1 个兼容身份）、29 个 Procedure 模板和 60 个 Demo 的验证对象与证据范围 |
 | [ENDPOINT-MATRIX.md](./demos/ENDPOINT-MATRIX.md) | 块端点（标准公开算法接口）对照表 |
 | [PRODUCT-CERTIFICATION-FEASIBILITY.md](./standards/PRODUCT-CERTIFICATION-FEASIBILITY.md) | 正式认证路径、候选产品边界、当前缺口与决策顺序 |
 
@@ -136,7 +136,7 @@ flowchart TD
   USER --> CAPABILITY["CAPABILITY-MAP.md · 能力地图"]
   ARCHITECTURE --> BLOCKLY["BLOCKLY-GUIDE.md · Blockly 指南"]
   ARCHITECTURE --> DEMO["DEMO.md · Demo 指南"]
-  ARCHITECTURE --> AUDIT["AUDIT-REPORT.md · 194 块 / 29 模板审计"]
+  ARCHITECTURE --> AUDIT["AUDIT-REPORT.md · 密码原语审计（2026-09-24 快照）"]
 ```
 
 ## 文档写作与命名规范
@@ -151,6 +151,6 @@ flowchart TD
 - **可视化编程**: Blockly 13.x
 - **桌面封装**: Tauri 2.x
 - **构建工具**: Vite + vue-tsc
-- **代码规范**: ESLint 9.x + RULES.md
+- **代码规范**: ESLint 10.x + RULES.md
 - **本地存储**: IndexedDB
 - **代码生成**: JavaScript / Python

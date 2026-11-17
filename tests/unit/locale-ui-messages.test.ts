@@ -12,7 +12,7 @@
  *   2. 两个语言包的键集必须一致（否则某一边静默回退到中文或键名）；
  *   3. 英文文案里不许残留中文（中文界面允许保留拉丁术语，反向不成立）。
  *
- * 语言包是 CipherCat ↔ metacrypt_server 共用的权威源（scripts/sync-to-metacrypt.sh
+ * 语言包是 MetaCrypto Online IDE ↔ metacrypt_server 共用的权威源（scripts/sync-to-metacrypt.sh
  * 的 [3.8] 逐文件镜像），这里删键会让对面界面直接露出键名。
  */
 import { readFileSync, readdirSync } from 'node:fs';

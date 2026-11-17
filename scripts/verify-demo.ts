@@ -153,7 +153,7 @@ async function main() {
     process.exit(1);
   }
 
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ciphercat-verify-'));
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'metacrypto-verify-'));
   const results: Array<{ lang: string; pass: boolean; got: string; expect: string }> = [];
 
   // Python

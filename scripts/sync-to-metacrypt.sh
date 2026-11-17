@@ -320,7 +320,7 @@ cp "$CIPHER/src/constants/list-bridge.ts" "$CORE/constants/list-bridge.ts"
 echo "[3.5/4] Function Manager 面板（CryptoFunctionPanel.vue）"
 cp "$CIPHER/src/components/CryptoFunctionPanel.vue" "$META/frontend/src/features/blockly/components/CryptoFunctionPanel.vue"
 fix_imports "$META/frontend/src/features/blockly/components/CryptoFunctionPanel.vue"
-sed -i 's|ciphercat_templates.json|function_templates.json|g' "$META/frontend/src/features/blockly/components/CryptoFunctionPanel.vue"
+# 导出文件名两侧已统一为 function_templates.json（2026-11-17），此处不再需要 sed 改名。
 
 # ─── 3.6 项目存储端口（ProjectStore）—— 权威源在 MetaCrypto Online IDE，metacrypt 只镜像接口 ───
 # 只镜像 ProjectStore.ts（纯类型 + 错误类，零依赖）；

@@ -114,7 +114,7 @@ describe('mockAdapter（确定性）', () => {
   });
 
   it('空候选返回空选择（拒答），且不给自己编 note', async () => {
-    const emptyRequest: RewriteRequest = { question: 'CipherCat 支持哪些区块链共识算法', candidates: [] };
+    const emptyRequest: RewriteRequest = { question: 'MetaCrypto Online IDE 支持哪些区块链共识算法', candidates: [] };
     const result = await mockAdapter().rewrite(emptyRequest);
     expect(result.selections).toEqual([]);
     expect(result.note).toBeUndefined();

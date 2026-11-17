@@ -2,7 +2,7 @@
 # Tauri dev mode in Docker with X11 GUI (hot reload)
 set -e
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-IMAGE="localhost/ciphercat:tauri"
+IMAGE="localhost/metacrypto-online-ide:tauri"
 
 if ! docker image inspect "$IMAGE" &>/dev/null; then
   echo ">>> Image not found, building..."

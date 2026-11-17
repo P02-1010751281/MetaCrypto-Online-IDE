@@ -710,7 +710,7 @@ async function main() {
     (process.platform === 'win32' ? 'python' : 'python3');
 
   let pass = 0, fail = 0;
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ciphercat-tpl-'));
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'metacrypto-tpl-'));
   process.once('exit', () => fs.rmSync(tmpDir, { recursive: true, force: true }));
 
   for (const tc of cases) {

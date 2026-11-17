@@ -95,7 +95,7 @@ async function applyLocale(locale: 'en' | 'zh-hans'): Promise<void> {
   const core = await import('blockly/core');
   if (locale === 'en') core.setLocale(await import('blockly/msg/en'));
   else core.setLocale(await import('blockly/msg/zh-hans'));
-  // 块自定义消息（CRYPTO_* / PROC_* 等）在 CipherCat 的 locale 模块里，不属于 Blockly 上游词表。
+  // 块自定义消息（CRYPTO_* / PROC_* 等）在 MetaCrypto Online IDE 的 locale 模块里，不属于 Blockly 上游词表。
   const custom = await import('@/composables/locale');
   const messages = locale === 'en' ? custom.MESSAGES_EN : custom.MESSAGES_ZH_HANS;
   Object.assign(core.Msg as Record<string, string>, messages);

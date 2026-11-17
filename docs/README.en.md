@@ -111,7 +111,7 @@ These pages record extraction, splitting, evidence ledgers, and certification pr
 | [STRUCTURED-ENTRY-SCHEMA.en.md](./standards/STRUCTURED-ENTRY-SCHEMA.en.md) | Common entry fields for functions, primitives, formulas, and algorithm stages |
 | [SOURCE-SPLIT-COVERAGE.en.md](./audits/standards/SOURCE-SPLIT-COVERAGE.en.md) | Source-to-entry split coverage and acceptance boundary |
 | [SOURCE-SPLIT-INVENTORY.en.md](./audits/standards/SOURCE-SPLIT-INVENTORY.en.md) | Entry-by-entry source links for 229 structured entries |
-| [CONFORMANCE-INVENTORY.md](./standards/CONFORMANCE-INVENTORY.md) | Verification objects and evidence scope for 222 active blocks (plus 1 compat identity), 29 procedure templates, and 60 demos (Chinese only) |
+| [CONFORMANCE-INVENTORY.md](./standards/CONFORMANCE-INVENTORY.md) | Verification objects and evidence scope for 224 active blocks (plus 1 compat identity), 29 procedure templates, and 60 demos (Chinese only) |
 | [ENDPOINT-MATRIX.md](./demos/ENDPOINT-MATRIX.md) | Block endpoint (public standard algorithm interface) matrix (Chinese only) |
 | [PRODUCT-CERTIFICATION-FEASIBILITY.en.md](./standards/PRODUCT-CERTIFICATION-FEASIBILITY.en.md) | Formal certification routes, candidate product boundary, gaps, and decision sequence |
 
@@ -137,7 +137,7 @@ flowchart TD
   USER --> CAPABILITY["CAPABILITY-MAP.en.md · capability map"]
   ARCHITECTURE --> BLOCKLY["BLOCKLY-GUIDE.md · Blockly guide"]
   ARCHITECTURE --> DEMO["DEMO.md · demo guide"]
-  ARCHITECTURE --> AUDIT["AUDIT-REPORT.md · 194 blocks / 29 templates"]
+  ARCHITECTURE --> AUDIT["AUDIT-REPORT.md · primitive audit (2026-09-24 snapshot)"]
 ```
 
 ## Documentation style

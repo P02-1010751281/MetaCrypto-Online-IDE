@@ -8,7 +8,7 @@ const checker = resolve(process.cwd(), 'scripts/check-standard-inventory.mjs');
 
 describe('standard inventory source-line anchors', () => {
   it('rejects a line range that exceeds the linked local source', () => {
-    const fixture = mkdtempSync(join(tmpdir(), 'ciphercat-standard-anchor-'));
+    const fixture = mkdtempSync(join(tmpdir(), 'metacrypto-standard-anchor-'));
     const standards = join(fixture, 'docs/standards/fixture');
     mkdirSync(standards, { recursive: true });
     // 清单文件已移到 docs/audits/standards/，--write 直接写该目录，fixture 需预建。

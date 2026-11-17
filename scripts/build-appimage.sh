@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 在受限宿主上构建 CipherCat AppImage。
+# 在受限宿主上构建 MetaCrypto Online IDE 的 AppImage。
 #
 # 直接跑 `npx tauri build --bundles appimage` 会在三个与项目代码无关的
 # 宿主环境问题上失败，本脚本逐个绕过：
