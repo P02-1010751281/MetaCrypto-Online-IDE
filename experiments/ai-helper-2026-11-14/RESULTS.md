@@ -2980,4 +2980,166 @@ def expand(state, n):
 4. **两/三参数 `range(a, b)` 的非常量端点**：仍走 `controls_for`，空区间倒序的漂移与诊断保留；
 5. **语句位置的原语调用**（§43.5 第 3 条）与**多 return**（§41）不变。
 
+## 45. 落提交与跨仓镜像的定向同步（2026-11-17 傍晚）
+
+§40–§44 四轮的改动一直在工作区里没进 git（62 项）。本轮先落提交，再做 CipherCat →
+metacrypt 的镜像同步；同步**不做全量镜像**，只推真正漂移的核心文件。
+
+### 45.1 提交
+
+| 提交 | 内容 | 文件 |
+|---|---|---|
+| `e45f4d1` | 反解析补齐 AST 路径、核心语法层与闭包门禁 | 38（+6496 −98） |
+| `a406a75` | `ctrl_iterate` 的次数改为值输入，`range(n)` 不再漂移 | 19（+1310 −57） |
+| `5c5d964` | §37–§44 记录、四条 e2e 脚本与截图证据 | 12（+1927） |
+
+工作区从 62 项变 0 项；未推送（`main` 与 tag `v2.0.0` 的分叉状态未动）。
+
+### 45.2 漂移实测（同步前）
+
+用「逐文件 diff，剔除 `import` 行」量镜像区（`metacrypt_server/frontend/src/features/blockly/`），
+真漂移只有 6 个文件，全部来自 §44 这轮：
+
+| 镜像目标 | diff 行数 |
+|---|---|
+| `core/blocks/ctrl/iterate.ts` | 35 |
+| `core/blocks/procedure/blocks/template-prefill.ts` | 8 |
+| `core/generators/python/ctrl/iterate.ts` | 3 |
+| `core/generators/javascript/ctrl/iterate.ts` | 3 |
+| `core/utils/migration/json-migrate.ts` | 35 |
+| `core/utils/migration/xml-migrate.ts` | 32 |
+
+两条不是漂移，记在这里免得下次重算：`generators/{python,javascript}/numtheory/ntt.ts` 的 2 行差异
+是同步脚本的路径改写（`../postquantum/` → `../post-quantum/`）；镜像区同步前未提交改动为 0 项
+（上次全量同步 `43b4e7c`，2026-11-16）。
+
+### 45.3 为什么不做全量镜像
+
+`sync-to-metacrypt.sh` 是全目录镜像，它会连带把 ai-helper 专用的东西推进 metacrypt：
+`core/utils/locale/ui-messages.ts` 里「从代码生成工作区」的 106 行文案、`runtime/python-parse.ts`
+（只有 CipherCat 的 `CodeToWorkspaceDialog.vue` 引用它）。这些东西在 metacrypt 没有调用方，
+属死代码。所以本轮只按 6 个文件做字节级 `cp`，同步后逐文件 `cmp` 全 OK。
+
+### 45.4 metacrypt 侧验证
+
+| 检查 | 结果 |
+|---|---|
+| `npx vue-tsc --noEmit`（frontend） | **0 error**（含新迁移器） |
+| `npx vitest run ../tests/frontend/unit/blockly` | **53 文件 / 483 通过**（含 `utils/migration.test.ts` 34 条、`blocks/index.test.ts` 15 条） |
+| `npm run verify:build` | **失败，但与本次同步无关**：`@cc/migration` 解析不到 |
+
+`verify:build` 这条是既有缺陷，不是本轮引入的：把 6 个文件用 `git checkout` 还原成同步前的版本重跑，
+报同一个错（`generators/javascript/index.ts` → `@cc/migration`），而 `vite.verify.config.ts` 里没有
+`@cc/*` 别名（`vite.config.ts` 与 `vitest.config.ts` 都有）。来源是 2026-11-16 那次包边界同步
+（`3ee4c5a` 把核内导入统一到 `@cc/*`），只补了两个配置、漏了 verify 配置。**修它属于 metacrypt 侧
+的独立改动，本轮没动**——补 6 行 alias 即可，但要连同它的 verify 链一起验。
+
+### 45.5 未同步的项与理由
+
+| 文件 | 不同步的理由 |
+|---|---|
+| `src/runtime/python-parse.ts` | 只有 ai-helper 的代码→工作区对话框用；metacrypt 无此入口 |
+| `src/runtime/python-runner.worker.ts`（22 行） | 同一件事：新增 `mode: 'ast'` 分支，metacrypt 不发这种消息 |
+| `src/composables/locale/ui-messages.ts`（108 行） | 全是 ai-helper 面板文案键（含 §46.2 的汇总行措辞修正） |
+| `src/utils/projectCodegen.ts` 等应用层 | 不在镜像清单内（`SYNC_WRITE_PREFIXES` 不含） |
+
+代价写明白：metacrypt 的 `migrateJsonState`/`migrateXmlText` 与 `ctrl_iterate` 已和 CipherCat 一致，
+但 metacrypt 没有「从代码生成工作区」入口；等这条线在 metacrypt 落地时，上面三件要一起补。
+
+## 46. 三线并行：§44.6 缺口收口 + P3/P4 侦察（2026-11-17 傍晚）
+
+三条线同时开：一条改代码（§44.6），两条只读侦察（P3 C/C++、P4 标准→工程）。侦察结论各自成文，
+代码结论落在本节。
+
+### 46.1 §44.6 四条缺口的判定（`proposals/S44-GAPS.md`）
+
+先判「现有块模型能不能忠实表达」，能才实现，不能就报诊断并点名缺的原语（不近似、不硬造块）：
+
+| # | 缺口 | 判定 | 落点 |
+|---|---|---|---|
+| 1 | 非字面量区间推导式 `[f(v) for v in range(n)]` | 不能：没有 list append | 一条 `unsupported` 诊断 |
+| 2a | 带 `if` 的推导式 | 不能：要先收集再筛选 | 一条 `unsupported` 诊断 |
+| 2b | **多个生成器（字面量 range）** | 能：笛卡尔积是定长列表 | **两条路径都实现**（上限 64 项） |
+| 3 | **省略终点切片 `a[i:]`** | 能：`arr_slice` + `len(源) − 起点` | **两条路径都实现**，带一处已记录漂移 |
+| 4 | `range(a, b)` 非常量端点 | 不能：缺「起点 + 次数」计数循环 | 出块 + `semantic-drift` |
+
+三个被实测钉住的原语选择（都在 `core/containers.ts` 的注释里）：
+
+- 长度用原生 `lists_length`（Python 生成就是 `len(x)`），**不用** `data_byte_length`——后者对
+  str 走 UTF-8 字节数、bytes 走 `len * 8`，拿它当切片长度会在 str/bytes 源上静默切错；
+- **不用** `lists_getSublist`：它的 Python 生成器按 1-based 取值（`a[int(i - 1) : ]`），本项目只把
+  `lists_getIndex`/`lists_setIndex` 覆盖成 0-based；
+- 缺口 3 的残余漂移照实报：起点为正且源更短时，`len − 起点` 变负，块抛 TypeError 而 Python 回 `[]`
+  （列表块里没有标量 min/钳位）；`a[:]`、`a[-2:]` 逐字等价、0 诊断。差分执行把这两种行为都跑成了证据。
+
+顺带修掉一处断链：模板层匹配到块之后，槽位里的子表达式原先只走模板层，`(len(a) - i)` 会留成
+UNRESOLVED；现在认不出的子输入留 `raw` 原文、核心语法层补拆，`a[i:]` 与 `a[i:j]` 的闭链都成立。
+
+诊断文案抽到 `reverse/diagnostics.ts`：两条路径说同一句话（面板只显示文本，措辞不同会让用户以为
+是两个问题），每条都点名缺的原语。`core/expressions.ts` 因此按职责拆成 `containers` / `nodes` /
+`text` 三个模块（单文件仍 ≤ 500 行）。
+
+### 46.2 汇总行的一处措辞不一致（浏览器实跑抓到）
+
+真实浏览器里跑新样本时，`a[i:]` 这条 **semantic-drift** 被汇总行报成「1 条未识别」，
+而逐条标签写的是「语义可能不同」——横幅与列表自相矛盾。§41 引入 `semantic-drift` 时只改了
+标签，漏了汇总行与诊断列表标题。改成中性且真实的措辞：
+
+| 键 | 改前 | 改后 |
+|---|---|---|
+| `codeToWorkspaceResult` | `…{diagnostics} 条未识别。` | `…{diagnostics} 处诊断。` |
+| `codeToWorkspaceDiagnostics` | `未识别的语句（显示 … 共 … 条）` | `诊断（… 逐条标注「未识别」或「语义可能不同」）` |
+
+英文孪生键同步改（键集与占位符集合不变）。
+
+### 46.3 浏览器验收（真实无头 Chromium，新脚本 `c2w-s44-e2e.mjs`）
+
+样本（模板路径可读，故意不含需要 append 的写法）：
+
+```python
+def cut(state, i):
+    head = state[0:4]
+    tail = state[i:]
+    table = [a * b for a in range(2) for b in range(2)]
+    acc = 0
+    for k in range(4):
+        acc = acc + k
+    return acc
+```
+
+| 步骤 | 结果 |
+|---|---|
+| 解析 | **37 块 / 1 函数 / 1 处诊断**（恰为 `a[i:]` 那条 drift，无 unsupported） |
+| 载入 | 37 块；汇总行显示「1 处诊断」 |
+| 再生成 | `head = crypto_array_slice(state, 0, 4)`、`tail = crypto_array_slice(state, i, (len(state) - i))`、`table = [0 * 0, 0 * 1, 1 * 0, 1 * 1]`、`for k in range(4):` |
+
+判据写成三条各自能开火的检查：`driftOnly`（只有一条且是 drift）、`summaryNotUnrecognised`
+（汇总行不许把 drift 说成未识别）、`applyEnabled`；截图 `out/c2w-s44.png`。
+
+### 46.4 两条侦察线（只读，结论各自成文）
+
+| 线 | 文档 | 一句话结论 |
+|---|---|---|
+| P3：外部 C/C++ → 工作区 | `proposals/P3-SCOPE.md`（273 行） | 21 类 C 构造里完整映射 8 / 部分 7 / 无块 6；**算法体几乎都在生成器闭包里**，所以 P3 落不到「C→积木」，只能落「结构骨架 + 别名命中的原语调用 + 带行号诊断」；推荐分层：Web 做静态结构与诊断、桌面 sidecar 才做逐例差分，第一步用本机 gcc 跑一个不进产品的 V3 脚本 |
+| P4：标准/论文 → 完整 project | `proposals/P4-SCOPE.md`（300 行） | `docs/standards/` 337 个 md、230 个中文条目、锚点 221/230；但「项目状态」与「项目映射」有 **39 处互相矛盾**，三档判定不能读状态字段，必须三级证据（L1 显式映射 / L2 tooltip 反引 / L3 检索候选 + 模板）；覆盖报告与锚点写 `ProjectRecord.metadata.aiHelper`（`files[]` 只能放 Blockly 负载）；试点选 FIPS 180-4 SHA-256 多分组摘要 |
+
+两处对既有记录的修正（侦察时实测）：契约键 **222**（PLAN 里写的 221 是旧数）；clang 实测
+**23.1.5**（`23.1.4` 的记录已过期）。
+
+### 46.5 本轮门禁（整树实跑）
+
+| 项 | 结果 |
+|---|---|
+| 单测 | **111 文件 / 1217 通过 1 跳过**（§45 落地时是 110 / 1197；新增 16 条 + 既有用例调整） |
+| lint / 类型 | 0 错误 0 警告 / `vue-tsc` 0 |
+| `npm run verify:all` | **rc=0**（模板 29/29、`DEMO_SUMMARY 60/60`） |
+| 浏览器 e2e | 见 §46.3，三条判据全绿 |
+
+### 46.6 仍然缺什么（更新 §44.6）
+
+1. 非字面量区间推导式、带 `if` 的推导式：**缺 list append**，属维护者线（新增块类型）才能解；
+2. 省略终点切片的正起点越界：缺标量 min/钳位原语，已按 drift 记录；
+3. `range(a, b)` 非常量端点：缺「起点 + 次数」计数循环；
+4. 语句位置的原语调用与多 return（§41/§43.5）不变。
+
 
