@@ -181,7 +181,27 @@ async function getPyodide(assets?: RuntimeAssets): Promise<PyodideRuntime> {
   return pyodide;
 }
 
-scope.onmessage = async (event: MessageEvent<{ code: string; assets?: RuntimeAssets }>) => {
+scope.onmessage = async (event: MessageEvent<{ code: string; assets?: RuntimeAssets; mode?: string }>) => {
+  // 解析分支（代码 → 工作区 AST 路径）：只执行转储脚本，脚本里只有 ast.parse，
+  // 不执行用户代码；输出走专用消息，不占用试运行的 stdout 通道。
+  if (event.data?.mode === 'ast') {
+    try {
+      const runtime = await getPyodide(event.data.assets);
+      const result = runtime.runPython(event.data.code);
+      const json =
+        typeof result === 'string'
+          ? result
+          : ((result as { toString?: () => string })?.toString?.() ?? String(result));
+      scope.postMessage({ type: 'ast', json });
+    } catch (error) {
+      scope.postMessage({
+        type: 'ast_error',
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
+    return;
+  }
+
   outputChars = 0;
   outputLimitSent = false;
   outputBuffer = '';

@@ -7,6 +7,11 @@
  * 嵌套调用里切错（`arr_slice(gf2m_poly_xgcd(...), 0, 2)` 曾整段判成 UNRESOLVED）。
  */
 
+import { normalizePythonSource } from './normalize';
+import { matchLiteralAt, readStringLiteral } from './tolerant';
+
+const isBlank = (ch: string): boolean => ch === ' ' || ch === '\t';
+
 const VALUE_PLACEHOLDER = 'zzsigv_';
 const STATEMENT_PLACEHOLDER = 'zzsigs_';
 const FIELD_PLACEHOLDER = 'zzfield_';
@@ -36,6 +41,11 @@ export interface BlockFieldTemplate {
   type: string;
   template: string | null;
   fields: FieldDescriptor[];
+  /**
+   * 块的连接能力（采集器从真实块对象读）。AST 路径把一个调用翻成块时靠它判断能否接值/
+   * 进语句链；老载荷没有这一项，原语调用索引会整体退化成空表（见 `primitive-calls.ts`）。
+   */
+  io?: { output: boolean; previous: boolean; next: boolean };
   probes: FieldProbe[];
   /**
    * 多字段同时取非默认值时的模板（采集器的组合探测）。单字段变体只覆盖「其余字段取
@@ -50,6 +60,12 @@ export interface BlockFieldTemplate {
 
 export interface FieldPayload {
   blocks: BlockFieldTemplate[];
+  /**
+   * 生成器内嵌闭包的函数名（`closure-names.json`）。反解析在「没有生成器题头」时用它分流：
+   * 名单内是内嵌实现、名单外才是 procedure。由 `npm run reverse:closures` 采集，
+   * 新鲜度由 `npm run reverse:closures:check` 守。
+   */
+  closures?: string[];
 }
 
 export type Segment = { kind: 'literal'; text: string } | { kind: 'child'; input: string } | { kind: 'field'; name: string };
@@ -150,49 +166,62 @@ export function matchSegments(source: string, segments: Segment[]): string[] | n
   for (let index = 0; index < segments.length; index += 1) {
     const segment = segments[index];
     if (segment.kind === 'literal') {
-      if (!source.startsWith(segment.text, pos)) return null;
-      pos += segment.text.length;
+      const next = matchLiteralAt(source, pos, segment.text);
+      if (next < 0) return null;
+      pos = next;
       continue;
     }
     if (segment.kind === 'field') {
-      const match = /^[\w.+-]+/.exec(source.slice(pos));
+      // 字段取值前可能被形变成 `RATE = 168`：先跳过空白再捕获，捕获的仍是源码原文。
+      let start = pos;
+      while (isBlank(source[start])) start += 1;
+      const match = /^[\w.+-]+/.exec(source.slice(start));
       if (!match) return null;
       captures.push(match[0]);
-      pos += match[0].length;
+      pos = start + match[0].length;
       continue;
     }
-    // 子块槽位：找到下一个字面量在「深度 0」的首次出现。
-    const next = segments.slice(index + 1).find((item) => item.kind === 'literal') as { text: string } | undefined;
-    if (!next) {
+    // 子块槽位：找到下一个字面量在「深度 0」的首次出现。先按逐字相同扫一遍（绝大多数
+    // 情况），扫不到再退到宽容比较——宽容比较是 O(n·m)，不能一上来就用。
+    const nextLiteral = segments.slice(index + 1).find((item) => item.kind === 'literal') as
+      | { text: string }
+      | undefined;
+    if (!nextLiteral) {
       captures.push(source.slice(pos));
       pos = source.length;
       continue;
     }
-    let depth = 0;
-    let quote = '';
-    let found = -1;
-    for (let cursor = pos; cursor < source.length; cursor += 1) {
-      const ch = source[cursor];
-      if (quote) {
-        if (ch === quote) quote = '';
-        continue;
-      }
-      if (ch === '"' || ch === "'") {
-        quote = ch;
-        continue;
-      }
-      if (depth === 0 && source.startsWith(next.text, cursor)) {
-        found = cursor;
-        break;
-      }
-      if (OPENERS.includes(ch)) depth += 1;
-      else if (CLOSERS.includes(ch)) depth = Math.max(0, depth - 1);
-    }
+    const found = findNextLiteral(source, pos, nextLiteral.text);
     if (found < 0) return null;
     captures.push(source.slice(pos, found));
     pos = found;
   }
   return pos === source.length ? captures : null;
+}
+
+/** 在括号深度 0 处找下一个模板字面量；先严格后宽容，字符串内部不参与判断。 */
+function findNextLiteral(source: string, from: number, literal: string): number {
+  for (const tolerant of [false, true]) {
+    let depth = 0;
+    for (let cursor = from; cursor <= source.length; cursor += 1) {
+      const ch = source[cursor];
+      const matched =
+        depth === 0 &&
+        (source.startsWith(literal, cursor) ||
+          (tolerant && cursor < source.length && matchLiteralAt(source, cursor, literal) >= 0));
+      if (matched) return cursor;
+      if (ch === '"' || ch === "'") {
+        const quoted = readStringLiteral(source, cursor);
+        if (quoted) {
+          cursor = quoted.end - 1;
+          continue;
+        }
+      }
+      if (OPENERS.includes(ch)) depth += 1;
+      else if (CLOSERS.includes(ch)) depth = Math.max(0, depth - 1);
+    }
+  }
+  return -1;
 }
 
 /** 把字段字面量换成 zzfield_ 槽（数字/标识符按词边界，避免 0 命中 0xFFFFFFFF）。 */
@@ -250,27 +279,32 @@ export function buildMatchers(payload: FieldPayload): Matcher[] {
       const defaultValue = defaultsByName.get(probe.name);
       if (defaultValue !== undefined) defaults[probe.name] = defaultValue;
     }
-    const segments = nameScanFields(buildSegments(block.template), block);
+    const segments = nameScanFields(buildSegments(normalizePythonSource(block.template)), block);
     add(buildMatcher(block.type, segments, { ...defaults }));
     for (const variant of booleanVariants(segments)) {
       add(buildMatcher(block.type, variant, { ...defaults }, true));
     }
     for (const probe of block.probes) {
       for (const variant of probe.variants) {
-        add(buildMatcher(block.type, nameScanFields(buildSegments(variant.template), block), { ...defaults, [probe.name]: variant.value }));
+        add(buildMatcher(block.type, nameScanFields(buildSegments(normalizePythonSource(variant.template)), block), { ...defaults, [probe.name]: variant.value }));
       }
     }
     // 组合模板带回「同时翻值」的那些字段；未在组合里出现的字段仍是默认值。
     for (const combo of block.combos ?? []) {
-      add(buildMatcher(block.type, nameScanFields(buildSegments(combo.template), block), { ...defaults, ...combo.values }));
+      add(buildMatcher(block.type, nameScanFields(buildSegments(normalizePythonSource(combo.template)), block), { ...defaults, ...combo.values }));
     }
     // 通配槽版本负责「字段取值无法枚举」的块；纯槽模板（data_value）无字面量骨架，不参与匹配。
-    let fieldized = block.template;
+    let fieldized = normalizePythonSource(block.template);
     for (const probe of block.probes) {
       if (!probe.wildcard || !probe.emittedDefault) continue;
       fieldized = fieldizeTemplate(fieldized, probe.emittedDefault, probe.valueShape ?? 'text', probe.name);
     }
-    if (fieldized !== block.template) add(buildMatcher(block.type, nameScanFields(buildSegments(fieldized), block), null));
+    if (fieldized !== block.template) {
+      const wildcardMatcher = buildMatcher(block.type, nameScanFields(buildSegments(fieldized), block), null);
+      // 纯槽模板（没有任何字面量骨架）不能参与匹配：它会把任意 `[\w.+-]+` 文本吞成自己的
+      // 字段值——data_value 因此把 `a-b` 读成 NUM，紧凑写法的算术永远轮不到核心语法层。
+      if (wildcardMatcher.literalChars > 0) add(wildcardMatcher);
+    }
   }
   const order = (a: Matcher, b: Matcher): number => b.literalChars - a.literalChars;
   return [...strict.sort(order), ...relaxed.sort(order)];

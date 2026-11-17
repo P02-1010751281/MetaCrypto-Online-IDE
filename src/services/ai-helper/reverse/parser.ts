@@ -12,6 +12,14 @@ export interface ParsedNode {
   type: string;
   fields: Record<string, string>;
   children: Array<{ input: string; node: ParsedNode }>;
+  /**
+   * 块自带的序列化附加状态（`controls_if` 的 elseIfCount/hasElse、`lists_create_with` 的
+   * itemCount、调用块的 name/params）。核心语法层要按 AST 路径的同一套格式产出，序列化层
+   * 原样带进工作区状态。
+   */
+  extraState?: Record<string, unknown>;
+  /** 这一段的原文：诊断要指回用户看到的那一行（复合语句尤其需要）。 */
+  text?: string;
 }
 
 const IDENTIFIER_RE = /^[A-Za-z_]\w*$/;
@@ -65,7 +73,9 @@ function stripOuterParens(text: string): string {
 
 export function parseExpression(text: string, matchers: Matcher[], depth = 0): ParsedNode {
   if (depth > 32) return { type: 'UNRESOLVED_DEPTH', fields: {}, children: [] };
-  const source = text.replace(/\s+$/, '');
+  // 前后空白一起收：模板槽位捕获的是「逗号后面那段原文」，常带一个前导空格；只收尾部会让
+  // ` 192` 这种字面量匹配不上（以前是靠 data_value 的通配槽兜住的，见 RESULTS §41）。
+  const source = text.trim();
   // 先按原样匹配：有的块模板自己就带外层括号（pq_rej_sample 的 `((x) if ...)`），
   // 剥掉括号反而认不出。原样匹不上再试去括号的形态（生成器给子块补的括号）。
   const direct = atomNode(source, matchers, depth);
@@ -114,7 +124,7 @@ function matchNode(source: string, matchers: Matcher[], depth: number, relaxed: 
 
 /** 语句：先试块模板（含赋值型块），再退回 `X = Y`（variables_set），最后当表达式。 */
 export function parseStatement(text: string, matchers: Matcher[]): ParsedNode {
-  const source = text.replace(/\s+$/, '');
+  const source = text.trim();
   if (!source.trim()) return { type: 'EMPTY', fields: {}, children: [] };
   // 赋值型块的模板里也含 `=`，必须由模板先行命中，不能被下面的通用赋值抢走。
   const templated = parseExpression(source, matchers);

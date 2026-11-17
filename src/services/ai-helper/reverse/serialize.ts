@@ -32,8 +32,16 @@ export interface SerializedBlock {
 export interface SerializeDiagnostic {
   /** 认不出的原文（去缩进后的整段），用于面板上逐条显示。 */
   text: string;
-  /** 为什么没认出来：`unresolved` 是模板没匹上，`unsupported` 是这一层还没实现。 */
-  reason: 'unresolved' | 'unsupported';
+  /**
+   * 为什么没认出来：`unresolved` 是模板没匹上，`unsupported` 是这一层还没实现，
+   * `foreign-code` 是「像外来实现、当前路径不支持」（此时不产出半成品，只给一句说明），
+   * `semantic-drift` 是块出来了但块模型的语义与原文不同（按位 uint32、range 空区间）。
+   */
+  reason: 'unresolved' | 'unsupported' | 'foreign-code' | 'semantic-drift';
+  /** 行号（1 基）：AST 路径逐节点报错，必须能指回用户看的那一行。 */
+  line?: number;
+  /** 补充说明（例如「不支持的表达式：ListComp」），面板可以跟在原文后面显示。 */
+  detail?: string;
 }
 
 export interface SerializedWorkspace {
@@ -48,6 +56,8 @@ const VARIABLE_FIELD_BLOCKS = new Set([
   'variables_set',
   'sbox_variables_get',
   'sbox_variables_set',
+  // 循环变量的字段也是变量引用（AST 路径同样发 `{ id }`）。
+  'controls_for',
 ]);
 
 const UNRESOLVED_PREFIX = 'UNRESOLVED';
@@ -127,13 +137,30 @@ export function toWorkspaceState(
 
   /** 一个节点 → 一个块；认不出的返回 null（并记诊断），不产出替代块。 */
   const toBlock = (node: ParsedNode, text: string): SerializedBlock | null => {
+    // 诊断要指回原文：复合语句的子节点自带文本（核心语法层填的），没有就用外层。
+    const source = node.text ?? text;
     if (node.type.startsWith(UNRESOLVED_PREFIX)) {
-      diagnostics.push({ text, reason: 'unresolved' });
+      diagnostics.push({ text: source, reason: 'unresolved' });
       return null;
     }
     if (node.type === 'EMPTY') return null;
 
+    // 语句链是虚拟节点（`chain`）：它不出块，只把子语句串成 next 链。
+    if (node.type === 'chain') {
+      let head: SerializedBlock | null = null;
+      let cursor: SerializedBlock | null = null;
+      for (const child of node.children) {
+        const childBlock = toBlock(child.node, source);
+        if (!childBlock) continue;
+        if (!head) head = childBlock;
+        else if (cursor) cursor.next = { block: childBlock };
+        cursor = childBlock;
+      }
+      return head;
+    }
+
     const block: SerializedBlock = { type: node.type, id: idOf() };
+    if (node.extraState) block.extraState = node.extraState;
     const fields: Record<string, unknown> = {};
     for (const [name, value] of Object.entries(node.fields)) {
       fields[name] = VARIABLE_FIELD_BLOCKS.has(node.type) && name === 'VAR'

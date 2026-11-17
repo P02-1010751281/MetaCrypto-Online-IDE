@@ -40,6 +40,7 @@ export default defineConfig({
             'ai-helper-signatures': resolve(import.meta.dirname, 'scripts/ai-helper-signatures.ts'),
             'ai-helper-roundtrip': resolve(import.meta.dirname, 'scripts/ai-helper-roundtrip.ts'),
             'ai-helper-variants': resolve(import.meta.dirname, 'scripts/ai-helper-variants.ts'),
+            'ai-helper-closures': resolve(import.meta.dirname, 'scripts/ai-helper-closures.ts'),
             'ai-helper-typecheck': resolve(import.meta.dirname, 'scripts/ai-helper-typecheck.ts'),
             'ai-helper-kat': resolve(import.meta.dirname, 'scripts/ai-helper-kat.ts'),
             'ai-helper-validate': resolve(import.meta.dirname, 'scripts/ai-helper-validate.ts'),

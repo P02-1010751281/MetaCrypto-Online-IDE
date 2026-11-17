@@ -22,10 +22,27 @@ export function parseFieldPayload(text: string): FieldPayload {
   return payload as FieldPayload;
 }
 
-/** 幂等：同一页面只解析一次。 */
+/**
+ * 文本 → 闭包名单。允许空数组（名单还没采过时，反解析退回「只认生成器题头」），
+ * 但不允许结构不对：半份名单会让 procedure 分流把内嵌实现认成用户函数。
+ */
+export function parseClosureNames(text: string): string[] {
+  const payload = JSON.parse(text) as { closures?: unknown };
+  if (!Array.isArray(payload.closures) || payload.closures.some((name) => typeof name !== 'string')) {
+    throw new Error('闭包名单载荷没有 closures 字符串数组');
+  }
+  return payload.closures as string[];
+}
+
+/** 幂等：同一页面只解析一次；两份载荷一起进缓存，避免分流时名单还没到。 */
 export async function loadFieldPayload(): Promise<FieldPayload> {
   if (cached) return cached;
-  const module = (await import('./field-templates.json?raw')) as { default: string };
-  cached = parseFieldPayload(module.default);
+  const [templates, closures] = await Promise.all([
+    import('./field-templates.json?raw') as Promise<{ default: string }>,
+    import('./closure-names.json?raw') as Promise<{ default: string }>,
+  ]);
+  const payload = parseFieldPayload(templates.default);
+  payload.closures = parseClosureNames(closures.default);
+  cached = payload;
   return cached;
 }

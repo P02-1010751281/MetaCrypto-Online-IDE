@@ -49,6 +49,10 @@ interface BlockLike {
   inputList: Array<{ fieldRow: FieldLike[] }>;
   setFieldValue: (value: string, field: string) => void;
   getFieldValue: (field: string) => unknown;
+  /** 连接能力：AST 路径要靠它判断一个块能不能当值/当语句接上去。 */
+  outputConnection?: unknown;
+  previousConnection?: unknown;
+  nextConnection?: unknown;
 }
 
 type Globals = typeof globalThis & Record<string, unknown>;
@@ -98,10 +102,24 @@ export interface FieldCombo {
   template: string;
 }
 
+/**
+ * 块的连接能力。采集时从真实块对象读，而不是从代码猜：AST 路径把一个调用翻成块时，
+ * 必须知道该块能不能接值、能不能进语句链，否则 `workspaces.load` 会在连接阶段报错。
+ */
+interface BlockIo {
+  /** 有输出连接：可以放在值输入里。 */
+  output: boolean;
+  /** 有前驱连接：可以接在别的语句后面。 */
+  previous: boolean;
+  /** 有后继连接：后面还能挂语句。 */
+  next: boolean;
+}
+
 interface BlockFieldTemplate {
   type: string;
   template: string | null;
   error: string | null;
+  io: BlockIo;
   fields: FieldDescriptor[];
   probes: FieldProbe[];
   /** 多字段同时翻值的组合模板；单字段能表达的组合不重复记。 */
@@ -506,7 +524,23 @@ async function main(): Promise<void> {
         fieldized = `${fieldized.slice(0, index)}${token}${fieldized.slice(index + probe.emittedDefault.length)}`;
       }
 
-      results.push({ type, template: base.template, error: base.error, fields, probes, combos, invisible, constant, unprobed, fieldized });
+      results.push({
+        type,
+        template: base.template,
+        error: base.error,
+        io: {
+          output: Boolean(block.outputConnection),
+          previous: Boolean(block.previousConnection),
+          next: Boolean(block.nextConnection),
+        },
+        fields,
+        probes,
+        combos,
+        invisible,
+        constant,
+        unprobed,
+        fieldized,
+      });
     }
   } finally {
     Blockly.Events.enable();

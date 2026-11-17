@@ -51,6 +51,7 @@
         </div>
 
         <p v-if="error" class="c2w-error" role="alert">{{ error }}</p>
+        <p v-else-if="parsing" class="c2w-hint">{{ ui('codeToWorkspaceAstLoading') }}</p>
         <p v-else-if="!source.trim()" class="c2w-hint">{{ ui('codeToWorkspaceEmpty') }}</p>
 
         <template v-if="result">
@@ -60,8 +61,27 @@
             {{ ui('codeToWorkspaceUnsupportedJs') }}
           </p>
 
+          <!-- 外来代码：识别到函数却拼不出块。逐条列「未识别」只会让用户以为自己写错，
+               这里换成一句说明 + 函数名清单（§38 的结论：明确拒绝，不产半成品）。 -->
+          <template v-else-if="foreignDefs.length">
+            <p class="c2w-hint c2w-hint--warn" role="alert">
+              {{ uiFormat('codeToWorkspaceForeignCode', { count: foreignDefs.length }) }}
+            </p>
+            <p class="c2w-hint">{{ uiFormat('codeToWorkspaceForeignDefs', { names: foreignNames }) }}</p>
+            <p v-if="astError" class="c2w-error" role="alert">
+              {{ uiFormat('codeToWorkspaceAstError', { message: astError }) }}
+            </p>
+          </template>
+
           <template v-else>
-            <p class="c2w-summary">
+            <p v-if="astPath && astStats" class="c2w-summary">
+              {{ uiFormat('codeToWorkspaceAstSummary', {
+                blocks: blockTotal,
+                functions: astStats.functions,
+                statements: astStats.statements,
+              }) }}
+            </p>
+            <p v-else class="c2w-summary">
               {{ uiFormat('codeToWorkspaceResult', {
                 blocks: blockTotal,
                 procedures: result.stats.procedures,
@@ -70,17 +90,26 @@
               }) }}
             </p>
 
+            <!-- 语法树路径必然是有损的：翻不出来的节点必须单独警告，不然用户会以为整段都还原了。 -->
+            <p v-if="astIncomplete" class="c2w-hint c2w-hint--warn" role="alert">
+              {{ uiFormat('codeToWorkspaceAstIncomplete', { count: astIncomplete }) }}
+            </p>
+
             <div v-if="shownDiagnostics.length" class="c2w-diagnostics">
               <p class="c2w-diagnostics-head">
-                {{ uiFormat('codeToWorkspaceDiagnostics', {
+                {{ uiFormat(astPath ? 'codeToWorkspaceAstDiagnostics' : 'codeToWorkspaceDiagnostics', {
                   shown: shownDiagnostics.length,
                   total: result.state.diagnostics.length,
                 }) }}
               </p>
               <ul class="c2w-diagnostics-list">
                 <li v-for="(diagnostic, index) in shownDiagnostics" :key="index">
-                  <span class="c2w-reason">{{ ui('codeToWorkspaceUnresolved') }}</span>
+                  <span v-if="diagnostic.line" class="c2w-line">
+                    {{ uiFormat('codeToWorkspaceLine', { line: diagnostic.line }) }}
+                  </span>
+                  <span class="c2w-reason">{{ diagnosticLabel(diagnostic) }}</span>
                   <code class="c2w-code">{{ diagnostic.text }}</code>
+                  <span v-if="diagnostic.detail" class="c2w-detail">{{ diagnostic.detail }}</span>
                 </li>
               </ul>
             </div>
@@ -89,12 +118,15 @@
           </template>
 
           <div class="c2w-foot">
+            <!-- AST 路径的说明必须与「会替换几块」并列：它描述的是这次识别**有损**，
+                 不能因为按钮区已有提示就被 v-else-if 吞掉。 -->
+            <span v-if="astPath" class="c2w-note">{{ ui('codeToWorkspaceAstNote') }}</span>
             <span v-if="blockTotal" class="c2w-note">
               {{ currentBlockCount
                 ? uiFormat('codeToWorkspaceReplaceWarn', { count: currentBlockCount })
                 : ui('codeToWorkspaceReplaceEmpty') }}
             </span>
-            <span v-else-if="!unsupportedLanguage" class="c2w-note">{{ ui('codeToWorkspaceHintOnlyGenerated') }}</span>
+            <span v-else-if="!unsupportedLanguage && !foreignDefs.length" class="c2w-note">{{ ui('codeToWorkspaceHintOnlyGenerated') }}</span>
             <span class="c2w-spacer" />
             <button type="button" class="c2w-ghost" @click="emit('close')">{{ ui('cancel') }}</button>
             <button
@@ -126,8 +158,9 @@
 import { computed, ref } from 'vue';
 
 import { ui, uiFormat } from '@/composables/locale';
-import { countStateBlocks, loadFieldPayload, reverseCode } from '@/services/ai-helper/reverse';
+import { countStateBlocks, loadFieldPayload, reverseCodeAuto } from '@/services/ai-helper/reverse';
 import type { ReverseCodeResult, SerializedWorkspace } from '@/services/ai-helper/reverse';
+import { parsePythonAst } from '@/runtime/python-parse';
 
 defineProps<{
   visible: boolean;
@@ -160,6 +193,34 @@ const shownDiagnostics = computed(() => result.value?.state.diagnostics.slice(0,
  * 面板必须换成一句可读说明：那条诊断的 text 是空的，列出来只会是一行空白。
  */
 const unsupportedLanguage = computed(() => result.value?.language === 'javascript');
+/**
+ * 外来代码：`reverseCode` 识别到函数却拼不出块时给 `foreignDefs`（而不是逐行诊断）。
+ * 只列前 8 个名字——清单是「让你确认我们看到了哪些函数」，不是逐行报告。
+ */
+const foreignDefs = computed(() => result.value?.stats.foreignDefs ?? []);
+/**
+ * 这次结果由语法树（AST）路径产出：模板路径认的是生成器写出来的形态，AST 路径认的是
+ * Python 语法结构。两条路的面板说明不同——AST 只能还原结构，类型标签与字段取值都可能缺。
+ */
+const astPath = computed(() => result.value?.path === 'ast');
+const astStats = computed(() => result.value?.astStats ?? null);
+/** 语法树也没走通时的原因（语法错误、运行时没加载起来）：照原样显示，不吞。 */
+const astError = computed(() => result.value?.astError ?? '');
+/** 有没有翻不出来的节点：有就必须在面板上明说「语义没还原」，不能只列在诊断里。 */
+const astIncomplete = computed(() =>
+  astPath.value ? result.value?.state.diagnostics.length ?? 0 : 0,
+);
+/**
+ * 标签分两档：`semantic-drift` 是「块已经出来了、只是语义与原文不同」，与「未识别」
+ * 不是一回事——混成同一句会让用户去找一块根本没搭出来的语句。
+ */
+function diagnosticLabel(diagnostic: { reason?: string }): string {
+  return ui(diagnostic.reason === 'semantic-drift' ? 'codeToWorkspaceDrift' : 'codeToWorkspaceUnresolved');
+}
+const foreignNames = computed(() => {
+  const names = foreignDefs.value;
+  return `${names.slice(0, 8).join('、')}${names.length > 8 ? ' …' : ''}`;
+});
 
 function resetResult(): void {
   result.value = null;
@@ -196,7 +257,10 @@ async function parse(): Promise<void> {
   resetResult();
   try {
     const payload = await loadFieldPayload();
-    result.value = reverseCode(source.value, payload);
+    // 模板优先、AST 兜底：见 reverseCodeAuto 的注释（模板能回填字段取值，AST 只还原结构）。
+    result.value = await reverseCodeAuto(source.value, payload, {
+      astRunner: (script) => parsePythonAst(script),
+    });
   } catch (cause) {
     error.value = uiFormat('codeToWorkspaceParseFailed', {
       message: cause instanceof Error ? cause.message : String(cause),
@@ -348,5 +412,15 @@ function apply(): void {
 .c2w-code {
   word-break: break-all;
   color: var(--color-text);
+}
+.c2w-line {
+  margin-right: 6px;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+.c2w-detail {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: 12px;
 }
 </style>

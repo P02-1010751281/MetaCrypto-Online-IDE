@@ -46,6 +46,16 @@ export function locateBlockCode(lines: string[], matchers: Matcher[], names: Set
 /** 生成器给 procedure 题头写的固定第二行；内嵌实现不会带它。 */
 const GENERATED_DOCSTRING = 'Crypto function:';
 
+/**
+ * 文档串的两种三重引号。生成器写双引号，但用户（尤其 LLM）会写单引号；两种都算题头，
+ * 否则「双引号改单引号」这一类形变会让所有 procedure 判不出来（RESULTS §37：4/60）。
+ */
+const DOC_QUOTES = ['"""', "'''"];
+
+function docOpener(line: string): string | null {
+  return DOC_QUOTES.find((quote) => line.startsWith(quote)) ?? null;
+}
+
 export interface ProcedureParam {
   name: string;
   /** Python 类型提示（`int` / `list[int]` / `bytes` …）；生成器总会写，缺省时为空。 */
@@ -86,7 +96,7 @@ export function parseSignature(line: string): ProcedureSignature | null {
  */
 export function isGeneratedProcedure(bodyLines: string[]): boolean {
   const text = bodyLines.map((line) => line.trim()).filter(Boolean);
-  return text[0] === '"""' && Boolean(text[1]?.startsWith(GENERATED_DOCSTRING));
+  return docOpener(text[0] ?? '') !== null && Boolean(text[1]?.startsWith(GENERATED_DOCSTRING));
 }
 
 export interface CodeLayout {
@@ -133,29 +143,43 @@ export function splitCode(lines: string[], blockStart: number, names: Set<string
  * 去缩进、剔掉 docstring，再切语句；最后一条 `return` 是 defreturn 的 RETURN 槽，
  * 不是体内语句（留在体内会生成 `return` 语句块，语义重复）。
  */
-export function procedureUnits(
-  bodyLines: string[],
-  matchers: Matcher[],
-): { units: StatementUnit[]; returnExpr: string | null } {
+/**
+ * 函数体 → 去缩进、剔掉文档串的行。
+ *
+ * 两处都要用：老的 `procedureUnits`（脚本侧按语句单元比对）与新的核心语法层（按缩进递归
+ * 解析 if/while/for）。抽出来只为准绳唯一——缩进与文档串的判法改一次就两边同时生效。
+ */
+export function prepareProcedureBody(bodyLines: string[]): string[] {
   const indents = bodyLines
     .filter((line) => line.trim() !== '')
     .map((line) => line.length - line.trimStart().length);
   const indent = indents.length ? Math.min(...indents) : 0;
   const lines: string[] = [];
-  let inDoc = false;
+  let docEnd: string | null = null;
   for (const raw of bodyLines) {
     const line = raw.slice(indent);
     const trimmed = line.trim();
-    if (!inDoc && trimmed.startsWith('"""')) {
-      inDoc = !trimmed.endsWith('"""') || trimmed.length <= 3;
-      continue;
-    }
-    if (inDoc) {
-      if (trimmed.endsWith('"""')) inDoc = false;
+    if (docEnd === null) {
+      const opener = docOpener(trimmed);
+      if (opener) {
+        // 单行文档串（`"""说明"""`）整行跳过，否则会一直吃到闭合那行、把函数体也吞掉。
+        if (!(trimmed.endsWith(opener) && trimmed.length > opener.length)) docEnd = opener;
+        continue;
+      }
+    } else {
+      if (trimmed.endsWith(docEnd)) docEnd = null;
       continue;
     }
     lines.push(line);
   }
+  return lines;
+}
+
+export function procedureUnits(
+  bodyLines: string[],
+  matchers: Matcher[],
+): { units: StatementUnit[]; returnExpr: string | null } {
+  const lines = prepareProcedureBody(bodyLines);
   const units = splitStatementUnits(lines.join('\n'), matchers);
   const last = units[units.length - 1];
   const returnMatch = last ? /^return\s+([\s\S]+)$/.exec(last.text) : null;

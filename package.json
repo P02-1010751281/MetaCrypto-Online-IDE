@@ -55,7 +55,7 @@
     "verify:build": "vite build --config vite.verify.config.ts",
     "verify:templates": "npm run verify:build && node dist-verify/verify-templates.js",
     "verify:demos": "npm run verify:build && node scripts/verify-demos.mjs",
-    "verify:all": "npm run standards:check && npm run standards:split-check && npm run standards:formula-check && npm run coverage:check && npm run standards:inventory && npm run spec:validate && npm run spec:anchors && npm run spec:runs && npm run spec:candidates && node scripts/spec-scaffold.mjs --selftest && npm run spec:matrix && npm run contract:check && npm run docs:titles:check && npm run build-guide:check && npm run docs:check-links && npm run docs:mermaid:check && npm run docs:index:check && npm run verify:build && node dist-verify/ai-helper-variants.js check && node dist-verify/verify-templates.js && node scripts/verify-demos.mjs",
+    "verify:all": "npm run standards:check && npm run standards:split-check && npm run standards:formula-check && npm run coverage:check && npm run standards:inventory && npm run spec:validate && npm run spec:anchors && npm run spec:runs && npm run spec:candidates && node scripts/spec-scaffold.mjs --selftest && npm run spec:matrix && npm run contract:check && npm run docs:titles:check && npm run build-guide:check && npm run docs:check-links && npm run docs:mermaid:check && npm run docs:index:check && npm run verify:build && node dist-verify/ai-helper-variants.js check && node dist-verify/ai-helper-closures.js check && node dist-verify/verify-templates.js && node scripts/verify-demos.mjs",
     "verify:docs-entry": "node scripts/verify-docs-entry-bidi.mjs",
     "tauri": "tauri",
     "tauri:dev": "WEBKIT_DISABLE_COMPOSITING_MODE=1 tauri dev",
@@ -73,7 +73,9 @@
     "docs:index:lit": "AIVERIFY_ENTRY=scripts/ai-helper-docindex.ts AIVERIFY_OUTDIR=dist-verify/track-docindex vite build --config vite.verify.config.ts && node dist-verify/track-docindex/ai-helper-docindex.js index:lit",
     "docs:index:check": "AIVERIFY_ENTRY=scripts/ai-helper-docindex.ts AIVERIFY_OUTDIR=dist-verify/track-docindex vite build --config vite.verify.config.ts && node dist-verify/track-docindex/ai-helper-docindex.js check",
     "reverse:templates": "AIVERIFY_ENTRY=scripts/ai-helper-variants.ts AIVERIFY_OUTDIR=dist-verify/track-variants vite build --config vite.verify.config.ts && node dist-verify/track-variants/ai-helper-variants.js",
-    "reverse:templates:check": "AIVERIFY_ENTRY=scripts/ai-helper-variants.ts AIVERIFY_OUTDIR=dist-verify/track-variants vite build --config vite.verify.config.ts && node dist-verify/track-variants/ai-helper-variants.js check"
+    "reverse:templates:check": "AIVERIFY_ENTRY=scripts/ai-helper-variants.ts AIVERIFY_OUTDIR=dist-verify/track-variants vite build --config vite.verify.config.ts && node dist-verify/track-variants/ai-helper-variants.js check",
+    "reverse:closures": "AIVERIFY_ENTRY=scripts/ai-helper-closures.ts AIVERIFY_OUTDIR=dist-verify/track-closures vite build --config vite.verify.config.ts && node dist-verify/track-closures/ai-helper-closures.js",
+    "reverse:closures:check": "AIVERIFY_ENTRY=scripts/ai-helper-closures.ts AIVERIFY_OUTDIR=dist-verify/track-closures vite build --config vite.verify.config.ts && node dist-verify/track-closures/ai-helper-closures.js check"
   },
   "dependencies": {
     "@tauri-apps/plugin-dialog": "^2.8.1",
