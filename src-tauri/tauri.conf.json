@@ -36,6 +36,9 @@
     "linux": {
       "deb": {
         "desktopTemplate": "desktop/metacrypto-online-ide.desktop",
+        "conflicts": ["cipher-cat"],
+        "replaces": ["cipher-cat"],
+        "provides": ["cipher-cat"],
         "files": {
           "/usr/share/doc/cipher-cat/copyright": "../LICENSE"
         }
