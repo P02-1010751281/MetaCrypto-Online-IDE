@@ -108,4 +108,6 @@ git archive v2.0.0 | tar -x -C /tmp/v200 && cd /tmp/v200 && npm ci && npm run ve
 > deb 实测 `usr/bin/metacrypto-online-ide`、`Package: meta-crypto-online-ide`、desktop 的 `Exec` 与 `Icon`
 > 均为新名；启动后窗口标题 `MetaCrypto Online IDE`、WM Class `metacrypto-online-ide`。
 > `identifier` 仍为 `com.ciphercat.editor`（数据目录不变）。`tests/` 仍 **89** 个文件，222 / 60 / 1018 不变。
+> 为从旧包平滑升级，deb 另声明 `Provides` / `Conflicts` / `Replaces` = `cipher-cat`（旧包名），
+> 使 `dpkg -i` 新包时自动移除 1.0.0 旧包，而不是并存两个图标。
 > 当前指向仍以 `git rev-parse 'v2.0.0^{commit}'` 为准。
