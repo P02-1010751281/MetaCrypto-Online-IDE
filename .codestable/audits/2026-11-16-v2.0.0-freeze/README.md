@@ -100,3 +100,12 @@ git archive v2.0.0 | tar -x -C /tmp/v200 && cd /tmp/v200 && npm ci && npm run ve
 > `tests/` 目录零改动，测试文件仍 **89** 个，222 / 60 / 1018 与 `docs/` 文件数 443 均不变；
 > 改变的只是名称与产物元信息（`bundle` 增设 short/long description，deb `Description` 不再出现 `(none)`）。
 > 当前指向仍以 `git rev-parse 'v2.0.0^{commit}'` 为准。
+
+> **2026-11-17 09:4x 第三次前移（执行层命名）**：主二进制与桌面条目改名后，tag 树增加
+> `mainBinaryName` = `metacrypto-online-ide`、`src-tauri/desktop/metacrypto-online-ide.desktop`
+> （`Categories=Development;Education;`，`Exec` / `Icon` / `StartupWMClass` 走模板变量），
+> 以及 `scripts/build-appimage.sh`、`docker/docker-build-windows.sh` 的同步改动。
+> deb 实测 `usr/bin/metacrypto-online-ide`、`Package: meta-crypto-online-ide`、desktop 的 `Exec` 与 `Icon`
+> 均为新名；启动后窗口标题 `MetaCrypto Online IDE`、WM Class `metacrypto-online-ide`。
+> `identifier` 仍为 `com.ciphercat.editor`（数据目录不变）。`tests/` 仍 **89** 个文件，222 / 60 / 1018 不变。
+> 当前指向仍以 `git rev-parse 'v2.0.0^{commit}'` 为准。
