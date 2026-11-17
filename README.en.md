@@ -105,7 +105,7 @@ src/
 └── assets/                     # Static assets
 ```
 
-## Supported Crypto Modules (194 custom blocks, 17 toolbox categories)
+## Supported Crypto Modules (222 custom blocks, 17 toolbox categories)
 
 | Category | Representative capabilities |
 |------|--------|
@@ -121,7 +121,7 @@ src/
 | Post-quantum cryptography | ML-KEM/ML-DSA lattice components and stages; SLH-DSA and code-based teaching components |
 | Functions and Blockly-native categories | 29 function-template registrations and native variables, math, arrays and logic |
 
-> The authoritative total is 194 active custom block types after recursively expanding and deduplicating `ALL_BLOCK_TYPES` in `src/blocks/index.ts`. There are 29 function-template registrations: three base `crypto_*` blocks are already included in the 194, while 26 `proc_*` templates are additional types. The deduplicated union contains 220 types. One further identity, `ctrl_assign`, is registered only so legacy workspaces still load: it is absent from the toolbox and excluded from both 194 and 220. The 17 toolbox categories include four Blockly-native categories. The table describes scope, not additive category counts. This educational surface is not a CAVP/ACVTS, CMVP/FIPS 140-3 or formal-verification claim.
+> The authoritative total is 222 active custom block types after recursively expanding and deduplicating `ALL_BLOCK_TYPES` in `src/blocks/index.ts`. There are 29 function-template registrations: three base `crypto_*` blocks are already included in the 222, while 26 `proc_*` templates are additional types. The deduplicated union contains 248 types. One further identity, `ctrl_assign`, is registered only so legacy workspaces still load: it is absent from the toolbox and excluded from both 222 and 248. The 17 toolbox categories include four Blockly-native categories. The table describes scope, not additive category counts. The counts above belong to the tree this tag points at (the 222-entry itemized list is in [docs/standards/CONFORMANCE-INVENTORY.md](docs/standards/CONFORMANCE-INVENTORY.md) and [docs/blocks/INDEX.md](docs/blocks/INDEX.md)); they drift as the main branch evolves. This educational surface is not a CAVP/ACVTS, CMVP/FIPS 140-3 or formal-verification claim.
 
 The browser is for Blockly editing, code generation and user trials. Trusted randomness assessment, statistical testing, isolated execution and final reports belong to the `metacrypt_server` backend.
 

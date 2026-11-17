@@ -100,11 +100,11 @@ src/
 ├── utils/                      # 工具函数（toolbox-config / migration / markdown）
 ├── styles/                     # 全局样式 / CSS 变量
 └── assets/                     # 静态资源
-docs/                           # 文档体系（guides/ 核心 + blocks/ 索引 + demos/ + standards/ 37 算法目录 + papers/ 文献索引）
+docs/                           # 文档体系（guides/ 核心 + blocks/ 索引 + demos/ + standards/ 40 标准目录 + papers/ 文献索引）
 demos/                          # Blockly 工作区示例（含官方向量期望）
 ```
 
-## 支持的密码学模块（194 个自定义积木块，17 个工具箱类目）
+## 支持的密码学模块（222 个自定义积木块，17 个工具箱类目）
 
 | 类目 | 代表能力 |
 |------|----------|
@@ -120,7 +120,7 @@ demos/                          # Blockly 工作区示例（含官方向量期�
 | 后量子密码 | ML-KEM/ML-DSA 格基构件与阶段；另含 SLH-DSA、纠错码教学构件 |
 | 函数与 Blockly 原生类目 | 29 个函数模板及变量、数学、数组、逻辑等 Blockly 原生块 |
 
-> 总数按 `src/blocks/index.ts` 的 `ALL_BLOCK_TYPES` 递归展开、去重得到 195 个活动块类型。另有 29 个函数模板注册项，其中 3 个基础 `crypto_*` 块已计入这 195 个类型，26 个 `proc_*` 模板是额外类型；块与模板合并去重后共 221 个类型。此外还注册 1 个仅供存量工作区加载的兼容身份 `ctrl_assign`（不在工具箱、不计入 195 与 221）。工具箱 17 类目含 4 个 Blockly 原生类目。上表用于说明能力范围，不提供可能重叠的分类小计。
+> 总数按 `src/blocks/index.ts` 的 `ALL_BLOCK_TYPES` 递归展开、去重得到 222 个活动块类型。另有 29 个函数模板注册项，其中 3 个基础 `crypto_*` 块已计入这 222 个类型，26 个 `proc_*` 模板是额外类型；块与模板合并去重后共 248 个类型。此外还注册 1 个仅供存量工作区加载的兼容身份 `ctrl_assign`（不在工具箱、不计入 222 与 248）。工具箱 17 类目含 4 个 Blockly 原生类目。上表用于说明能力范围，不提供可能重叠的分类小计。以上计数以本 tag 指向的树为准（222 项逐条清单见 [docs/standards/CONFORMANCE-INVENTORY.md](docs/standards/CONFORMANCE-INVENTORY.md) 与 [docs/blocks/INDEX.md](docs/blocks/INDEX.md)），主分支继续演进后数字会变化。
 
 ## 代码生成示例
 
