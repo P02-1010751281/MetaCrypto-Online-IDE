@@ -1,4 +1,4 @@
-# CipherCat system architecture
+# MetaCrypto Online IDE system architecture
 
 
 ## Overall architecture
@@ -52,7 +52,7 @@ flowchart TB
 
 ## Vue 3 frontend and Blockly integration pattern
 
-CipherCat does not use a heavyweight third-party Blockly-Vue wrapper library. Instead, it manages the Blockly workspace lifecycle directly through Vue components:
+MetaCrypto Online IDE does not use a heavyweight third-party Blockly-Vue wrapper library. Instead, it manages the Blockly workspace lifecycle directly through Vue components:
 
 The component lifecycle is organized as follows:
 
@@ -93,7 +93,7 @@ All block types are aggregated into the `ALL_BLOCK_TYPES` union type in `src/blo
 
 ### Type system (`src/constants/block-types.ts`)
 
-CipherCat defines **cryptographic domain type constants** used for Blockly's `setCheck()`/`setOutput()` connection constraints:
+MetaCrypto Online IDE defines **cryptographic domain type constants** used for Blockly's `setCheck()`/`setOutput()` connection constraints:
 
 | Type constant | Blockly type string | Semantics |
 |---------|-------------------|------|
@@ -231,7 +231,7 @@ User clicks "Export" → exportWorkspace(format)
 
 ## Internationalization (i18n) strategy
 
-CipherCat uses **two-layer i18n**:
+MetaCrypto Online IDE uses **two-layer i18n**:
 
 ### Layer 1: Built-in Blockly mechanism
 

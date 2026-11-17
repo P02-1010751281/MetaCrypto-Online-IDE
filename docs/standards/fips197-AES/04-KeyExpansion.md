@@ -35,7 +35,7 @@ w[i] = w[i−Nk] xor temp
 
 `Rcon[j]` 的首字节为 `x^(j−1)` 在 `GF(2^8)` 中的值，其余三个字节为零。每连续 `Nk` 个字构成一个轮密钥；加密从第 0 轮密钥开始，末轮不执行 MixColumns。
 
-## CipherCat 映射
+## MetaCrypto Online IDE 映射
 
 `aes_add_round_key` 展示状态与轮密钥异或，`aes_key_schedule`/`proc_aes_key_schedule`（如适用）负责生成轮密钥。当前 AES 单轮 Demo 使用固定状态和轮密钥作项目回归检查；该输入不是 FIPS 197 Appendix B/C 的完整 AES-128 测试向量。AES-192/256 的递推保留在本页，项目的可视化块不因此自动获得全部密钥长度覆盖。
 ## 原文摘录

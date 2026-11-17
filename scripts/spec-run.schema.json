@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "ciphercat/spec-run/v0",
-  "title": "CipherCat SpecCard 运行清单 v0",
+  "title": "MetaCrypto Online IDE SpecCard 运行清单 v0",
   "description": "记录一次「标准/论文/参考代码 → SpecCard → Blockly 候选」运行读了什么、产出了什么、门禁结果如何。契约只冻结**输入**（源 PDF/文本层必须逐字节不变，否则这次运行就失效）；产出与共享文件只列路径——SpecCard、Demo 工作区是会被后续评审改写的活文档，若把它们的哈希写进清单，每次正常修订都会把历史清单拖红，哈希也就退化成噪声。",
   "type": "object",
   "additionalProperties": false,

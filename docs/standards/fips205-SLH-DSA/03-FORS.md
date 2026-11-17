@@ -60,7 +60,7 @@ FORS 签名 ← (sig_sk[0..k−1], sig_auth[0..k−1])
 由 `SK.seed` 生成全部 k·2^a 个叶子 → 逐树建树 → 根压缩：
 `pk = H(ADRS(FORS_ROOTS) ‖ roots)`。
 
-## CipherCat 块实现
+## MetaCrypto Online IDE 块实现
 
 教学参数（固定，非标准参数集）：**n = 32、k = 4、a = 4**（每树 16 叶），
 消息摘要 M = 16 bit（2 字节），按 4-bit 分块（块 0 最高位）选叶。签名 640 字节

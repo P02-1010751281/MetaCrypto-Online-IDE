@@ -11,7 +11,7 @@ See [00-Research-Source.md](./00-Research-Source.md) for the source and standard
 
 ## Implementation Boundary
 
-> CipherCat’s code-based blocks (`src/blocks/numtheory/codebased.ts`, `gf2mpoly.ts`, and binary-matrix/Hamming blocks under `src/blocks/numtheory/`) cover Goppa-code construction, syndrome computation, and Patterson decoding as teaching primitives. They do not implement the ISO Classic McEliece KEM’s key generation, encapsulation/decapsulation interfaces, or selected parameter sets, and do not establish conformance.
+> MetaCrypto Online IDE’s code-based blocks (`src/blocks/numtheory/codebased.ts`, `gf2mpoly.ts`, and binary-matrix/Hamming blocks under `src/blocks/numtheory/`) cover Goppa-code construction, syndrome computation, and Patterson decoding as teaching primitives. They do not implement the ISO Classic McEliece KEM’s key generation, encapsulation/decapsulation interfaces, or selected parameter sets, and do not establish conformance.
 >
 > Fixed teaching parameters: GF(2^8) AES field with irreducible polynomial x^8+x^4+x^3+x+1 = 0x11B, t=2, n=14.
 

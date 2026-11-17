@@ -17,7 +17,7 @@ export interface ProjectCodeBundle {
 
 /**
  * 把单个 block 文件的负载反序列化成临时工作区。
- * CipherCat 的文件只有 JSON/XML 两种 block 负载，没有源码文件；
+ * MetaCrypto Online IDE 的文件只有 JSON/XML 两种 block 负载，没有源码文件；
  * XML 以 `<` 开头，用 format 字段优先、内容特征兜底，兼容早期没有 format 的记录。
  */
 function parseWorkspace(file: ProjectFileRecord): Blockly.Workspace {
@@ -263,7 +263,7 @@ export function generateProjectBundle(
       workspace = parseWorkspace(file);
       const codeWorkspace = workspace as unknown as Blockly.WorkspaceSvg;
       let python = generateCode(codeWorkspace, 'python') || '';
-      // CipherCat 没有算法类型概念：只有显式传入 algorithmType 时才注入 primitive/algo
+      // MetaCrypto Online IDE 没有算法类型概念：只有显式传入 algorithmType 时才注入 primitive/algo
       // 脚手架，否则输出与单文件生成保持一致。
       if (file.fileId === entryFileId && algorithmType) {
         python = injectPrimitives(python, algorithmType);

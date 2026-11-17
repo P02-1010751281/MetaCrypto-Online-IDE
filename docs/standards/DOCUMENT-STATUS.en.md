@@ -32,7 +32,7 @@ The repository previously placed several PDF text-layer dumps directly in Markdo
 - GB/T 15852 has verified `.1-2020`, current `.2-2024`, and an official notification record for `.3-2019`; local source artifacts, a separate `.1/.2/.3` clause matrix, and `.3` status verification remain open.
 - Eight RFC directories contain RFC Editor `.txt` sources rather than PDFs; they remain traceable through the RFC source and errata pages and are not counted as missing PDF source artifacts.
 - ZUC 128-EIA3 now has a MAC block, two GB/T 33133.3-2021 Appendix B vectors (1-bit and 577-bit messages), and parameter-rejection regressions; broader interoperability, certification, and side-channel guarantees remain out of scope. The full DRBG lifecycle and broad negative/interop vector sets remain incomplete. Ascon Hash/XOF/CXOF and the AEAD tag-rejection path are implemented and covered by the extended dual-language demo; official Hash/XOF KAT coverage and streaming APIs are still open.
-- Platform-side randomness assessment runs through the `metacrypt_server` Python sample-generation sandbox and Go detection pipeline. CipherCat is the user code-trial and report-display frontend; this assessment is not certification or proof of entropy-source quality.
+- Platform-side randomness assessment runs through the `metacrypt_server` Python sample-generation sandbox and Go detection pipeline. MetaCrypto Online IDE is the user code-trial and report-display frontend; this assessment is not certification or proof of entropy-source quality.
 
 ## User-document illustration status
 

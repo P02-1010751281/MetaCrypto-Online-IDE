@@ -1,4 +1,4 @@
-# CipherCat development guide
+# MetaCrypto Online IDE development guide
 
 
 ## Environment setup
@@ -301,11 +301,11 @@ If an old block type is renamed or deprecated, add a mapping entry to `BLOCK_TYP
 
 ### Syncing core changes to metacrypt_server
 
-The Blockly core is a **one-way mirror**: `scripts/sync-to-metacrypt.sh` treats CipherCat as the authoritative source and fully overwrites `metacrypt_server/frontend/src/features/blockly/core/` (blocks, generators, constants and so on). Any change inside the mirrored tree must therefore land in CipherCat first; metacrypt-only implementations belong in non-mirrored directories such as `features/blockly/algorithms/`, not in `core/`.
+The Blockly core is a **one-way mirror**: `scripts/sync-to-metacrypt.sh` treats MetaCrypto Online IDE as the authoritative source and fully overwrites `metacrypt_server/frontend/src/features/blockly/core/` (blocks, generators, constants and so on). Any change inside the mirrored tree must therefore land in MetaCrypto Online IDE first; metacrypt-only implementations belong in non-mirrored directories such as `features/blockly/algorithms/`, not in `core/`.
 
 Before any write, the script runs two preflight checks and aborts if either trips:
 
-1. the mirror target exports a name CipherCat does not have — such an increment is guaranteed to be deleted by the sync (past incident: the group exports in `core/blocks/{hash,pq}/index.ts` were overwritten, making `build:prod` fail with `HASH_ALGORITHM_BLOCK_GROUPS is not exported`);
+1. the mirror target exports a name MetaCrypto Online IDE does not have — such an increment is guaranteed to be deleted by the sync (past incident: the group exports in `core/blocks/{hash,pq}/index.ts` were overwritten, making `build:prod` fail with `HASH_ALGORITHM_BLOCK_GROUPS is not exported`);
 2. the mirrored tree has uncommitted changes.
 
 If those changes are known to be disposable, re-run with `--overwrite-local`.

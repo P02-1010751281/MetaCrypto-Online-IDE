@@ -36,7 +36,7 @@ T(i+1) = α · Ti  in GF(2^128)
 
 `α` 的乘法使用标准规定的字节序和约简多项式。数据单元、扇区范围和重复 tweak 的管理属于调用方责任；XTS 本身不替代认证。
 
-## CipherCat 覆盖边界
+## MetaCrypto Online IDE 覆盖边界
 
 `xts_encrypt` 使用 AES-128 的双密钥输入（`K1‖K2` 且两半必须不同）、16 字节 tweak 和数据单元
 （16 字节至 16 MiB），返回密文；末尾部分块走 ciphertext stealing，因此接受非 16 字节倍数数据

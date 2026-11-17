@@ -39,7 +39,7 @@ n    = FFFFFFFF 00000000 FFFFFFFF FFFFFFFF BCE6FAAD A7179E84 F3B9CAC2 FC632551
 h    = 1
 ```
 
-## CipherCat 块实现
+## MetaCrypto Online IDE 块实现
 
 `ecdh_shared_secret(d, qx, qy)` → 共享点 S = [d]Q 的 x 坐标 32 字节大端 hex：
 

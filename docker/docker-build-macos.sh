@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build CipherCat for macOS (.dmg)
+# Build MetaCrypto Online IDE for macOS (.dmg)
 # NOTE: macOS cannot be cross-compiled from Linux — run this on a Mac.
 set -e
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"

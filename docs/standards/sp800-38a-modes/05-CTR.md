@@ -41,4 +41,4 @@ P_j = C_j xor O_j
 
 CTR 可并行、可随机访问，但计数器块重复会直接破坏机密性。
 
-CipherCat：`mode_ctr_encrypt`；示例见 `demos/procedures/Mode-CTR.json`。
+MetaCrypto Online IDE：`mode_ctr_encrypt`；示例见 `demos/procedures/Mode-CTR.json`。

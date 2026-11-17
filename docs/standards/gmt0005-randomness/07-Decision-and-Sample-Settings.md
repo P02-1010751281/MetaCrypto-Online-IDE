@@ -63,7 +63,7 @@ final_ok = every item satisfies pass_rate_ok and uniformity_ok
 ## 项目映射
 
 `metacrypt_server` 负责生成或接收受控样本、执行 15 项检测、计算两层判定并保存可审计报告。
-CipherCat 前端只负责用户代码试跑、展示后端报告和标准解释；前端生成的样本不得直接显示可信“通过”。
+MetaCrypto Online IDE 前端只负责用户代码试跑、展示后端报告和标准解释；前端生成的样本不得直接显示可信“通过”。
 
 ## 核验与缺项
 

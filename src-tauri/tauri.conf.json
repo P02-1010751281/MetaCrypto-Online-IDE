@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/tauri-apps/tauri/dev/crates/tauri-config-schema/schema.json",
-  "productName": "CipherCat",
+  "productName": "MetaCrypto Online IDE",
   "identifier": "com.ciphercat.editor",
   "build": {
     "frontendDist": "../dist",

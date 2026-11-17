@@ -1,4 +1,4 @@
-# CipherCat 系统架构
+# MetaCrypto Online IDE 系统架构
 
 ## 总体架构
 
@@ -51,7 +51,7 @@ flowchart TB
 
 ## Vue 3 前端 + Blockly 集成模式
 
-CipherCat 不使用繁琐的第三方 Blockly-Vue 封装库，而是直接通过 Vue 组件管理 Blockly 工作区的生命周期：
+MetaCrypto Online IDE 不使用繁琐的第三方 Blockly-Vue 封装库，而是直接通过 Vue 组件管理 Blockly 工作区的生命周期：
 
 组件生命周期按以下顺序协作：
 
@@ -92,7 +92,7 @@ CipherCat 不使用繁琐的第三方 Blockly-Vue 封装库，而是直接通过
 
 ### 类型系统 (`src/constants/block-types.ts`)
 
-CipherCat 定义了**密码学领域类型常量**，用于 Blockly 的 `setCheck()`/`setOutput()` 连接约束：
+MetaCrypto Online IDE 定义了**密码学领域类型常量**，用于 Blockly 的 `setCheck()`/`setOutput()` 连接约束：
 
 | 类型常量 | Blockly 类型字符串 | 语义 |
 |---------|-------------------|------|
@@ -230,7 +230,7 @@ Blockly 工作区 (WorkspaceSvg)
 
 ## 国际化 (i18n) 方案
 
-CipherCat 使用**两层 i18n**：
+MetaCrypto Online IDE 使用**两层 i18n**：
 
 ### 层 1: Blockly 内置机制
 

@@ -52,6 +52,6 @@ K = HMAC(K, V || 01 || provided_data); V = HMAC(K, V)
 
 实例化把 entropy、nonce、personalization 拼入 Update；重播种和 additional input 需要分别遵守标准流程。
 
-## CipherCat 边界
+## MetaCrypto Online IDE 边界
 
 Update 由 `drbg_generate` 内部完成，没有独立状态块；当前代码路径不应标注为 Hash_DRBG 或 CTR_DRBG。

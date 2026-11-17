@@ -37,5 +37,5 @@ P_j = CIPH_K⁻¹(C_j)       1 ≤ j ≤ n
 
 ECB 不隐藏相同明文分组的重复模式，通常不应单独用于结构化数据。
 
-CipherCat：`mode_ecb_encrypt`、`mode_ecb_decrypt`；SM4 官方示例见
+MetaCrypto Online IDE：`mode_ecb_encrypt`、`mode_ecb_decrypt`；SM4 官方示例见
 `demos/procedures/Mode-ECB.json`。

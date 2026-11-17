@@ -45,4 +45,4 @@
 
 ## 项目边界
 
-检测项目不是 CipherCat Blockly 原语。它们由 `metacrypt_server` Go 后端执行并写入测评报告。
+检测项目不是 MetaCrypto Online IDE Blockly 原语。它们由 `metacrypt_server` Go 后端执行并写入测评报告。

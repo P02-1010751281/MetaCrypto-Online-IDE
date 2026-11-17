@@ -1,6 +1,6 @@
 # Standards Coverage Matrix (Standard ↔ Blocks ↔ Demos ↔ Templates ↔ Guides)
 
-> This document is the index of `docs/standards/`: one row per standards directory, showing its coverage in the CipherCat block system —
+> This document is the index of `docs/standards/`: one row per standards directory, showing its coverage in the MetaCrypto Online IDE block system —
 > **atomic blocks** (registered in `src/blocks/`), **demos** (prebuilt workspaces under `demos/`), **templates** (`proc_*` prefilled templates in `src/blocks/procedure/blocks/`), and **build guides** (`standards/*/guides/`).
 > Extraction quality, source-artifact availability, and unfinished items are tracked separately in [DOCUMENT-STATUS.en.md](./DOCUMENT-STATUS.en.md); this matrix is not proof of full-text standards coverage.
 > Function/primitive page split rules and entry points are listed in [FUNCTION-PRIMITIVE-INDEX.en.md](./FUNCTION-PRIMITIVE-INDEX.en.md); source-layer boundaries are listed in [SOURCE-LAYERS.en.md](../audits/standards/SOURCE-LAYERS.en.md).
@@ -18,7 +18,7 @@
 - `Atomic blocks/templates/demos/guides` indicate repository assets only; they do not imply certification or production security assurance.
 - Each standards directory should record the exact edition/date, official source URL, vector source, known errata, implementation status and security boundary.
 - When an NIST page carries an errata or revision notice, retain the coverage row but mark the reference for re-check instead of claiming unconditional conformance to the latest text.
-- The Go assessment in `gmt0005-randomness/` and the CipherCat browser trial are separate execution planes; randomness judgments must come from the `metacrypt_server` backend report.
+- The Go assessment in `gmt0005-randomness/` and the MetaCrypto Online IDE browser trial are separate execution planes; randomness judgments must come from the `metacrypt_server` backend report.
 
 | Standard | Standards dir | Atomic blocks | Demo | Template | Guide |
 |----------|---------------|---------------|------|----------|-------|

@@ -6,7 +6,7 @@
  * 不可用（实测 0 次使用）。桥接把原生标签拓宽为 {@link LIST_BRIDGE_CHECKS}，
  * 并把「当前接受 `'Array'` 的输入端口」一并拓宽（只按端口现有 check 识别，不按名字猜）。
  *
- * 边界：原生块**不进** `BLOCK-IO-CONTRACT.json`——该契约只描述 CipherCat 块
+ * 边界：原生块**不进** `BLOCK-IO-CONTRACT.json`——该契约只描述 MetaCrypto Online IDE 块
  * （见 `scripts/check-block-contract.mjs` 的 NATIVE_BLOCK_TYPES 注释），
  * 所以类型检查器对桥接块仍报 unknown，这是已知且有意保留的边界。
  */

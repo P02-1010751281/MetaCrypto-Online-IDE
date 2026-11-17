@@ -4,7 +4,7 @@
       IKE and IKEv2
       https://www.rfc-editor.org/rfc/rfc5903.txt      (2010-06)
 
-> CipherCat ECDH 块族（`src/blocks/ecdh/`）覆盖 ECDH 共享密钥计算（P-256）。
+> MetaCrypto Online IDE ECDH 块族（`src/blocks/ecdh/`）覆盖 ECDH 共享密钥计算（P-256）。
 > 官方向量：RFC 5903 §8.1（IKE P-256）两方向，JS/Python 双语言回归，并由独立实现复算。
 
 ## 算法清单

@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "CipherCat - A visual cryptography programming platform based on Blockly and Vue 3, supporting JavaScript, Python, and Kasm51 code generation",
+  "description": "MetaCrypto Online IDE - A visual cryptography programming platform based on Blockly and Vue 3, supporting JavaScript, Python, and Kasm51 code generation",
   "author": "",
   "license": "AGPL-3.0-or-later",
   "keywords": [

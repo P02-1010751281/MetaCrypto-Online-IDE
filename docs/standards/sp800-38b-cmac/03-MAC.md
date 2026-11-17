@@ -56,6 +56,6 @@ Tag = Xn
 
 标签截断由上层协议决定，不能默认为认证能力已经完成。
 
-## CipherCat 边界
+## MetaCrypto Online IDE 边界
 
 `cmac_mac` 当前输出完整 16-byte 标签，已有 AES-CMAC 向量和 SM4 同构路径；没有独立验证、截断策略或失败拒绝块。

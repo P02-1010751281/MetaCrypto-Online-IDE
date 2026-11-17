@@ -26,7 +26,7 @@ ECB、CBC、CFB、OFB、CTR 都是保密性模式；它们本身不提供完整�
 
 ## 模式索引
 
-| 模式 | 标准章节 | 参考页 | CipherCat 状态 |
+| 模式 | 标准章节 | 参考页 | MetaCrypto Online IDE 状态 |
 |---|---|---|---|
 | ECB | §6.1 | [01-ECB.md](./01-ECB.md) | `mode_ecb_encrypt/decrypt` |
 | CBC | §6.2 | [02-CBC.md](./02-CBC.md) | `mode_cbc_encrypt` |

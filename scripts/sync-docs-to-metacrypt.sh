@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # =============================================================================
-# sync-docs-to-metacrypt.sh — 通用文档单源同步（CipherCat → metacrypt_server）
+# sync-docs-to-metacrypt.sh — 通用文档单源同步（MetaCrypto Online IDE → metacrypt_server）
 #
-# 两项目共享 Blockly 核心，以下文档在 CipherCat 维护、同步到 metacrypt：
+# 两项目共享 Blockly 核心，以下文档在 MetaCrypto Online IDE 维护、同步到 metacrypt：
 #   docs/guides/{CAPABILITY-MAP,TYPE-SYSTEM,BLOCKLY-GUIDE,DEMO}.md(+en)
 #   docs/blocks/（8 份块文档 + BLOCK-IO-CONTRACT.json，双语）
 #   docs/standards/（入口页与规范 + 算法标准目录，纯知识库）
@@ -157,7 +157,7 @@ for f in 02-editor-empty 03-import-menu 04-editor-imported 05-generated-python 0
   cp "$CC_ROOT/public/docs-assets/tutorials/$f.png" "$MC_ROOT/frontend/public/docs-assets/tutorials/$f.png"
   echo "  frontend/public/docs-assets/tutorials/$f.png"
 done
-# 06-docs-center-current.png is specific to CipherCat's docs UI; do not sync it.
+# 06-docs-center-current.png is specific to MetaCrypto Online IDE's docs UI; do not sync it.
 
 echo "== 同步演示教程实机截图 ================"
 mkdir -p "$MC_ROOT/frontend/public/docs-assets/demo-guides"
@@ -200,8 +200,8 @@ done
 echo "== 平台专属用户指南保留目标仓库版本 =="
 echo "  USER-GUIDE / TUTORIALS 不同步：入口、路由和测评流程按目标平台维护，不做全仓品牌替换。"
 
-echo "== 降级 CipherCat 专属证据链接 ============="
-# 共享文档在 CipherCat 内链接到 src/、tests/、scripts/ 的真实文件；metacrypt
+echo "== 降级 MetaCrypto Online IDE 专属证据链接 ============="
+# 共享文档在 MetaCrypto Online IDE 内链接到 src/、tests/、scripts/ 的真实文件；metacrypt
 # 仓库没有这些路径，原样同步会变成死链。目标仓库里把这类链接降级为
 # 「文本（源码路径：路径）」的代码标记，保留出处但不留死链；标记里不写仓库名，
 # 避免平台文档出现另一个仓库的名字。
@@ -219,42 +219,42 @@ sync_targets() {
   | xargs -0 -r perl -0pi -e 's/\[([^\]]*)\]\((?:\.\.\/)+((?:tests|src|scripts)\/[^)\s]*)\)/$1（源码路径：`$2`）/g'
 { sync_targets | grep -z '\.en\.md$' || true; } \
   | xargs -0 -r perl -0pi -e 's/\[([^\]]*)\]\((?:\.\.\/)+((?:tests|src|scripts)\/[^)\s]*)\)/$1 (source path: `$2`)/g'
-echo "  CipherCat-only evidence links de-linked in target docs (marked as 源码路径)"
+echo "  MetaCrypto Online IDE-only evidence links de-linked in target docs (marked as 源码路径)"
 
 echo "== 目标仓库去掉开发仓库名 ================"
 # 平台文档面向 Metacrypto 读者，标题与正文出现另一个仓库名会让人以为是两套产品。
 # 这里只改写本次同步过去的文件；调研/审计这类开发文档的叙述保留原样。
 # 中文文档
 { sync_targets | grep -zv '\.en\.md$' || true; } | xargs -0 -r perl -0pi \
-  -e 's/^## (\d+\.?\s*)?CipherCat\s*/## ${1}项目/gm;' \
-  -e 's/\| CipherCat 状态 \|/| 项目状态 |/g;' \
-  -e 's/\| CipherCat 前端 \|/| 平台前端 |/g;' \
-  -e 's/前端 CipherCat/平台前端/g;' \
-  -e 's/CipherCat 前端/平台前端/g;' \
-  -e 's/CipherCat 块：/项目块：/g;' \
-  -e 's/CipherCat：/项目块：/g;' \
-  -e 's/（CipherCat /（/g;' \
-  -e 's/CipherCat 的/本项目的/g;' \
-  -e 's/CipherCat 对/本项目对/g;' \
-  -e 's/CipherCat 基于/本项目基于/g;' \
-  -e 's/CipherCat 整体/本项目整体/g;' \
-  -e 's/CipherCat 作为/本项目作为/g;' \
-  -e 's/CipherCat 当前/本项目当前/g;' \
-  -e 's/CipherCat 已有/本项目已有/g;' \
-  -e 's/CipherCat 积木体系/本项目积木体系/g;' \
-  -e 's/CipherCat Blockly 原语/Blockly 原语/g;' \
-  -e 's/CipherCat 实测/实测/g;' \
-  -e 's/CipherCat ECDH/本项目 ECDH/g;' \
-  -e 's/CipherCat 算法实现/本项目算法实现/g;' \
-  -e 's/CipherCat 或/本项目或/g;' \
-  -e 's/CipherCat 教学与科研定位/本项目教学与科研定位/g;' \
+  -e 's/^## (\d+\.?\s*)?MetaCrypto Online IDE\s*/## ${1}项目/gm;' \
+  -e 's/\| MetaCrypto Online IDE 状态 \|/| 项目状态 |/g;' \
+  -e 's/\| MetaCrypto Online IDE 前端 \|/| 平台前端 |/g;' \
+  -e 's/前端 MetaCrypto Online IDE/平台前端/g;' \
+  -e 's/MetaCrypto Online IDE 前端/平台前端/g;' \
+  -e 's/MetaCrypto Online IDE 块：/项目块：/g;' \
+  -e 's/MetaCrypto Online IDE：/项目块：/g;' \
+  -e 's/（MetaCrypto Online IDE /（/g;' \
+  -e 's/MetaCrypto Online IDE 的/本项目的/g;' \
+  -e 's/MetaCrypto Online IDE 对/本项目对/g;' \
+  -e 's/MetaCrypto Online IDE 基于/本项目基于/g;' \
+  -e 's/MetaCrypto Online IDE 整体/本项目整体/g;' \
+  -e 's/MetaCrypto Online IDE 作为/本项目作为/g;' \
+  -e 's/MetaCrypto Online IDE 当前/本项目当前/g;' \
+  -e 's/MetaCrypto Online IDE 已有/本项目已有/g;' \
+  -e 's/MetaCrypto Online IDE 积木体系/本项目积木体系/g;' \
+  -e 's/MetaCrypto Online IDE Blockly 原语/Blockly 原语/g;' \
+  -e 's/MetaCrypto Online IDE 实测/实测/g;' \
+  -e 's/MetaCrypto Online IDE ECDH/本项目 ECDH/g;' \
+  -e 's/MetaCrypto Online IDE 算法实现/本项目算法实现/g;' \
+  -e 's/MetaCrypto Online IDE 或/本项目或/g;' \
+  -e 's/MetaCrypto Online IDE 教学与科研定位/本项目教学与科研定位/g;' \
   -e 's/当前本项目/本项目/g;'
 # 英文文档
 { sync_targets | grep -z '\.en\.md$' || true; } | xargs -0 -r perl -0pi \
-  -e 's/^## (\d+\.?\s*)?CipherCat\s*/## ${1}Project /gm;' \
-  -e 's/CipherCat’s/Project’s/g;' \
-  -e 's/CipherCat\x27s/the project\x27s/g;' \
-  -e 's/\bCipherCat\b/the project/g;' \
+  -e 's/^## (\d+\.?\s*)?MetaCrypto Online IDE\s*/## ${1}Project /gm;' \
+  -e 's/MetaCrypto Online IDE’s/Project’s/g;' \
+  -e 's/MetaCrypto Online IDE\x27s/the project\x27s/g;' \
+  -e 's/\bMetaCrypto Online IDE\b/the project/g;' \
   -e 's/\bthe the project\b/the project/g;' \
   -e 's/(^|[.!?]\s+)the project/${1}The project/gm;'
 echo "  repository name removed from platform-facing sections"

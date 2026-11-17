@@ -1,7 +1,7 @@
 # AI Helper 调研：把文献、标准与参考代码转成 MCL Blockly 资产
 
 **调研日期：** 2026-11-13
-**范围：** 能否、以及怎样做一个「AI helper」，把标准（NIST FIPS/SP、GB/T、GM/T、RFC）、文献（论文/技术报告）与参考实现代码，转成 CipherCat / metacrypt_server 的 Blockly 资产（积木定义、双语言生成器、Demo、文档条目）；MCL 文本不在范围（见下行任务边界）。本文是可行性调研与设计建议，**不是**已实现能力的声明，也**不是**对任何工具或模型的背书。
+**范围：** 能否、以及怎样做一个「AI helper」，把标准（NIST FIPS/SP、GB/T、GM/T、RFC）、文献（论文/技术报告）与参考实现代码，转成 MetaCrypto Online IDE / metacrypt_server 的 Blockly 资产（积木定义、双语言生成器、Demo、文档条目）；MCL 文本不在范围（见下行任务边界）。本文是可行性调研与设计建议，**不是**已实现能力的声明，也**不是**对任何工具或模型的背书。
 **证据等级：** [A] 论文自述的实测结果（只到检索摘要级）；[B] 官方文档/标准声明；[C] 二手转述或汇总页；[D] 本报告分析或本项目实测。
 **环境限制：** 本机 `web_fetch` 对所有外部域名被 SSRF 策略拦截（域名解析到 `198.18.0.0/15` 的代理假 IP），外部来源只能读到检索摘要；凡涉及页码、表号、完整实验设置的结论，写论文前必须联网复核原文。
 **任务边界（owner 2026-11-13 裁定）：** 本任务的交付物只到 **Blockly 侧资产**——块定义、JS/Python 双生成器、注册链、工具箱条目、Demo/KAT、标准文档条目。**MCL 相关全部出范围**：MCL 文本视图、Blockly→MCL 适配器、平台 MCL 生成器缺口（约 82/216 块无生成器）、MCL-Core 与 MCLProver 都不在本次范围内，「另说」。下文保留 MCL 现状描述只为解释为什么不能把它当验证目标，不代表要做它。
@@ -24,7 +24,7 @@
 
 | 对象 | 位置 | 现状（本次实测） | 能否执行/验证 |
 |---|---|---|---|
-| CipherCat Blockly | `src/blocks/`、`src/generators/{javascript,python}/` | 220 个活动块；JS/Python 双生成器；`BLOCK-IO-CONTRACT.json` 机器可读；60 个 Demo 可用官方/性质向量执行 | **能**，是今天唯一可端到端验证的产物 |
+| MetaCrypto Online IDE Blockly | `src/blocks/`、`src/generators/{javascript,python}/` | 220 个活动块；JS/Python 双生成器；`BLOCK-IO-CONTRACT.json` 机器可读；60 个 Demo 可用官方/性质向量执行 | **能**，是今天唯一可端到端验证的产物 |
 | 平台 MCL 生成器 | `metacrypt_server/frontend/src/features/blockly/core/generators/mcl/` | 薄封装：每个块只发出 `SHA256_PAD(INPUT)` 一类 MCL 调用；216 个块中按名称匹配有 82 个无生成器，兜底 `UNSUPPORTED_OP(...)`；MCL→CUDA 编译器是实验模块，明确不在测评路径 | **不能**，MCL 输出既无端到端测试也无执行门禁 |
 | MCL-Core | `../MetaCrypto-Language/` | 独立类型化 DSL；36 册规格 16815 行；`mcl check` / `mcl gen --target c`；`corpus/mlkem.mcl` 238 行，`check` 报 25 个函数 proved、181 条义务、13 条未证 + 14 个 TCB 成员 | **部分能**：只覆盖确定性纯函数、定长 Bytes/Bits、模整数、有界循环的窄子集；无 Blockly 适配器 |
 

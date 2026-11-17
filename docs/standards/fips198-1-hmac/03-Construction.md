@@ -28,7 +28,7 @@ HMAC(K,M) = H((K0 xor opad) || H((K0 xor ipad) || M))
 
 `ipad` 是重复 `0x36`，`opad` 是重复 `0x5c`，重复长度等于底层哈希分组长度 `B`。
 
-## CipherCat 映射
+## MetaCrypto Online IDE 映射
 
 | 块 | 路径 |
 |---|---|

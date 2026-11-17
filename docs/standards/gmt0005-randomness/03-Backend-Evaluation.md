@@ -38,7 +38,7 @@ metacrypt_server Go 检测器
   ├─ 执行检测项目
   └─ 保存检测结果并生成报告
 
-CipherCat 前端
+MetaCrypto Online IDE 前端
   ├─ 允许用户试跑自己的代码
   └─ 展示后端报告或实验结果
 ```

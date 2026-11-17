@@ -1,4 +1,4 @@
-# CipherCat documentation center
+# MetaCrypto Online IDE documentation center
 
 
 🐱 **Post-Quantum Cryptography Visual Programming Platform** — built on Blockly 13.x and Vue 3 (Composition API + TypeScript).

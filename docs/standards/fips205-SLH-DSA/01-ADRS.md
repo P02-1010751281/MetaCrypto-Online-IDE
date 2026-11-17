@@ -46,7 +46,7 @@ offset  大小  字段
 | 5 | WOTS_PRF | keypair | chain 地址 | hash 地址 = 0 |
 | 6 | FORS_PRF | keypair | tree height = 0 | tree index |
 
-## CipherCat 块实现（教学编码）
+## MetaCrypto Online IDE 块实现（教学编码）
 
 - `slh_addr(layer, tree, type, keypair)` → 32 字节前缀教学编码，写入四字节 layer、
   12 字节 tree、type 与 keypair；末尾 8 字节置零，不处理 type 专用字段。

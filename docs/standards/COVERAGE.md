@@ -1,6 +1,6 @@
 # 标准覆盖矩阵（标准 ↔ 块 ↔ Demo ↔ 模板 ↔ 指南）
 
-> 本文档是 `docs/standards/` 的索引：以每个标准目录为行，列出其在 CipherCat 积木体系中的覆盖情况——
+> 本文档是 `docs/standards/` 的索引：以每个标准目录为行，列出其在 MetaCrypto Online IDE 积木体系中的覆盖情况——
 > **原子块**（`src/blocks/` 注册的块）、**Demo**（`demos/` 预构建工作区）、**模板**（`src/blocks/procedure/blocks/` 的 `proc_*` 预填模板）、**搭建指南**（`standards/*/guides/`）。
 > 文档提取质量、原件可检索性和未完成项另见 [DOCUMENT-STATUS.md](./DOCUMENT-STATUS.md)，不要把本矩阵当作标准全文覆盖证明。
 > 函数/原语页的拆分规则和入口见 [FUNCTION-PRIMITIVE-INDEX.md](./FUNCTION-PRIMITIVE-INDEX.md)。
@@ -17,7 +17,7 @@
 - `原子块/模板/Demo/指南` 只表示仓库中存在对应资产，不表示认证或生产安全保证。
 - 每个标准目录应逐步补齐：精确版本/发布日期、官方来源 URL、向量来源、已知 errata、实现状态和安全边界。
 - NIST 页面出现 errata 或修订提示时，覆盖仍可保留，但必须在目录说明中记录“待复核”，不能写成“无条件符合最新版”。
-- `gmt0005-randomness/` 的 Go 后端测评与 CipherCat 前端试运行是两个执行面；随机性判定必须以 `metacrypt_server` 的后端报告为准。
+- `gmt0005-randomness/` 的 Go 后端测评与 MetaCrypto Online IDE 前端试运行是两个执行面；随机性判定必须以 `metacrypt_server` 的后端报告为准。
 
 | 标准 | standards 目录 | 原子块覆盖 | Demo | 模板 | 指南 |
 |------|----------------|------------|------|------|------|

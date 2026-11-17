@@ -128,7 +128,7 @@ Input:  00112233445566778899aabbccddeeff
 Output: 69c4e0d86a7b0430d8cdb78070b4c55a
 ```
 
-该向量用于 CipherCat 的 AES 结构/生成器回归；通过选定向量不等于认证或侧信道验证。
+该向量用于 MetaCrypto Online IDE 的 AES 结构/生成器回归；通过选定向量不等于认证或侧信道验证。
 ## 原文摘录
 
 > 本页正文是按 source 的“# FIPS 197 — AES 算法参考”拆出的结构化说明；该定位是概览/组合页，未强行截取不唯一的行号。需要核对时请按 [source 提取稿](./00-Standard-Source.md) 的章节标题和同目录 PDF 查看原文。

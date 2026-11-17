@@ -46,7 +46,7 @@ H = ( hᵢ · αᵢʲ ),  行 j = 0..t−1（幂次），列 i = 0..n−1（码�
 
 接收字 y 的 **syndrome**：`s = H·y`（GF(2) 上）。s = 0 ⟺ y 是合法码字。
 
-### 教学实例（CipherCat demo 参数）
+### 教学实例（MetaCrypto Online IDE demo 参数）
 
 - 支持集 L = GF(16) 子域 14 个元素（AES 域 0x11B 中阶 15 元 0x0d 生成；子域
   S = {0} ∪ {13^k} XOR 封闭，排除 G 的根 13/81 后 |L| = 14）
@@ -65,7 +65,7 @@ G(z) = ∏ᵢ (z − αᵢ)，αᵢ 为支持集元素（**G 的根不在支持�
 
 特征 2 中减号 = 加号。GF(2^8)（AES 域 0x11B）上逐对乘。
 
-## CipherCat 块实现
+## MetaCrypto Online IDE 块实现
 
 - `goppa_gen_poly(alpha)` → G(z) 系数数组（低次到高次，GF(2^8) 元素）：
   G(z) = ∏(z−αᵢ)，αᵢ 为码位对应的域元素字节值。

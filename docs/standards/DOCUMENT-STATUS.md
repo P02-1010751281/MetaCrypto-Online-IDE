@@ -35,7 +35,7 @@
 | GB/T 36624-2018 | 官方记录为现行（2018-09-17 发布、2019-04-01 实施），但本地 PDF 是扫描图像，暂无可靠文本层；现有 GCM 不能证明覆盖本标准 | 保留为 `review`，待取得可检索官方原件或人工逐页转录 |
 | GB/T 15852 | 已确认 `.1-2020`、现行 `.2-2024` 和官方通知中的 `.3-2019`；目录没有随仓库保存 PDF，且分部分覆盖关系需分开核验 | 保留为 `review`，补齐原件、`.1/.2/.3` 条款矩阵和 `.3` 状态核验后再升格 |
 | RFC 目录 | 当前 8 个目录保存 RFC Editor `.txt` 原文而非 PDF；这对 RFC 可追溯性足够，但不应在 PDF 统计中计数，也不应被列为缺少 source artifact | 继续以 RFC Editor 原文和 errata 页面为准 |
-| Classic McEliece / 中国抗量子密码进展 | ISO 标准参考与官方研究/标准化信息追踪；不属于 CipherCat 的完整算法标准实现 | 分别标记为 `reference/tracking`，不计入“完整标准实现” |
+| Classic McEliece / 中国抗量子密码进展 | ISO 标准参考与官方研究/标准化信息追踪；不属于 MetaCrypto Online IDE 的完整算法标准实现 | 分别标记为 `reference/tracking`，不计入“完整标准实现” |
 
 ### 实现与测评
 
@@ -43,7 +43,7 @@
 - Ascon-Hash256、Ascon-XOF128、Ascon-CXOF128 和 AEAD 解密/标签拒绝路径已补齐；扩展 Demo 覆盖空消息、`abc` 定制字符串、双语言生成和错误标签拒绝。完整官方 KAT/流式 API 仍需按标准清单继续扩展。
 - GCM、CCM、XTS 当前只有明确标注的加密/整块子集；没有把“有加密块”写成完整 AEAD/磁盘模式覆盖。
 - SP 800-90A 当前只实现 HMAC-SHA-256 的一次性生成子集；Hash_DRBG、CTR_DRBG、reseed、additional input、预测抗性和健康测试仍缺。
-- GM/T 0005 的平台后端随机性测评由 `metacrypt_server` Python 隔离样本生成与 Go 检测链路执行；CipherCat 前端用于用户试跑代码和展示报告，不能自行给出后端结论或认证结论。
+- GM/T 0005 的平台后端随机性测评由 `metacrypt_server` Python 隔离样本生成与 Go 检测链路执行；MetaCrypto Online IDE 前端用于用户试跑代码和展示报告，不能自行给出后端结论或认证结论。
 - 成功向量还需要配套负例：错误标签、非法长度、非法编码、无效点、失败解封装、nonce 重用和健康测试失败。
 
 ## 用户文档插图状态

@@ -53,7 +53,7 @@ Patterson 算法对二元 Goppa 码做**代数译码**：由 syndrome 直接解�
 Patterson 恒等式 σ = r² + z·B²（特征 2 下形式导数 σ′ = B²）代入关键方程
 S·σ ≡ σ′ ⟹ B² = S·(r²+zB²) ⟹ r² = B²(S⁻¹+z)，开方得 r ≡ B·T。
 **实现坑**：σ 取 (r, B) 而非 (g 系数, T 系数)——A_B 变体全部译错，R_B 变体全对
-（CipherCat 实测 50/50）；Bezout 关系是 r ≡ B·T 而非 r ≡ B·S（数值验证：
+（MetaCrypto Online IDE 实测 50/50）；Bezout 关系是 r ≡ B·T 而非 r ≡ B·S（数值验证：
 r≡B·T 成立、r≡B·S 不成立）。
 
 ### 模多项式开方（特征 2）
@@ -63,7 +63,7 @@ GF(2^m)[z]/(G) 上的平方根用 **m·t × m·t GF(2) Frobenius 矩阵**（基 
 系数按比特展开），矩阵求逆后乘目标——比逐项试探快且确定。矩阵方向易反
 （行/列坐标需转置），先随机往返验证再集成。
 
-## CipherCat 块实现
+## MetaCrypto Online IDE 块实现
 
 - `goppa_decode(y, g, l)` → 纠正后的接收字（0/1 位向量）：完整 Patterson 闭包
   （扩展欧几里得 → Frobenius 开方 → Chien 搜索），教学实例 t=2/n=14/GF(16) 子域。

@@ -38,6 +38,6 @@ Yi = (Y(i−1) xor Xi) · H
 
 有限域乘法的约减多项式和 bit/byte 顺序必须按标准执行；不能用普通整数乘法替代。
 
-## CipherCat 边界
+## MetaCrypto Online IDE 边界
 
 GHASH 由 `gcm_encrypt` 内部使用，目前没有独立 `ghash` 块或标签验证块。非 96-bit IV 的 `J0` 派生另见 [03-GCTR-and-J0.md](./03-GCTR-and-J0.md)。

@@ -37,7 +37,7 @@ DK = T1 || T2 || ...，截断到 dkLen
 
 块编号从 `i=1` 开始，`INT32_BE(i)` 为 4 字节大端表示。`c` 必须为正，盐应独立、不可预测且与口令分离；派生结果仍需配合安全的存储、用途绑定和参数升级策略。
 
-## CipherCat 映射
+## MetaCrypto Online IDE 映射
 
 `pbkdf2(password, salt, iterations, keylen)` 支持 SHA-256 和 SM3-HMAC 两条教学路径；对应 SM3 路径也用于 GM/T 0091 参考。Demo：`demos/procedures/PBKDF2-SHA256.json`、`PBKDF2-SM3.json`。
 

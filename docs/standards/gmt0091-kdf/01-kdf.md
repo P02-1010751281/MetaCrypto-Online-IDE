@@ -58,7 +58,7 @@ GM/T 0091（SM3 实例）与 PBKDF2 结构对应，PRF 使用 SM3-HMAC。RFC 791
 当作 SM3 官方标准向量。项目另以 OpenSSL 3 的独立实现对照一组固定 PBKDF2-HMAC-SM3 输入/输出，作为交叉实现回归，不标记为 GM/T 官方测试向量（见 [`kdf-parameter-contract.test.ts`](../../../tests/unit/kdf-parameter-contract.test.ts)）。RFC 8018 附录 B.2.1 实际定义 DES-CBC-Pad，不是 PBKDF2 向量。
 当前 SM3 路径见 [`PBKDF2-SM3.json`](../../../demos/procedures/PBKDF2-SM3.json) Demo；该有限对照不代表完整标准验证或认证。
 
-## CipherCat 块实现
+## MetaCrypto Online IDE 块实现
 
 - `pbkdf2(password, salt, iterations, dklen, prf)` — HASH 下拉 SHA-256 / SM3；
   Demo：`demos/procedures/PBKDF2-SM3.json`（SM3 同构 + hashlib 交叉）。

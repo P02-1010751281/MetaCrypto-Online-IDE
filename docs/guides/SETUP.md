@@ -1,6 +1,6 @@
 # 环境搭建与验收指南
 
-本指南用于在本地启动 CipherCat、构建生产前端、运行桌面版本，并确认文档、代码生成和 Demo 验证链路可用。它只覆盖 CipherCat 前端；平台后端随机性测评由独立的 `metacrypt_server` 后端负责。
+本指南用于在本地启动 MetaCrypto Online IDE、构建生产前端、运行桌面版本，并确认文档、代码生成和 Demo 验证链路可用。它只覆盖 MetaCrypto Online IDE 前端；平台后端随机性测评由独立的 `metacrypt_server` 后端负责。
 
 ## 1. 环境要求
 
@@ -18,7 +18,7 @@
 
 ```bash
 git clone <repository-url>
-cd CipherCat
+cd MetaCrypto Online IDE
 npm ci
 ```
 

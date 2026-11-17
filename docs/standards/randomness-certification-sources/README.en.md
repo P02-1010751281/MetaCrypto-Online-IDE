@@ -1,6 +1,6 @@
 # Official sources: randomness and cryptographic-module validation
 
-This directory stores standards and guides obtained from NIST and the national official standards portal on 2026-09-30 for checking the [product-certification feasibility review](../PRODUCT-CERTIFICATION-FEASIBILITY.en.md). The files are unmodified. Before submission, recheck the versions in force and obtain the testing laboratory's scope interpretation. These standards and guides do not show that CipherCat or a proposed module has been validated.
+This directory stores standards and guides obtained from NIST and the national official standards portal on 2026-09-30 for checking the [product-certification feasibility review](../PRODUCT-CERTIFICATION-FEASIBILITY.en.md). The files are unmodified. Before submission, recheck the versions in force and obtain the testing laboratory's scope interpretation. These standards and guides do not show that MetaCrypto Online IDE or a proposed module has been validated.
 
 | Local file | Document and focus | Official source | SHA-256 |
 |---|---|---|---|

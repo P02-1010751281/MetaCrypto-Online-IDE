@@ -52,7 +52,7 @@ K2 = dbl(K1)
 
 `dbl` 在 `GF(2^128)` 中乘以 `x`；当最高位进位时，使用 `Rb=0x87` 约减。CMAC 的字节序和约减规则不能与 XTS tweak 加倍混用。
 
-## CipherCat 映射
+## MetaCrypto Online IDE 映射
 
 §6.1 的整段过程有独立块 `cmac_subkeys`（输出 `K1‖K2`），单次 GF(2¹²⁸) 加倍另有 `cmac_double`
 （输出 `dbl(X)`）；`cmac_mac` 也内部完成同一步子密钥生成。CIPHER 下拉支持 AES-128 和 SM4。

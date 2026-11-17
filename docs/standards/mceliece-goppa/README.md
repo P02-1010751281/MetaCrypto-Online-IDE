@@ -11,7 +11,7 @@
 
 ## 实现范围
 
-> CipherCat 基于纠错码的数学构件（`src/blocks/numtheory/codebased.ts` + `gf2mpoly.ts` +
+> MetaCrypto Online IDE 基于纠错码的数学构件（`src/blocks/numtheory/codebased.ts` + `gf2mpoly.ts` +
 > `src/blocks/numtheory/` 二进制矩阵/汉明）覆盖 Goppa 码构造、syndrome 计算与
 > Patterson 译码——McEliece 公钥密码与 Goppa 码纠错的教学原语。它不实现 ISO
 > Classic McEliece KEM 的密钥生成、封装/解封装接口或所列参数集，也不构成标准符合性声明。

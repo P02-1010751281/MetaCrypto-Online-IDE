@@ -33,6 +33,6 @@ C_i = E_K(P_i xor C_(i−1))
 
 解密使用底层逆变换并与前一密文分组异或。IV 需要按协议随机/唯一管理，填充不属于 CBC 核心变换。
 
-## CipherCat 映射
+## MetaCrypto Online IDE 映射
 
 `mode_cbc_encrypt` 有 AES-128 加密路径；当前没有对应解密块、完整填充协商和非法 IV 负例。

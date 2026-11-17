@@ -31,7 +31,7 @@
 > 本条目是 CCM 组合导航页，没有独立归属的公式或伪代码规范单元；上文参数和流程说明仅作导航，不能当作完整标准摘录。
 > 完整规范单元见 [格式化](./02-Formatting.md)、[CBC-MAC](./03-CBC-MAC.md)、[CTR](./04-CTR.md) 和本页 [source](./00-Standard-Source.md)。
 
-## CipherCat 覆盖边界
+## MetaCrypto Online IDE 覆盖边界
 
 `ccm_encrypt(key, nonce, aad, msg, tagLen)` 实现 §6.1 的 AES-128 生成-加密路径，`ccm_decrypt(key, nonce, aad, ctTag, tagLen)` 实现 §6.2 的解密-验证路径：先 CTR 解出明文，再对 (N, A, P) 重算标签并比对，不符即抛错、不返回明文；demo 均为 `demos/procedures/CCM-Encrypt.json`。
 

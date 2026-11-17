@@ -1,6 +1,6 @@
 # User guide: from blocks to algorithms and verification
 
-CipherCat is a Blockly frontend for cryptographic algorithm structure and code generation. It presents primitives, composes algorithm stages, generates Python/JavaScript code, and links demos to standards. When code is submitted to the integrated Metacrypto platform for randomness assessment, the backend handles sample generation, statistical testing, and reports. Code generation, demo verification, and backend assessment are separate evidence levels and must not be substituted for one another.
+MetaCrypto Online IDE is a Blockly frontend for cryptographic algorithm structure and code generation. It presents primitives, composes algorithm stages, generates Python/JavaScript code, and links demos to standards. When code is submitted to the integrated Metacrypto platform for randomness assessment, the backend handles sample generation, statistical testing, and reports. Code generation, demo verification, and backend assessment are separate evidence levels and must not be substituted for one another.
 
 ## 1. Documentation paths
 
@@ -16,11 +16,11 @@ CipherCat is a Blockly frontend for cryptographic algorithm structure and code g
 
 ### 2.1 Open the editor
 
-CipherCat opens directly in the editor instead of stopping at the project list: it reopens the last project you used, falls back to the most recently modified project, and only creates a new one when no project exists. Projects and workspaces are stored in browser IndexedDB; the editor route is `/editor/<project-id>`.
+MetaCrypto Online IDE opens directly in the editor instead of stopping at the project list: it reopens the last project you used, falls back to the most recently modified project, and only creates a new one when no project exists. Projects and workspaces are stored in browser IndexedDB; the editor route is `/editor/<project-id>`.
 
 The project list lives in the editor sidebar rather than on its own page: click the top **Projects** icon in the sidebar activity bar, or the back button (`←`) at the left of the **Files** panel header, and the sidebar opens the projects panel. The panel has a search box and a **+** button for new projects; each row shows the project name and modification time, `✕` deletes it, and clicking a row switches to that project. Click the **Files** icon to return to the current project's file tree. The project name is editable in place in the editor breadcrumb; language switching is in the toolbar; the **Docs** button there opens the documentation center (`/docs`), whose sidebar groups user docs, developer docs and standards, and **Back** returns to the editor.
 
-The sidebar hosts mutually exclusive panels: Projects, Files, Functions, Docs and Blocks — only one is expanded at a time, and switching never stacks an overlay. Both platforms expose the same shape (a projects panel in the editor sidebar) but keep separate data: CipherCat stores projects in this browser's IndexedDB, while Metacrypto projects are managed by the platform backend, so the two lists are not interchangeable.
+The sidebar hosts mutually exclusive panels: Projects, Files, Functions, Docs and Blocks — only one is expanded at a time, and switching never stacks an overlay. Both platforms expose the same shape (a projects panel in the editor sidebar) but keep separate data: MetaCrypto Online IDE stores projects in this browser's IndexedDB, while Metacrypto projects are managed by the platform backend, so the two lists are not interchangeable.
 
 ### 2.2 Import a workspace
 
@@ -169,8 +169,8 @@ The project uses four verification layers:
 
 | Layer | Executor | Verification | Main evidence |
 |---|---|---|---|
-| Workspace/generator | CipherCat | JSON/XML loading, block connections, Python/JavaScript generation | editor and code panel |
-| Demos and vectors | CipherCat demo workspaces | whether registered inputs match standard vectors (or an independent implementation) | demo index and coverage matrix |
+| Workspace/generator | MetaCrypto Online IDE | JSON/XML loading, block connections, Python/JavaScript generation | editor and code panel |
+| Demos and vectors | MetaCrypto Online IDE demo workspaces | whether registered inputs match standard vectors (or an independent implementation) | demo index and coverage matrix |
 | User code trial | user’s Python/JavaScript runtime, or the editor’s built-in in-browser trial run (Pyodide / Worker) | behavior of modified code for specified inputs | code, test script, input/output, run-output area |
 | Platform-side backend randomness assessment | the platform backend generates samples and runs tests; the platform frontend displays reports | sample generation, isolation, statistical tests, rule decisions, and reports | the report, parameters, and detector details shown on the task page |
 
@@ -185,12 +185,12 @@ The demo index is [demos/README.en.md](../../demos/README.en.md); full commands 
 The responsibility split between user trials and backend assessment is:
 
 ```text
-CipherCat: block construction, code generation, and user code trials
+MetaCrypto Online IDE: block construction, code generation, and user code trials
         ↓
 Platform backend: isolated sample generation and statistical assessment; the platform frontend displays task reports
 ```
 
-Sample generation, statistical testing, isolation, and the final decision run in the platform backend; CipherCat handles block editing, code generation, and user code trials, while platform tasks and reports are a separate feature that the editor itself does not conclude on. Reports and comparisons expose code and sample fingerprints to delimit the submitted input scope; an equal fingerprint means only that the scope matched and does not prove sample provenance, algorithm correctness, or reproducibility. A passing statistical test does not prove generator honesty, entropy-source quality, or algorithm certification. See the [GM/T 0005 backend boundary](../standards/gmt0005-randomness/03-Backend-Evaluation.en.md).
+Sample generation, statistical testing, isolation, and the final decision run in the platform backend; MetaCrypto Online IDE handles block editing, code generation, and user code trials, while platform tasks and reports are a separate feature that the editor itself does not conclude on. Reports and comparisons expose code and sample fingerprints to delimit the submitted input scope; an equal fingerprint means only that the scope matched and does not prove sample provenance, algorithm correctness, or reproducibility. A passing statistical test does not prove generator honesty, entropy-source quality, or algorithm certification. See the [GM/T 0005 backend boundary](../standards/gmt0005-randomness/03-Backend-Evaluation.en.md).
 
 ## 6. Result states
 

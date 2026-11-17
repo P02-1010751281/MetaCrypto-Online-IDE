@@ -21,10 +21,10 @@ const excluded = [
   '项目边界',
   '覆盖边界',
   '验证边界',
-  'CipherCat 映射',
-  'CipherCat 块实现',
-  'CipherCat 覆盖',
-  'CipherCat 覆盖边界',
+  'MetaCrypto Online IDE 映射',
+  'MetaCrypto Online IDE 块实现',
+  'MetaCrypto Online IDE 覆盖',
+  'MetaCrypto Online IDE 覆盖边界',
 ];
 
 function parseSections(text) {

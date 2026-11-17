@@ -33,6 +33,6 @@ C_i = P_i xor S_i
 
 最后一个不足整块的明文只使用同长度密钥流前缀。计数器字段、初值和递增方向必须遵循选定标准配置；同一密钥下不得重用 nonce/counter 区间。
 
-## CipherCat 映射
+## MetaCrypto Online IDE 映射
 
 `mode_ctr_encrypt` 有 AES-128 加密路径，并可作为 SM4 模式教学映射；当前没有独立 counter 编码块和完整 nonce 重用检测。
