@@ -5,6 +5,11 @@ import { describe, expect, it } from 'vitest';
 
 import { migrateJsonState, migrateXmlText } from '@/utils/migration';
 import '@/blocks/sbox/sbox';
+import '@/blocks/data/number';
+import '@/blocks/ctrl/iterate';
+import '@/generators/python';
+import '@/generators/python/ctrl/iterate';
+import { pythonGenerator } from 'blockly/python';
 
 describe('workspace migration', () => {
   it('migrates legacy XML block names', () => {
@@ -199,5 +204,48 @@ describe('workspace migration', () => {
 
     expect(block.type).toBe('ctrl_assign');
     expect(block.inputs).toHaveProperty('RIGHT');
+  });
+
+  it('ctrl_iterate 的 TIMES：字段 → 值输入（JSON），次数不丢且幂等', () => {
+    const state = migrateJsonState({
+      blocks: {
+        blocks: [
+          { type: 'ctrl_iterate', fields: { VAR: 'i', TIMES: '10' }, inputs: {} },
+          { type: 'ctrl_iterate', fields: { VAR: 'j', TIMES: 3 } },
+        ],
+      },
+    });
+    const blocks = (state.blocks as { blocks: Array<Record<string, unknown>> }).blocks;
+    expect(blocks[0].fields).toEqual({ VAR: 'i' });
+    expect(blocks[0].inputs).toEqual({
+      TIMES: { shadow: { type: 'data_value', fields: { NUM: '10' } } },
+    });
+    expect(blocks[1].fields).toEqual({ VAR: 'j' });
+    expect(migrateJsonState(state)).toEqual(state);
+  });
+
+  it('ctrl_iterate 的 TIMES：字段 → 值输入（XML），次数不丢且幂等', () => {
+    const xml = migrateXmlText(
+      '<xml><block type="ctrl_iterate"><field name="VAR">i</field><field name="TIMES">10</field></block></xml>',
+    );
+    expect(xml).toContain(
+      '<value name="TIMES"><shadow type="data_value"><field name="NUM">10</field></shadow></value>',
+    );
+    expect(xml).not.toContain('<field name="TIMES">');
+    expect(migrateXmlText(xml)).toBe(xml);
+  });
+
+  it('迁移后的旧工作区照旧生成 `range(10)`', () => {
+    const state = migrateJsonState({
+      blocks: { blocks: [{ type: 'ctrl_iterate', fields: { VAR: 'i', TIMES: '10' } }] },
+    });
+    const workspace = new Blockly.Workspace();
+    try {
+      Blockly.serialization.workspaces.load(state, workspace);
+      const code = pythonGenerator.workspaceToCode(workspace);
+      expect(code).toContain('for i in range(10):');
+    } finally {
+      workspace.dispose();
+    }
   });
 });

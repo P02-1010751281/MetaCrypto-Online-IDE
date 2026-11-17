@@ -302,12 +302,14 @@ function collectStateVariables(state: Record<string, unknown>, out: string[]) {
   if (next && next.block) collectStateVariables(next.block, out);
 }
 
-/** 构建 ctrl_iterate 循环块 state（BODY 预填用）。 */
+/** 构建 ctrl_iterate 循环块 state（BODY 预填用）。TIMES 是值输入，用 math_number 影子块表达次数。 */
 function iterateState(times: number, varName = 'i', bodyBlocks?: Blockly.serialization.blocks.State[]): Blockly.serialization.blocks.State {
   const state: Record<string, unknown> = {
     type: 'ctrl_iterate',
-    fields: { VAR: varName, TIMES: String(times) },
-    inputs: {},
+    fields: { VAR: varName },
+    inputs: {
+      TIMES: { shadow: { type: 'data_value', fields: { NUM: String(times) } } },
+    },
   };
   if (bodyBlocks && bodyBlocks.length) {
     (state.inputs as Record<string, unknown>).DO = { block: bodyBlocks[0] };

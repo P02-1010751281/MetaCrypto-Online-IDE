@@ -75,7 +75,7 @@ Low-order X25519 `u` inputs can produce an all-zero output. RFC 7748 §6.1 allow
 
 | Block | Layer | Connection | Input→Output |
 |----|----|------|----------|
-| `ctrl_iterate` | 1 | stmt(→→) | —→— |
+| `ctrl_iterate` | 1 | stmt(→→) | Number→— |
 
 ## Function Wrapping
 

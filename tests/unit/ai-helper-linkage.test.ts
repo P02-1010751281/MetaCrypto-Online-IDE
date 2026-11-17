@@ -49,7 +49,9 @@ function topHitMatchesToken(hits: SearchHit[], tokens: string[]): boolean {
 
 describe('派生规则', () => {
   it('文档 → 积木：取路径/标题里与块词表相交的标识符，长词优先', () => {
-    expect(blockVocabulary(blockIndex).size).toBe(455);
+    // 455 → 454：ctrl_iterate 的次数从数字字段改成值输入后，块面文字只剩
+    // 「Var / i / Loop / Do」，原来的 times 标签随字段一起消失（词表少一个 token）。
+    expect(blockVocabulary(blockIndex).size).toBe(454);
     expect(vocabulary.has('sm4')).toBe(true);
     expect(vocabulary.has('addroundkey')).toBe(true);
 

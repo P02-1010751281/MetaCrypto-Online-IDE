@@ -1909,6 +1909,13 @@
         "check": null
       },
       {
+        "name": "TIMES",
+        "type": 1,
+        "check": [
+          "Number"
+        ]
+      },
+      {
         "name": "DO",
         "type": 3,
         "check": null
@@ -1918,10 +1925,6 @@
       {
         "name": "VAR",
         "fieldClass": ""
-      },
-      {
-        "name": "TIMES",
-        "fieldClass": "_m"
       }
     ],
     "outputCheck": null,

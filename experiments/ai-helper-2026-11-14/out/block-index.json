@@ -3,7 +3,7 @@
   "sources": {
     "contract": {
       "path": "docs/blocks/BLOCK-IO-CONTRACT.json",
-      "contentFnv1a64": "8fa82098921a3502"
+      "contentFnv1a64": "89d72b63fa60b61c"
     },
     "signatures": {
       "path": "experiments/ai-helper-2026-11-14/out/code-signatures.json",
@@ -2489,6 +2489,13 @@
           "check": null
         },
         {
+          "name": "TIMES",
+          "type": 1,
+          "check": [
+            "Number"
+          ]
+        },
+        {
           "name": "DO",
           "type": 3,
           "check": null
@@ -2504,16 +2511,12 @@
           "Var",
           "i",
           "Loop",
-          "32",
-          "times",
           "Do"
         ],
         "zh": [
           "变量",
           "i",
           "循环",
-          "32",
-          "次",
           "执行"
         ]
       },

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-17T03:35:05.747Z",
+  "generatedAt": "2026-11-17T08:25:00.714Z",
   "stats": {
     "blocks": 222,
     "withTemplate": 220,
@@ -44,6 +44,11 @@
       "type": "aes_add_round_key",
       "template": "aes_add_round_key(zzsigv_STATE, zzsigv_ROUND_KEY)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -56,6 +61,11 @@
       "type": "aes_mix_columns",
       "template": "aes_mix_columns(zzsigv_STATE)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -68,6 +78,11 @@
       "type": "aes_shift_rows",
       "template": "aes_shift_rows(zzsigv_STATE)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -80,6 +95,11 @@
       "type": "aes_sub_bytes",
       "template": "aes_sub_bytes(zzsigv_STATE)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -92,6 +112,11 @@
       "type": "argon2_g",
       "template": "bytes(argon2_g(zzsigv_X, zzsigv_Y))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -104,6 +129,11 @@
       "type": "argon2_hash",
       "template": "bytes(argon2_hash(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_SECRET, zzsigv_AD, zzsigv_M_COST, zzsigv_T_COST, zzsigv_LANES, zzsigv_TAGLEN, 0))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "VARIANT",
@@ -147,6 +177,11 @@
       "type": "arr_partition_to_array",
       "template": "zzsigv_TARGET = crypto_partition_array(zzsigv_SRC, zzsigv_COUNT, \"BYTES\")\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [
         {
           "name": "MODE",
@@ -185,6 +220,11 @@
       "type": "arr_slice",
       "template": "crypto_array_slice(zzsigv_LIST, zzsigv_START, zzsigv_LENGTH)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -197,6 +237,11 @@
       "type": "ascon_cxof128",
       "template": "bytes(ascon_hash_xof(zzsigv_MSG, zzsigv_LEN, zzsigv_CUSTOM, 0x0000080000CC0004))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -209,6 +254,11 @@
       "type": "ascon_decrypt",
       "template": "bytes(ascon_decrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AD, zzsigv_CT))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -221,6 +271,11 @@
       "type": "ascon_encrypt",
       "template": "bytes(ascon_encrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AD, zzsigv_MSG))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -233,6 +288,11 @@
       "type": "ascon_hash256",
       "template": "bytes(ascon_hash_xof(zzsigv_MSG, 32, None, 0x0000080100CC0002))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -245,6 +305,11 @@
       "type": "ascon_xof128",
       "template": "bytes(ascon_hash_xof(zzsigv_MSG, zzsigv_LEN, None, 0x0000080000CC0003))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -257,6 +322,11 @@
       "type": "base64_decode",
       "template": "__import__(\"base64\").b64decode(zzsigv_INPUT, validate=True)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -269,6 +339,11 @@
       "type": "base64_encode",
       "template": "__import__(\"base64\").b64encode(zzsigv_INPUT).decode()",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -281,6 +356,11 @@
       "type": "berlekamp_massey",
       "template": "code_based()[\"bm_shiftreg\"](zzsigv_SEQ)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -293,6 +373,11 @@
       "type": "bin_mat_inv",
       "template": "code_based()[\"mat_inv\"](zzsigv_A, zzsigv_N)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -305,6 +390,11 @@
       "type": "bin_mat_mul",
       "template": "code_based()[\"mat_mul\"](zzsigv_A, zzsigv_B, zzsigv_N)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -317,6 +407,11 @@
       "type": "bit_byte_substitute",
       "template": "\n_byte_substitute_index = zzsigv_INPUT\nif isinstance(_byte_substitute_index, bool) or not isinstance(_byte_substitute_index, (int, float)) or not 0 <= _byte_substitute_index <= 255 or int(_byte_substitute_index) != _byte_substitute_index:\n    raise ValueError(\"S-box input must be a byte\")\nif not isinstance(sbox, list) or len(sbox) < 256:\n    raise TypeError(\"sbox must contain at least 256 entries\")\n_byte_substitute_value = sbox[int(_byte_substitute_index)]\nif isinstance(_byte_substitute_value, bool) or not isinstance(_byte_substitute_value, (int, float)) or not 0 <= _byte_substitute_value <= 255 or int(_byte_substitute_value) != _byte_substitute_value:\n    raise ValueError(\"S-box output must be a byte\")\nzzsigv_OUTPUT = int(_byte_substitute_value)\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -329,6 +424,11 @@
       "type": "bit_expr_infix",
       "template": "crypto_to_uint32(zzsigv_A) ^ crypto_to_uint32(zzsigv_B)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "OP",
@@ -377,6 +477,11 @@
       "type": "bit_not32",
       "template": "(~crypto_to_uint32(zzsigv_A)) & 0xFFFFFFFF",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -389,6 +494,11 @@
       "type": "bit_operation",
       "template": "crypto_to_uint32(zzsigv_A) & crypto_to_uint32(zzsigv_B)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "OP",
@@ -452,6 +562,11 @@
       "type": "bit_rotate_left",
       "template": "zzsigv_Output = ((crypto_to_uint32(zzsigv_Input) << 0) | (crypto_to_uint32(zzsigv_Input) >> (32 - 0))) & 0xFFFFFFFF\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [
         {
           "name": "bit",
@@ -482,6 +597,11 @@
       "type": "bit_rotate_left_op",
       "template": "zzsigv_Output = (crypto_to_uint32(zzsigv_Input) ^ ((crypto_to_uint32(zzsigv_Input) << 0) | (crypto_to_uint32(zzsigv_Input) >> (32 - 0)))) & 0xFFFFFFFF\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [
         {
           "name": "option",
@@ -546,6 +666,11 @@
       "type": "bit_rotate_right",
       "template": "zzsigv_Output = ((crypto_to_uint32(zzsigv_Input) >> 0) | (crypto_to_uint32(zzsigv_Input) << (32 - 0))) & 0xFFFFFFFF\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [
         {
           "name": "bit",
@@ -576,6 +701,11 @@
       "type": "bit_rotate_right_op",
       "template": "zzsigv_Output = (crypto_to_uint32(zzsigv_Input) ^ ((crypto_to_uint32(zzsigv_Input) >> 0) | (crypto_to_uint32(zzsigv_Input) << (32 - 0)))) & 0xFFFFFFFF\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [
         {
           "name": "option",
@@ -640,6 +770,11 @@
       "type": "bn_add",
       "template": "bn_from_int((bn_to_int(zzsigv_A) + bn_to_int(zzsigv_B)))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -652,6 +787,11 @@
       "type": "bn_div",
       "template": "bn_from_int((bn_to_int(zzsigv_A) // bn_to_int(zzsigv_B)))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -664,6 +804,11 @@
       "type": "bn_mul",
       "template": "bn_from_int((bn_to_int(zzsigv_A) * bn_to_int(zzsigv_B)))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -676,6 +821,11 @@
       "type": "bn_sub",
       "template": "bn_subtract(bn_to_int(zzsigv_A), bn_to_int(zzsigv_B))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -688,6 +838,11 @@
       "type": "bytes_to_hex",
       "template": "(zzsigv_INPUT).hex()",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -700,6 +855,11 @@
       "type": "ccm_aad_len_prefix",
       "template": "ccm_aad_len_prefix(zzsigv_AADLEN)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -712,6 +872,11 @@
       "type": "ccm_b0",
       "template": "ccm_b0(zzsigv_NONCE, zzsigv_MSGLEN, zzsigv_AADLEN, 4)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "TAGLEN",
@@ -775,6 +940,11 @@
       "type": "ccm_cbc_mac",
       "template": "bytes(ccm_cbc_mac(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 4))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "TAGLEN",
@@ -838,6 +1008,11 @@
       "type": "ccm_counter_block",
       "template": "ccm_counter_block(zzsigv_NONCE, zzsigv_I, 4)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "TAGLEN",
@@ -901,6 +1076,11 @@
       "type": "ccm_ctr",
       "template": "bytes(ccm_ctr(zzsigv_KEY, zzsigv_NONCE, zzsigv_MSG, 4))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "TAGLEN",
@@ -964,6 +1144,11 @@
       "type": "ccm_decrypt",
       "template": "bytes(ccm_decrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_CT, 16))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "TAGLEN",
@@ -1027,6 +1212,11 @@
       "type": "ccm_encrypt",
       "template": "bytes(ccm_encrypt(zzsigv_KEY, zzsigv_NONCE, zzsigv_AAD, zzsigv_MSG, 16))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "TAGLEN",
@@ -1090,6 +1280,11 @@
       "type": "cipher_key_from_seed",
       "template": "crypto_cipher_key_from_seed(data)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1102,6 +1297,11 @@
       "type": "cmac_double",
       "template": "cmac_double(zzsigv_X)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1114,6 +1314,11 @@
       "type": "cmac_mac",
       "template": "bytes(cmac_cbc(zzsigv_MSG, zzsigv_KEY, aes_encrypt_block, cmac_double))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "CIPHER",
@@ -1152,6 +1357,11 @@
       "type": "cmac_subkeys",
       "template": "bytes(cmac_subkeys_aes(zzsigv_KEY))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1164,6 +1374,11 @@
       "type": "comb",
       "template": "multivariate()[\"comb\"](zzsigv_N, zzsigv_K)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1176,6 +1391,11 @@
       "type": "crypto_decrypt_func",
       "template": "\ndef crypto_decrypt_func(ciphertext: bytes) -> bytes:\n    \"\"\"\n    Crypto function: crypto_decrypt_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "FUNC_NAME",
@@ -1259,6 +1479,11 @@
       "type": "crypto_encrypt_func",
       "template": "\ndef crypto_encrypt_func(message: bytes) -> bytes:\n    \"\"\"\n    Crypto function: crypto_encrypt_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "FUNC_NAME",
@@ -1342,6 +1567,11 @@
       "type": "crypto_hash_func",
       "template": "\ndef crypto_hash_func(message: bytes) -> bytes:\n    \"\"\"\n    Crypto function: crypto_hash_func\n    \"\"\"\n  zzsigs_BODY\n    return zzsigv_RETURN\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "FUNC_NAME",
@@ -1425,6 +1655,11 @@
       "type": "crypto_return",
       "template": "return zzsigv_VALUE\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1435,19 +1670,18 @@
     },
     {
       "type": "ctrl_iterate",
-      "template": "for i in range(32):\n    zzsigs_DO",
+      "template": "for i in range(zzsigv_TIMES):\n    zzsigs_DO",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [
         {
           "name": "VAR",
           "kind": "text",
           "defaultValue": "i",
-          "options": null
-        },
-        {
-          "name": "TIMES",
-          "kind": "number",
-          "defaultValue": "32",
           "options": null
         }
       ],
@@ -1461,28 +1695,23 @@
           "variants": [],
           "wildcard": "-?\\d+",
           "valueShape": "number"
-        },
-        {
-          "name": "TIMES",
-          "kind": "number",
-          "visible": true,
-          "constant": false,
-          "emittedDefault": "32",
-          "variants": [],
-          "wildcard": "-?\\d+",
-          "valueShape": "number"
         }
       ],
       "combos": [],
       "invisible": [],
       "constant": [],
       "unprobed": [],
-      "fieldized": "for zzfield_VAR in range(zzfield_TIMES):\n    zzsigs_DO"
+      "fieldized": "for zzfield_VAR in range(zzsigv_TIMES):\n    zzsigs_DO"
     },
     {
       "type": "data_bit_length",
       "template": "(lambda value: len(value.encode('utf-8')) * 8 if isinstance(value, str) else len(value) * 8 if isinstance(value, (bytes, list)) else 32 if isinstance(value, (int, float)) and not isinstance(value, bool) else 0)(zzsigv_X)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1495,6 +1724,11 @@
       "type": "data_byte_length",
       "template": "(lambda value: len(value.encode('utf-8')) if isinstance(value, str) else len(value) if isinstance(value, (bytes, list)) else 4 if isinstance(value, (int, float)) and not isinstance(value, bool) else 0)(zzsigv_X)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1507,6 +1741,11 @@
       "type": "data_convert_bits_to_bytes",
       "template": "zzsigv_BYTES = crypto_bits_to_bytes(zzsigv_BITS)\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1519,6 +1758,11 @@
       "type": "data_convert_bytes_to_bits",
       "template": "zzsigv_BITS = crypto_bytes_to_bits(zzsigv_BYTES)\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1531,6 +1775,11 @@
       "type": "data_convert_to_int",
       "template": "zzsigv_VAR = crypto_convert_to_int(zzsigv_VAR)\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1543,6 +1792,11 @@
       "type": "data_int_list",
       "template": "[0, 0, 0, 0]",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "SHAPE",
@@ -1564,6 +1818,11 @@
       "type": "data_value",
       "template": "0",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "NUM",
@@ -1594,6 +1853,11 @@
       "type": "drbg_generate",
       "template": "bytes(drbg_generate_all(zzsigv_ENTROPY, zzsigv_NONCE, zzsigv_PERSO, zzsigv_BITS))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1606,6 +1870,11 @@
       "type": "drbg_update",
       "template": "bytes(drbg_update_raw(zzsigv_STATE, zzsigv_PROVIDED))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1618,6 +1887,11 @@
       "type": "ecc_add",
       "template": "\n# 点加法运算\necc_validate_curve_point(zzsigv_value1, curve)\necc_validate_curve_point(zzsigv_value2, curve)\nif zzsigv_value1.get(\"infinity\", False):\n    zzsigv_value3 = zzsigv_value2\nelif zzsigv_value2.get(\"infinity\", False):\n    zzsigv_value3 = zzsigv_value1\nelif zzsigv_value1[\"x\"] == zzsigv_value2[\"x\"] and (zzsigv_value1[\"y\"] + zzsigv_value2[\"y\"]) % curve[\"p\"] == 0:\n    zzsigv_value3 = {\"infinity\": True}\nelif zzsigv_value1[\"x\"] == zzsigv_value2[\"x\"] and zzsigv_value1[\"y\"] == zzsigv_value2[\"y\"]:\n    # 点相同，调用倍点公式\n    lambda_val = (3 * zzsigv_value1[\"x\"] * zzsigv_value1[\"x\"] + curve[\"a\"]) * pow(2 * zzsigv_value1[\"y\"], -1, curve[\"p\"]) % curve[\"p\"]\n    zzsigv_value3 = {\n        \"x\": (lambda_val * lambda_val - 2 * zzsigv_value1[\"x\"]) % curve[\"p\"],\n        \"y\": (lambda_val * (zzsigv_value1[\"x\"] - ((lambda_val * lambda_val - 2 * zzsigv_value1[\"x\"]) % curve[\"p\"])) - zzsigv_value1[\"y\"]) % curve[\"p\"]\n    }\nelif zzsigv_value1[\"x\"] == zzsigv_value2[\"x\"]:\n    raise ValueError(\"points with equal x must be equal or inverses\")\nelse:\n    # 点不同，使用加法公式\n    lambda_val = (zzsigv_value2[\"y\"] - zzsigv_value1[\"y\"]) * pow(zzsigv_value2[\"x\"] - zzsigv_value1[\"x\"], -1, curve[\"p\"]) % curve[\"p\"]\n    zzsigv_value3 = {\n        \"x\": (lambda_val * lambda_val - zzsigv_value1[\"x\"] - zzsigv_value2[\"x\"]) % curve[\"p\"],\n        \"y\": (lambda_val * (zzsigv_value1[\"x\"] - ((lambda_val * lambda_val - zzsigv_value1[\"x\"] - zzsigv_value2[\"x\"]) % curve[\"p\"])) - zzsigv_value1[\"y\"]) % curve[\"p\"]\n    }\nif not zzsigv_value3.get(\"infinity\", False):\n    if zzsigv_value3[\"x\"] < 0:\n        zzsigv_value3[\"x\"] += curve[\"p\"]\n    if zzsigv_value3[\"y\"] < 0:\n        zzsigv_value3[\"y\"] += curve[\"p\"]\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1630,6 +1904,11 @@
       "type": "ecc_load_curve_params",
       "template": "curve = {\"a\": scan_out, \"b\": scan_out, \"p\": scan_out}\necc_validate_curve_point({\"infinity\": True}, curve)\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [
         {
           "name": "a",
@@ -1665,6 +1944,11 @@
       "type": "ecc_load_point",
       "template": "zzsigv_point = {\"x\": scan_out, \"y\": scan_out}\necc_validate_curve_point(zzsigv_point, curve)\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [
         {
           "name": "x",
@@ -1693,6 +1977,11 @@
       "type": "ecc_multiply",
       "template": "\n# 点乘法运算 - 使用倍加算法\necc_validate_curve_point(zzsigv_value1, curve)\nk = scan_out\nif type(k) is not int or k < 0:\n    raise ValueError(\"scalar must be a non-negative integer\")\nP_temp = zzsigv_value1.copy()\nresult = {\"infinity\": True}\n\nwhile k > 0:\n    if k & 1:\n        # 如果结果点为无穷远点，则直接赋值为当前点\n        if not P_temp.get(\"infinity\", False) and result[\"infinity\"]:\n            result = {\"x\": P_temp[\"x\"], \"y\": P_temp[\"y\"], \"infinity\": False}\n        elif not P_temp.get(\"infinity\", False) and result[\"x\"] == P_temp[\"x\"] and (result[\"y\"] + P_temp[\"y\"]) % curve[\"p\"] == 0:\n            result = {\"infinity\": True}\n        elif not P_temp.get(\"infinity\", False) and result[\"x\"] == P_temp[\"x\"] and result[\"y\"] == P_temp[\"y\"]:\n            lambda_val = (3 * P_temp[\"x\"] * P_temp[\"x\"] + curve[\"a\"]) * pow(2 * P_temp[\"y\"], -1, curve[\"p\"]) % curve[\"p\"]\n            x = (lambda_val * lambda_val - 2 * P_temp[\"x\"]) % curve[\"p\"]\n            y = (lambda_val * (P_temp[\"x\"] - x) - P_temp[\"y\"]) % curve[\"p\"]\n            result = {\"x\": x, \"y\": y, \"infinity\": False}\n        elif not P_temp.get(\"infinity\", False):\n            # 点加运算\n            lambda_val = (result[\"y\"] - P_temp[\"y\"]) * pow(result[\"x\"] - P_temp[\"x\"], -1, curve[\"p\"]) % curve[\"p\"]\n            x = (lambda_val * lambda_val - result[\"x\"] - P_temp[\"x\"]) % curve[\"p\"]\n            y = (lambda_val * (result[\"x\"] - x) - result[\"y\"]) % curve[\"p\"]\n            result = {\"x\": x, \"y\": y, \"infinity\": False}\n\n    # 倍点运算\n    if P_temp.get(\"infinity\", False) or P_temp[\"y\"] % curve[\"p\"] == 0:\n        P_temp = {\"infinity\": True}\n    else:\n        lambda_val = (3 * P_temp[\"x\"] * P_temp[\"x\"] + curve[\"a\"]) * pow(2 * P_temp[\"y\"], -1, curve[\"p\"]) % curve[\"p\"]\n        x = (lambda_val * lambda_val - 2 * P_temp[\"x\"]) % curve[\"p\"]\n        y = (lambda_val * (P_temp[\"x\"] - x) - P_temp[\"y\"]) % curve[\"p\"]\n        P_temp = {\"x\": x, \"y\": y}\n\n    k = k >> 1\n\n    if not result[\"infinity\"]:\n        if result[\"x\"] < 0:\n            result[\"x\"] += curve[\"p\"]\n        if result[\"y\"] < 0:\n            result[\"y\"] += curve[\"p\"]\n    if not P_temp.get(\"infinity\", False):\n        if P_temp[\"x\"] < 0:\n            P_temp[\"x\"] += curve[\"p\"]\n        if P_temp[\"y\"] < 0:\n            P_temp[\"y\"] += curve[\"p\"]\n\nzzsigv_value2 = {\"infinity\": True} if result[\"infinity\"] else {\"x\": result[\"x\"], \"y\": result[\"y\"]}\n\n# Python中使用内置的pow(a, -1, m)来计算模逆\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [
         {
           "name": "times",
@@ -1723,6 +2012,11 @@
       "type": "ecc_point_double",
       "template": "\n# 点倍点运算\necc_validate_curve_point(zzsigv_value1, curve)\nif zzsigv_value1.get(\"infinity\", False) or zzsigv_value1[\"y\"] % curve[\"p\"] == 0:\n    zzsigv_value2 = {\"infinity\": True}\nelse:\n    lambda_val = (3 * zzsigv_value1[\"x\"] * zzsigv_value1[\"x\"] + curve[\"a\"]) * pow(2 * zzsigv_value1[\"y\"], -1, curve[\"p\"]) % curve[\"p\"]\n    zzsigv_value2 = {\n        \"x\": (lambda_val * lambda_val - 2 * zzsigv_value1[\"x\"]) % curve[\"p\"],\n        \"y\": (lambda_val * (zzsigv_value1[\"x\"] - ((lambda_val * lambda_val - 2 * zzsigv_value1[\"x\"]) % curve[\"p\"])) - zzsigv_value1[\"y\"]) % curve[\"p\"]\n    }\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1735,6 +2029,11 @@
       "type": "ecdh_shared_secret",
       "template": "ecdh_shared_secret(zzsigv_D, zzsigv_QX, zzsigv_QY)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1747,6 +2046,11 @@
       "type": "ecdsa_k_rfc6979",
       "template": "bytes(ecdsa_k_rfc6979(zzsigv_PRIV, zzsigv_HASH))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1759,6 +2063,11 @@
       "type": "ecdsa_sign",
       "template": "bytes(ecdsa_sign(zzsigv_PRIV, zzsigv_MSG))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1771,6 +2080,11 @@
       "type": "ecdsa_verify",
       "template": "ecdsa_verify(zzsigv_MSG, zzsigv_PUB, zzsigv_SIG)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1783,6 +2097,11 @@
       "type": "eddsa_sign",
       "template": "bytes(eddsa_sign(zzsigv_SECRET, zzsigv_MSG))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1795,6 +2114,11 @@
       "type": "eddsa_verify",
       "template": "eddsa_verify(zzsigv_PUBLIC, zzsigv_MSG, zzsigv_SIGNATURE)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1807,6 +2131,11 @@
       "type": "endian_swap",
       "template": "list(reversed(zzsigv_INPUT))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1819,6 +2148,11 @@
       "type": "fors_leaf_index",
       "template": "hash_based()[\"fors_leaf_index\"](zzsigv_M, zzsigv_I)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1831,6 +2165,11 @@
       "type": "fors_pk_from_sk",
       "template": "fors_core()[\"fors_pk\"](zzsigv_SK_SEED)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1843,6 +2182,11 @@
       "type": "fors_root",
       "template": "hash_based()[\"fors_root\"](zzsigv_ROOTS, zzsigv_ADRS)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1855,6 +2199,11 @@
       "type": "fors_sign",
       "template": "fors_core()[\"fors_sign\"](zzsigv_SK_SEED, zzsigv_MESSAGE)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1867,6 +2216,11 @@
       "type": "fors_verify",
       "template": "fors_core()[\"fors_verify\"](zzsigv_PUBLIC_KEY, zzsigv_MESSAGE, zzsigv_SIGNATURE)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1879,6 +2233,11 @@
       "type": "gauss_elim",
       "template": "multivariate()[\"gauss_elim\"](zzsigv_AUG, zzsigv_N)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1891,6 +2250,11 @@
       "type": "gauss_pmf",
       "template": "multivariate()[\"gauss_pmf\"](zzsigv_X, zzsigv_SIGMA)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1903,6 +2267,11 @@
       "type": "gcm_encrypt",
       "template": "bytes(gcm_encrypt(zzsigv_KEY, zzsigv_IV, zzsigv_AAD, zzsigv_MSG))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1915,6 +2284,11 @@
       "type": "gcm_gctr",
       "template": "bytes(gcm_gctr(zzsigv_KEY, zzsigv_ICB, zzsigv_X))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1927,6 +2301,11 @@
       "type": "gcm_gf128_mul",
       "template": "gcm_mul(zzsigv_X, zzsigv_Y)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1939,6 +2318,11 @@
       "type": "gcm_ghash",
       "template": "gcm_ghash(zzsigv_H, zzsigv_A, zzsigv_C)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1951,6 +2335,11 @@
       "type": "gcm_inc32",
       "template": "gcm_inc32(zzsigv_X)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1963,6 +2352,11 @@
       "type": "gcm_j0",
       "template": "gcm_j0(zzsigv_H, zzsigv_IV)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1975,6 +2369,11 @@
       "type": "gf2_poly_div",
       "template": "code_based()[\"poly_div\"](zzsigv_A, zzsigv_B)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1987,6 +2386,11 @@
       "type": "gf2_poly_gcd",
       "template": "code_based()[\"poly_gcd\"](zzsigv_A, zzsigv_B)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -1999,6 +2403,11 @@
       "type": "gf2_poly_mod",
       "template": "code_based()[\"poly_mod\"](zzsigv_A, zzsigv_B)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2011,6 +2420,11 @@
       "type": "gf2_poly_mul",
       "template": "code_based()[\"poly_mul\"](zzsigv_A, zzsigv_B)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2023,6 +2437,11 @@
       "type": "gf2m_add",
       "template": "[zzsigv_A[0] ^ zzsigv_B[0]]",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "FIELD",
@@ -2061,6 +2480,11 @@
       "type": "gf2m_inv",
       "template": "[gf2m_inv_aes(zzsigv_A[0])]",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "FIELD",
@@ -2099,6 +2523,11 @@
       "type": "gf2m_mul",
       "template": "[gf2m_mul_aes(zzsigv_A[0],zzsigv_B[0])]",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "FIELD",
@@ -2137,6 +2566,11 @@
       "type": "gf2m_poly_add",
       "template": "gf2m_poly()[\"poly_add\"](zzsigv_A, zzsigv_B)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2149,6 +2583,11 @@
       "type": "gf2m_poly_eval",
       "template": "gf2m_poly()[\"poly_eval\"](zzsigv_P, zzsigv_X)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2161,6 +2600,11 @@
       "type": "gf2m_poly_mod",
       "template": "gf2m_poly()[\"poly_mod\"](zzsigv_A, zzsigv_B)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2173,6 +2617,11 @@
       "type": "gf2m_poly_mul",
       "template": "gf2m_poly()[\"poly_mul\"](zzsigv_A, zzsigv_B)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2185,6 +2634,11 @@
       "type": "gf2m_poly_xgcd",
       "template": "gf2m_poly()[\"poly_xgcd\"](zzsigv_A, zzsigv_B)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2197,6 +2651,11 @@
       "type": "gm_rng",
       "template": "bytes(gm_drbg(zzsigv_ENTROPY, zzsigv_NONCE, zzsigv_PERSO, zzsigv_LEN))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2209,6 +2668,11 @@
       "type": "goppa_decode",
       "template": "goppa_core()[\"goppa_decode\"](zzsigv_Y, zzsigv_G, zzsigv_L)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2221,6 +2685,11 @@
       "type": "goppa_gen_poly",
       "template": "code_based()[\"goppa_gen_poly\"](zzsigv_ALPHA)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2233,6 +2702,11 @@
       "type": "ham_dist",
       "template": "code_based()[\"ham_dist\"](zzsigv_X, zzsigv_Y)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2245,6 +2719,11 @@
       "type": "ham_weight",
       "template": "code_based()[\"ham_weight\"](zzsigv_X)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2257,6 +2736,11 @@
       "type": "hash_chain",
       "template": "hash_based()[\"hash_chain\"](zzsigv_INPUT, zzsigv_ITERATIONS)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2269,6 +2753,11 @@
       "type": "hash_hmac",
       "template": "hmac_sha256(zzsigv_KEY,zzsigv_MSG)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "HASH",
@@ -2307,6 +2796,11 @@
       "type": "hash_sha224_hash",
       "template": "sha224_hash(zzsigv_MSG)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2319,6 +2813,11 @@
       "type": "hash_sha256_compress",
       "template": "sha256_compress(zzsigv_V, zzsigv_W)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2331,6 +2830,11 @@
       "type": "hash_sha256_pad",
       "template": "sha256_pad(zzsigv_INPUT)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2343,6 +2847,11 @@
       "type": "hash_sha256_pad_hex",
       "template": "sha256_pad(decodeHexBytes(zzsigv_INPUT))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2355,6 +2864,11 @@
       "type": "hash_sha256_pad_text",
       "template": "sha256_pad_text(zzsigv_INPUT)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2367,6 +2881,11 @@
       "type": "hash_sha3_pad_hex",
       "template": "sha3_pad(decodeHexBytes(zzsigv_INPUT), rate_bytes=136, suffix=0x06)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2379,6 +2898,11 @@
       "type": "hash_sha3_pad_text",
       "template": "sha3_pad_text(zzsigv_INPUT)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2391,6 +2915,11 @@
       "type": "hash_sha512_compress",
       "template": "sha512_compress(zzsigv_V, zzsigv_W)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2403,6 +2932,11 @@
       "type": "hash_sha512_hash",
       "template": "sha512_hash(zzsigv_MSG, 384)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "SIZE",
@@ -2441,6 +2975,11 @@
       "type": "hash_sha512_pad",
       "template": "sha512_pad(zzsigv_INPUT)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2453,6 +2992,11 @@
       "type": "hash_sm3_compress",
       "template": "sm3_compress(zzsigv_V, zzsigv_W)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2465,6 +3009,11 @@
       "type": "hash_sm3_pad",
       "template": "sm3_pad(zzsigv_INPUT)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2477,6 +3026,11 @@
       "type": "hash_sm3_pad_hex",
       "template": "sm3_pad(decodeHexBytes(zzsigv_INPUT))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2489,6 +3043,11 @@
       "type": "hash_sm3_pad_text",
       "template": "sm3_pad_text(zzsigv_INPUT)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2501,6 +3060,11 @@
       "type": "hex_to_bytes",
       "template": "hex_to_bytes(zzsigv_INPUT)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2513,6 +3077,11 @@
       "type": "hkdf",
       "template": "bytes(hkdf(zzsigv_SALT, zzsigv_IKM, zzsigv_INFO, zzsigv_LEN))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2525,6 +3094,11 @@
       "type": "hkdf_expand",
       "template": "bytes(hkdf_expand(zzsigv_PRK, zzsigv_INFO, zzsigv_LEN))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2537,6 +3111,11 @@
       "type": "hkdf_extract",
       "template": "bytes(hkdf_extract(zzsigv_SALT, zzsigv_IKM))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2549,6 +3128,11 @@
       "type": "keccak_f",
       "template": "keccak_f(zzsigv_STATE, 200)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "WIDTH",
@@ -2597,6 +3181,11 @@
       "type": "keccak_state_init",
       "template": "[0] * 25",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2609,6 +3198,11 @@
       "type": "lgc_compound",
       "template": "zzsigv_C = ((zzsigv_A ^ zzsigv_B) ^ zzsigv_B) & 0xFFFFFFFF\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [
         {
           "name": "instr",
@@ -2682,6 +3276,11 @@
       "type": "lgc_not",
       "template": "zzsigv_VALUE2 = (~zzsigv_VALUE1) & 0xFFFFFFFF\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [
         {
           "name": "NOT_LABEL",
@@ -2703,6 +3302,11 @@
       "type": "lgc_operation",
       "template": "zzsigv_C = (zzsigv_A ^ zzsigv_B) & 0xFFFFFFFF\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [
         {
           "name": "instr",
@@ -2746,6 +3350,11 @@
       "type": "lll_reduce",
       "template": "multivariate()[\"lll_reduce\"](zzsigv_BASIS, zzsigv_ROWS, zzsigv_COLS)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2758,6 +3367,11 @@
       "type": "merkle_auth_path",
       "template": "hash_based()[\"merkle_auth_path\"](zzsigv_LEAVES, zzsigv_LEAF_LEN, zzsigv_ADRS, zzsigv_INDEX)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2770,6 +3384,11 @@
       "type": "merkle_leaf",
       "template": "hash_based()[\"merkle_leaf\"](zzsigv_MSG, zzsigv_ADRS)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2782,6 +3401,11 @@
       "type": "merkle_node",
       "template": "hash_based()[\"merkle_node\"](zzsigv_LEFT, zzsigv_RIGHT, zzsigv_ADRS)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2794,6 +3418,11 @@
       "type": "merkle_root",
       "template": "hash_based()[\"merkle_root\"](zzsigv_LEAVES, zzsigv_LEAF_LEN, zzsigv_ADRS)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2806,6 +3435,11 @@
       "type": "mldsa_sign",
       "template": "bytes(ml_dsa_sign(zzsigv_SECRET_KEY, zzsigv_MESSAGE))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2818,6 +3452,11 @@
       "type": "mldsa_verify",
       "template": "ml_dsa_verify(zzsigv_PUBLIC_KEY, zzsigv_MESSAGE, zzsigv_SIGNATURE)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2830,6 +3469,11 @@
       "type": "mode_cbc_encrypt",
       "template": "bytes(aes_cbc_encrypt(zzsigv_DATA, zzsigv_KEY, zzsigv_IV))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2842,6 +3486,11 @@
       "type": "mode_ctr_encrypt",
       "template": "bytes(aes_ctr_encrypt(zzsigv_DATA, zzsigv_KEY, zzsigv_NONCE))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2854,6 +3503,11 @@
       "type": "mode_ecb_decrypt",
       "template": "bytes(aes_ecb_decrypt(zzsigv_DATA, zzsigv_KEY))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2866,6 +3520,11 @@
       "type": "mode_ecb_encrypt",
       "template": "bytes(aes_ecb_encrypt(zzsigv_DATA, zzsigv_KEY))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2878,6 +3537,11 @@
       "type": "mv_quad_eval",
       "template": "multivariate()[\"mv_quad_eval\"](zzsigv_COEFFS, zzsigv_X)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2890,6 +3554,11 @@
       "type": "nt_div_rem",
       "template": "safe_divmod(zzsigv_A, zzsigv_B)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2902,6 +3571,11 @@
       "type": "nt_field_add",
       "template": "field_operation(zzsigv_A, zzsigv_B, zzsigv_P, \"ADD\")",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "OP",
@@ -2945,6 +3619,11 @@
       "type": "nt_mod",
       "template": "positive_mod(zzsigv_A, zzsigv_B)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2957,6 +3636,11 @@
       "type": "nt_mod_inverse",
       "template": "\n# 扩展欧几里得算法求模逆元\ndef extended_gcd(a, b):\n    if a == 0:\n        return b, 0, 1\n    else:\n        g, y, x = extended_gcd(b % a, a)\n        return g, x - (b // a) * y, y\n\ndef mod_inverse(a, m):\n    values = (a, m)\n    if any(isinstance(value, bool) or not isinstance(value, (int, float)) or not -9007199254740991 <= value <= 9007199254740991 or int(value) != value for value in values):\n        raise ValueError('modular inverse inputs must be safe integers')\n    a, m = (int(value) for value in values)\n    if m <= 0:\n        raise ValueError('modulus must be positive')\n    a %= m\n    g, x, y = extended_gcd(a, m)\n    if g != 1:\n        raise Exception('modular inverse does not exist')\n    return x % m\n\nzzsigv_D = mod_inverse(zzsigv_E, zzsigv_PHI)\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -2969,6 +3653,11 @@
       "type": "nt_mod_pow",
       "template": "pow_mod(zzsigv_A, zzsigv_B, 3329)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "MODULUS",
@@ -3022,6 +3711,11 @@
       "type": "pad_pkcs7",
       "template": "pad_pkcs7(zzsigv_DATA, zzsigv_BLOCK_SIZE)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -3034,6 +3728,11 @@
       "type": "pad_zero",
       "template": "pad_zero(zzsigv_DATA, zzsigv_BLOCK_SIZE)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -3046,6 +3745,11 @@
       "type": "pbkdf2",
       "template": "bytes(pbkdf2(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_ITER, zzsigv_KEYLEN, pbkdf2_hmac_sha256))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "HASH",
@@ -3084,6 +3788,11 @@
       "type": "pbkdf2_f",
       "template": "bytes(pbkdf2_f(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_ITER, zzsigv_INDEX, pbkdf2_hmac_sha256))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "HASH",
@@ -3122,6 +3831,11 @@
       "type": "poly_scale",
       "template": "multivariate()[\"poly_scale\"](zzsigv_P, zzsigv_K)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -3134,6 +3848,11 @@
       "type": "pq_bits_to_bytes",
       "template": "bits_to_bytes(zzsigv_INPUT)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -3146,6 +3865,11 @@
       "type": "pq_byte_concat",
       "template": "bytes_concat(zzsigv_A, zzsigv_B)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -3158,6 +3882,11 @@
       "type": "pq_byte_decode",
       "template": "byte_decode_d12(zzsigv_INPUT)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "BITS",
@@ -3216,6 +3945,11 @@
       "type": "pq_byte_encode",
       "template": "byte_encode_d12(zzsigv_INPUT)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "BITS",
@@ -3274,6 +4008,11 @@
       "type": "pq_bytes_slice",
       "template": "bytes_slice(zzsigv_INPUT, zzsigv_START, zzsigv_END)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -3286,6 +4025,11 @@
       "type": "pq_bytes_to_bits",
       "template": "bytes_to_bits(zzsigv_INPUT)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -3298,6 +4042,11 @@
       "type": "pq_compress",
       "template": "compress_d11(zzsigv_INPUT, q=3329)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "BITS",
@@ -3386,6 +4135,11 @@
       "type": "pq_decompose",
       "template": "ml_dsa_primitives()[\"decompose\"](zzsigv_INPUT, 0)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "PART",
@@ -3424,6 +4178,11 @@
       "type": "pq_decompress",
       "template": "decompress_d11(zzsigv_INPUT, q=3329)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "BITS",
@@ -3512,6 +4271,11 @@
       "type": "pq_intt",
       "template": "intt(zzsigv_INPUT, q=3329, n=256)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "MODULUS",
@@ -3575,6 +4339,11 @@
       "type": "pq_make_hint",
       "template": "ml_dsa_primitives()[\"make_hint\"](zzsigv_Z, zzsigv_R)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -3587,6 +4356,11 @@
       "type": "pq_mat_vec_mul",
       "template": "mat_vec_mul(zzsigv_MATRIX, zzsigv_VEC, q=3329)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "MODULUS",
@@ -3625,6 +4399,11 @@
       "type": "pq_ntt",
       "template": "ntt(zzsigv_INPUT, q=3329, n=256)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "MODULUS",
@@ -3688,6 +4467,11 @@
       "type": "pq_ntt_butterfly",
       "template": "ntt_butterfly(zzsigv_A, zzsigv_B, zzsigv_ZETA, 3329, \"ct\")",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "MODULUS",
@@ -3770,6 +4554,11 @@
       "type": "pq_ntt_mul",
       "template": "ntt_mul(zzsigv_A, zzsigv_B, q=3329)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "MODULUS",
@@ -3808,6 +4597,11 @@
       "type": "pq_poly_add",
       "template": "poly_add_mod(zzsigv_A, zzsigv_B, q=3329)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "MODULUS",
@@ -3846,6 +4640,11 @@
       "type": "pq_poly_mul",
       "template": "pq_poly_mul(zzsigv_A, zzsigv_B, 0)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "MODULUS",
@@ -3894,6 +4693,11 @@
       "type": "pq_poly_sub",
       "template": "poly_sub_mod(zzsigv_A, zzsigv_B, q=3329)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "MODULUS",
@@ -3932,6 +4736,11 @@
       "type": "pq_power2round",
       "template": "ml_dsa_primitives()[\"power2round\"](zzsigv_INPUT, 0)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "PART",
@@ -3970,6 +4779,11 @@
       "type": "pq_prf",
       "template": "prf_shake256(zzsigv_SEED, zzsigv_NONCE, out_len=zzsigv_OUTLEN)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "ALGO",
@@ -4008,6 +4822,11 @@
       "type": "pq_rej_sample",
       "template": "((zzsigv_X) if (zzsigv_X) < (zzsigv_BOUND) else -1)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4020,6 +4839,11 @@
       "type": "pq_sample_in_ball",
       "template": "ml_dsa_primitives()[\"sample_in_ball\"](zzsigv_SEED)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4032,6 +4856,11 @@
       "type": "pq_sample_ntt",
       "template": "sample_ntt(zzsigv_SEED, q=3329)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "MODULUS",
@@ -4070,6 +4899,11 @@
       "type": "pq_sample_poly_cbd",
       "template": "sample_poly_cbd_eta3(zzsigv_SEED, q=3329)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "ETA",
@@ -4140,6 +4974,11 @@
       "type": "pq_seed_with_nonce",
       "template": "seed_with_nonce(zzsigv_SEED, zzsigv_NONCE)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4152,6 +4991,11 @@
       "type": "pq_use_hint",
       "template": "ml_dsa_primitives()[\"use_hint\"](zzsigv_H, zzsigv_R)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4164,6 +5008,11 @@
       "type": "pq_xof",
       "template": "xof_shake128(zzsigv_SEED, out_len=zzsigv_OUTLEN)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "ALGO",
@@ -4202,6 +5051,11 @@
       "type": "primitive_def",
       "template": "\ndef primitive(n_bytes: int = zzsigv_NBYTES, seed: bytes = zzsigv_SEED) -> bytes:\n    \"\"\"随机性测评入口：返回至少 n_bytes 字节。\"\"\"\n    seed = bytes(seed or b\"\")\n    data = seed\n  zzsigs_BODY    return zzsigv_RETURN\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4214,6 +5068,11 @@
       "type": "rsa_decrypt",
       "template": "bytes(rsa_decrypt(zzsigv_KEY, zzsigv_CT))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4226,6 +5085,11 @@
       "type": "rsa_emsa_pkcs1_v15_encode",
       "template": "bytes(rsa_emsa_pkcs1_v15(zzsigv_MSG, zzsigv_EMLEN))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4238,6 +5102,11 @@
       "type": "rsa_encrypt",
       "template": "bytes(rsa_encrypt(zzsigv_KEY, zzsigv_MSG))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4250,6 +5119,11 @@
       "type": "rsa_keygen",
       "template": "bytes(rsa_keygen(512))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "BITS",
@@ -4293,6 +5167,11 @@
       "type": "rsa_mgf1",
       "template": "bytes(rsa_mgf1(zzsigv_SEED, zzsigv_LEN))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4305,6 +5184,11 @@
       "type": "rsa_sign",
       "template": "bytes(rsa_sign(zzsigv_KEY, zzsigv_MSG))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4317,6 +5201,11 @@
       "type": "rsa_verify",
       "template": "rsa_verify(zzsigv_KEY, zzsigv_MSG, zzsigv_SIG)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4329,6 +5218,11 @@
       "type": "sbox",
       "template": "[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "ROW",
@@ -4450,6 +5344,11 @@
       "type": "sbox_sub",
       "template": "\n# Apply S-box substitution byte-wise using the user-defined 'sbox'\ntry:\n    _sbox_ref = zzsigv_SBOX_VAR\nexcept NameError:\n    raise NameError(\"Variable 'zzsigv_SBOX_VAR' is not defined. Please define it first using an S-box definition block.\")\nif isinstance(_sbox_ref, list) and len(_sbox_ref) > 0 and isinstance(_sbox_ref[0], list):\n    _sbox_ref = [item for row in _sbox_ref for item in row]\nif not isinstance(_sbox_ref, list) or len(_sbox_ref) < 256:\n    raise ValueError(\"S-box must contain at least 256 entries\")\nfor _sbox_index in range(256):\n    _sbox_entry = _sbox_ref[_sbox_index]\n    if isinstance(_sbox_entry, bool) or not isinstance(_sbox_entry, (int, float)) or not 0 <= _sbox_entry <= 255 or int(_sbox_entry) != _sbox_entry:\n        raise ValueError(\"S-box entries must be bytes\")\n_sbox_ref = [int(value) for value in _sbox_ref[:256]]\n\n_input_val = zzsigv_INPUT_VAR\nif _input_val is None:\n    _input_val = 0\nif isinstance(_input_val, bool) or not isinstance(_input_val, (int, float)) or not 0 <= _input_val <= 0xFFFFFFFF or int(_input_val) != _input_val:\n    raise ValueError(\"S-box input must be an unsigned 32-bit word\")\n_input_val = int(_input_val)\n_b0 = (_input_val >> 24) & 0xFF\n_b1 = (_input_val >> 16) & 0xFF\n_b2 = (_input_val >> 8) & 0xFF\n_b3 = _input_val & 0xFF\n\n_s_b0 = _sbox_ref[_b0]\n_s_b1 = _sbox_ref[_b1]\n_s_b2 = _sbox_ref[_b2]\n_s_b3 = _sbox_ref[_b3]\n\nzzsigv_OUTPUT_VAR = ((_s_b0 << 24) | (_s_b1 << 16) | (_s_b2 << 8) | _s_b3) & 0xFFFFFFFF\n",
       "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4462,6 +5361,11 @@
       "type": "sbox_variables_get",
       "template": null,
       "error": "Cannot read properties of null (reading 'toLowerCase')",
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "VAR",
@@ -4481,6 +5385,11 @@
       "type": "sbox_variables_set",
       "template": null,
       "error": "Cannot read properties of null (reading 'toLowerCase')",
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
       "fields": [
         {
           "name": "VAR",
@@ -4500,6 +5409,11 @@
       "type": "seed_bytes",
       "template": "data",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4512,6 +5426,11 @@
       "type": "seed_hex",
       "template": "data.hex()",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4524,6 +5443,11 @@
       "type": "sha3_hash",
       "template": "sha3_hash(zzsigv_MSG, 224, 144)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "SIZE",
@@ -4572,6 +5496,11 @@
       "type": "slh_addr",
       "template": "hash_based()[\"slh_addr\"](zzsigv_LAYER, zzsigv_TREE, zzsigv_LEAF, 0)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "TYPE",
@@ -4635,6 +5564,11 @@
       "type": "slh_adrs_full",
       "template": "slh_adrs_full(zzsigv_LAYER, zzsigv_TREE, 0, zzsigv_KEYPAIR, zzsigv_HEIGHT, zzsigv_INDEX)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "TYPE",
@@ -4698,6 +5632,11 @@
       "type": "slh_msg_randomness",
       "template": "bytes(slh_msg_randomness(zzsigv_SK_PRF, zzsigv_OPT_RAND, zzsigv_MESSAGE, zzsigv_CONTEXT))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4710,6 +5649,11 @@
       "type": "slh_sign",
       "template": "bytes(slh_sign(zzsigv_SK, zzsigv_MESSAGE, zzsigv_CONTEXT, \"SLH-DSA-SHAKE-128f\"))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "PARAM_SET",
@@ -4768,6 +5712,11 @@
       "type": "slh_xmss_root",
       "template": "bytes(slh_xmss_root(zzsigv_SK_SEED, zzsigv_PK_SEED, zzsigv_H_PRIME, zzsigv_LAYER, zzsigv_TREE))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4780,6 +5729,11 @@
       "type": "sm2_decrypt",
       "template": "bytes(sm2_decrypt(zzsigv_CT, zzsigv_DA))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4792,6 +5746,11 @@
       "type": "sm2_encrypt",
       "template": "sm2_encrypt(zzsigv_MSG, zzsigv_PX, zzsigv_PY, zzsigv_K)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4804,6 +5763,11 @@
       "type": "sm2_kdf",
       "template": "bytes(sm2_kdf_derive(zzsigv_Z, zzsigv_KLEN))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4816,6 +5780,11 @@
       "type": "sm2_key_exchange",
       "template": "sm2_key_exchange(zzsigv_DB, zzsigv_RBVAL, zzsigv_PAX, zzsigv_PAY, zzsigv_RA, zzsigv_RBP, zzsigv_ZA, zzsigv_ZB, zzsigv_WLEN)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4828,6 +5797,11 @@
       "type": "sm2_sign",
       "template": "bytes(sm2_sign(zzsigv_DA, zzsigv_IDA, zzsigv_MSG, zzsigv_K))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4840,6 +5814,11 @@
       "type": "sm2_verify",
       "template": "sm2_verify(zzsigv_PAX, zzsigv_PAY, zzsigv_IDA, zzsigv_MSG, zzsigv_R, zzsigv_S)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4852,6 +5831,11 @@
       "type": "sm4_linear_transform",
       "template": "sm4_linear_transform(zzsigv_B)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4864,6 +5848,11 @@
       "type": "sm4_round_func",
       "template": "sm4_round_func(zzsigv_X0, zzsigv_X1, zzsigv_X2, zzsigv_X3, zzsigv_RK)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4876,6 +5865,11 @@
       "type": "sm4_sbox",
       "template": "sm4_sbox_lookup(zzsigv_INPUT)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4888,6 +5882,11 @@
       "type": "sm9_master_key",
       "template": "bytes(sm9_master_key(zzsigv_KS))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4900,6 +5899,11 @@
       "type": "sm9_sign",
       "template": "bytes(sm9_sign(zzsigv_MSG, zzsigv_DS, zzsigv_PPUB, zzsigv_R, True))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -4912,6 +5916,11 @@
       "type": "sm9_user_key",
       "template": "bytes(sm9_user_key(zzsigv_KS, zzsigv_ID, 1))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "HID",
@@ -4946,6 +5955,11 @@
       "type": "sm9_verify",
       "template": "sm9_verify(zzsigv_MSG, zzsigv_ID, zzsigv_H, zzsigv_S, zzsigv_PPUB, 1)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "HID",
@@ -4980,6 +5994,11 @@
       "type": "sponge_absorb",
       "template": "sha3_absorb(zzsigv_STATE, zzsigv_BLOCK, rate_bytes=136)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "RATE",
@@ -5033,6 +6052,11 @@
       "type": "sponge_pad",
       "template": "sha3_pad(zzsigv_INPUT, rate_bytes=136, suffix=0x06)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "RATE",
@@ -5139,6 +6163,11 @@
       "type": "sponge_squeeze",
       "template": "sha3_squeeze(zzsigv_STATE, zzsigv_OUTLEN, rate_bytes=136)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [
         {
           "name": "RATE",
@@ -5192,6 +6221,11 @@
       "type": "syndrome_calc",
       "template": "code_based()[\"syndrome_calc\"](zzsigv_H, zzsigv_Y, zzsigv_ROWS, zzsigv_COLS)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -5204,6 +6238,11 @@
       "type": "vec_dot",
       "template": "multivariate()[\"vec_dot\"](zzsigv_A, zzsigv_B)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -5216,6 +6255,11 @@
       "type": "wots_checksum",
       "template": "wots_checksum(zzsigv_M)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -5228,6 +6272,11 @@
       "type": "x25519",
       "template": "bytes(x25519(zzsigv_SCALAR, zzsigv_U))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -5240,6 +6289,11 @@
       "type": "xts_encrypt",
       "template": "bytes(xts_encrypt(zzsigv_KEY, zzsigv_TWEAK, zzsigv_MSG))",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -5252,6 +6306,11 @@
       "type": "xts_tweak_mul",
       "template": "xts_tweak_mul(zzsigv_TWEAK)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -5264,6 +6323,11 @@
       "type": "zuc_eia3",
       "template": "zuc_eia3(zzsigv_KEY, zzsigv_COUNT, zzsigv_BEARER, zzsigv_DIRECTION, zzsigv_MESSAGE, zzsigv_LENGTH)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -5276,6 +6340,11 @@
       "type": "zuc_f",
       "template": "zuc_f(zzsigv_X0, zzsigv_X1, zzsigv_X2, zzsigv_R1, zzsigv_R2)[0]",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -5288,6 +6357,11 @@
       "type": "zuc_keystream",
       "template": "zuc_keystream(zzsigv_KEY, zzsigv_IV, zzsigv_LEN)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -5300,6 +6374,11 @@
       "type": "zuc_l1",
       "template": "zuc_l1(zzsigv_INPUT)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -5312,6 +6391,11 @@
       "type": "zuc_l2",
       "template": "zuc_l2(zzsigv_INPUT)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -5324,6 +6408,11 @@
       "type": "zuc_s0",
       "template": "zuc_s0_lookup(zzsigv_INPUT)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],
@@ -5336,6 +6425,11 @@
       "type": "zuc_s1",
       "template": "zuc_s1_lookup(zzsigv_INPUT)",
       "error": null,
+      "io": {
+        "output": true,
+        "previous": false,
+        "next": false
+      },
       "fields": [],
       "probes": [],
       "combos": [],

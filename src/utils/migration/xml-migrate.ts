@@ -40,6 +40,7 @@ export function migrateXmlText(xmlText: string): string {
   result = migrateCompoundFieldXml(result);
   result = migrateBitOperationFieldXml(result);
   result = migratePartitionModeXml(result);
+  result = migrateIterateTimesXml(result);
 
   return result;
 }
@@ -90,6 +91,37 @@ function migrateBitOperationFieldXml(xml: string): string {
       return prefix + (opMap[value] || value) + suffix;
     },
   );
+}
+
+/**
+ * `ctrl_iterate` 的 `TIMES`：旧 XML 是 `<field name="TIMES">N</field>`，新块是值输入。
+ * 就地改写成 `math_number` 影子值，次数不丢（与 json-migrate 的同一迁移对应）。
+ */
+function migrateIterateTimesXml(xml: string): string {
+  const blockOpenings = /<block\b(?:[^'">]|"[^"]*"|'[^']*')*>/g;
+  const replacements: Array<{ start: number; end: number; value: string }> = [];
+  let match: RegExpExecArray | null;
+
+  while ((match = blockOpenings.exec(xml))) {
+    const type = match[0].match(/\btype=(['"])(.*?)\1/);
+    if (type?.[2] !== 'ctrl_iterate' || match[0].endsWith('/>')) continue;
+    const end = matchingBlockClose(xml, match.index);
+    if (end < 0) continue;
+    const openingEnd = blockOpenings.lastIndex;
+    const contents = xml.slice(openingEnd, end);
+    const field = /<field\s+name=(['"])TIMES\1\s*>([^<]*)<\/field>/.exec(contents);
+    if (!field) continue;
+    replacements.push({
+      start: openingEnd + field.index,
+      end: openingEnd + field.index + field[0].length,
+      value: `<value name="TIMES"><shadow type="data_value"><field name="NUM">${field[2].trim() || '32'}</field></shadow></value>`,
+    });
+  }
+
+  for (const replacement of replacements.reverse()) {
+    xml = `${xml.slice(0, replacement.start)}${replacement.value}${xml.slice(replacement.end)}`;
+  }
+  return xml;
 }
 
 function migratePartitionModeXml(xml: string): string {

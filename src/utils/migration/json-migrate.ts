@@ -36,10 +36,45 @@ export function migrateJsonState(
     migratePartitionModeJson(parsed, variableNames);
     // ctrl_assign 赋值块 → variables_set（Blockly 内置变量赋值）
     migrateAssignmentBlocks(parsed);
+    // ctrl_iterate 的 TIMES：数字字段 → 值输入（次数不丢）
+    migrateIterateTimesField(parsed);
     return parsed as Record<string, unknown>;
   } catch {
     return state;
   }
+}
+
+/**
+ * `ctrl_iterate` 的次数从数字字段（`fields.TIMES`）改成值输入（`inputs.TIMES`）。
+ *
+ * 为什么改：`range(n)` 的次数可能不是常数，而数字字段只能填常数；改成值输入后循环次数
+ * 可以接变量与表达式，生成代码与 Python 的 `range(n)` 逐字对应。旧工作区把次数存在字段里，
+ * 这里搬到 `math_number` 影子块，次数本身不丢。
+ */
+function migrateIterateTimesField(value: unknown): void {
+  if (Array.isArray(value)) {
+    for (const item of value) migrateIterateTimesField(item);
+    return;
+  }
+  if (typeof value !== 'object' || value === null) return;
+
+  const record = value as Record<string, unknown>;
+  if (record.type === 'ctrl_iterate' && typeof record.fields === 'object' && record.fields !== null) {
+    const fields = record.fields as Record<string, unknown>;
+    if ('TIMES' in fields) {
+      const times = fields.TIMES;
+      delete fields.TIMES;
+      if (typeof record.inputs !== 'object' || record.inputs === null) record.inputs = {};
+      const inputs = record.inputs as Record<string, unknown>;
+      if (!('TIMES' in inputs)) {
+        inputs.TIMES = {
+          shadow: { type: 'data_value', fields: { NUM: String(times ?? '32') } },
+        };
+      }
+    }
+  }
+
+  for (const child of Object.values(record)) migrateIterateTimesField(child);
 }
 
 function migratePartitionModeJson(value: unknown, variableNames: ReadonlyMap<string, string>): void {

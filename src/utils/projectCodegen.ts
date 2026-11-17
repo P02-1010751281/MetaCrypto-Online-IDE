@@ -1,6 +1,7 @@
 import * as Blockly from 'blockly/core';
 
 import { generateCode } from '@/composables/generator';
+import { migrateJsonState, migrateXmlText } from '@/utils/migration';
 import { injectPrimitives } from '@/generators/python';
 import {
   setProjectSymbols,
@@ -25,11 +26,15 @@ function parseWorkspace(file: ProjectFileRecord): Blockly.Workspace {
   const raw = String(file.workspace || '').trim();
   if (!raw) return workspace;
   const isXml = file.format === 'xml' || raw.startsWith('<');
+  // 生成代码前走同一套迁移：旧项目里的 ctrl_iterate 次数还存成字段，不迁移会按默认 32 生成。
   if (isXml) {
-    const dom = Blockly.utils.xml.textToDom(raw);
+    const dom = Blockly.utils.xml.textToDom(migrateXmlText(raw));
     Blockly.Xml.domToWorkspace(dom, workspace);
   } else {
-    Blockly.serialization.workspaces.load(JSON.parse(raw), workspace);
+    Blockly.serialization.workspaces.load(
+      migrateJsonState(JSON.parse(raw) as Record<string, unknown>),
+      workspace,
+    );
   }
   return workspace;
 }

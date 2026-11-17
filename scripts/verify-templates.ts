@@ -651,7 +651,7 @@ async function main() {
         if ((tc.bodyState || tc.bodyTimes) && !bodyRoot) {
           throw new Error(`${tc.name}: 实际 BODY 未注入`);
         }
-        if (tc.bodyTimes && (bodyRoot?.type !== 'ctrl_iterate' || String(bodyRoot.getFieldValue('TIMES')) !== tc.bodyTimes)) {
+        if (tc.bodyTimes && (bodyRoot?.type !== 'ctrl_iterate' || String(bodyRoot.getInputTargetBlock('TIMES')?.getFieldValue('NUM')) !== tc.bodyTimes)) {
           throw new Error(`${tc.name}: BODY 循环次数错误`);
         }
         if (tc.returnState && !returnRoot) {
@@ -680,7 +680,7 @@ async function main() {
           ...tc.returnChain,
           ...collectStateBlockTypes(tc.bodyState),
           ...collectStateBlockTypes(tc.returnState),
-          ...(tc.bodyTimes ? ['ctrl_iterate'] : []),
+          ...(tc.bodyTimes ? ['ctrl_iterate', 'data_value'] : []),
         ].sort();
         const actualTypes = workspace.getAllBlocks(false).map((block) => block.type).sort();
         if (expectedTypes.length !== actualTypes.length || expectedTypes.some((type, index) => type !== actualTypes[index])) {

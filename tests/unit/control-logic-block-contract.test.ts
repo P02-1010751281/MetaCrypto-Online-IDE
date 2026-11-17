@@ -35,7 +35,10 @@ function generateLoop(language: 'javascript' | 'python', times: number): string 
   try {
     const loop = workspace.newBlock('ctrl_iterate');
     loop.setFieldValue('i', 'VAR');
-    loop.setFieldValue(String(times), 'TIMES');
+    // TIMES 是值输入（可接变量/表达式），次数用 math_number 接进去。
+    const timesBlock = workspace.newBlock('math_number');
+    timesBlock.setFieldValue(String(times), 'NUM');
+    loop.getInput('TIMES')!.connection!.connect(timesBlock.outputConnection!);
 
     const collect = workspace.newBlock('test_loop_collect');
     loop.getInput('DO')!.connection!.connect(collect.previousConnection!);
