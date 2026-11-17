@@ -30,6 +30,38 @@ Blockly.Blocks['test_loop_collect'] = {
 javascriptGenerator.forBlock['test_loop_collect'] = () => 'observed.push(i);\n';
 pythonGenerator.forBlock['test_loop_collect'] = () => 'observed.append(i)\n';
 
+/**
+ * 次数来源：输出一个裸标识符（测试用），避免依赖 variables_get 的变量下拉——那一套在
+ * headless 下需要先灌 locale 消息，本文件其余用例并不需要。
+ */
+Blockly.Blocks['test_number_ref'] = {
+  init() {
+    this.appendDummyInput().appendField(new Blockly.FieldTextInput('times'), 'EXPR');
+    this.setOutput(true, 'Number');
+  },
+};
+javascriptGenerator.forBlock['test_number_ref'] = (block) =>
+  [block.getFieldValue('EXPR') || 'times', 0];
+pythonGenerator.forBlock['test_number_ref'] = (block) =>
+  [block.getFieldValue('EXPR') || 'times', 0];
+
+/**
+ * 循环体：记录下标后把次数变量 +1。
+ *
+ * 验证「次数只求值一次」：Python 的 `range(TIMES)` 进循环前定格，JS 的 `for` 条件每轮
+ * 重算——修复前这条用例在 JS 侧会无限循环，所以生成里带一条 64 轮守卫，让回归抛异常
+ * 而不是挂死。
+ */
+Blockly.Blocks['test_loop_bump'] = {
+  init() {
+    this.appendDummyInput().appendField('collect and bump the bound');
+    this.setPreviousStatement(true);
+  },
+};
+javascriptGenerator.forBlock['test_loop_bump'] = () =>
+  'observed.push(i);\ntimes = times + 1;\nif (observed.length > 64) throw new Error("loop bound re-evaluated");\n';
+pythonGenerator.forBlock['test_loop_bump'] = () => 'observed.append(i)\ntimes = times + 1\n';
+
 function generateLoop(language: 'javascript' | 'python', times: number): string {
   const workspace = new Blockly.Workspace();
   try {
@@ -104,11 +136,56 @@ function runPythonLoop(program: string): number[] {
   return JSON.parse(output) as number[];
 }
 
+/** 用变量当次数（`range(times)` / `i < times`），循环体再把 `times` 加一。 */
+function generateVariableLoop(language: 'javascript' | 'python'): string {
+  const workspace = new Blockly.Workspace();
+  try {
+    const loop = workspace.newBlock('ctrl_iterate');
+    loop.setFieldValue('i', 'VAR');
+    const timesBlock = workspace.newBlock('test_number_ref');
+    timesBlock.setFieldValue('times', 'EXPR');
+    loop.getInput('TIMES')!.connection!.connect(timesBlock.outputConnection!);
+    const body = workspace.newBlock('test_loop_bump');
+    loop.getInput('DO')!.connection!.connect(body.previousConnection!);
+    const generator = language === 'javascript' ? javascriptGenerator : pythonGenerator;
+    return generator.workspaceToCode(workspace);
+  } finally {
+    workspace.dispose();
+  }
+}
+
+function runJavaScriptLoopBumped(times: number): number[] {
+  const observed: number[] = [];
+  new Function('observed', 'times', generateVariableLoop('javascript'))(observed, times);
+  return observed;
+}
+
+function runPythonLoopBumped(times: number): number[] {
+  const program = generateVariableLoop('python');
+  const output = execFileSync(pythonCommand, ['-c', [
+    'import json',
+    'observed = []',
+    `times = ${times}`,
+    program,
+    'print(json.dumps(observed))',
+  ].join('\n')], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  }).trim();
+  return JSON.parse(output) as number[];
+}
+
 describe('control-flow and 32-bit logic Blockly contracts', () => {
   it.each([1, 5])('executes exactly %i iterations in both languages', (times) => {
     const expected = Array.from({ length: times }, (_, index) => index);
     expect(runJavaScriptLoop(generateLoop('javascript', times))).toEqual(expected);
     expect(runPythonLoop(generateLoop('python', times))).toEqual(expected);
+  });
+
+  it('ctrl_iterate: 循环体修改次数变量时两种语言跑同样次数（次数只求值一次）', () => {
+    // 原文形如 `for i in range(times): times = times + 1`：Python 进循环前定格，跑 times0 次。
+    expect(runPythonLoopBumped(3)).toEqual([0, 1, 2]);
+    expect(runJavaScriptLoopBumped(3)).toEqual([0, 1, 2]);
   });
 
   it.each([

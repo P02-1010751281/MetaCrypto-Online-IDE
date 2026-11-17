@@ -146,10 +146,38 @@ describe('语句：按缩进拆', () => {
     expect(empty.diagnostics).toEqual([]);
   });
 
-  it('两参数 range(a, b) 仍落 controls_for（闭区间语义）', () => {
-    const parsed = parsePythonBody(['for i in range(2, 5):', '    x = i'], context());
-    expect(parsed.statements[0].node.type).toBe('controls_for');
-    expect(shape(parsed.statements[0].node)).toContain('TO:data_value(NUM=4)');
+  it('两参数 range(a, b) 落 ctrl_range（TO 是独占终点）', () => {
+    const ctx = context();
+    const parsed = parsePythonBody(['for i in range(2, 5):', '    x = i'], ctx);
+    expect(parsed.statements[0].node.type).toBe('ctrl_range');
+    expect(shape(parsed.statements[0].node)).toContain('FROM:data_value(NUM=2)');
+    // TO 就是 Python 的终点 5，不再减 1（ctrl_range 是半开区间）。
+    expect(shape(parsed.statements[0].node)).toContain('TO:data_value(NUM=5)');
+    expect(ctx.diagnostics).toEqual([]);
+  });
+
+  it('非常量端点的两参数 range 不再报漂移：ctrl_range 逐字对应 range(a, b)', () => {
+    const ctx = context();
+    const parsed = parsePythonBody(['for i in range(n, m):', '    x = i'], ctx);
+    expect(parsed.statements[0].node.type).toBe('ctrl_range');
+    expect(shape(parsed.statements[0].node)).toContain('FROM:variables_get(VAR=n)');
+    expect(shape(parsed.statements[0].node)).toContain('TO:variables_get(VAR=m)');
+    expect(ctx.diagnostics).toEqual([]);
+  });
+
+  it('常量空区间 range(4, 2) 也照常出 ctrl_range（一次不执行由生成代码保证）', () => {
+    const ctx = context();
+    const parsed = parsePythonBody(['for i in range(4, 2):', '    x = i'], ctx);
+    expect(parsed.statements[0].node.type).toBe('ctrl_range');
+    expect(ctx.diagnostics).toEqual([]);
+  });
+
+  it('非 range 迭代器落原生 controls_forEach', () => {
+    const parsed = parsePythonBody(['for x in xs:', '    y = x'], context());
+    const node = parsed.statements[0].node;
+    expect(node.type).toBe('controls_forEach');
+    expect(node.fields.VAR).toBe('x');
+    expect(shape(node)).toContain('LIST:variables_get(VAR=xs)');
   });
 
   it('末尾 return 属于 RETURN 槽；嵌套 return 所在分支整条不产出（与 AST 同口径）', () => {

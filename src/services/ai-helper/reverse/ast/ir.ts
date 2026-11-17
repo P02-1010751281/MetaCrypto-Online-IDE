@@ -14,9 +14,10 @@
  */
 
 import type { AstNode } from './dump';
-import { RANGE_ARITY, RANGE_EMPTY, RANGE_ENDPOINT, RANGE_STEP } from '../diagnostics';
+import { RANGE_ARITY, RANGE_STEP } from '../diagnostics';
+import { desugarListComp } from './ir-comprehension';
 import { callToIr, exprToIr } from './ir-expr';
-import { child, children, integerValue, lineOf, minusOne, nameOf, report, reportDrift, snippet } from './ir-shared';
+import { child, children, integerValue, lineOf, nameOf, report, snippet } from './ir-shared';
 import type { Ctx, IrBinOp, IrDiag, IrExpr, IrStmt } from './ir-shared';
 import type { PrimitiveIndex } from '../primitive-calls';
 
@@ -72,13 +73,15 @@ function bodyToIr(nodes: AstNode[], ctx: Ctx, nested = false): IrStmt[] {
       report(ctx, node, '分支里的 return 不支持（块模型只有一个返回值）');
       return;
     }
+    // 一条源语句可能展开成多条 IR 语句（`target = [...]` 的推导式 → 空列表 + 循环）。
     const converted = stmtToIr(node, ctx);
-    if (converted) out.push(converted);
+    if (Array.isArray(converted)) out.push(...converted);
+    else if (converted) out.push(converted);
   });
   return out;
 }
 
-function stmtToIr(node: AstNode, ctx: Ctx): IrStmt | null {
+function stmtToIr(node: AstNode, ctx: Ctx): IrStmt | IrStmt[] | null {
   const line = lineOf(node);
   switch (node._) {
     case 'Assign': {
@@ -86,9 +89,22 @@ function stmtToIr(node: AstNode, ctx: Ctx): IrStmt | null {
       if (targets.length !== 1 || targets[0]._ !== 'Name') {
         return report(ctx, node, '只支持单个变量赋值（a = b = c、元组赋值、下标赋值都翻不了）');
       }
-      const value = exprToIr(child(node, 'value'), ctx);
+      const target = nameOf(targets[0]);
+      const valueNode = child(node, 'value');
+      // 推导式落在赋值右侧时可能展开成「空列表 + 循环 + append」三条语句；静态可展开的
+      // 形态返回 'static'，回落到下面的普通表达式转换（既有语义不变）。
+      if (valueNode && valueNode._ === 'ListComp') {
+        const planned = desugarListComp(target, valueNode, ctx, exprToIr);
+        if (Array.isArray(planned)) {
+          ctx.scope.add(target);
+          return planned;
+        }
+        if (planned === null) return null;
+      }
+      const value = exprToIr(valueNode, ctx);
       if (!value) return null;
-      return { kind: 'assign', target: nameOf(targets[0]), value, line };
+      ctx.scope.add(target);
+      return { kind: 'assign', target, value, line };
     }
     case 'AugAssign': {
       const target = child(node, 'target');
@@ -100,6 +116,7 @@ function stmtToIr(node: AstNode, ctx: Ctx): IrStmt | null {
       if (!op) return report(ctx, node, '不支持的复合赋值运算符');
       const value = exprToIr(child(node, 'value'), ctx);
       if (!value) return null;
+      ctx.scope.add(nameOf(target));
       return { kind: 'augassign', target: nameOf(target), op, value, line };
     }
     case 'Expr': {
@@ -137,8 +154,20 @@ function stmtToIr(node: AstNode, ctx: Ctx): IrStmt | null {
       if (!target || target._ !== 'Name') {
         return report(ctx, node, '只支持 for 单个循环变量');
       }
-      if (!iterator || iterator._ !== 'Call' || nameOf(child(iterator, 'func')) !== 'range') {
-        return report(ctx, node, '只支持 for ... in range(...)');
+      if (!iterator) return report(ctx, node, 'for 缺少迭代器');
+      // 非 range 迭代器：`for x in <列表表达式>` → 原生 controls_forEach（与模板路径同口径）。
+      if (iterator._ !== 'Call' || nameOf(child(iterator, 'func')) !== 'range') {
+        const variable = nameOf(target);
+        const list = exprToIr(iterator, ctx);
+        if (!list) return null;
+        ctx.scope.add(variable);
+        return {
+          kind: 'forEach',
+          variable,
+          list,
+          body: bodyToIr(children(node, 'body'), ctx, true),
+          line,
+        };
       }
       const args = children(iterator, 'args').map((arg) => exprToIr(arg, ctx));
       if (args.some((arg) => !arg)) return null;
@@ -146,42 +175,33 @@ function stmtToIr(node: AstNode, ctx: Ctx): IrStmt | null {
       if (values.length < 1 || values.length > 3) {
         return report(ctx, node, RANGE_ARITY);
       }
+      const variable = nameOf(target);
+      // 循环变量在体内可见：先登记，体内再出现同名推导式时才会改名。
+      ctx.scope.add(variable);
       // 一参数 `range(n)` 与 Python 的「执行 n 次」逐字对应：落到 ctrl_iterate（TIMES 是值输入），
       // 既没有空区间倒序问题，也不需要按字面量分档。
       if (values.length === 1) {
         return {
           kind: 'iterate',
-          variable: nameOf(target),
+          variable,
           times: values[0],
           body: bodyToIr(children(node, 'body'), ctx, true),
           line,
         };
       }
-      const from: IrExpr = values[0];
-      const toSource = values[1];
       if (values.length === 3) {
         const step = integerValue(values[2]);
         if (step !== BigInt(1)) {
           return report(ctx, node, RANGE_STEP);
         }
       }
-      // 块模型的循环方向是自适应的（FROM > TO 时倒序执行），而 Python 的 range 在起点 ≥ 终点时
-      // **一次也不执行**。两边只在这个「空区间」上不同：常量能判定的直接不产出块；非常量无法
-      // 静态判定，只能照样出块并把差异标出来——这是差分执行判据抓到的第一个真问题。
-      const fromValue = integerValue(from);
-      const stopValue = integerValue(toSource);
-      if (fromValue !== null && stopValue !== null) {
-        if (fromValue >= stopValue) {
-          return report(ctx, node, RANGE_EMPTY);
-        }
-      } else {
-        reportDrift(ctx, node, RANGE_ENDPOINT);
-      }
+      // 两/三参（步长 1）：`ctrl_range` 的 TO 是**独占**终点，与 Python 的 range(a, b) 逐字对应，
+      // 常量空区间（a >= b）也精确（一次不执行），不再需要空区间/端点的漂移诊断。
       return {
-        kind: 'for',
-        variable: nameOf(target),
-        from,
-        to: minusOne(toSource),
+        kind: 'range',
+        variable,
+        from: values[0],
+        to: values[1],
         body: bodyToIr(children(node, 'body'), ctx, true),
         line,
       };
@@ -227,6 +247,7 @@ export function astToIr(module: AstNode, source: string, primitives?: PrimitiveI
     primitives,
     diagnostics: [],
     lines: source.split('\n'),
+    scope: new Set<string>(),
   };
 
   const defs = children(module, 'body').filter(
@@ -256,6 +277,9 @@ export function astToIr(module: AstNode, source: string, primitives?: PrimitiveI
         report(ctx, node, '不支持 *args / **kwargs');
         continue;
       }
+      // 每个函数一份作用域：形参先算「已出现过的名字」。Python 函数没有块级作用域，
+      // 分支/循环里的赋值都加进同一个集合。
+      ctx.scope = new Set(params);
       const body = bodyToIr(children(node, 'body'), ctx);
       const returns = extractReturn(body, ctx, node);
       procedures.push({ name, params, body, returns, line: lineOf(node) });
@@ -268,6 +292,8 @@ export function astToIr(module: AstNode, source: string, primitives?: PrimitiveI
     topLevelNodes.push(node);
   }
 
+  // 顶层是另一份作用域：上一个函数的局部名字不能影响顶层的推导式改名。
+  ctx.scope = new Set<string>();
   const topLevel = bodyToIr(topLevelNodes, ctx);
 
   return { procedures, topLevel, diagnostics: ctx.diagnostics };

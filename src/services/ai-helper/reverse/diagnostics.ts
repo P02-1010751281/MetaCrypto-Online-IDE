@@ -2,60 +2,58 @@
  * 两条反解析路径共用的诊断文案（模板路径 `core/` 与 AST 路径 `ast/`）。
  *
  * 同一段代码在两条路径上必须说同一句话：面板只显示文本时，措辞不同会让用户以为遇到两个
- * 问题。文案里一律写清**缺的是哪个原语**，而不是笼统的「不支持」。
+ * 问题。文案里一律写清**缺的是哪个原语**或**哪条限制还没实现**，而不是笼统的「不支持」。
  */
-
-/** 非字面量区间的推导式：缺的正是「往列表末尾追加」这一个原语。 */
-export const MISSING_APPEND =
-  '缺 list append（追加）原语：lists_setIndex 被覆盖成只做按下标赋值，lists_create_with 的项数必须静态确定';
-
-/** 所以只认「生成器全是字面量 range」的推导式。 */
-export const COMP_RANGE = `推导式只认 range(字面量) 的生成器（展开次数要能静态确定）：${MISSING_APPEND}`;
-
-/** 带 `if` 的推导式：先收集再筛选，两步都落在同一个缺席的原语上。 */
-export const COMP_IF = `带 if 的推导式要先追加进列表再筛选，同样缺 list append（追加）与条件过滤原语：${MISSING_APPEND}`;
-
-/** 展开后的项数超过列表块上限。 */
-export const compTooLong = (count: number): string => `推导式展开后过长（${count} 项，上限 64）`;
-
-/** 两/三参数 range 的常量空区间：Python 不执行，块模型没有「零次」的闭区间。 */
-export const RANGE_EMPTY = 'range 在常量上是空区间（起点 ≥ 终点）：Python 不执行循环体，块模型没有空区间';
 
 /**
- * 两/三参数 range 的非常量端点：块出来了，但空区间会倒序执行（语义漂移）。
+ * 推导式只在「简单变量赋值的右侧」展开成「空列表 + 循环 + append」。
  *
- * 缺的原语是「起点 + 次数」的计数循环：`ctrl_iterate` 只接次数（变量恒从 0 起），
- * `controls_for` 是闭区间且自适应方向。所以这里不能整条拒绝（`range(0, len(x))` 这类写法
- * 会全部丢掉），只能出块并明确告诉用户差在哪。
+ * 展开成三条语句后就没有值了（结果是就地追加进目标变量的），所以放在 return、函数实参、
+ * 嵌套表达式或二元表达式的一部分时没有对应的块结构——这不是「缺原语」，是落点限制。
  */
-export const RANGE_ENDPOINT =
-  'range 的起点/终点不是字面量：缺「起点 + 次数」的两参数计数循环原语——ctrl_iterate 只接次数（变量恒从 0 起），controls_for 是闭区间且起点 ≥ 终点时倒序执行；非常量端点无法静态判定空区间，Python 一次也不执行';
+export const COMP_ASSIGN_ONLY =
+  '推导式只支持放在简单变量赋值右侧（target = [表达式 for 变量 in ...]）：展开成「空列表 + 循环 + append」后没有值，放进 return 或其它表达式里没有对应的块结构';
 
-/** range 的参数个数超出块模型：`ctrl_iterate` 只接次数，`controls_for` 只接闭区间两端与步长。 */
+/**
+ * 多个生成器 / 多个 if 的嵌套展开还没实现。
+ *
+ * 生成器全是字面量 range 且没有 if 时仍是静态笛卡尔积（既有行为）；其余多生成器形态要
+ * 展开成嵌套循环，本轮只做了单生成器，所以报出来而不是硬凑。
+ */
+export const COMP_NESTED =
+  '多生成器嵌套展开未实现：生成器多于一个且不全是「字面量 range、无 if」时，需要展开成嵌套循环（含 if 时还要在每层循环体里加条件），本轮只支持单生成器推导式';
+
+/** 生成器分句本身认不出：只支持「单个变量 in range(...) 或 列表表达式」这一种形态。 */
+export const COMP_GENERATOR =
+  '推导式的生成器只支持「变量 in range(...)」或「变量 in 列表表达式」，且只支持单个循环变量';
+
+/** 展开后的项数超过列表块上限（只对静态展开生效；动态展开由循环次数决定）。 */
+export const compTooLong = (count: number): string => `推导式展开后过长（${count} 项，上限 64）`;
+
+/** range 的参数个数超出块模型：一参走 ctrl_iterate，两/三参（步长 1）走 ctrl_range。 */
 export const RANGE_ARITY =
-  'range 只接 1–3 个参数：循环块只有「次数」（ctrl_iterate）与「闭区间终点」（controls_for）两种形态';
+  'range 只接 1–3 个参数：循环块只有「次数」（ctrl_iterate）与「起点/独占终点」（ctrl_range）两种形态';
 
-/** 步长不是 1：`controls_for` 的 TO 是闭区间终点，换算不成任意步长。 */
+/** 步长不是 1：`ctrl_range` 是 `range(FROM, TO)` 的两参形态，没有步长输入。 */
 export const RANGE_STEP =
-  '只支持步长为 1 的 range：controls_for 的 TO 是闭区间终点，步长非 1 时区间换算不对（BY 只是块内递增量）';
+  '只支持步长为 1 的 range：ctrl_range 生成 range(FROM, TO)，块上没有步长输入';
 
 /** 带步长的切片：`arr_slice` 只有起点与长度两个输入。 */
 export const SLICE_STEP = '带步长的切片没有对应块：arr_slice 只有起点与长度，没有步长';
 
-/** 切片终点小于起点：块要求长度非负，而 Python 返回空列表。 */
+/** 切片终点小于起点（两个字面量）：块要求长度非负，而 Python 返回空列表。 */
 export const SLICE_LENGTH = '切片终点小于起点：arr_slice 的长度必须非负，Python 返回空列表';
 
-/** 切片起终点一正一负：负起点会先按长度归一，`j - i` 不再是元素个数。 */
+/** 切片起终点一正一负（两个字面量）：负起点会先按长度归一，`j - i` 不再是元素个数。 */
 export const SLICE_SIGN =
   '切片起终点一正一负：arr_slice 的负起点会先按长度归一，`j - i` 不再是元素个数';
 
 /**
- * 省略终点的切片：长度只能用 `len(源) - 起点` 表示。起点为正且源比它还短时，块会算出负长度
- * 并抛错，Python 返回空列表——缺的是一个 min/钳位原语（列表块里没有标量 min）。
+ * 两参切片里至少一端不是字面量：长度只能写成 `j - i`。
+ *
+ * `j - i` 只在两端**同号**时是元素个数；两端异号时负起点会先按长度归一（例如
+ * `a[-2:j]`，运行期 `j = 3`：Python 得 `a[len-2:3]`，`j - i` 却把起点当成了 -2），块与原文
+ * 语义不同。反向解析没有运行期的符号判定，所以出块但必须记一条 `semantic-drift`。
  */
-export const SLICE_TAIL_DRIFT =
-  '省略终点的切片用 len(源) - 起点 表示长度：起点为正且源比它还短时，块会算出负长度并抛错，Python 返回空列表（缺 min/钳位原语）';
-
-/** 起终点都不是字面量：块会因负长度报错，Python 返回空列表。 */
-export const SLICE_DRIFT =
-  '切片起终点不是字面量：终点小于起点时块会因负长度报错，Python 返回空列表';
+export const SLICE_DYNAMIC_SIGN =
+  '两参切片至少一端不是字面量：负起点会先按长度归一，`j - i` 在两端异号时不再是元素个数（缺运行期的符号判定），块出来的语义可能与原文不同';

@@ -40,8 +40,8 @@ import { RSA_BLOCK_TYPES } from '@/blocks/rsa';
 export function createToolboxConfig() {
   const msg = Blockly.Msg as Record<string, string>;
 
-  const ctrlTypes: CtrlBlockType[] = ['ctrl_iterate'];
-  const arrTypes: ArrayBlockType[] = ['arr_partition_to_array'];
+  const ctrlTypes: CtrlBlockType[] = ['ctrl_iterate', 'ctrl_range'];
+  const arrTypes: ArrayBlockType[] = ['arr_append', 'arr_partition_to_array'];
   const dataTypes: DataBlockType[] = [
     'data_bit_length',
     'data_byte_length',

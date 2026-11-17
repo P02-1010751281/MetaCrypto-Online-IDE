@@ -8,7 +8,7 @@
  *      其中 28 题是词表派生且 top1 落在同名算法块上；
  *   3. 产品判据「有联动的文档不空点」：词表派生的 383 篇文档**每一篇**都能查到 ≥1 个块，
  *      这是界面只在 `linked` 时才显示「查积木」按钮的依据；
- *   4. 块 → 文档的覆盖率（222 个块里 200 个能查到文档，其余是 BM / 高斯消元这类共享数学原语，
+ *   4. 块 → 文档的覆盖率（224 个块里 202 个能查到文档，其余是 BM / 高斯消元这类共享数学原语，
  *      仓库里本来就没有对应文档页）。
  *
  * 数字是 2026-11-16 在真实索引上实测的基线（`experiments/ai-helper-2026-11-14/RESULTS.md` §23）。
@@ -51,7 +51,8 @@ describe('派生规则', () => {
   it('文档 → 积木：取路径/标题里与块词表相交的标识符，长词优先', () => {
     // 455 → 454：ctrl_iterate 的次数从数字字段改成值输入后，块面文字只剩
     // 「Var / i / Loop / Do」，原来的 times 标签随字段一起消失（词表少一个 token）。
-    expect(blockVocabulary(blockIndex).size).toBe(454);
+    // 454 → 457：新增 arr_append / ctrl_range 两块带入 append / range / ctrl 三个新 token。
+    expect(blockVocabulary(blockIndex).size).toBe(457);
     expect(vocabulary.has('sm4')).toBe(true);
     expect(vocabulary.has('addroundkey')).toBe(true);
 
@@ -121,7 +122,7 @@ describe('文档 → 积木（真实索引）', () => {
 });
 
 describe('积木 → 文档（真实索引）', () => {
-  it('222 个块里 200 个能查到 ≥1 篇文档；没命中的 22 个是共享数学原语', () => {
+  it('224 个块里 202 个能查到 ≥1 篇文档；没命中的 22 个是共享数学原语', () => {
     const missing: string[] = [];
     for (const block of blockIndex.blocks) {
       const query = blockToDocQuery(block);

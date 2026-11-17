@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-11-17T08:25:00.714Z",
+  "generatedAt": "2026-11-17T12:52:36.869Z",
   "stats": {
-    "blocks": 222,
-    "withTemplate": 220,
-    "blocksWithVisibleFields": 60,
+    "blocks": 224,
+    "withTemplate": 222,
+    "blocksWithVisibleFields": 61,
     "blocksWithVariants": 55,
     "variantCount": 175,
     "blocksWithCombos": 4,
     "comboCount": 11,
-    "blocksWithWildcardFields": 10,
+    "blocksWithWildcardFields": 11,
     "blocksWithInvisibleFields": 5,
     "invisibleFieldCount": 9,
     "unprobedFieldCount": 0,
@@ -172,6 +172,23 @@
       "constant": [],
       "unprobed": [],
       "fieldized": "bytes(argon2_hash(zzsigv_PASSWORD, zzsigv_SALT, zzsigv_SECRET, zzsigv_AD, zzsigv_M_COST, zzsigv_T_COST, zzsigv_LANES, zzsigv_TAGLEN, 0))"
+    },
+    {
+      "type": "arr_append",
+      "template": "zzsigv_LIST.append(zzsigv_VALUE)\n",
+      "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
+      "fields": [],
+      "probes": [],
+      "combos": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "zzsigv_LIST.append(zzsigv_VALUE)\n"
     },
     {
       "type": "arr_partition_to_array",
@@ -1702,6 +1719,41 @@
       "constant": [],
       "unprobed": [],
       "fieldized": "for zzfield_VAR in range(zzsigv_TIMES):\n    zzsigs_DO"
+    },
+    {
+      "type": "ctrl_range",
+      "template": "for i in range(zzsigv_FROM, zzsigv_TO):\n    zzsigs_DO",
+      "error": null,
+      "io": {
+        "output": false,
+        "previous": true,
+        "next": true
+      },
+      "fields": [
+        {
+          "name": "VAR",
+          "kind": "text",
+          "defaultValue": "i",
+          "options": null
+        }
+      ],
+      "probes": [
+        {
+          "name": "VAR",
+          "kind": "text",
+          "visible": true,
+          "constant": false,
+          "emittedDefault": "i",
+          "variants": [],
+          "wildcard": "-?\\d+",
+          "valueShape": "number"
+        }
+      ],
+      "combos": [],
+      "invisible": [],
+      "constant": [],
+      "unprobed": [],
+      "fieldized": "for zzfield_VAR in range(zzsigv_FROM, zzsigv_TO):\n    zzsigs_DO"
     },
     {
       "type": "data_bit_length",

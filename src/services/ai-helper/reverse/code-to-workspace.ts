@@ -147,7 +147,12 @@ export function reverseCode(
   for (const [name, body] of layout.bodies) {
     const signature = layout.signatures.get(name);
     if (!signature) continue;
-    const parsed = parsePythonBody(prepareProcedureBody(body), core, { trailingReturn: true });
+    const parsed = parsePythonBody(prepareProcedureBody(body), core, {
+      trailingReturn: true,
+      // 形参先算「已出现过的名字」：推导式的循环变量与形参重名时要改名（Python 3 的推导式
+      // 有独立作用域，展开会把它泄漏到函数体）。
+      params: signature.params.map((param) => param.name),
+    });
     const returnNode = parsed.returnExpr
       ? { text: parsed.returnExpr, node: parseValue(parsed.returnExpr, core) }
       : null;
@@ -155,7 +160,7 @@ export function reverseCode(
   }
 
   const state = toWorkspaceState(topLevel, { procedures });
-  // 核心语法层的漂移诊断（按位 uint32、range 空区间）排在前面：它们是「块出来了但语义变了」，
+  // 核心语法层的漂移诊断（按位 uint32）排在前面：它们是「块出来了但语义变了」，
   // 比逐条「未识别」更需要用户先看到。
   if (core.diagnostics?.length) {
     state.diagnostics.unshift(

@@ -9,12 +9,13 @@
  * 绝不换成相近的块。
  */
 
-import { parseExpression } from '../parser';
+import { parseExpression, parseStatement } from '../parser';
 import type { ParsedNode } from '../parser';
 import type { CoreContext } from './types';
 import { child, node } from './nodes';
 import { isBinaryAt, lastUseful, matchParens, splitTopLevel, topLevelTokens } from './text';
-import { listCompNode, sliceNode, splitSlice } from './containers';
+import { sliceNode, splitSlice } from './containers';
+import { listCompNode } from './comprehension';
 
 const IDENTIFIER = /^[A-Za-z_]\w*$/;
 const NUMBER = /^(?:0[xX][0-9a-fA-F]+|\d+(?:\.\d+)?)$/;
@@ -22,10 +23,18 @@ const NUMBER = /^(?:0[xX][0-9a-fA-F]+|\d+(?:\.\d+)?)$/;
 /** 模板层优先：密码块的代码形态、字面量与变量名都由它认。 */
 export function parseValue(text: string, ctx: CoreContext, depth = 0): ParsedNode {
   const source = text.trim();
+  // 空列表有原生块：`lists_create_empty` 与 AST 路径同形，也保证「生成 `[]` → 读回」的
+  // 闭链不落在 data_value 的文本透传上（`data_value` 会把它当任意表达式原样透传）。
+  if (source === '[]') return node('lists_create_empty');
   const templated = parseExpression(source, ctx.matchers);
   if (!templated.type.startsWith('UNRESOLVED')) return upgradeCaptured(templated, ctx, depth);
   const core = parseCoreExpression(source, ctx, depth);
   return core ? upgradeCaptured(core, ctx, depth) : templated;
+}
+
+/** 语句位置的模板匹配：命中后同样要把槽位里的子表达式补拆（`x.append(v * 2)` 的 VALUE）。 */
+export function parseStatementValue(text: string, ctx: CoreContext, depth = 0): ParsedNode {
+  return upgradeCaptured(parseStatement(text, ctx.matchers), ctx, depth);
 }
 
 /**
@@ -190,6 +199,7 @@ function atomNode(source: string, ctx: CoreContext, depth: number): ParsedNode |
     const forTokens = topLevelTokens(body, ['for']);
     if (forTokens.length) return listCompNode(body, forTokens, inner);
     const items = body ? splitTopLevel(body) : [];
+    if (!items.length) return node('lists_create_empty');
     const children: ParsedNode['children'] = [];
     for (let index = 0; index < items.length; index += 1) {
       children.push(child(`ADD${index}`, inner(items[index])));
@@ -222,6 +232,19 @@ function atomNode(source: string, ctx: CoreContext, depth: number): ParsedNode |
     }
   }
 
+  // `min(max(v, low), high)` → `math_constrain`（Blockly 原生块）。切片长度由 AST 路径生成
+  // 这个形态，模板路径必须能读回同一个块（闭链）。本模块真定义了 min/max 时不抢。
+  if (!ctx.procedures.has('min') && !ctx.procedures.has('max')) {
+    const constrained = readConstrain(source);
+    if (constrained) {
+      return node('math_constrain', {}, [
+        child('VALUE', inner(constrained[0])),
+        child('LOW', inner(constrained[1])),
+        child('HIGH', inner(constrained[2])),
+      ]);
+    }
+  }
+
   // 调用：只认本模块 procedure——密码块由模板层先接走，走到这里说明模板没命中。
   const call = /^([A-Za-z_]\w*)\s*\(([\s\S]*)\)$/.exec(source);
   if (call && matchParens(source, call[1].length)) {
@@ -235,6 +258,23 @@ function atomNode(source: string, ctx: CoreContext, depth: number): ParsedNode |
   // 数字/True/False/None 由模板层（parseExpression 的字面量分支）先认，走到这里只剩变量名。
   if (IDENTIFIER.test(source)) return node('variables_get', { VAR: source });
   return null;
+}
+
+/**
+ * 读 `min(max(value, low), high)` 的三个实参；不是这个精确形态返回 null。
+ *
+ * 只认两层调用：块模型只有一个钳位块，`max(min(...))`、三个以上实参都不是它生成的形态。
+ */
+function readConstrain(source: string): [string, string, string] | null {
+  const outer = /^min\s*\(/.exec(source);
+  if (!outer || !matchParens(source, outer[0].length - 1)) return null;
+  const args = splitTopLevel(source.slice(outer[0].length, -1));
+  if (args.length !== 2) return null;
+  const inner = /^max\s*\(/.exec(args[0]);
+  if (!inner || !matchParens(args[0], inner[0].length - 1)) return null;
+  const values = splitTopLevel(args[0].slice(inner[0].length, -1));
+  if (values.length !== 2) return null;
+  return [values[0], values[1], args[1]];
 }
 
 /** `base[index]` 的最外层方括号：base 与 indexText 分开返回。 */

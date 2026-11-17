@@ -118,6 +118,13 @@ export const MESSAGES_EN: Record<string, string> = {
   CRYPTO_ITERATE_VAR: 'Var',
   CRYPTO_ITERATE_LOOP: 'Loop',
 
+  CRYPTO_RANGE_VAR: 'Var',
+  CRYPTO_RANGE_FROM: 'from',
+  CRYPTO_RANGE_TO: 'to (exclusive)',
+  CRYPTO_RANGE_DO: 'Do',
+  CRYPTO_RANGE_TOOLTIP:
+    'Equivalent to Python range(FROM, TO): TO is an exclusive bound, so the body never runs when FROM >= TO. control_for (controls_for) is inclusive and counts down when FROM > TO; only this block maps literally to range(a, b). FROM/TO are value inputs, so variables and expressions are accepted.',
+
   CRYPTO_CONVERT_TO_INT: 'Convert to Int',
   CRYPTO_CONVERT_TO_INT_TOOLTIP:
     'Convert variable to integer type, assign result to itself',
@@ -143,6 +150,11 @@ export const MESSAGES_EN: Record<string, string> = {
   CRYPTO_PARTITION_TARGET: 'into',
   CRYPTO_PARTITION_TOOLTIP:
     'Split bytes into equal byte slices or 32-bit big-endian words and assign to a target variable',
+
+  CRYPTO_APPEND_LIST: 'Append to',
+  CRYPTO_APPEND_VALUE: 'value',
+  CRYPTO_APPEND_TOOLTIP:
+    'Append the value to the end of the list, mutating it in place. Appending to a temporary literal (such as a freshly created empty list) has no effect: the list must be a variable or an addressable list expression.',
 
   CRYPTO_MOD_INVERSE_ASSIGN: 'Mod Inverse d',
   CRYPTO_MOD_INVERSE_TOOLTIP: 'Compute d = modular inverse of e mod φ(n)',

@@ -1,20 +1,16 @@
 // @vitest-environment jsdom
 /**
- * §44.6「仍然缺什么」的四条缺口（P2.3d-2）
+ * §44.6 四条缺口收口后的判据（S44 收口）：`range(a, b)` 与省略终点切片。
  *
- * 每条缺口先判「在现有块类型内能不能忠实表达」，再按结论落判据：
+ * 1. **两/三参数 `range(a, b)` → `ctrl_range`**：TO 是**独占**终点，与 Python 逐字对应；
+ *    常量空区间（`range(5, 2)`）也精确（一次不执行），空区间/端点两条漂移诊断消失。步长不是 1 仍报 `RANGE_STEP`，参数越界仍报 `RANGE_ARITY`，
+ *    一参数 `range(n)` 仍是 `ctrl_iterate`（不动）。
+ * 2. **省略终点切片 `a[i:]` → `arr_slice` + `math_constrain(len(源) - i, 0, len(源))`**：
+ *    `i < 0`、`0 <= i <= len`、`i > len` 三种情况都与 Python 一致，0 诊断；两参非常量切片
+ *    `a[i:j]` 的长度是 `math_constrain(j - i, 0, len(源))`，但两端符号运行时才知道，出块 +
+ *    `SLICE_DYNAMIC_SIGN` 语义漂移诊断（`a[-2:j]` 的差分把这条诊断钉住）。
  *
- * 1. **非字面量区间的推导式**（`[f(v) for v in range(n)]`）：块模型没有 list append
- *    （`lists_setIndex` 被覆盖成只做按下标赋值，`lists_create_with` 的项数必须静态确定），
- *    落不了地 → 一条点名原语的 `unsupported` 诊断，不出块。
- * 2. **带 `if` 的推导式**（同上，要先收集再筛选）：诊断；**多个生成器**在字面量区间上是
- *    笛卡尔积，可以忠实展开 → 两条路径都实现（外层的 for 变化最慢）。
- * 3. **省略终点的切片**（`a[i:]`）：`arr_slice` + `len(源) - 起点`（`lists_length` 的
- *    Python 生成就是 `len(...)`）→ 两条路径都实现，闭链可读回。仍有一处已记录的漂移：
- *    起点为正且源比它还短时，块算出负长度会抛错，Python 返回空列表（没有 min/钳位原语）；
- *    `a[:]` / `a[-2:]` 的长度必然非负，逐字等价、不出诊断。
- * 4. **两/三参数 `range(a, b)` 的非常量端点**：块能出但空区间会倒序执行，缺的是「起点 +
- *    次数」的计数循环原语 → 出块 + `semantic-drift`；常量空区间直接不产出。
+ * 两条路径（模板 `core/`、AST `ast/`）必须同形，且共用 `diagnostics.ts` 的同一句文案。
  */
 
 import { execFileSync } from 'node:child_process';
@@ -28,7 +24,7 @@ import { describe, expect, it } from 'vitest';
 
 import '@/blocks';
 import '@/generators/python';
-import { buildMatchers, parseClosureNames, parseFieldPayload, reverseCode } from '@/services/ai-helper/reverse';
+import { buildMatchers, parseClosureNames, parseFieldPayload } from '@/services/ai-helper/reverse';
 import type { ParsedNode, SerializedBlock, SerializedWorkspace } from '@/services/ai-helper/reverse';
 import { buildAstDumpScript, readAstDump } from '@/services/ai-helper/reverse/ast/dump';
 import { irToWorkspace } from '@/services/ai-helper/reverse/ast/blocks';
@@ -36,7 +32,7 @@ import { astToIr } from '@/services/ai-helper/reverse/ast/ir';
 import { buildPrimitiveIndex } from '@/services/ai-helper/reverse/primitive-calls';
 import { parsePythonBody, parseValue } from '@/services/ai-helper/reverse/core-syntax';
 import type { CoreContext } from '@/services/ai-helper/reverse/core-syntax';
-import { toWorkspaceState } from '@/services/ai-helper/reverse/serialize';
+import { RANGE_ARITY, RANGE_STEP, SLICE_DYNAMIC_SIGN } from '@/services/ai-helper/reverse/diagnostics';
 
 setLocale(enMessages as unknown as Record<string, string>);
 
@@ -101,7 +97,7 @@ function regenerate(state: SerializedWorkspace): string {
 }
 
 /** 原文与再生成代码用同一组输入各跑一遍（差分执行）。 */
-function runCalls(code: string, calls: Array<[string, unknown[]]>, quiet = false): string {
+function runCalls(code: string, calls: Array<[string, unknown[]]>): string {
   const encoded = Buffer.from(code, 'utf8').toString('base64');
   const driver = [
     'import base64, json',
@@ -111,188 +107,176 @@ function runCalls(code: string, calls: Array<[string, unknown[]]>, quiet = false
     "exec(compile(src, '<sample>', 'exec'), ns)",
     'print(json.dumps([ns[name](*args) for name, args in calls]))',
   ].join('\n');
-  return execFileSync('python3', ['-c', driver], {
-    encoding: 'utf8',
-    timeout: 10000,
-    // 预期会抛错的用例不该把 CPython 的 traceback 打到测试输出里。
-    stdio: ['ignore', 'pipe', quiet ? 'ignore' : 'pipe'],
-  }).trim();
+  return execFileSync('python3', ['-c', driver], { encoding: 'utf8', timeout: 10000 }).trim();
 }
 
-describe('缺口 1/2：推导式里的非字面量区间与 if —— 诊断代替', () => {
-  it('模板路径：诊断点名缺 list append，且序列化后只有一条诊断、不出块', () => {
-    for (const source of ['[v for v in range(n)]', '[v for v in range(2) if v]']) {
-      const parsed = parseValue(source, context());
-      expect(parsed.type).toBe('UNRESOLVED');
-      expect(parsed.blocked?.reason).toBe('unsupported');
-      expect(parsed.blocked?.detail).toContain('append');
-
-      // 语句层：同一条语句只报一次（不会「子块 + 父块」各记一条）。
-      const statement = parsePythonBody([`SBOX = ${source}`], context()).statements[0];
-      const state = toWorkspaceState([statement]);
-      expect(state.blocks.blocks).toEqual([]);
-      expect(state.diagnostics).toHaveLength(1);
-      expect(state.diagnostics[0].reason).toBe('unsupported');
-      expect(state.diagnostics[0].detail).toContain('append');
-    }
+describe('缺口 4：range(a, b) → ctrl_range（TO 独占，空区间精确）', () => {
+  it('模板路径：两参数字面量落 ctrl_range，FROM=a / TO=b，不再减 1', () => {
+    const parsed = parsePythonBody(['for i in range(2, 5):', '    x = i'], context());
+    const loop = parsed.statements[0].node;
+    expect(loop.type).toBe('ctrl_range');
+    expect(loop.fields.VAR).toBe('i');
+    expect(shape(loop)).toContain('FROM:data_value(NUM=2)');
+    expect(shape(loop)).toContain('TO:data_value(NUM=5)');
   });
 
-  it('AST 路径：同一条诊断，不出列表块', () => {
-    for (const source of ['return [v for v in range(n)]', 'return [v for v in range(2) if v]']) {
-      const state = astState(['def f(n):', `    ${source}`, ''].join('\n'));
-      expect(state.diagnostics).toHaveLength(1);
-      expect(state.diagnostics[0].reason).toBe('unsupported');
-      expect(state.diagnostics[0].detail).toContain('append');
-      expect(flatten(state).some((block) => block.type === 'lists_create_with')).toBe(false);
-    }
-  });
-});
-
-describe('缺口 2：多个生成器 —— 两条路径都按笛卡尔积展开', () => {
-  it('模板路径：项数与顺序（外层 for 变化最慢）', () => {
-    expect(shape(parseValue('[v for v in range(2) for w in range(2)]', context()))).toBe(
-      'lists_create_with{ADD0:data_value(NUM=0) ADD1:data_value(NUM=0) '
-        + 'ADD2:data_value(NUM=1) ADD3:data_value(NUM=1)}',
-    );
-    expect(shape(parseValue('[v * 10 + w for v in range(2) for w in range(3)]', context())))
-      .toContain('math_arithmetic(OP=ADD)');
+  it('模板路径：非常量端点同样是 ctrl_range，0 诊断', () => {
+    const ctx = context();
+    const loop = parsePythonBody(['for i in range(0, len(xs)):', '    x = i'], ctx).statements[0].node;
+    expect(loop.type).toBe('ctrl_range');
+    expect(shape(loop)).toContain('FROM:data_value(NUM=0)');
+    expect(shape(loop)).toContain('TO:lists_length{VALUE:variables_get(VAR=xs)}');
+    expect(ctx.diagnostics).toEqual([]);
   });
 
-  it('AST 路径：同一段代码得到同一组项（6 项），0 诊断', () => {
-    const template = parseValue('[v * 10 + w for v in range(2) for w in range(3)]', context());
-    expect(template.extraState).toEqual({ itemCount: 6 });
-    const state = astState(['def f():', '    return [v * 10 + w for v in range(2) for w in range(3)]', ''].join('\n'));
-    const list = flatten(state).find((block) => block.type === 'lists_create_with');
-    expect(list?.extraState).toEqual({ itemCount: 6 });
+  it('模板路径：常量空区间 range(5, 2) 仍是 ctrl_range（生成代码一次也不执行）', () => {
+    const ctx = context();
+    const loop = parsePythonBody(['for i in range(5, 2):', '    x = i'], ctx).statements[0].node;
+    expect(loop.type).toBe('ctrl_range');
+    expect(ctx.diagnostics).toEqual([]);
+  });
+
+  it('三参数且步长为 1 同样落 ctrl_range（TO 独占）；两条路径一致', () => {
+    const ctx = context();
+    const loop = parsePythonBody(['for i in range(0, n, 1):', '    x = i'], ctx).statements[0].node;
+    expect(loop.type).toBe('ctrl_range');
+    expect(shape(loop)).toContain('TO:variables_get(VAR=n)');
+    expect(ctx.diagnostics).toEqual([]);
+    const ast = astState(['def f(n):', '    acc = 0', '    for i in range(0, n, 1):', '        acc = acc + i', '    return acc', ''].join('\n'));
+    expect(ast.diagnostics).toEqual([]);
+    expect(flatten(ast).some((block) => block.type === 'ctrl_range')).toBe(true);
+  });
+
+  it('一参数 range(n) 仍是 ctrl_iterate，不受影响', () => {
+    const parsed = parsePythonBody(['for i in range(n):', '    x = i'], context());
+    expect(parsed.statements[0].node.type).toBe('ctrl_iterate');
+  });
+
+  it('步长不是 1：两条路径都报同一条 RANGE_STEP', () => {
+    const ctx = context();
+    const template = parsePythonBody(['for i in range(0, 8, 2):', '    x = i'], ctx).statements[0].node;
+    expect(template.type).toBe('UNRESOLVED');
+    expect(template.blocked?.detail).toBe(RANGE_STEP);
+    const ast = astState(['def f():', '    for i in range(0, 8, 2):', '        pass', '    return 1', ''].join('\n'));
+    expect(ast.diagnostics).toHaveLength(1);
+    expect(ast.diagnostics[0].detail).toBe(RANGE_STEP);
+  });
+
+  it('参数个数越界：两条路径都报同一条 RANGE_ARITY', () => {
+    const ctx = context();
+    const template = parsePythonBody(['for i in range(1, 2, 3, 4):', '    x = i'], ctx).statements[0].node;
+    expect(template.blocked?.detail).toBe(RANGE_ARITY);
+    const ast = astState(['def f():', '    for i in range(1, 2, 3, 4):', '        pass', '    return 1', ''].join('\n'));
+    expect(ast.diagnostics[0].detail).toBe(RANGE_ARITY);
+  });
+
+  it('AST 路径：range(n, m) 落 ctrl_range，0 漂移诊断', () => {
+    const state = astState(['def f(n, m):', '    acc = 0', '    for i in range(n, m):', '        acc = acc + i', '    return acc', ''].join('\n'));
     expect(state.diagnostics).toEqual([]);
+    const loop = flatten(state).find((block) => block.type === 'ctrl_range');
+    expect(loop?.fields?.VAR).toBe('i');
+    expect(loop?.inputs?.FROM?.block.type).toBe('variables_get');
+    expect(loop?.inputs?.TO?.block.type).toBe('variables_get');
   });
 
-  it.skipIf(!hasPython)('差分执行：展开后的列表与原文一致', () => {
-    const code = ['def f():', '    return [v * 10 + w for v in range(2) for w in range(3)]', ''].join('\n');
-    const generated = regenerate(astState(code));
-    expect(runCalls(generated, [['f', []]])).toBe(runCalls(code, [['f', []]]));
-  });
+  it.skipIf(!hasPython)('差分执行：变量端点与常量空区间都与 Python 一致', () => {
+    const variable = ['def f(xs):', '    acc = 0', '    for i in range(0, len(xs)):', '        acc = acc + i', '    return acc', ''].join('\n');
+    const generated = regenerate(astState(variable));
+    expect(generated).toContain('for i in range(0, len(xs)):');
+    const calls: Array<[string, unknown[]]> = [['f', [[7, 8]]], ['f', [[]]]];
+    expect(runCalls(generated, calls)).toBe(runCalls(variable, calls));
 
-  it('展开超过上限（128 项 > 64）时诊断，不静默截断', () => {
-    const parsed = parseValue('[v for v in range(8) for w in range(8) for u in range(2)]', context());
-    expect(parsed.type).toBe('UNRESOLVED');
-    expect(parsed.blocked?.detail).toContain('128');
+    const empty = ['def g():', '    acc = 0', '    for i in range(5, 2):', '        acc = acc + i', '    return acc', ''].join('\n');
+    const emptyGenerated = regenerate(astState(empty));
+    expect(emptyGenerated).toContain('for i in range(5, 2):');
+    expect(runCalls(emptyGenerated, [['g', []]])).toBe('[0]');
+    expect(runCalls(empty, [['g', []]])).toBe('[0]');
   });
 });
 
-describe('缺口 3：省略终点的切片 —— 两条路径都实现（arr_slice + len）', () => {
-  it('模板路径：a[i:] / a[:] 的长度是 len(源) - 起点', () => {
-    const tailCtx = context();
-    expect(shape(parseValue('a[i:]', tailCtx))).toBe(
+describe('缺口 3：省略终点切片 → arr_slice + math_constrain', () => {
+  it('模板路径：a[i:] 的长度是 constrain(len(源) - i, 0, len(源))，0 诊断', () => {
+    const ctx = context();
+    expect(shape(parseValue('a[i:]', ctx))).toBe(
       'arr_slice{LIST:variables_get(VAR=a) START:variables_get(VAR=i) '
-        + 'LENGTH:math_arithmetic(OP=MINUS){A:lists_length{VALUE:variables_get(VAR=a)} B:variables_get(VAR=i)}}',
+        + 'LENGTH:math_constrain{VALUE:math_arithmetic(OP=MINUS){A:lists_length{VALUE:variables_get(VAR=a)} '
+        + 'B:variables_get(VAR=i)} LOW:data_value(NUM=0) HIGH:lists_length{VALUE:variables_get(VAR=a)}}}',
     );
-    // 起点为正时源可能比它还短，块会算出负长度（Python 返回空列表）——必须报漂移。
-    expect(tailCtx.diagnostics).toHaveLength(1);
-    expect(tailCtx.diagnostics?.[0].reason).toBe('semantic-drift');
-    expect(tailCtx.diagnostics?.[0].detail).toContain('负长度');
-
-    // `a[:]` 与 `a[-2:]` 的长度必然非负，是逐字等价的，不该有诊断。
-    const headCtx = context();
-    expect(shape(parseValue('a[:]', headCtx))).toBe(
-      'arr_slice{LIST:variables_get(VAR=a) START:data_value(NUM=0) '
-        + 'LENGTH:math_arithmetic(OP=MINUS){A:lists_length{VALUE:variables_get(VAR=a)} B:data_value(NUM=0)}}',
-    );
-    expect(parseValue('a[-2:]', headCtx).type).toBe('arr_slice');
-    expect(headCtx.diagnostics).toEqual([]);
+    expect(ctx.diagnostics).toEqual([]);
   });
 
-  it('AST 路径：同一个块（输入名与字段逐字一致），并报同一条漂移', () => {
-    const state = astState(['def f(a, i):', '    return a[i:]', ''].join('\n'));
-    const slice = flatten(state).find((block) => block.type === 'arr_slice');
-    expect(Object.keys(slice?.inputs ?? {}).sort()).toEqual(['LENGTH', 'LIST', 'START']);
-    expect(slice?.inputs?.LENGTH?.block.type).toBe('math_arithmetic');
-    expect(slice?.inputs?.LENGTH?.block.fields?.OP).toBe('MINUS');
-    expect(slice?.inputs?.LENGTH?.block.inputs?.A?.block.type).toBe('lists_length');
-    expect(state.diagnostics).toHaveLength(1);
-    expect(state.diagnostics[0].reason).toBe('semantic-drift');
-    expect(state.diagnostics[0].detail).toContain('负长度');
-
-    // `a[:]` 逐字等价：0 诊断。
-    expect(astState(['def f(a):', '    return a[:]', ''].join('\n')).diagnostics).toEqual([]);
+  it('模板路径：a[i:j] 非常量端点的长度是 constrain(j - i, 0, len(源))，并报动态符号漂移', () => {
+    const ctx = context();
+    const parsed = parseValue('a[i:j]', ctx);
+    expect(parsed.type).toBe('arr_slice');
+    expect(shape(parsed)).toContain(
+      'LENGTH:math_constrain{VALUE:math_arithmetic(OP=MINUS){A:variables_get(VAR=j) B:variables_get(VAR=i)} '
+        + 'LOW:data_value(NUM=0) HIGH:lists_length{VALUE:variables_get(VAR=a)}}',
+    );
+    expect(ctx.diagnostics).toHaveLength(1);
+    expect(ctx.diagnostics?.[0].reason).toBe('semantic-drift');
+    expect(ctx.diagnostics?.[0].detail).toBe(SLICE_DYNAMIC_SIGN);
   });
 
-  it.skipIf(!hasPython)('闭链：AST 产物 → 生成 → 模板路径读回同一段代码', () => {
+  it('两个字面量端点的拒绝规则不变（步长 / 异号 / 终点小于起点）', () => {
+    expect(parseValue('a[1:2:3]', context()).blocked?.detail).toContain('步长');
+    expect(parseValue('a[-2:2]', context()).blocked?.detail).toContain('一正一负');
+    expect(parseValue('a[2:1]', context()).blocked?.detail).toContain('非负');
+  });
+
+  it('AST 路径：a[i:] 0 诊断；a[i:j] 也落 math_constrain 并报同一条动态符号漂移', () => {
+    const tail = astState(['def f(a, i):', '    return a[i:]', ''].join('\n'));
+    expect(tail.diagnostics).toEqual([]);
+    const tailSlice = flatten(tail).find((block) => block.type === 'arr_slice');
+    const tailLength = tailSlice?.inputs?.LENGTH?.block;
+    expect(tailLength?.type).toBe('math_constrain');
+    expect(tailLength?.inputs?.LOW?.block.type).toBe('math_number');
+    expect(tailLength?.inputs?.HIGH?.block.type).toBe('lists_length');
+    expect(tailLength?.inputs?.VALUE?.block.type).toBe('math_arithmetic');
+
+    const mid = astState(['def f(a, i, j):', '    return a[i:j]', ''].join('\n'));
+    expect(mid.diagnostics).toHaveLength(1);
+    expect(mid.diagnostics[0].reason).toBe('semantic-drift');
+    expect(mid.diagnostics[0].detail).toBe(SLICE_DYNAMIC_SIGN);
+    expect(flatten(mid).find((block) => block.type === 'arr_slice')?.inputs?.LENGTH?.block.type).toBe('math_constrain');
+  });
+
+  it.skipIf(!hasPython)('差分执行：i < 0 / 0 ≤ i ≤ len / i > len 全部与 Python 一致（原漂移已消失）', () => {
     const code = ['def tail(a, i):', '    return a[i:]', ''].join('\n');
     const generated = regenerate(astState(code));
-    const reversed = reverseCode(generated, payload);
-    expect(reversed.stats.diagnostics).toBe(0);
-    expect(regenerate(reversed.state)).toBe(generated);
-  });
-
-  it.skipIf(!hasPython)('闭链顺带覆盖：a[i:j] 非常量端点的长度表达式也能读回（槽位补拆）', () => {
-    const code = ['def mid(a, i, j):', '    return a[i:j]', ''].join('\n');
-    const generated = regenerate(astState(code));
-    expect(generated).toContain('(j - i)');
-    const reversed = reverseCode(generated, payload);
-    expect(reversed.stats.diagnostics).toBe(0);
-    expect(regenerate(reversed.state)).toBe(generated);
-  });
-
-  it.skipIf(!hasPython)('差分执行：0 ≤ 起点 ≤ 长度与负起点都与 Python 一致', () => {
-    const code = ['def tail(a, i):', '    return a[i:]', ''].join('\n');
-    const generated = regenerate(astState(code));
+    expect(generated).toContain('min(max(');
     const calls: Array<[string, unknown[]]> = [
-      ['tail', [[1, 2, 3, 4], 1]],
-      ['tail', [[1, 2, 3, 4], 4]],
-      ['tail', [[1, 2, 3, 4], -2]],
       ['tail', [[1, 2, 3, 4], -9]],
+      ['tail', [[1, 2, 3, 4], -2]],
+      ['tail', [[1, 2, 3, 4], 0]],
+      ['tail', [[1, 2, 3, 4], 2]],
+      ['tail', [[1, 2, 3, 4], 4]],
+      ['tail', [[1, 2, 3, 4], 9]],
       ['tail', [[], 0]],
     ];
     expect(runCalls(generated, calls)).toBe(runCalls(code, calls));
   });
 
-  it.skipIf(!hasPython)('已记录的漂移是真的：起点越界时块抛错、Python 返回空列表', () => {
-    const code = ['def tail(a, i):', '    return a[i:]', ''].join('\n');
+  it.skipIf(!hasPython)('已记录的漂移是真的：a[-2:j]（j = 3）块取到 [3,4]，Python 取 [3]', () => {
+    const code = ['def mid(a, i, j):', '    return a[i:j]', ''].join('\n');
+    const state = astState(code);
+    // 诊断就是为这一段存在的：两端符号运行时才知道，块把负起点归一后的长度算多了。
+    expect(state.diagnostics[0]?.detail).toBe(SLICE_DYNAMIC_SIGN);
+    const generated = regenerate(state);
+    const call: Array<[string, unknown[]]> = [['mid', [[1, 2, 3, 4], -2, 3]]];
+    expect(runCalls(generated, call)).toBe('[[3, 4]]');
+    expect(runCalls(code, call)).toBe('[[3]]');
+  });
+
+  it.skipIf(!hasPython)('差分执行：a[i:j] 同号端点（j ≥ i / j < i）时都与 Python 一致', () => {
+    const code = ['def mid(a, i, j):', '    return a[i:j]', ''].join('\n');
     const generated = regenerate(astState(code));
-    // 漂移诊断说的就是这个分支：没有 min/钳位原语，负长度会被 arr_slice 拒绝。
-    expect(() => runCalls(generated, [['tail', [[1, 2, 3, 4], 9]]], true)).toThrow();
-    expect(runCalls(code, [['tail', [[1, 2, 3, 4], 9]]])).toBe('[[]]');
-  });
-});
-
-describe('缺口 4：range 的非常量端点 —— 出块 + semantic-drift（常量空区间不产出）', () => {
-  it('模板路径：controls_for + 一条漂移诊断，点名缺的计数循环原语', () => {
-    const ctx = context();
-    const parsed = parsePythonBody(['for i in range(n, m):', '    x = i'], ctx);
-    expect(parsed.statements[0].node.type).toBe('controls_for');
-    expect(ctx.diagnostics).toHaveLength(1);
-    expect(ctx.diagnostics?.[0].reason).toBe('semantic-drift');
-    expect(ctx.diagnostics?.[0].detail).toContain('ctrl_iterate');
-    expect(ctx.diagnostics?.[0].detail).toContain('倒序');
-  });
-
-  it('AST 路径：同一个块、同一条漂移诊断', () => {
-    const state = astState(['def f(n, m):', '    acc = 0', '    for i in range(n, m):', '        acc = acc + i', '    return acc', ''].join('\n'));
-    expect(flatten(state).some((block) => block.type === 'controls_for')).toBe(true);
-    const drift = state.diagnostics.filter((diag) => diag.reason === 'semantic-drift');
-    expect(drift).toHaveLength(1);
-    expect(drift[0].detail).toContain('ctrl_iterate');
-  });
-
-  it('常量空区间两条路径都不产出块（unsupported）', () => {
-    const ctx = context();
-    const parsed = parsePythonBody(['for i in range(4, 2):', '    x = i'], ctx);
-    expect(parsed.statements[0].node.type).toBe('UNRESOLVED');
-    expect(parsed.statements[0].node.blocked?.reason).toBe('unsupported');
-    expect(parsed.statements[0].node.blocked?.detail).toContain('空区间');
-
-    const state = astState(['def f():', '    for i in range(4, 2):', '        pass', '    return 1', ''].join('\n'));
-    expect(flatten(state).some((block) => block.type === 'controls_for')).toBe(false);
-    expect(state.diagnostics[0].reason).toBe('unsupported');
-    expect(state.diagnostics[0].detail).toContain('空区间');
-  });
-
-  it('步长不是 1：两条路径都报缺计数循环/步长换算，不硬套闭区间', () => {
-    const ctx = context();
-    expect(parsePythonBody(['for i in range(0, 8, 2):', '    x = i'], ctx).statements[0].node.blocked?.detail).toContain('步长');
-
-    const state = astState(['def f():', '    for i in range(0, 8, 2):', '        pass', '    return 1', ''].join('\n'));
-    expect(state.diagnostics[0].detail).toContain('步长');
+    const calls: Array<[string, unknown[]]> = [
+      ['mid', [[1, 2, 3, 4], 1, 3]],
+      ['mid', [[1, 2, 3, 4], 3, 1]],
+      ['mid', [[1, 2, 3, 4], -3, -1]],
+      ['mid', [[1, 2, 3, 4], 0, 9]],
+    ];
+    expect(runCalls(generated, calls)).toBe(runCalls(code, calls));
   });
 });

@@ -213,6 +213,28 @@
     "previousStatement": null,
     "nextStatement": null
   },
+  "arr_append": {
+    "inputs": [
+      {
+        "name": "LIST",
+        "type": 1,
+        "check": [
+          "IntList"
+        ]
+      },
+      {
+        "name": "VALUE",
+        "type": 1,
+        "check": [
+          "Number"
+        ]
+      }
+    ],
+    "fields": [],
+    "outputCheck": null,
+    "previousStatement": null,
+    "nextStatement": null
+  },
   "arr_partition_to_array": {
     "inputs": [
       {
@@ -1910,6 +1932,38 @@
       },
       {
         "name": "TIMES",
+        "type": 1,
+        "check": [
+          "Number"
+        ]
+      },
+      {
+        "name": "DO",
+        "type": 3,
+        "check": null
+      }
+    ],
+    "fields": [
+      {
+        "name": "VAR",
+        "fieldClass": ""
+      }
+    ],
+    "outputCheck": null,
+    "previousStatement": null,
+    "nextStatement": null
+  },
+  "ctrl_range": {
+    "inputs": [
+      {
+        "name": "FROM",
+        "type": 1,
+        "check": [
+          "Number"
+        ]
+      },
+      {
+        "name": "TO",
         "type": 1,
         "check": [
           "Number"

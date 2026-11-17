@@ -4,12 +4,13 @@
  * 复合语句的体递归解析；体里一条都认不出时整条复合语句不产出（与 AST 路径一致）。
  */
 
-import { matchStatementSpan, parseStatement } from '../parser';
+import { matchStatementSpan } from '../parser';
 import type { ParsedNode } from '../parser';
-import { RANGE_ARITY, RANGE_EMPTY, RANGE_ENDPOINT, RANGE_STEP } from '../diagnostics';
+import { RANGE_ARITY, RANGE_STEP } from '../diagnostics';
 import { blocked, child, node, unresolved } from './nodes';
-import { splitTopLevel } from './text';
-import { parseValue } from './expressions';
+import { matchParens, splitTopLevel } from './text';
+import { parseStatementValue, parseValue } from './expressions';
+import { desugarAssignment } from './comprehension';
 import type { CoreContext, ParsedStatement } from './types';
 
 // ---------------------------------------------------------------------------
@@ -73,9 +74,12 @@ function resolvable(statements: ParsedStatement[]): boolean {
 export function parsePythonBody(
   lines: string[],
   ctx: CoreContext,
-  options: { trailingReturn?: boolean } = {},
+  options: { trailingReturn?: boolean; params?: string[]; seen?: Set<string> } = {},
 ): { statements: ParsedStatement[]; returnExpr: string | null } {
   const statements: ParsedStatement[] = [];
+  // 同作用域已出现过的名字：推导式展开时循环变量与它们重名要改名（Python 3 推导式有独立
+  // 作用域，展开会把循环变量泄漏到外层）。嵌套体共用同一个集合——Python 没有块级作用域。
+  const seen = options.seen ?? new Set(options.params ?? []);
   let returnExpr: string | null = null;
   let index = 0;
 
@@ -111,7 +115,7 @@ export function parsePythonBody(
     if (ifMatch) {
       const branches: Array<{ test: string; statements: ParsedStatement[] }> = [];
       const first = collectIndented(lines, index + 1, 0);
-      branches.push({ test: ifMatch[1], statements: parsePythonBody(first.lines, ctx).statements });
+      branches.push({ test: ifMatch[1], statements: parsePythonBody(first.lines, ctx, { seen }).statements });
       let cursor = first.next;
       let hasElse = false;
       let elseBody: ParsedStatement[] = [];
@@ -120,14 +124,14 @@ export function parsePythonBody(
         const elif = /^elif\s+([\s\S]+):\s*$/.exec(next);
         if (elif) {
           const body = collectIndented(lines, cursor + 1, 0);
-          branches.push({ test: elif[1], statements: parsePythonBody(body.lines, ctx).statements });
+          branches.push({ test: elif[1], statements: parsePythonBody(body.lines, ctx, { seen }).statements });
           cursor = body.next;
           continue;
         }
         if (/^else\s*:\s*$/.test(next)) {
           const body = collectIndented(lines, cursor + 1, 0);
           hasElse = true;
-          elseBody = parsePythonBody(body.lines, ctx).statements;
+          elseBody = parsePythonBody(body.lines, ctx, { seen }).statements;
           cursor = body.next;
         }
         break;
@@ -162,7 +166,7 @@ export function parsePythonBody(
     const whileMatch = /^while\s+([\s\S]+):\s*$/.exec(text);
     if (whileMatch) {
       const body = collectIndented(lines, index + 1, 0);
-      const parsed = parsePythonBody(body.lines, ctx).statements;
+      const parsed = parsePythonBody(body.lines, ctx, { seen }).statements;
       const chain = chainNode(parsed);
       statements.push({
         text,
@@ -174,15 +178,20 @@ export function parsePythonBody(
       continue;
     }
 
-    // 4. for ... in range(...)：一参数走 ctrl_iterate，两/三参数走 controls_for（与 AST 路径同一套判据）。
-    const forMatch = /^for\s+([A-Za-z_]\w*)\s+in\s+range\(([\s\S]*)\)\s*:\s*$/.exec(text);
+    // 4. for ... in ...：`range(...)` 按参数个数落 ctrl_iterate / ctrl_range；其余迭代器
+    //    落原生 controls_forEach（与 AST 路径同一套判据）。
+    const forMatch = /^for\s+([A-Za-z_]\w*)\s+in\s+([\s\S]+?)\s*:\s*$/.exec(text);
     if (forMatch) {
-      const args = splitTopLevel(forMatch[2]);
       const body = collectIndented(lines, index + 1, 0);
-      const parsed = parsePythonBody(body.lines, ctx).statements;
+      const parsed = parsePythonBody(body.lines, ctx, { seen }).statements;
       const chain = chainNode(parsed);
-      const built = buildForNode(forMatch[1], args, chain, parsed, ctx);
+      const iterable = forMatch[2].trim();
+      const rangeCall = /^range\s*\(([\s\S]*)\)$/.exec(iterable);
+      const built = rangeCall && matchParens(iterable, iterable.indexOf('('))
+        ? buildForNode(forMatch[1], splitTopLevel(rangeCall[1]), chain, parsed, ctx)
+        : buildForEachNode(forMatch[1], iterable, chain, parsed, ctx);
       statements.push({ text, node: built ?? unresolved() });
+      seen.add(forMatch[1]);
       index = body.next;
       continue;
     }
@@ -191,10 +200,10 @@ export function parsePythonBody(
     //
     // 放在复合语句之后是有原因的：`ctrl_iterate` 的模板是 `for i in range(32):` + 体，
     // 与结构化解析走的是同一条 `for` 头；先让模板层匹配会把同一段代码读成模板块，
-    // 而结构化解析产出的 `ctrl_iterate`/`controls_for` 才是与 AST 路径同形的结果（§41.3）。
+    // 而结构化解析产出的 `ctrl_iterate`/`ctrl_range` 才是与 AST 路径同形的结果（§41.3）。
     const span = matchStatementSpan(lines, index, ctx.matchers);
     if (span) {
-      statements.push({ text: span.text, node: parseStatement(span.text, ctx.matchers) });
+      statements.push({ text: span.text, node: parseStatementValue(span.text, ctx) });
       index += span.lines;
       continue;
     }
@@ -228,26 +237,41 @@ export function parsePythonBody(
       continue;
     }
 
-    // 8. 赋值：`name = expr`（`==` 不匹配）。
+    // 8. 赋值：`name = expr`（`==` 不匹配）。右侧是推导式且需要动态展开时，一条赋值语句
+    //    变成「空列表 + 循环 + append」三条语句（链节点），其余情况仍是 variables_set。
     const assignment = /^([A-Za-z_]\w*)\s*=\s*([^=][\s\S]*)$/.exec(text);
     if (assignment) {
+      const desugared = desugarAssignment(
+        assignment[1],
+        assignment[2],
+        (value) => parseValue(value, ctx),
+        seen,
+      );
       statements.push({
         text,
-        node: node('variables_set', { VAR: assignment[1] }, [child('VALUE', parseValue(assignment[2], ctx))]),
+        node: desugared ?? node('variables_set', { VAR: assignment[1] }, [child('VALUE', parseValue(assignment[2], ctx))]),
       });
+      seen.add(assignment[1]);
       index += 1;
       continue;
     }
 
     // 9. 其余交给模板层；认不出就留 UNRESOLVED（诊断由序列化层记录）。
-    statements.push({ text, node: parseStatement(text, ctx.matchers) });
+    statements.push({ text, node: parseStatementValue(text, ctx) });
     index += 1;
   }
 
   return { statements, returnExpr };
 }
 
-/** `for` 的装配：一参数 `range(expr)` → `ctrl_iterate`（与 Python 逐字对应）；两/三参数 → `controls_for`。 */
+/**
+ * `for` 的装配。
+ *
+ * - 一参数 `range(expr)` → `ctrl_iterate`（Python「执行 expr 次」，n ≤ 0 时一次也不执行）；
+ * - 两参数 / 三参数且步长为 1 → `ctrl_range`（TO 是**独占**终点，与 Python 的 `range(a, b)`
+ *   逐字对应，常量空区间也精确）；
+ * - 步长不是 1 → `RANGE_STEP`；参数个数越界 → `RANGE_ARITY`。
+ */
 function buildForNode(
   variable: string,
   args: string[],
@@ -259,9 +283,6 @@ function buildForNode(
   if (args.length < 1 || args.length > 3) {
     return blocked(RANGE_ARITY);
   }
-
-  // `range(n)`：只有 ctrl_iterate 能逐字表达——TIMES 是值输入，n ≤ 0 时一次也不执行，
-  // 而 controls_for 的闭区间在起点大于终点时会倒序执行（§41.2 的漂移）。
   if (args.length === 1) {
     const times = parseValue(args[0], ctx);
     if (times.type.startsWith('UNRESOLVED')) return null;
@@ -271,33 +292,28 @@ function buildForNode(
       children: [child('TIMES', times), child('DO', chain)],
     };
   }
-
-  const fromText = args[0];
-  const stopText = args[1];
   if (args.length === 3 && args[2].trim() !== '1') return blocked(RANGE_STEP);
-  const INTEGER = /^\d+$/;
-  const fromValue = INTEGER.test(fromText.trim()) ? Number(fromText) : null;
-  const stopValue = INTEGER.test(stopText.trim()) ? Number(stopText) : null;
-  // 空区间：Python 一次也不执行，而块模型会倒序执行——常量能判定的直接不产出（§41.2），
-  // 非常量的照样出块，但必须记一条与 AST 路径同口径的漂移诊断。
-  if (fromValue !== null && stopValue !== null && fromValue >= stopValue) {
-    return blocked(RANGE_EMPTY);
-  }
-  if (fromValue === null || stopValue === null) {
-    ctx.diagnostics?.push({
-      text: `for ${variable} in range(${args.join(', ')}):`,
-      detail: RANGE_ENDPOINT,
-      reason: 'semantic-drift',
-    });
-  }
-  const from = parseValue(fromText, ctx);
-  const to = stopValue !== null
-    ? parseValue(String(stopValue - 1), ctx)
-    : node('math_arithmetic', { OP: 'MINUS' }, [child('A', parseValue(stopText, ctx)), child('B', parseValue('1', ctx))]);
-  const by = parseValue('1', ctx);
   return {
-    type: 'controls_for',
+    type: 'ctrl_range',
     fields: { VAR: variable },
-    children: [child('FROM', from), child('TO', to), child('BY', by), child('DO', chain)],
+    children: [child('FROM', parseValue(args[0], ctx)), child('TO', parseValue(args[1], ctx)), child('DO', chain)],
+  };
+}
+
+/** 非 range 迭代器：`for x in xs:` → 原生 `controls_forEach`（前提是那条表达式能反解析）。 */
+function buildForEachNode(
+  variable: string,
+  iterable: string,
+  chain: ParsedNode | null,
+  parsed: ParsedStatement[],
+  ctx: CoreContext,
+): ParsedNode | null {
+  if (!chain || !resolvable(parsed)) return null;
+  const list = parseValue(iterable, ctx);
+  if (list.type.startsWith('UNRESOLVED')) return null;
+  return {
+    type: 'controls_forEach',
+    fields: { VAR: variable },
+    children: [child('LIST', list), child('DO', chain)],
   };
 }

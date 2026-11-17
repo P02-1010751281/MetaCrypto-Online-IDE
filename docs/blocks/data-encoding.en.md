@@ -25,6 +25,7 @@
 
 | Block | Layer | Connection | Input→Output |
 |----|----|------|----------|
+| `arr_append` | 1 | stmt(→→) | IntList&Number→— |
 | `arr_partition_to_array` | 1 | stmt(→→) | null&Number&null→— |
 | `arr_slice` | 1 | value(→) | IntList&Number&Number→IntList |
 
@@ -53,5 +54,6 @@
 - `seed_bytes` / `seed_hex`: expose the runtime-injected seed as bytes and lowercase hexadecimal, respectively.
 - `cipher_key_from_seed`: takes the first 16 seed bytes and splits them into four unsigned 32-bit big-endian integers. It is not a key-derivation function (KDF) and must not replace a standard KDF.
 - `arr_partition_to_array`: explicitly select byte slices or 32-bit words. Byte mode divides a byte sequence into the requested number of equal, non-empty slices. Word mode requires exactly four bytes per part and decodes each part as an unsigned big-endian 32-bit integer. The count expression must evaluate to a positive integer number (strings, booleans, and arrays are rejected), and the data length must divide exactly; invalid input raises an error instead of silently dropping trailing data. Byte-array/list elements must be integer-valued numbers in `[0,255]`; to keep JavaScript and Python behavior aligned, Python lists also accept integral floats such as `1.0`, but reject booleans and strings. Integer input is minimally encoded as big-endian bytes in byte mode (`0` becomes `00`) and encoded as exactly four big-endian bytes in word mode. The destination must be a variable name.
+- `arr_append`: appends the value to the end of the list, mutating it in place (Python `LIST.append(VALUE)`, JavaScript `LIST.push(VALUE);`). `LIST` requires `IntList` and `VALUE` requires `Number`; untyped slots (variables, native list-access blocks) pass as wildcards while blocks returning `IntList`/`Bytes`/`SBox` are rejected, since that would append one container as an element of another. It is a statement block with no output; appending to a temporary literal (such as a freshly created empty list) has no effect, so the list must be a variable or an addressable list expression.
 - `arr_slice`: slices by start index and element count. Both values must be safe integers. A negative start is relative to the end and clamped to zero; a negative length is rejected; an end past the sequence is truncated. Both generators evaluate each input once and return a new list.
 - Legacy workspace migration: when the mode field is missing, targets named `B`, `Block`, `padded`, `data`, or `state` migrate to byte mode; all other targets migrate to 32-bit word mode. This is a one-time compatibility default that can be changed explicitly after migration; generators no longer infer the mode from the target name.

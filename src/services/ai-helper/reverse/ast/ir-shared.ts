@@ -53,6 +53,12 @@ export type IrExpr =
   | { kind: 'index'; value: IrExpr; at: IrExpr; line?: number }
   /** `len(x)`：原生列表长度块（`blocks.ts` 落 `lists_length`，Python 生成就是 `len(...)`）。 */
   | { kind: 'length'; value: IrExpr; line?: number }
+  /**
+   * `min(max(value, low), high)`：Blockly 原生 `math_constrain`。切片长度用它钳到
+   * `[0, len(源)]`，这样 `a[i:]` 的三种起点与 `a[i:j]` 的 `j < i` 都不再会算出负长度；
+   * `a[i:j]` 两端异号的残余漂移另报 `SLICE_DYNAMIC_SIGN`。
+   */
+  | { kind: 'constrain'; value: IrExpr; low: IrExpr; high: IrExpr; line?: number }
   | { kind: 'ifexp'; test: IrExpr; then: IrExpr; otherwise: IrExpr; line?: number };
 
 export type IrStmt =
@@ -71,6 +77,12 @@ export type IrStmt =
   | { kind: 'for'; variable: string; from: IrExpr; to: IrExpr; body: IrStmt[]; line?: number }
   /** 单参数 `range(expr)`：Python「执行 expr 次」，块模型只有 ctrl_iterate 能逐字表达。 */
   | { kind: 'iterate'; variable: string; times: IrExpr; body: IrStmt[]; line?: number }
+  /** 两/三参数 `range(a, b)`（步长 1）：`ctrl_range` 的 TO 是独占终点，与 Python 逐字对应。 */
+  | { kind: 'range'; variable: string; from: IrExpr; to: IrExpr; body: IrStmt[]; line?: number }
+  /** `for x in <列表表达式>`：原生 `controls_forEach`。 */
+  | { kind: 'forEach'; variable: string; list: IrExpr; body: IrStmt[]; line?: number }
+  /** `LIST.append(VALUE)`：`arr_append`（推导式展开的循环体就是它）。 */
+  | { kind: 'append'; list: IrExpr; value: IrExpr; line?: number }
   | { kind: 'while'; test: IrExpr; body: IrStmt[]; line?: number }
   | { kind: 'flow'; flow: 'BREAK' | 'CONTINUE'; line?: number };
 
@@ -107,6 +119,11 @@ export interface Ctx {
   diagnostics: IrDiag[];
   /** 原文按行切开：诊断要把用户看到的那一行还给他。 */
   lines: string[];
+  /**
+   * 当前作用域里已出现过的名字（形参 + 已处理的赋值/循环变量）。推导式展开时循环变量与它们
+   * 重名就要改名：Python 3 的推导式有独立作用域，展开会把循环变量泄漏到外层。
+   */
+  scope: Set<string>;
 }
 
 export function isNode(value: unknown): value is AstNode {

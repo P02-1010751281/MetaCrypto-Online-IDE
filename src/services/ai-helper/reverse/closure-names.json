@@ -229,7 +229,7 @@
     "zuc_s32"
   ],
   "stats": {
-    "blockTypes": 222,
+    "blockTypes": 224,
     "fromBlocks": 181,
     "fromRaw": 177,
     "fromDemos": 183,

@@ -48,12 +48,12 @@ describe('索引新鲜度', () => {
     expect(readFileSync(PRODUCT_INDEX)).toEqual(readFileSync(ARCHIVE_INDEX));
   });
 
-  it('规模与块清单一致（222 块、中英标签各 222、58 个块带下拉选项）', () => {
-    expect(index.stats.blockTypes).toBe(222);
-    expect(index.blocks).toHaveLength(222);
-    expect(index.stats.labelCoverage.en).toEqual({ labeled: 222, total: 222 });
-    expect(index.stats.labelCoverage.zh).toEqual({ labeled: 222, total: 222 });
-    expect(index.stats.localizedZh).toBe(32);
+  it('规模与块清单一致（224 块、中英标签各 224、58 个块带下拉选项）', () => {
+    expect(index.stats.blockTypes).toBe(224);
+    expect(index.blocks).toHaveLength(224);
+    expect(index.stats.labelCoverage.en).toEqual({ labeled: 224, total: 224 });
+    expect(index.stats.labelCoverage.zh).toEqual({ labeled: 224, total: 224 });
+    expect(index.stats.localizedZh).toBe(34);
     expect(index.blocks.filter((block) => block.options.length > 0)).toHaveLength(58);
     expect(index.stats.creationErrors).toHaveLength(0);
   });

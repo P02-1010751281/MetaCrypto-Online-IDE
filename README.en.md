@@ -12,11 +12,12 @@
 ## Features
 
 - 🔮 **Post-quantum cryptography** — lattice-focused components and algorithm stages such as NTT/INTT, encode/compress, and SampleNTT
-- 🔐 **Comprehensive crypto coverage** — symmetric ciphers (S-Box, bitwise operations), hash functions (SM3/SHA), number-theoretic operations
+- 🔐 **Crypto teaching coverage** — AES/SM4 rounds and block modes, S-Box and bitwise operations, hash functions (SM3/SHA/HMAC) and number-theoretic operations
+- 🧮 **Algorithm templates** — 29 pre-filled teaching starter templates; parameters or algorithm steps still have to be completed as annotated after dragging them out
+- ✅ **Vector and regression checks** — function templates receive structural/executability checks and 60 demos have registered output regressions in both JavaScript and Python; selected cases such as SM4/SM3/SM2/ML-KEM are checked against standard vectors, which is not an algorithm certification
 - 🧩 **Visual programming** — drag and drop blocks to write crypto code like building with LEGO
 - 🌐 **Multilingual** — Chinese/English UI, Blockly blocks switch in sync
 - 💻 **Code generation** — generate executable JavaScript / Python code in one click
-- ✅ **Regression checks** — 29 templates receive structural/executability checks; 60 demos receive registered output regressions in JavaScript and Python
 - 📁 **Project management** — multi-project local management based on IndexedDB, with auto-save
 - 🖥️ **Desktop app** — Tauri wrapper, runs natively on Windows / Linux / macOS
 - 📱 **Responsive** — adapts to wide and narrow screens, panels resizable by dragging
@@ -66,6 +67,7 @@ npm run docs:check-links
 | Frontend framework | Vue 3 (Composition API + TypeScript) |
 | Visual programming | Blockly 13.2.x |
 | Code highlighting | highlight.js |
+| Docs rendering | marked + mermaid |
 | Desktop wrapper | Tauri 2.x |
 | Build tooling | Vite + vue-tsc |
 | Code standards | ESLint 10.x |
@@ -103,6 +105,8 @@ src/
 ├── utils/                      # Utility functions (toolbox-config / migration / markdown)
 ├── styles/                     # Global styles / CSS variables
 └── assets/                     # Static assets
+docs/                           # Documentation (guides/ core + blocks/ index + demos/ + 40 standards directories + papers/ index)
+demos/                          # Blockly workspace examples (with official-vector expectations)
 ```
 
 ## Supported Crypto Modules (224 custom blocks, 17 toolbox categories)

@@ -76,6 +76,11 @@ X25519 的低阶 `u` 输入可能得到全零输出。RFC 7748 §6.1 允许协�
 | 块 | 层 | 连接 | 输入→输出 |
 |----|----|------|----------|
 | `ctrl_iterate` | 1 | stmt(→→) | Number→— |
+| `ctrl_range` | 1 | stmt(→→) | Number&Number→— |
+
+`ctrl_range` 逐字对应 Python 的 `range(FROM, TO)`：`TO` 是**独占**终点，`FROM ≥ TO` 时循环体一次也不执行。`FROM`/`TO` 是值输入（不是数字字段），因此能接变量与表达式（`range(n, m)`、`range(0, len(x))`）。它与 `controls_for` 的分工是区间语义：`controls_for` 为闭区间，起点大于终点会倒序执行；只有本块与 `range(a, b)` 逐字对应。空循环体在 Python 侧补 `pass`、JavaScript 侧补注释。
+
+区间在进入循环前定格：Python 的 `range(...)` 本来就只求值一次端点；JavaScript 侧则在终点非常量时先绑一个临时变量（`__ctrl_range_to__`、`ctrl_iterate` 用 `__ctrl_iterate_times__`），再按它比较。否则 `for i in range(0, len(x)): x.append(0)` 这类「循环体改端点」的写法在 JS 里会越跑越长，次数与 Python 不一致。
 
 ## 函数封装
 
@@ -91,3 +96,5 @@ X25519 的低阶 `u` 输入可能得到全零输出。RFC 7748 §6.1 允许协�
 `crypto_encrypt_func`、`crypto_decrypt_func` 和 `crypto_hash_func` 是可编辑的组合起始模板，不是可直接用于生产或声称符合标准的完整算法。默认加/解密模板仅预填 ECB 组合且未提供密钥；默认哈希模板只预填 SHA-256 填充块，不包含完整压缩/迭代流程。使用者须补齐参数、算法流程并自行验证。
 
 `primitive_def` 固定生成 `def primitive(n_bytes, seed=b"") -> bytes`，是后端随机性测评读取的唯一入口。`n_bytes` 与 `seed` 留空时分别按 32 字节和空字节串生成；`返回 bytes` 必须连接字节类型表达式，或在函数体内用 `crypto_return` 返回。该块只声明测评入口契约，不证明被测算法正确、随机或符合标准。
+
+函数块的参数名在写进生成代码前会过 Blockly 的 NameDB：与 Python/JavaScript 保留字或 Python 内建名重名的参数会被改名（`in` → `in2`、`class` → `class2`、`bytes` → `bytes2`），带空格等非法字符的名字会被合法化（`my param` → `my_param`）。函数签名与体内引用用的是同一个名字，所以生成的代码总能编译执行；工作区里显示的变量名不变。若签名直接抄原名，会得到 `def f(in: bytes):` 这类语法错误，而体内引用又已被改名成 `in2`——这正是该规则要杜绝的形态。

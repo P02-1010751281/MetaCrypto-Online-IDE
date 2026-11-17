@@ -11,226 +11,13 @@
  *   - **无 Blockly 依赖**：只产出纯对象，`workspaces.load` 由宿主调用。
  */
 
-import type { SerializeDiagnostic, SerializedBlock, SerializedWorkspace } from '../serialize';
-import type { IrBinOp, IrExpr, IrModule, IrStmt } from './ir';
+import type { SerializedBlock, SerializedWorkspace } from '../serialize';
+import type { IrExpr, IrModule, IrStmt } from './ir';
+import { type Ctx, newId, variableId, varField, numBlock } from './block-ctx';
+import { exprBlock } from './expr-blocks';
 
 /** 参数类型只能给块模型的默认值：AST 里没有任何类型标签（RESULTS §35.3）。 */
 const DEFAULT_PARAM_TYPE = 'bytes';
-
-const BITWISE_OP: Partial<Record<IrBinOp, string>> = {
-  BIT_AND: 'AND',
-  BIT_OR: 'OR',
-  BIT_XOR: 'XOR',
-  SHL: 'LEFT_SHIFT',
-  SHR: 'RIGHT_SHIFT',
-};
-
-const ARITHMETIC_OP: Partial<Record<IrBinOp, string>> = {
-  ADD: 'ADD',
-  MINUS: 'MINUS',
-  MULTIPLY: 'MULTIPLY',
-  DIVIDE: 'DIVIDE',
-  POWER: 'POWER',
-};
-
-interface Ctx {
-  variables: Map<string, string>;
-  /** 函数名 → 形参名：call 块的 ARG0.. 输入个数与名字由它决定。 */
-  signatures: Map<string, string[]>;
-  diagnostics: SerializeDiagnostic[];
-  nextId: number;
-}
-
-function newId(ctx: Ctx): string {
-  ctx.nextId += 1;
-  return `ai-ast-${ctx.nextId.toString(36)}`;
-}
-
-function variableId(ctx: Ctx, name: string): string {
-  const existing = ctx.variables.get(name);
-  if (existing) return existing;
-  const id = `ai-var-${ctx.variables.size + 1}`;
-  ctx.variables.set(name, id);
-  return id;
-}
-
-function varField(ctx: Ctx, name: string): { VAR: { id: string } } {
-  return { VAR: { id: variableId(ctx, name) } };
-}
-
-function numBlock(ctx: Ctx, value: string): SerializedBlock {
-  return { type: 'math_number', id: newId(ctx), fields: { NUM: value } };
-}
-
-/** 表达式 → 值块。IR 已经把不支持的都挡掉了，这里的 null 只可能出现在空表达式上。 */
-function exprBlock(expr: IrExpr, ctx: Ctx): SerializedBlock | null {
-  switch (expr.kind) {
-    case 'num':
-      return numBlock(ctx, expr.value);
-    case 'str':
-      return { type: 'text', id: newId(ctx), fields: { TEXT: expr.value } };
-    case 'bool':
-      return {
-        type: 'logic_boolean',
-        id: newId(ctx),
-        fields: { BOOL: expr.value ? 'TRUE' : 'FALSE' },
-      };
-    case 'none':
-      return { type: 'logic_null', id: newId(ctx) };
-    case 'name':
-      return { type: 'variables_get', id: newId(ctx), fields: varField(ctx, expr.name) };
-    case 'neg': {
-      const operand = exprBlock(expr.operand, ctx);
-      if (!operand) return null;
-      return {
-        type: 'math_single',
-        id: newId(ctx),
-        fields: { OP: 'NEG' },
-        inputs: { NUM: { block: operand } },
-      };
-    }
-    case 'not': {
-      const operand = exprBlock(expr.operand, ctx);
-      if (!operand) return null;
-      return { type: 'logic_negate', id: newId(ctx), inputs: { BOOL: { block: operand } } };
-    }
-    case 'binop': {
-      const left = exprBlock(expr.left, ctx);
-      const right = left ? exprBlock(expr.right, ctx) : null;
-      if (!left || !right) return null;
-      const bitwise = BITWISE_OP[expr.op];
-      if (bitwise) {
-        return {
-          type: 'bit_operation',
-          id: newId(ctx),
-          fields: { OP: bitwise },
-          inputs: { A: { block: left }, B: { block: right } },
-        };
-      }
-      if (expr.op === 'MOD') {
-        return {
-          type: 'math_modulo',
-          id: newId(ctx),
-          inputs: { DIVIDEND: { block: left }, DIVISOR: { block: right } },
-        };
-      }
-      const op = ARITHMETIC_OP[expr.op];
-      if (!op) {
-        ctx.diagnostics.push({ text: '表达式', reason: 'unsupported', detail: `没有对应运算符块：${expr.op}` });
-        return null;
-      }
-      return {
-        type: 'math_arithmetic',
-        id: newId(ctx),
-        fields: { OP: op },
-        inputs: { A: { block: left }, B: { block: right } },
-      };
-    }
-    case 'compare': {
-      const left = exprBlock(expr.left, ctx);
-      const right = left ? exprBlock(expr.right, ctx) : null;
-      if (!left || !right) return null;
-      return {
-        type: 'logic_compare',
-        id: newId(ctx),
-        fields: { OP: expr.op },
-        inputs: { A: { block: left }, B: { block: right } },
-      };
-    }
-    case 'boolop': {
-      const left = exprBlock(expr.left, ctx);
-      const right = left ? exprBlock(expr.right, ctx) : null;
-      if (!left || !right) return null;
-      return {
-        type: 'logic_operation',
-        id: newId(ctx),
-        fields: { OP: expr.op },
-        inputs: { A: { block: left }, B: { block: right } },
-      };
-    }
-    case 'list': {
-      const items: SerializedBlock[] = [];
-      for (const item of expr.items) {
-        const block = exprBlock(item, ctx);
-        if (!block) return null;
-        items.push(block);
-      }
-      if (!items.length) return { type: 'lists_create_empty', id: newId(ctx) };
-      const inputs: Record<string, { block: SerializedBlock }> = {};
-      items.forEach((block, index) => {
-        inputs[`ADD${index}`] = { block };
-      });
-      return {
-        type: 'lists_create_with',
-        id: newId(ctx),
-        extraState: { itemCount: items.length },
-        inputs,
-      };
-    }
-    case 'index': {
-      const value = exprBlock(expr.value, ctx);
-      const at = value ? exprBlock(expr.at, ctx) : null;
-      if (!value || !at) return null;
-      return {
-        type: 'lists_getIndex',
-        id: newId(ctx),
-        fields: { MODE: 'GET', WHERE: 'FROM_START' },
-        inputs: { VALUE: { block: value }, AT: { block: at } },
-      };
-    }
-    case 'length': {
-      // 原生列表长度块：Python 生成就是 `len(...)`，与 AST 里的 `len(x)` 逐字对应。
-      const value = exprBlock(expr.value, ctx);
-      if (!value) return null;
-      return { type: 'lists_length', id: newId(ctx), inputs: { VALUE: { block: value } } };
-    }
-    case 'ifexp': {
-      const test = exprBlock(expr.test, ctx);
-      const then = test ? exprBlock(expr.then, ctx) : null;
-      const otherwise = then ? exprBlock(expr.otherwise, ctx) : null;
-      if (!test || !then || !otherwise) return null;
-      return {
-        type: 'logic_ternary',
-        id: newId(ctx),
-        inputs: { IF: { block: test }, THEN: { block: then }, ELSE: { block: otherwise } },
-      };
-    }
-    case 'call': {
-      const params = ctx.signatures.get(expr.name) ?? [];
-      const inputs: Record<string, { block: SerializedBlock }> = {};
-      for (let index = 0; index < expr.args.length; index += 1) {
-        const block = exprBlock(expr.args[index], ctx);
-        if (!block) return null;
-        inputs[`ARG${index}`] = { block };
-      }
-      return {
-        type: 'procedures_callreturn',
-        id: newId(ctx),
-        extraState: { name: expr.name, params },
-        inputs,
-      };
-    }
-    case 'primitive': {
-      const inputs: Record<string, { block: SerializedBlock }> = {};
-      for (let index = 0; index < expr.args.length; index += 1) {
-        const slot = expr.primitive.inputs[index];
-        const block = slot ? exprBlock(expr.args[index], ctx) : null;
-        if (!slot || !block) {
-          ctx.diagnostics.push({
-            text: `${expr.primitive.call}()`,
-            reason: 'unsupported',
-            detail: `块的输入槽与实参个数对不上（模板只有 ${expr.primitive.inputs.length} 个）`,
-          });
-          return null;
-        }
-        inputs[slot] = { block };
-      }
-      return { type: expr.primitive.type, id: newId(ctx), inputs };
-    }
-    default:
-      return null;
-  }
-}
 
 /** 一条语句 → 一个块（不含 next）。 */
 function stmtBlock(stmt: IrStmt, ctx: Ctx): SerializedBlock | null {
@@ -338,6 +125,48 @@ function stmtBlock(stmt: IrStmt, ctx: Ctx): SerializedBlock | null {
       };
       if (body) block.inputs!.DO = { block: body };
       return block;
+    }
+    case 'range': {
+      // ctrl_range：TO 是独占终点，`range(FROM, TO)` 逐字对应。VAR 是文本字段（与 ctrl_iterate 同）。
+      variableId(ctx, stmt.variable);
+      const from = exprBlock(stmt.from, ctx);
+      const to = from ? exprBlock(stmt.to, ctx) : null;
+      const body = to ? stmtChain(stmt.body, ctx) : null;
+      if (!from || !to) return null;
+      const block: SerializedBlock = {
+        type: 'ctrl_range',
+        id: newId(ctx),
+        fields: { VAR: stmt.variable },
+        inputs: { FROM: { block: from }, TO: { block: to } },
+      };
+      if (body) block.inputs!.DO = { block: body };
+      return block;
+    }
+    case 'forEach': {
+      // controls_forEach：VAR 是变量字段，必须是 `{ id }` 引用。
+      variableId(ctx, stmt.variable);
+      const list = exprBlock(stmt.list, ctx);
+      const body = list ? stmtChain(stmt.body, ctx) : null;
+      if (!list) return null;
+      const block: SerializedBlock = {
+        type: 'controls_forEach',
+        id: newId(ctx),
+        fields: varField(ctx, stmt.variable),
+        inputs: { LIST: { block: list } },
+      };
+      if (body) block.inputs!.DO = { block: body };
+      return block;
+    }
+    case 'append': {
+      // arr_append：`LIST.append(VALUE)`，原地修改列表。LIST 接目标变量。
+      const list = exprBlock(stmt.list, ctx);
+      const value = list ? exprBlock(stmt.value, ctx) : null;
+      if (!list || !value) return null;
+      return {
+        type: 'arr_append',
+        id: newId(ctx),
+        inputs: { LIST: { block: list }, VALUE: { block: value } },
+      };
     }
     case 'while': {
       const test = exprBlock(stmt.test, ctx);

@@ -76,6 +76,11 @@ Low-order X25519 `u` inputs can produce an all-zero output. RFC 7748 §6.1 allow
 | Block | Layer | Connection | Input→Output |
 |----|----|------|----------|
 | `ctrl_iterate` | 1 | stmt(→→) | Number→— |
+| `ctrl_range` | 1 | stmt(→→) | Number&Number→— |
+
+`ctrl_range` maps literally to Python `range(FROM, TO)`: `TO` is an **exclusive** bound, so the body never runs when `FROM >= TO`. `FROM` and `TO` are value inputs (not number fields), so variables and expressions such as `range(n, m)` or `range(0, len(x))` are accepted. Its split from `controls_for` is the interval semantics: `controls_for` is inclusive and counts down when the start exceeds the end; only this block corresponds literally to `range(a, b)`. An empty body is filled with `pass` on the Python side and a comment on the JavaScript side.
+
+The interval is fixed before the loop starts: Python's `range(...)` evaluates its bounds once anyway, while the JavaScript side binds a non-constant end to a temporary variable first (`__ctrl_range_to__`, or `__ctrl_iterate_times__` for `ctrl_iterate`) and compares against that. Without it, bodies that change the bound — `for i in range(0, len(x)): x.append(0)` — would keep running longer in JS and disagree with Python on the iteration count.
 
 ## Function Wrapping
 
@@ -91,3 +96,5 @@ Low-order X25519 `u` inputs can produce an all-zero output. RFC 7748 §6.1 allow
 `crypto_encrypt_func`, `crypto_decrypt_func`, and `crypto_hash_func` are editable composition starters, not complete algorithms for production use or standards-conformance claims. The default encryption/decryption templates only prefill an ECB composition and do not provide a key; the default hash template prefills only SHA-256 padding, not the full compression/iteration process. Users must complete the parameters and algorithm flow, then validate the result.
 
 `primitive_def` emits the fixed entry `def primitive(n_bytes, seed=b"") -> bytes` used by the backend randomness assessment. Empty `n_bytes` and `seed` default to 32 bytes and the empty byte string; the `return bytes` input must be connected to a byte-typed expression, or the body must return through `crypto_return`. The block declares only the assessment entry contract; it does not prove that the tested algorithm is correct, random, or standards-compliant.
+
+Function parameter names pass through Blockly's NameDB before they reach generated code: parameters that collide with Python/JavaScript reserved words or Python builtins are renamed (`in` → `in2`, `class` → `class2`, `bytes` → `bytes2`), and names with illegal characters are made legal (`my param` → `my_param`). The signature and the body references use the same name, so the generated code always compiles and runs; the variable name shown in the workspace is unchanged. Copying the raw name into the signature instead would produce syntax errors such as `def f(in: bytes):` while the body already referred to `in2` — exactly what this rule prevents.

@@ -109,6 +109,13 @@ export const MESSAGES_ZH_HANS: Record<string, string> = {
   CRYPTO_ITERATE_VAR: '变量',
   CRYPTO_ITERATE_LOOP: '循环',
 
+  CRYPTO_RANGE_VAR: '变量',
+  CRYPTO_RANGE_FROM: '从',
+  CRYPTO_RANGE_TO: '到（不含）',
+  CRYPTO_RANGE_DO: '执行',
+  CRYPTO_RANGE_TOOLTIP:
+    '等价 Python 的 range(FROM, TO)：TO 是独占终点，FROM ≥ TO 时循环体一次也不执行。与 controls_for 的区别是后者为闭区间，起点大于终点会倒序执行；只有本块逐字对应 range(a, b)。FROM/TO 是值输入，可接变量与表达式。',
+
   CRYPTO_CONVERT_TO_INT: '转换为整数',
   CRYPTO_CONVERT_TO_INT_TOOLTIP: '将变量转换为整数类型，结果赋值给自身',
   CRYPTO_CONVERT_VAR: '变量',
@@ -132,6 +139,11 @@ export const MESSAGES_ZH_HANS: Record<string, string> = {
   CRYPTO_PARTITION_MODE_WORDS32: '32 位字',
   CRYPTO_PARTITION_TARGET: '写入',
   CRYPTO_PARTITION_TOOLTIP: '将字节序列等分为字节切片或 32 位大端字，并赋值给目标变量',
+
+  CRYPTO_APPEND_LIST: '追加到',
+  CRYPTO_APPEND_VALUE: '值',
+  CRYPTO_APPEND_TOOLTIP:
+    '把值追加到列表末尾，原地修改（mutating）。追加到临时字面量（例如新建的空列表）上没有意义：列表必须是变量或可寻址的列表表达式。',
 
   CRYPTO_MOD_INVERSE_ASSIGN: '模逆赋值 d',
   CRYPTO_MOD_INVERSE_TOOLTIP: '计算 d = e 的模逆元 mod φ(n)',

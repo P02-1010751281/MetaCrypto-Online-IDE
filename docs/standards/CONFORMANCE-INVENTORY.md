@@ -10,41 +10,41 @@
 
 | 对象 | 数量 | 权威身份来源 | 当前测试入口 |
 |---|---:|---|---|
-| 唯一自定义 Blockly 块（活动清单） | 222 | [`ALL_BLOCK_TYPES`](../../src/blocks/index.ts) 及各块族导出 | `npm run verify:demos`、`npm run verify:templates`、Vitest |
+| 唯一自定义 Blockly 块（活动清单） | 224 | [`ALL_BLOCK_TYPES`](../../src/blocks/index.ts) 及各块族导出 | `npm run verify:demos`、`npm run verify:templates`、Vitest |
 | 已废弃/兼容注册身份 | 1 | [`COMPAT_BLOCK_TYPES`](../../src/blocks/ctrl/index.ts) | `npm run verify:templates`（登记一致性）；详见下方兼容身份章节 |
 | Procedure 模板注册身份 | 29 | [`TEMPLATE_REGISTRY`](../../src/blocks/procedure/blocks/shared.ts) | `scripts/verify-templates.ts` |
 | 与基础块同名的模板身份 | 3 | `crypto_encrypt_func`、`crypto_decrypt_func`、`crypto_hash_func` | 模板注入与生成测试；计数时不重复加入唯一块数 |
 | Demo 工作区 | 60 | [`demos/tests.json`](../../demos/tests.json) 的键与 `demos/**/*.json` 文件 | `scripts/verify-demos.mjs`；每项登记 Python、JavaScript 用例 |
 
-因此当前对象总数为 **222 个活动块 + 1 个已登记的兼容身份 + 29 个模板身份 + 60 个 Demo**。模板身份是单独的产品对象，即使其中 3 项与基础块同名，也要分别核对其模板参数/预填行为。`verify:demos` 检查工作区文件与测试登记一致并执行双语言用例；它本身不判定测试期望值是否来自完整官方测试集。
+因此当前对象总数为 **224 个活动块 + 1 个已登记的兼容身份 + 29 个模板身份 + 60 个 Demo**。模板身份是单独的产品对象，即使其中 3 项与基础块同名，也要分别核对其模板参数/预填行为。`verify:demos` 检查工作区文件与测试登记一致并执行双语言用例；它本身不判定测试期望值是否来自完整官方测试集。
 
-按身份去重的口径：222 个活动块与 29 个模板身份有 3 项重合（`crypto_encrypt_func`、`crypto_decrypt_func`、`crypto_hash_func`），合并去重后共 **248 个** 类型；`npm run verify:templates` 会重算该数字并核对本行说明。
+按身份去重的口径：224 个活动块与 29 个模板身份有 3 项重合（`crypto_encrypt_func`、`crypto_decrypt_func`、`crypto_hash_func`），合并去重后共 **250 个** 类型；`npm run verify:templates` 会重算该数字并核对本行说明。
 
 ## 兼容与已废弃注册身份
 
-下表列出**不进入 221 项活动清单**、但代码中仍然注册的 Blockly 身份。它们仅为加载存量工作区而保留，不出现在工具箱，也不作为可认证或可独立测试的算法构件；每项必须同时具备 Blockly 定义与 JS/Python 生成器，否则应从仓库删除。门禁 `npm run verify:templates` 会枚举全部已注册类型：既不在 221 项活动清单、也不在本表的类型将直接导致失败，防止出现未登记的“影子身份”。
+下表列出**不进入 224 项活动清单**、但代码中仍然注册的 Blockly 身份。它们仅为加载存量工作区而保留，不出现在工具箱，也不作为可认证或可独立测试的算法构件；每项必须同时具备 Blockly 定义与 JS/Python 生成器，否则应从仓库删除。门禁 `npm run verify:templates` 会枚举全部已注册类型：既不在 224 项活动清单、也不在本表的类型将直接导致失败，防止出现未登记的“影子身份”。
 
 | 身份 | 关系/适用范围 |
 |---|---|
 | `ctrl_assign` | 已废弃赋值块；`src/blocks/ctrl/deprecated.ts` 保留定义，JS/Python 生成器保留以支持 `migration.ts` 对复杂左值的重建（见 `src/utils/migration.ts` 的 `ctrl_assign` 分支）；不进入 `ALL_BLOCK_TYPES`，不在工具箱出现，无独立规范依据 |
 
-`222` 的准确含义是“当前 `ALL_BLOCK_TYPES` 活动身份数”；加上兼容身份后，项目实际注册的自定义 Blockly 类型为 223 个。
+`224` 的准确含义是“当前 `ALL_BLOCK_TYPES` 活动身份数”；加上兼容身份后，项目实际注册的自定义 Blockly 类型为 225 个。
 
 ## Blockly 块清单与适用类别
 
-下表逐项列出当前 `ALL_BLOCK_TYPES` 中的 222 个唯一块类型。类别表示应采用的验证边界：规范算法端点按算法测试；标准内部原语按其规范语义、接口契约和父算法关系测试；通用构件测试接口与组合语义；研究数学块不冒称为标准化算法。规范目录和当前聚合映射见[标准覆盖矩阵](./COVERAGE.md)。矩阵列出资产不等于对应块已获得逐块测试证据。
+下表逐项列出当前 `ALL_BLOCK_TYPES` 中的 224 个唯一块类型。类别表示应采用的验证边界：规范算法端点按算法测试；标准内部原语按其规范语义、接口契约和父算法关系测试；通用构件测试接口与组合语义；研究数学块不冒称为标准化算法。规范目录和当前聚合映射见[标准覆盖矩阵](./COVERAGE.md)。矩阵列出资产不等于对应块已获得逐块测试证据。
 
-每个块的实际端口、字段、连接类型由 `src/blocks/` 中相应类型的 `Blockly.Blocks[type].init` 定义；Python 与 JavaScript 语义分别由 `src/generators/python/`、`src/generators/javascript/` 的同类型生成器定义。为让“输入输出契约”本身可机器复核，仓库从**真实 Blockly 块**生成 [`BLOCK-IO-CONTRACT.json`](../blocks/BLOCK-IO-CONTRACT.json)（222 个活动块的端口名/输入类型/连接检查/输出检查/字段签名），`npm run verify:all` 每次重算并与该文件逐字节比对——代码里的签名一改而契约未同步就会直接失败；有意变更后用 `npm run block-io:write` 重新生成并复核差异。下表保留精确类型 ID，不复制一份可能漂移的 I/O 规格。
+每个块的实际端口、字段、连接类型由 `src/blocks/` 中相应类型的 `Blockly.Blocks[type].init` 定义；Python 与 JavaScript 语义分别由 `src/generators/python/`、`src/generators/javascript/` 的同类型生成器定义。为让“输入输出契约”本身可机器复核，仓库从**真实 Blockly 块**生成 [`BLOCK-IO-CONTRACT.json`](../blocks/BLOCK-IO-CONTRACT.json)（224 个活动块的端口名/输入类型/连接检查/输出检查/字段签名），`npm run verify:all` 每次重算并与该文件逐字节比对——代码里的签名一改而契约未同步就会直接失败；有意变更后用 `npm run block-io:write` 重新生成并复核差异。下表保留精确类型 ID，不复制一份可能漂移的 I/O 规格。
 
-仍待逐项完成的是**规范语义级**比对：确认每个块的签名与其规范条款要求的接口/参数域一致（例如标准规定某参数为固定长度字节串，块是否以该类型/约束表达），而不仅是“有端口、有双语言生成器”。该工作按「已核对的逐块测试证据」的 110 行逐条推进，当前状态见每行的“未由这些测试证明”列；门禁已强制每行的“规范语义范围”**要么给出标准族依据（FIPS/SP 800/GB\/T/GM\/T/RFC/ISO\/IEC/IEEE），要么明确标注为通用/教学/研究/项目构件（无独立规范依据）**，两者皆无即失败（已用负向测试验证）。
+仍待逐项完成的是**规范语义级**比对：确认每个块的签名与其规范条款要求的接口/参数域一致（例如标准规定某参数为固定长度字节串，块是否以该类型/约束表达），而不仅是“有端口、有双语言生成器”。该工作按「已核对的逐块测试证据」的 112 行逐条推进，当前状态见每行的“未由这些测试证明”列；门禁已强制每行的“规范语义范围”**要么给出标准族依据（FIPS/SP 800/GB\/T/GM\/T/RFC/ISO\/IEC/IEEE），要么明确标注为通用/教学/研究/项目构件（无独立规范依据）**，两者皆无即失败（已用负向测试验证）。
 
 端点级的“测试来源 + 参数范围 + 缺口”汇总见自动生成的 [`ENDPOINT-MATRIX.md`](../demos/ENDPOINT-MATRIX.md)：它由本文件的 Demo↔块映射表与 `demos/evidence.json` 生成，`npm run verify:all` 逐字节比对（`npm run endpoint-matrix:write` 重新生成），因此不存在手写漂移。
 
 | 注册组 | 适用类别及规范边界 | 当前块类型（与代码注册名一致） |
 |---|---|---|
-| `CTRL_BLOCK_TYPES` | 通用控制流；无独立密码标准算法身份 | `ctrl_iterate` |
+| `CTRL_BLOCK_TYPES` | 通用控制流；无独立密码标准算法身份 | `ctrl_iterate` · `ctrl_range` |
 | `DATA_BLOCK_TYPES` | 通用数据转换、长度、值与种子材料接口；按父算法测试，不单独认证 | `data_convert_to_int` · `data_convert_bits_to_bytes` · `data_convert_bytes_to_bits` · `data_bit_length` · `data_byte_length` · `cipher_key_from_seed` · `seed_bytes` · `seed_hex` · `data_value` · `data_int_list` |
-| `ARRAY_BLOCK_TYPES` | 通用数组操作；无独立密码标准算法身份 | `arr_partition_to_array` · `arr_slice` |
+| `ARRAY_BLOCK_TYPES` | 通用数组操作；无独立密码标准算法身份 | `arr_append` · `arr_partition_to_array` · `arr_slice` |
 | `LOGIC_BLOCK_TYPES` | 通用逻辑构件；无独立密码标准算法身份 | `lgc_compound` · `lgc_not` · `lgc_operation` |
 | `BIT_BLOCK_TYPES` | 位运算辅助原语；按其用于的父算法条款与双语言契约验证 | `bit_expr_infix` · `bit_operation` · `bit_rotate_left` · `bit_rotate_left_op` · `bit_rotate_right` · `bit_rotate_right_op` · `bit_not32` · `bit_byte_substitute` |
 | `ALL_SBOX_BLOCK_TYPES` | 参数化查表构件；AES、SM4、ZUC 预置须分别对准其标准参数，通用自定义表不是独立标准算法 | `sbox` · `sbox_sub` · `sbox_variables_get` · `sbox_variables_set` |
@@ -309,10 +309,11 @@ ITEM-2 要求“不能离线分发官方数据时，记录正式验证系统路�
 
 ### 尚未出现在 Demo 工作区的块
 
-静态比对 60 个工作区后，有 **89 个**注册块没有出现在任一 Demo 中。该结果只表示“没有 Demo 直接引用”，不能据此断言没有其他测试；后续须逐项查找单元/模板测试，或新增最小接口、边界、性质测试。当前集合如下：
+静态比对 60 个工作区后，有 **91 个**注册块没有出现在任一 Demo 中。该结果只表示“没有 Demo 直接引用”，不能据此断言没有其他测试；后续须逐项查找单元/模板测试，或新增最小接口、边界、性质测试。当前集合如下：
 
 ```text
 ctrl_iterate
+ctrl_range
 data_convert_to_int
 data_convert_bits_to_bytes
 data_convert_bytes_to_bits
@@ -323,6 +324,7 @@ seed_bytes
 seed_hex
 data_int_list
 primitive_def
+arr_append
 arr_partition_to_array
 lgc_compound
 lgc_not
@@ -405,7 +407,7 @@ slh_sign
 
 ### 既无 Demo 也无单测字面量命中的块
 
-在上述 88 个无 Demo 直接引用的块中，进一步要求 `tests/unit/**/*.ts` 以字符串字面量引用块类型。两者都没有的共 **0 个**：
+在上述 91 个无 Demo 直接引用的块中，进一步要求 `tests/unit/**/*.ts` 以字符串字面量引用块类型。两者都没有的共 **0 个**：
 
 ```text
 ```
@@ -430,6 +432,8 @@ slh_sign
 |---|---|---|---|
 | `arr_partition_to_array` | 通用等分数组构件；`BYTES` 输出等长非空字节片，`WORDS32` 按大端字节组装无符号 32-bit 字 | [`array-partition.test.ts`](../../tests/unit/array-partition.test.ts) 通过真实 Blockly 块执行双语言代码，覆盖两种模式、迁移保存/加载、字节/字列表与整数编码输入、边界拒绝和单次求值 | 仅证明列明的分割契约，不属于独立密码标准算法，也不证明调用方算法符合性 |
 | `arr_slice` | 通用数组切片构件；安全整数起始索引（负值按末尾相对索引处理）；非负安全整数长度表示元素个数，数组边界处截断 | [`array-slice-contract.test.ts`](../../tests/unit/array-slice-contract.test.ts) 通过真实 Blockly 块生成并执行双语言代码，覆盖常规/尾端截断、负索引取足长度、起点越过数组头部、整数值浮点索引、输入只求值一次，并拒绝小数索引、负长度及超范围 start/length | 无独立密码标准算法身份；不证明父算法符合性 |
+| `arr_append` | 通用数组追加构件；元素域沿用 `IntList` 的数值语义，无独立密码标准依据 | [`ctrl-range-append-contract.test.ts`](../../tests/unit/ctrl-range-append-contract.test.ts) 通过真实 Blockly 块生成并执行双语言代码：逐字核对 `LIST.append(VALUE)` / `LIST.push(VALUE);`、空输入兜底，并断言追加后原列表内容变化（原地修改）且该块无输出连接 | 只证明该语句块的接口与双语言行为；不证明父算法的列表语义、元素范围或并发修改 |
+| `ctrl_range` | 通用控制流构件；逐字对应 Python `range(FROM, TO)` 的半开区间（TO 独占、FROM ≥ TO 时不执行），无独立密码标准依据 | 同一 [`ctrl-range-append-contract.test.ts`](../../tests/unit/ctrl-range-append-contract.test.ts) 通过真实 Blockly 块生成并执行双语言代码：空循环体补 `pass`/注释、FROM/TO 作为值输入接变量时生成 `range(n, m)`、运行期断言 TO 独占与 FROM ≥ TO 零次迭代 | 只证明该循环语句的接口与区间语义；不证明 `controls_for` 的行为等价、FROM/TO 表达式只求值一次或父算法符合性 |
 | `data_value` | 通用原始表达式输入块；不定义密码算法或跨语言语法转换 | [`generator-contracts.test.ts`](../../tests/unit/generator-contracts.test.ts) 通过真实 Blockly 块连接到输出语句，执行数字、数组和带引号文本表达式，核对 JS/Python 行为 | 仅核对列出的相同语法输入；不会解析或保证任意语言表达式可移植 |
 | `data_convert_to_int` | 通用数据转换；字节序列按无符号大端、十六进制字符串按严格 Hex、数值向零截断；结果限定 JS 安全整数范围 | 同一 [`generator-contracts.test.ts`](../../tests/unit/generator-contracts.test.ts) 由真实 Blockly 生成执行两种语言，核对 Hex/符号/字节/数值输入及非法 Hex、越界值拒绝 | 不是密码标准原语；不替代任意精度整数或特定算法的编码规则 |
 | `data_convert_bits_to_bytes` / `data_convert_bytes_to_bits` | 通用位串与字节转换；位串仅含 0/1，末组左侧补零；输出位串每字节固定 8 位，字节值须为 0..255 整数值 | 同一 [`generator-contracts.test.ts`](../../tests/unit/generator-contracts.test.ts) 由真实 Blockly 双语言执行，覆盖前导零、非整字节位串、非法字符/赋值目标、文档列出的有效容器、负数/越界/分数/布尔伪字节及不支持容器的明确拒绝；`bytes → bits` 源表达式只求值一次 | 通用编码构件，不代表任一父算法实现符合标准；转换格式由父算法规范决定 |
@@ -552,7 +556,7 @@ slh_sign
 
 SM2 验签定向回归最近一次为 1 个文件、13 项通过；SM9 四块定向回归最近一次为 4 个文件、61 项通过。逐块条款到测试来源的全量台账、标准版本/勘误盘点及其它对象仍在 ITEM-1/ITEM-2 中继续核对。
 
-**证据入口覆盖盘点（自动核对）**：222 个活动块**全部**在本表有逐块证据行（本轮补齐后为 **222 个**），其中相当一部分块的直接证据来自其登记的 Demo 而非独立单测；既无逐块证据行、也不被任何登记 Demo 执行的块为 **0 个**。`npm run verify:all` 会用同一口径重算并拒绝出现“零证据块”；该口径只证明“存在可追溯的证据入口”，不证明该证据已达到完整标准测试集，也不改变各行的“未由这些测试证明”边界。
+**证据入口覆盖盘点（自动核对）**：224 个活动块**全部**在本表有逐块证据行（本轮补齐后为 **224 个**），其中相当一部分块的直接证据来自其登记的 Demo 而非独立单测；既无逐块证据行、也不被任何登记 Demo 执行的块为 **0 个**。`npm run verify:all` 会用同一口径重算并拒绝出现“零证据块”；该口径只证明“存在可追溯的证据入口”，不证明该证据已达到完整标准测试集，也不改变各行的“未由这些测试证明”边界。
 | `gcm_gf128_mul` | SP 800-38D Algorithm 1（GF(2¹²⁸) 块乘法） | [`gcm-primitives-contract.test.ts`](../../tests/unit/gcm-primitives-contract.test.ts) 通过真实 Blockly 块在 JS/Python 执行 Test Case 3 派生乘法值 `5e2ec746…`，并核对两语言一致 | 只覆盖单块乘法与该派生向量；不覆盖多块 GHASH 全谱或其他域约定 |
 | `gcm_ghash` | SP 800-38D Algorithm 2（GHASH_H(A, C)） | [`gcm-primitives-contract.test.ts`](../../tests/unit/gcm-primitives-contract.test.ts) 双语言执行单块 GHASH，并与 Test Case 3 标签推导值 `f38cbb1a…` 比对 | 单块输入；不覆盖 AAD/密文长度组合全谱、标签截断或认证流程 |
 | `gcm_gctr` | SP 800-38D Algorithm 3（GCTR_K(ICB, X)） | [`gcm-primitives-contract.test.ts`](../../tests/unit/gcm-primitives-contract.test.ts) 双语言以 ICB = J0+1 复现 Test Case 3 密文块 `0388dace…`，且拒绝非 16 字节密钥 | 一个分组的 AES-128 路径；不覆盖其它密钥长度、调用上限或完整数据集 |

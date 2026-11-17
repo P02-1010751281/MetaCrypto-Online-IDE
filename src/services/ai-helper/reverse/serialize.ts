@@ -58,6 +58,7 @@ const VARIABLE_FIELD_BLOCKS = new Set([
   'sbox_variables_set',
   // 循环变量的字段也是变量引用（AST 路径同样发 `{ id }`）。
   'controls_for',
+  'controls_forEach',
 ]);
 
 const UNRESOLVED_PREFIX = 'UNRESOLVED';
@@ -135,6 +136,19 @@ export function toWorkspaceState(
     }
   }
 
+  /**
+   * 沿着 `next` 走到链尾。
+   *
+   * 一条语句单元不一定是单块：推导式展开成「空列表 + 循环 + append」时，`toBlock` 返回的是
+   * 链头。把链头当游标去接下一句，会覆盖掉中间那条 `next`（`table = []` 直接接上后一句，
+   * 循环与 append 被静默吞掉）——所以串联一律用链尾。
+   */
+  const tailOf = (block: SerializedBlock): SerializedBlock => {
+    let cursor = block;
+    while (cursor.next) cursor = cursor.next.block;
+    return cursor;
+  };
+
   /** 一个节点 → 一个块；认不出的返回 null（并记诊断），不产出替代块。 */
   const toBlock = (node: ParsedNode, text: string): SerializedBlock | null => {
     // 诊断要指回原文：复合语句的子节点自带文本（核心语法层填的），没有就用外层。
@@ -159,7 +173,7 @@ export function toWorkspaceState(
         if (!childBlock) continue;
         if (!head) head = childBlock;
         else if (cursor) cursor.next = { block: childBlock };
-        cursor = childBlock;
+        cursor = tailOf(childBlock);
       }
       return head;
     }
@@ -204,7 +218,9 @@ export function toWorkspaceState(
       if (!block) continue;
       if (!head) head = block;
       else if (cursor) cursor.next = { block };
-      cursor = block;
+      // 一条语句可能不是单块（`chain` 虚拟节点：推导式展开成「空列表 + 循环 + append」），
+      // 此时 `block` 是链头，游标必须走到链尾，否则下一条语句会覆盖掉链中间的 `next`。
+      cursor = tailOf(block);
     }
     return head;
   };

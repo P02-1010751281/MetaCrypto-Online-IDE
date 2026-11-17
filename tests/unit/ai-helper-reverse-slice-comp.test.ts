@@ -13,6 +13,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { SLICE_DYNAMIC_SIGN } from '@/services/ai-helper/reverse/diagnostics';
 
 import { buildMatchers, parseClosureNames, parseFieldPayload } from '@/services/ai-helper/reverse';
 import type { ParsedNode } from '@/services/ai-helper/reverse';
@@ -84,17 +85,24 @@ describe('模板路径：切片', () => {
     expect(shape(parseValue('a[-2:-1]', context()))).toContain('LENGTH:data_value(NUM=1)');
   });
 
-  it('省略终点：a[i:] / a[:] 用 len(源) - 起点补长度（lists_length 生成就是 len）', () => {
-    expect(shape(parseValue('a[i:]', context()))).toBe(
+  it('省略终点：a[i:] / a[:] 用 len(源) - 起点补长度，再钳到 [0, len(源)]', () => {
+    const tail = context();
+    expect(shape(parseValue('a[i:]', tail))).toBe(
       'arr_slice{LIST:variables_get(VAR=a) START:variables_get(VAR=i) '
-        + 'LENGTH:math_arithmetic(OP=MINUS){A:lists_length{VALUE:variables_get(VAR=a)} B:variables_get(VAR=i)}}',
+        + 'LENGTH:math_constrain{VALUE:math_arithmetic(OP=MINUS){A:lists_length{VALUE:variables_get(VAR=a)} '
+        + 'B:variables_get(VAR=i)} LOW:data_value(NUM=0) HIGH:lists_length{VALUE:variables_get(VAR=a)}}}',
     );
+    // 长度钳位后，起点为正但越界不再算出负长度，逐字与 Python 一致：不该有漂移诊断。
+    expect(tail.diagnostics).toEqual([]);
     expect(shape(parseValue('a[:]', context()))).toBe(
       'arr_slice{LIST:variables_get(VAR=a) START:data_value(NUM=0) '
-        + 'LENGTH:math_arithmetic(OP=MINUS){A:lists_length{VALUE:variables_get(VAR=a)} B:data_value(NUM=0)}}',
+        + 'LENGTH:math_constrain{VALUE:math_arithmetic(OP=MINUS){A:lists_length{VALUE:variables_get(VAR=a)} '
+        + 'B:data_value(NUM=0)} LOW:data_value(NUM=0) HIGH:lists_length{VALUE:variables_get(VAR=a)}}}',
     );
-    // 负起点同样走同一个减法块：arr_slice 的负起点先按长度归一，等价于 a[-2:]。
-    expect(shape(parseValue('a[-2:]', context()))).toContain('LENGTH:math_arithmetic(OP=MINUS)');
+    // 负起点同样走同一个钳位：arr_slice 的负起点先按长度归一，等价于 a[-2:]。
+    const negative = context();
+    expect(shape(parseValue('a[-2:]', negative))).toContain('LENGTH:math_constrain');
+    expect(negative.diagnostics).toEqual([]);
   });
 
   it('步长 / 起终点异号 / 终点小于起点都拒绝，并说清原因', () => {
@@ -107,12 +115,16 @@ describe('模板路径：切片', () => {
     expect(parseValue('a[2:1]', context()).blocked?.detail).toContain('非负');
   });
 
-  it('起终点不是字面量：出块，但必须记漂移诊断', () => {
+  it('起终点不是字面量：长度 j - i 钳到 [0, len(源)]，并报动态符号漂移', () => {
     const ctx = context();
     const parsed = parseValue('a[i:j]', ctx);
     expect(shape(parsed)).toContain('arr_slice');
-    expect(shape(parsed)).toContain('LENGTH:math_arithmetic(OP=MINUS)');
-    expect(ctx.diagnostics?.some((diag) => diag.reason === 'semantic-drift')).toBe(true);
+    expect(shape(parsed)).toContain('LENGTH:math_constrain');
+    expect(shape(parsed)).toContain('VALUE:math_arithmetic(OP=MINUS){A:variables_get(VAR=j) B:variables_get(VAR=i)}');
+    // 两端符号运行时才知道：异号时 `j - i` 不是元素个数（`a[-2:j]`），必须报出来。
+    expect(ctx.diagnostics).toHaveLength(1);
+    expect(ctx.diagnostics?.[0].reason).toBe('semantic-drift');
+    expect(ctx.diagnostics?.[0].detail).toBe(SLICE_DYNAMIC_SIGN);
   });
 });
 
@@ -136,15 +148,13 @@ describe('模板路径：推导式', () => {
     expect(shape(parseValue('[v for v in range(4, 2)]', context()))).toBe('lists_create_empty');
   });
 
-  it('非字面量区间 / 带 if 拒绝，且诊断点名缺 list append', () => {
-    for (const text of ['[v for v in range(n)]', '[v for v in range(2) if v]']) {
+  it('非字面量区间 / 带 if / 非 range 迭代器在表达式位置报「只支持赋值右侧」', () => {
+    for (const text of ['[v for v in range(n)]', '[v for v in range(2) if v]', '[v for v in xs]']) {
       const parsed = parseValue(text, context());
       expect(shape(parsed)).toContain('UNRESOLVED');
       expect(parsed.blocked?.reason).toBe('unsupported');
-      expect(parsed.blocked?.detail).toContain('append');
+      expect(parsed.blocked?.detail).toContain('赋值右侧');
     }
-    // 迭代器不是 range 的写法同样要落到 append 这个原语上。
-    expect(parseValue('[v for v in xs]', context()).blocked?.detail).toContain('append');
   });
 
   it('多个生成器：字面量区间按笛卡尔积展开（外层 for 变化最慢）', () => {
@@ -178,17 +188,22 @@ describe.skipIf(!hasPython)('AST 路径：切片与推导式', () => {
     expect(state.diagnostics).toEqual([]);
   });
 
-  it('a[i:j] 出块并记漂移；a[i:] 用 len 补长度；a[1:2:3] 拒绝', () => {
-    expect(astState(['def f(a, i, j):', '    return a[i:j]', ''].join('\n')).diagnostics[0]?.reason).toBe('semantic-drift');
+  it('a[i:] 0 诊断；a[i:j] 落 math_constrain 并报动态符号漂移；a[1:2:3] 拒绝', () => {
+    const mid = astState(['def f(a, i, j):', '    return a[i:j]', ''].join('\n'));
+    expect(mid.diagnostics).toHaveLength(1);
+    expect(mid.diagnostics[0].reason).toBe('semantic-drift');
+    expect(mid.diagnostics[0].detail).toBe(SLICE_DYNAMIC_SIGN);
+    const midSlice = flatten(mid).find((block) => block.type === 'arr_slice');
+    expect(midSlice?.inputs?.LENGTH?.block.type).toBe('math_constrain');
+    expect(midSlice?.inputs?.LENGTH?.block.inputs?.VALUE?.block.type).toBe('math_arithmetic');
 
     const tail = astState(['def f(a, i):', '    return a[i:]', ''].join('\n'));
     const slice = flatten(tail).find((block) => block.type === 'arr_slice');
     expect(Object.keys(slice?.inputs ?? {}).sort()).toEqual(['LENGTH', 'LIST', 'START']);
-    expect(slice?.inputs?.LENGTH?.block.type).toBe('math_arithmetic');
-    expect(slice?.inputs?.LENGTH?.block.inputs?.A?.block.type).toBe('lists_length');
-    // 起点为正时源可能更短 → 负长度会被块拒绝，Python 返回空列表：一条漂移诊断。
-    expect(tail.diagnostics).toHaveLength(1);
-    expect(tail.diagnostics[0].reason).toBe('semantic-drift');
+    expect(slice?.inputs?.LENGTH?.block.type).toBe('math_constrain');
+    expect(slice?.inputs?.LENGTH?.block.inputs?.VALUE?.block.type).toBe('math_arithmetic');
+    expect(slice?.inputs?.LENGTH?.block.inputs?.VALUE?.block.inputs?.A?.block.type).toBe('lists_length');
+    expect(tail.diagnostics).toEqual([]);
 
     expect(flatten(astState(['def f(a):', '    return a[1:2:3]', ''].join('\n'))).some((b) => b.type === 'arr_slice')).toBe(false);
   });
@@ -207,9 +222,9 @@ describe.skipIf(!hasPython)('AST 路径：切片与推导式', () => {
     expect(state.diagnostics).toEqual([]);
   });
 
-  it('非常量 range 拒绝：展开次数不能静态确定', () => {
+  it('推导式在 return 里：报「只支持赋值右侧」，不产出列表块', () => {
     const state = astState(['def f(n):', '    return [v for v in range(n)]', ''].join('\n'));
     expect(flatten(state).some((block) => block.type === 'lists_create_with')).toBe(false);
-    expect(state.diagnostics.some((diag) => (diag.detail ?? '').includes('字面量'))).toBe(true);
+    expect(state.diagnostics.some((diag) => (diag.detail ?? '').includes('赋值右侧'))).toBe(true);
   });
 });

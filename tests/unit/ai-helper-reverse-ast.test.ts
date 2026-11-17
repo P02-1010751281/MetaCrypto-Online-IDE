@@ -194,12 +194,12 @@ describe.skipIf(!hasPython)('AST → IR → 块：能翻的结构必须保住', 
 });
 
 describe.skipIf(!hasPython)('不支持的部分必须逐条带行号报出来', () => {
-  it('列表推导式：只认字面量 range，其他形态报出来而不是静默丢', () => {
+  it('推导式落在 return 里：报「只支持赋值右侧」而不是静默丢', () => {
     const state = toWorkspace(['def f(xs):', '    return [i for i in xs]', ''].join('\n'));
     expect(state.diagnostics).toHaveLength(1);
     expect(state.diagnostics[0].line).toBe(2);
     expect(state.diagnostics[0].reason).toBe('unsupported');
-    expect(state.diagnostics[0].detail).toContain('range');
+    expect(state.diagnostics[0].detail).toContain('赋值右侧');
     // 返回值翻不出来 → 函数按无返回值生成，但块还在，用户能看到缺了什么。
     expect(state.blocks.blocks[0].type).toBe('procedures_defnoreturn');
   });

@@ -8,7 +8,7 @@
 import type { AstNode } from './dump';
 import type { IrExpr, IrStmt } from './ir-shared';
 import type { PrimitiveCall } from '../primitive-calls';
-import { SLICE_DRIFT, SLICE_LENGTH, SLICE_SIGN, SLICE_STEP, SLICE_TAIL_DRIFT } from '../diagnostics';
+import { SLICE_DYNAMIC_SIGN, SLICE_LENGTH, SLICE_SIGN, SLICE_STEP } from '../diagnostics';
 import { listCompToIr } from './ir-comprehension';
 import {
   ARITHMETIC_OPS,
@@ -223,17 +223,34 @@ function lengthOf(value: IrExpr, line?: number): IrExpr {
   return { kind: 'length', value, line };
 }
 
+function minus(left: IrExpr, right: IrExpr, line?: number): IrExpr {
+  return { kind: 'binop', op: 'MINUS', left, right, line };
+}
+
+/**
+ * `min(max(value, low), high)`：Blockly 原生 `math_constrain`（Python 生成
+ * `min(max(v, low), high)`）。切片长度一律钳到 `[0, len(源)]`。
+ */
+function constrain(value: IrExpr, low: IrExpr, high: IrExpr, line?: number): IrExpr {
+  return { kind: 'constrain', value, low, high, line };
+}
+
+function zero(line?: number): IrExpr {
+  return { kind: 'num', value: '0', line };
+}
+
 /**
  * 切片 → `arr_slice`。
  *
- * 块的语义是 `crypto_array_slice(list, start, length)`（起点可从末尾负计、长度须非负），
- * 与 Python 的 `a[i:j]` 只在「起终点同号且 j ≥ i」时逐字等价：
- *   - 起终点一正一负（`a[-2:2]`）时 `j - i` 不是 Python 的元素个数；
- *   - 起终点不是字面量时，`j < i` 会被块判成非法长度并抛错，而 Python 返回空列表。
- * 这两类拒绝/报漂移；**省略终点**（`a[i:]`）用 `len(a) - i` 补出长度——`len` 是 Python 的
- * 长度原语，`lists_length` 的生成代码就是 `len(...)`。起点为 0 或负数时长度必然非负，
- * 逐字等价；起点为正时源可能比它还短，长度会变负、块抛错（Python 返回空列表），所以那条
- * 路径记 `semantic-drift`（列表块里没有标量 min/钳位原语）。
+ * 块的语义是 `crypto_array_slice(list, start, length)`（起点可从末尾负计、长度须非负）。
+ * 动态长度一律套 `math_constrain` 钳到 `[0, len(源)]`：
+ *   - `a[i:]` ⇔ `arr_slice(a, i, constrain(len(a) - i, 0, len(a)))`，`i < 0` / `0 ≤ i ≤ len` /
+ *     `i > len` 三种情况都与 Python 一致（负长度不再存在，所以没有漂移诊断）；
+ *   - `a[i:j]`（至少一端不是字面量）⇔ `constrain(j - i, 0, len(a))`，`j < i` 时钳成 0；
+ *     但两端异号时负起点会先按长度归一，`j - i` 不再是元素个数（没有运行期符号判定），
+ *     所以出块 + 一条 `SLICE_DYNAMIC_SIGN` 语义漂移诊断。
+ * 两个字面量端点仍按 `j - i` 折叠：一正一负（`a[-2:2]`）与 `j < i` 在反向解析时拒绝。
+ * `len` 是 Python 的长度原语，`lists_length` 的生成代码就是 `len(...)`。
  * 不用 `data_byte_length`：它对 list 返回 `len(list)`，但对 str/bytes 按字节数换算
  * （`generators/python/data/measurement.ts`），拿它当切片长度会在 str/bytes 源上静默切错。
  */
@@ -250,19 +267,15 @@ function sliceToIr(node: AstNode, slice: AstNode, ctx: Ctx): IrExpr | null {
     start = converted;
   }
 
-  // `a[i:]` / `a[:]`：长度 = len(源) - 起点；起点省略时写成 `len(源) - 0`，与模板路径同形。
-  // 起点为 0 或负数时长度必然非负（`a[:]`、`a[-2:]` 逐字等价）；起点为正时源可能比它还短，
-  // 块会算出负长度并抛错（Python 返回空列表）——没有 min/钳位原语，只能报漂移。
+  // `a[i:]` / `a[:]`：长度 = len(源) - 起点，钳到 [0, len(源)]。起点省略时写成
+  // `len(源) - 0`，与模板路径同形。
   if (!upper) {
-    const startValue = integerValue(start);
-    if (startValue === null || startValue > BigInt(0)) reportDrift(ctx, node, SLICE_TAIL_DRIFT);
-    const length: IrExpr = {
-      kind: 'binop',
-      op: 'MINUS',
-      left: lengthOf(source, lineOf(node)),
-      right: start,
-      line: lineOf(node),
-    };
+    const length = constrain(
+      minus(lengthOf(source, lineOf(node)), start, lineOf(node)),
+      zero(lineOf(node)),
+      lengthOf(source, lineOf(node)),
+      lineOf(node),
+    );
     return { kind: 'primitive', primitive: ARR_SLICE, args: [source, start, length], line: lineOf(node) };
   }
 
@@ -276,8 +289,16 @@ function sliceToIr(node: AstNode, slice: AstNode, ctx: Ctx): IrExpr | null {
     if (endValue < startValue) return report(ctx, node, SLICE_LENGTH);
     length = { kind: 'num', value: (endValue - startValue).toString(), line: lineOf(node) };
   } else {
-    reportDrift(ctx, node, SLICE_DRIFT);
-    length = { kind: 'binop', op: 'MINUS', left: end, right: start, line: lineOf(node) };
+    // 至少一端不是字面量：长度 = j - i，钳到 [0, len(源)]。同号且 j ≥ i 时精确；
+    // `j < i` 时钳成 0（Python 返回空列表）。两端异号时负起点先按长度归一，`j - i` 不再是
+    // 元素个数——没有运行期符号判定，出块 + 语义漂移诊断。
+    reportDrift(ctx, node, SLICE_DYNAMIC_SIGN);
+    length = constrain(
+      minus(end, start, lineOf(node)),
+      zero(lineOf(node)),
+      lengthOf(source, lineOf(node)),
+      lineOf(node),
+    );
   }
   return { kind: 'primitive', primitive: ARR_SLICE, args: [source, start, length], line: lineOf(node) };
 }

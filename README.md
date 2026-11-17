@@ -10,9 +10,9 @@
 ## 特性
 
 - 🔮 **后量子密码** — 以格基密码为核心，覆盖 NTT/INTT、编码压缩、SampleNTT 等公共原语与算法阶段
-- 🔐 **密码学教学覆盖** — AES 单轮原语与模式、SM4 全轮、哈希函数（SM3/SHA/HMAC）和数论运算
+- 🔐 **密码学教学覆盖** — AES/SM4 轮函数与分组模式、S-Box 与位运算、哈希函数（SM3/SHA/HMAC）和数论运算
 - 🧮 **算法模板** — 29 个预填教学起始模板；拖出后仍需按标注补全参数或算法步骤
-- ✅ **标准参考向量回归** — SM4/SM3/SM2/ML-KEM 等选定用例在 Python 与 JavaScript 生成代码中核对；不代表算法认证
+- ✅ **标准向量与回归检查** — 函数模板做结构与可执行性检查，60 个 demo 在 Python 与 JavaScript 下登记输出回归；SM4/SM3/SM2/ML-KEM 等选定用例与标准向量核对；不代表算法认证
 - 🧩 **可视化编程** — 拖拽积木块，像搭乐高一样写密码学代码
 - 🌐 **多语言** — 中英文界面，Blockly 积木块同步切换
 - 💻 **代码生成** — 一键生成 JavaScript / Python 可执行代码
@@ -60,7 +60,7 @@ npm run docs:check-links
 | 层 | 技术 |
 |---|---|
 | 前端框架 | Vue 3 (Composition API + TypeScript) |
-| 可视化编程 | Blockly 13.x |
+| 可视化编程 | Blockly 13.2.x |
 | 代码高亮 | highlight.js |
 | 文档渲染 | marked + mermaid |
 | 桌面封装 | Tauri 2.x |
@@ -120,7 +120,9 @@ demos/                          # Blockly 工作区示例（含官方向量期�
 | 后量子密码 | ML-KEM/ML-DSA 格基构件与阶段；另含 SLH-DSA、纠错码教学构件 |
 | 函数与 Blockly 原生类目 | 29 个函数模板及变量、数学、数组、逻辑等 Blockly 原生块 |
 
-> 总数按 `src/blocks/index.ts` 的 `ALL_BLOCK_TYPES` 递归展开、去重得到 224 个活动块类型。另有 29 个函数模板注册项，其中 3 个基础 `crypto_*` 块已计入这 224 个类型，26 个 `proc_*` 模板是额外类型；块与模板合并去重后共 250 个类型。此外还注册 1 个仅供存量工作区加载的兼容身份 `ctrl_assign`（不在工具箱、不计入 224 与 250）。工具箱 17 类目含 4 个 Blockly 原生类目。上表用于说明能力范围，不提供可能重叠的分类小计。计数口径见 [`docs/standards/CONFORMANCE-INVENTORY.md`](docs/standards/CONFORMANCE-INVENTORY.md)，由 `npm run verify:templates` 枚举全部已注册类型守住；上面四个数随主分支变动，历史版本以该版本树内的清单为准（`v2.0.0` tag 树为 222 个活动块、248 个合并类型）。
+> 总数按 `src/blocks/index.ts` 的 `ALL_BLOCK_TYPES` 递归展开、去重得到 224 个活动块类型。另有 29 个函数模板注册项，其中 3 个基础 `crypto_*` 块已计入这 224 个类型，26 个 `proc_*` 模板是额外类型；块与模板合并去重后共 250 个类型。此外还注册 1 个仅供存量工作区加载的兼容身份 `ctrl_assign`（不在工具箱、不计入 224 与 250）。工具箱 17 类目含 4 个 Blockly 原生类目。上表用于说明能力范围，不提供可能重叠的分类小计。计数口径见 [`docs/standards/CONFORMANCE-INVENTORY.md`](docs/standards/CONFORMANCE-INVENTORY.md)，由 `npm run verify:templates` 枚举全部已注册类型守住；上面四个数随主分支变动，历史版本以该版本树内的清单为准（`v2.0.0` tag 树为 222 个活动块、248 个合并类型）。这一教学面向不构成 CAVP/ACVTS、CMVP/FIPS 140-3 认证或形式化验证声明。
+
+浏览器内负责 Blockly 编辑、代码生成与用户试用；可信随机性评估、统计检验、隔离执行与最终报告由 `metacrypt_server` 后端承担。
 
 ## 代码生成示例
 
