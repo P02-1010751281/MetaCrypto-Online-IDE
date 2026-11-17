@@ -35,6 +35,7 @@
       @update:import-format="$emit('update:import-format', $event)"
       @export="$emit('export')"
       @import-file="$emit('import-file', $event)"
+      @code-to-workspace="$emit('code-to-workspace')"
       @new-workspace="$emit('new-workspace')"
       @clear="$emit('clear')"
     />
@@ -114,6 +115,7 @@ defineEmits<{
   'update:import-format': [value: 'auto' | 'json' | 'xml'];
   export: [];
   'import-file': [file: File];
+  'code-to-workspace': [];
   'new-workspace': [];
   clear: [];
   'open-docs': [];

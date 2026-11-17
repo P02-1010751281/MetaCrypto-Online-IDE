@@ -37,6 +37,11 @@ export interface BlockFieldTemplate {
   template: string | null;
   fields: FieldDescriptor[];
   probes: FieldProbe[];
+  /**
+   * 多字段同时取非默认值时的模板（采集器的组合探测）。单字段变体只覆盖「其余字段取
+   * 默认值」，所以两个可见下拉同时翻值时只能靠这里命中，否则整条语句判不出。
+   */
+  combos?: Array<{ values: Record<string, string>; template: string }>;
   /** 翻值后模板不变：代码里没有痕迹，不可回填。 */
   invisible: string[];
   /** 单选项下拉：值由块类型强制决定，无需比较。 */
@@ -254,6 +259,10 @@ export function buildMatchers(payload: FieldPayload): Matcher[] {
       for (const variant of probe.variants) {
         add(buildMatcher(block.type, nameScanFields(buildSegments(variant.template), block), { ...defaults, [probe.name]: variant.value }));
       }
+    }
+    // 组合模板带回「同时翻值」的那些字段；未在组合里出现的字段仍是默认值。
+    for (const combo of block.combos ?? []) {
+      add(buildMatcher(block.type, nameScanFields(buildSegments(combo.template), block), { ...defaults, ...combo.values }));
     }
     // 通配槽版本负责「字段取值无法枚举」的块；纯槽模板（data_value）无字面量骨架，不参与匹配。
     let fieldized = block.template;

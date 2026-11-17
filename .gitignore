@@ -91,3 +91,7 @@ public/pyodide/
 # Python 字节码缓存（scripts/tools 下的本地脚本会生成，不入库）
 __pycache__/
 *.pyc
+
+# 一次性浏览器复核（c2w-combo-fixed-e2e.mjs）的临时 profile
+experiments/ai-helper-2026-11-14/cdp-profile-*/
+.shot/

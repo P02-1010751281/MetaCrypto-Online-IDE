@@ -12,16 +12,23 @@
  * 字段类型判定必须用 instanceof，不能用 constructor.name：vite 打包会把类名压缩掉，
  * 用名字判断会让 TextInput/Number 字段全部落进「未知类型」而被误记为不可见。
  *
- * 产物：experiments/ai-helper-2026-11-14/out/field-templates.json
- * 用法：npm run verify:build && node dist-verify/ai-helper-variants.js [块类型...]
+ * 产物（同一份内容写两处）：
+ *   - 运行时：src/services/ai-helper/reverse/field-templates.json（浏览器按需 ?raw 载入）
+ *   - 存档：experiments/ai-helper-2026-11-14/out/field-templates.json
+ * 用法：
+ *   npm run reverse:templates                 # 重新采集并落两处产物
+ *   npm run reverse:templates:check           # 只重算不落盘：与运行时产物逐字段比对，过期即失败
+ *   单块排查：npm run verify:build && node dist-verify/ai-helper-variants.js <块类型>...
  *
- * 说明：本脚本只读 src/，产物写 experiments/，不参与 verify:all。
+ * 说明：本脚本只读 src/，check 档进 verify:all；采样档不参与门禁（改产物要显式跑）。
  */
 import { JSDOM } from 'jsdom';
 
 const VALUE_PLACEHOLDER = 'zzsigv_';
 const STATEMENT_PLACEHOLDER = 'zzsigs_';
 const FIELD_PLACEHOLDER = 'zzfield_';
+/** 每个块最多采多少组合模板：目前最大的组合积只有 10，超限说明该块不适合全枚举。 */
+const COMBO_LIMIT = 64;
 
 interface GeneratorLike {
   forBlock: Record<string, (block: unknown) => unknown>;
@@ -78,12 +85,27 @@ interface FieldProbe {
   valueShape: 'number' | 'hex' | 'identifier' | 'text' | null;
 }
 
+/**
+ * 组合探测：两个及以上可见下拉同时取非默认值时的模板。
+ *
+ * 单字段变体只覆盖「其余字段取默认值」的形态。`sponge_pad` 的 RATE（5 档）与 SUFFIX
+ * （2 档）各自都有变体，但 RATE=1344 × SUFFIX=0x1F 这个组合没有模板，平台自己生成的代码
+ * 反解析时整条语句判不出，还会连锁出几十条诊断（RESULTS §36）。
+ */
+export interface FieldCombo {
+  /** 只记与默认值不同的字段，避免把默认值写进两份结论。 */
+  values: Record<string, string>;
+  template: string;
+}
+
 interface BlockFieldTemplate {
   type: string;
   template: string | null;
   error: string | null;
   fields: FieldDescriptor[];
   probes: FieldProbe[];
+  /** 多字段同时翻值的组合模板；单字段能表达的组合不重复记。 */
+  combos: FieldCombo[];
   /** 翻值后模板不变：代码里没有该字段的痕迹。 */
   invisible: string[];
   /** 单选项下拉：值由块类型决定，无需回填也无需比较。 */
@@ -137,6 +159,55 @@ function buildSubstitution(
 
 function escapeRegExp(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+interface PayloadComparable {
+  stats: unknown;
+  collisions: unknown;
+  blocks: Array<{ type: string }>;
+}
+
+type FsLike = { readFileSync: (file: string, encoding: string) => string };
+
+/**
+ * 新鲜度判据：忽略 generatedAt，把重算结果与运行时产物逐字段比对。
+ *
+ * 为什么不用 mtime：产物在克隆/检出/打包时会被重写成「检出时间」，mtime 既可能漏报
+ * （检出比块源码新）也可能误报；而重算一次只要 ~8 s，远小于误判代价。
+ * stats 由 blocks 派生但仍单独比一次：它决定 FIELD_SUMMARY 那行数字是否可信。
+ */
+function compareWithRuntime(runtimePath: string, fresh: PayloadComparable, fs: FsLike): number {
+  let previous: PayloadComparable;
+  try {
+    previous = JSON.parse(fs.readFileSync(runtimePath, 'utf-8')) as PayloadComparable;
+  } catch {
+    console.error(`FIELD_CHECK 运行时产物缺失或不可读：${runtimePath} → npm run reverse:templates`);
+    return 1;
+  }
+  const differences: string[] = [];
+  const before = new Map(previous.blocks.map((block) => [block.type, block]));
+  for (const block of fresh.blocks) {
+    const earlier = before.get(block.type);
+    if (!earlier) {
+      differences.push(`${block.type}：运行时产物里没有这一块`);
+      continue;
+    }
+    before.delete(block.type);
+    if (JSON.stringify(earlier) !== JSON.stringify(block)) {
+      differences.push(`${block.type}：模板或字段结论变了`);
+    }
+  }
+  for (const type of before.keys()) differences.push(`${type}：块已不存在`);
+  for (const key of ['stats', 'collisions'] as const) {
+    if (JSON.stringify(previous[key]) !== JSON.stringify(fresh[key])) differences.push(`${key}：汇总不一致`);
+  }
+  if (differences.length) {
+    console.error(`FIELD_CHECK 运行时产物过期（${differences.length} 处差异）→ npm run reverse:templates`);
+    for (const line of differences.slice(0, 20)) console.error(`  ${line}`);
+    return 1;
+  }
+  console.log(`FIELD_CHECK ok blocks=${fresh.blocks.length}`);
+  return 0;
 }
 
 async function main(): Promise<void> {
@@ -271,7 +342,71 @@ async function main(): Promise<void> {
     return [];
   };
 
-  const targets = process.argv.slice(2);
+  /**
+   * 组合探测：可见下拉做笛卡尔积。单字段变体只覆盖「其余字段取默认值」的形态，
+   * 两个字段同时取非默认值时模板没人采过——`sponge_pad` 的 RATE=1344 × SUFFIX=0x1F
+   * 就是这样，平台自己生成的代码反解析会对整条语句判不出（RESULTS §36）。
+   * 只采差异 ≥2 个的组合：差异 1 个的已经是单字段变体。
+   */
+  const probeCombos = (
+    block: BlockLike,
+    fields: FieldDescriptor[],
+    probes: FieldProbe[],
+    base: CollectResult,
+  ): FieldCombo[] => {
+    const enumerable = probes.filter(
+      (probe) => probe.kind === 'dropdown' && probe.visible && probe.variants.length > 0,
+    );
+    if (enumerable.length < 2) return [];
+    const axes = enumerable.map((probe) => {
+      const descriptor = fields.find((field) => field.name === probe.name);
+      return [descriptor?.defaultValue ?? probe.variants[0].value, ...probe.variants.map((variant) => variant.value)];
+    });
+    const product = axes.reduce<string[][]>(
+      (prefixes, axis) => prefixes.flatMap((prefix) => axis.map((value) => [...prefix, value])),
+      [[]],
+    );
+    if (product.length > COMBO_LIMIT) return [];
+    const restore = (): void => {
+      enumerable.forEach((probe, index) => {
+        try {
+          block.setFieldValue(axes[index][0], probe.name);
+        } catch {
+          // 字段约束拒绝复原：组合已采到的照常返回，后续字段探测按当前值继续。
+        }
+      });
+    };
+    const combos: FieldCombo[] = [];
+    try {
+      for (const values of product) {
+        if (values.filter((value, index) => value !== axes[index][0]).length < 2) continue;
+        try {
+          enumerable.forEach((probe, index) => block.setFieldValue(values[index], probe.name));
+        } catch {
+          continue;
+        }
+        const applied = enumerable.every(
+          (probe, index) => String(block.getFieldValue(probe.name) ?? '') === values[index],
+        );
+        if (!applied) continue;
+        const alt = collect(block);
+        if (alt.template === null || alt.template === base.template) continue;
+        const record: Record<string, string> = {};
+        enumerable.forEach((probe, index) => {
+          if (values[index] !== axes[index][0]) record[probe.name] = values[index];
+        });
+        combos.push({ values: record, template: alt.template });
+      }
+    } finally {
+      restore();
+    }
+    return combos;
+  };
+
+  const argv = process.argv.slice(2);
+  // `check` 是子命令而不是块类型：它要采全量，不接受类型清单。
+  const checkMode = argv[0] === 'check';
+  const targets = checkMode ? [] : argv;
   const types = targets.length ? targets : [...ALL_BLOCK_TYPES].sort();
   const results: BlockFieldTemplate[] = [];
 
@@ -359,6 +494,8 @@ async function main(): Promise<void> {
         probes.push({ name: field.name, kind: field.kind, visible, constant: false, emittedDefault, variants, wildcard, valueShape });
       }
 
+      const combos = probeCombos(block, fields, probes, base);
+
       // 组装可匹配模板：可见的非下拉字段换成通配槽（其余字面量保持逐字匹配）。
       let fieldized = base.template;
       for (const probe of probes) {
@@ -369,7 +506,7 @@ async function main(): Promise<void> {
         fieldized = `${fieldized.slice(0, index)}${token}${fieldized.slice(index + probe.emittedDefault.length)}`;
       }
 
-      results.push({ type, template: base.template, error: base.error, fields, probes, invisible, constant, unprobed, fieldized });
+      results.push({ type, template: base.template, error: base.error, fields, probes, combos, invisible, constant, unprobed, fieldized });
     }
   } finally {
     Blockly.Events.enable();
@@ -388,6 +525,7 @@ async function main(): Promise<void> {
   for (const item of results) {
     addTemplate(item.template, item.type);
     for (const probe of item.probes) for (const variant of probe.variants) addTemplate(variant.template, item.type);
+    for (const combo of item.combos) addTemplate(combo.template, item.type);
   }
   const collisions = [...allTemplates.entries()]
     .filter(([, typesWithTemplate]) => typesWithTemplate.length > 1)
@@ -399,6 +537,8 @@ async function main(): Promise<void> {
     blocksWithVisibleFields: results.filter((item) => item.probes.some((probe) => probe.visible)).length,
     blocksWithVariants: results.filter((item) => item.probes.some((probe) => probe.variants.length > 0)).length,
     variantCount: results.reduce((sum, item) => sum + item.probes.reduce((n, probe) => n + probe.variants.length, 0), 0),
+    blocksWithCombos: results.filter((item) => item.combos.length > 0).length,
+    comboCount: results.reduce((sum, item) => sum + item.combos.length, 0),
     blocksWithWildcardFields: results.filter((item) => item.probes.some((probe) => probe.wildcard !== null)).length,
     blocksWithInvisibleFields: results.filter((item) => item.invisible.length > 0).length,
     invisibleFieldCount: results.reduce((sum, item) => sum + item.invisible.length, 0),
@@ -408,15 +548,28 @@ async function main(): Promise<void> {
     errors: results.filter((item) => item.template === null).length,
   };
 
-  const outDir = path.resolve(process.cwd(), 'experiments/ai-helper-2026-11-14/out');
-  fs.mkdirSync(outDir, { recursive: true });
+  const archivePath = path.resolve(process.cwd(), 'experiments/ai-helper-2026-11-14/out/field-templates.json');
+  const runtimePath = path.resolve(process.cwd(), 'src/services/ai-helper/reverse/field-templates.json');
   const payload = { generatedAt: new Date().toISOString(), stats, collisions, blocks: results };
-  fs.writeFileSync(path.join(outDir, 'field-templates.json'), `${JSON.stringify(payload, null, 2)}\n`, 'utf-8');
+  const text = `${JSON.stringify(payload, null, 2)}\n`;
+
+  if (checkMode) {
+    process.exitCode = compareWithRuntime(runtimePath, payload, fs);
+  } else {
+    fs.mkdirSync(path.dirname(archivePath), { recursive: true });
+    fs.mkdirSync(path.dirname(runtimePath), { recursive: true });
+    fs.writeFileSync(archivePath, text, 'utf-8');
+    fs.writeFileSync(runtimePath, text, 'utf-8');
+    console.log(
+      `FIELD_WRITE ${path.relative(process.cwd(), runtimePath)} + ${path.relative(process.cwd(), archivePath)}`,
+    );
+  }
 
   console.log(
     `FIELD_SUMMARY blocks=${stats.blocks} with_template=${stats.withTemplate} ` +
       `visible_field_blocks=${stats.blocksWithVisibleFields} variant_blocks=${stats.blocksWithVariants} ` +
       `variants=${stats.variantCount} wildcard_blocks=${stats.blocksWithWildcardFields} ` +
+      `combo_blocks=${stats.blocksWithCombos} combos=${stats.comboCount} ` +
       `invisible_field_blocks=${stats.blocksWithInvisibleFields} invisible_fields=${stats.invisibleFieldCount} ` +
       `constant_fields=${stats.constantFieldCount} unprobed_fields=${stats.unprobedFieldCount} ` +
       `collisions_after_variants=${stats.collisionsAfterVariants} ` +

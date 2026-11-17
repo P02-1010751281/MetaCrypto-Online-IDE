@@ -90,6 +90,22 @@
           @change="onImportFile"
         />
 
+        <!-- A/B 线入口：与「导入工作区」并列，不是同一条路径——导入的是既有工作区文件，
+             这一项是从代码/文档反解析出新工作区。 -->
+        <button type="button" class="dropdown-action" @click="$emit('code-to-workspace')">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+          >
+            <polyline points="16 18 22 12 16 6" />
+            <polyline points="8 6 2 12 8 18" />
+          </svg>
+          <span>{{ ui("codeToWorkspaceAction") }}</span>
+        </button>
+
         <div class="dropdown-divider" />
         <button type="button" class="dropdown-action" @click="$emit('new-workspace')">
           <svg
@@ -146,6 +162,7 @@ const emit = defineEmits<{
   'update:import-format': [value: 'auto' | 'json' | 'xml'];
   export: [];
   'import-file': [file: File];
+  'code-to-workspace': [];
   'new-workspace': [];
   clear: [];
 }>();

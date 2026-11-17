@@ -76,6 +76,7 @@
           @update:import-format="importFormat = $event"
           @export="handleExport"
           @import-file="onImportFile"
+          @code-to-workspace="openCodeToWorkspace"
           @new-workspace="handleNewWorkspace"
           @clear="handleClear"
           @open-docs="openDocs"
@@ -122,6 +123,13 @@
       @generate="generateCode"
     />
 
+    <CodeToWorkspaceDialog
+      :visible="codeToWorkspaceVisible"
+      :current-block-count="blockCount"
+      @close="closeCodeToWorkspace"
+      @apply="onApplyReversedWorkspace"
+    />
+
     <EditorToast :visible="toastVisible" :message="toastMessage" />
   </div>
 </template>
@@ -133,6 +141,7 @@ import BlocklyEditor from '@/components/BlocklyEditor.vue';
 import CryptoFunctionPanel from '@/components/CryptoFunctionPanel.vue';
 import ProjectPanel from '@/components/editor/ProjectPanel.vue';
 import AssistantPanel from '@/components/ai-helper/AssistantPanel.vue';
+import CodeToWorkspaceDialog from '@/components/ai-helper/CodeToWorkspaceDialog.vue';
 import EditorSidebar from '@/components/editor/EditorSidebar.vue';
 import EditorToast from '@/components/editor/EditorToast.vue';
 import EditorBreadcrumb from '@/components/editor/EditorBreadcrumb.vue';
@@ -145,6 +154,8 @@ import { useEditorFileActions } from '@/components/editor/useEditorFileActions';
 import { useEditorPanels } from '@/components/editor/useEditorPanels';
 import { buildDocsLocation } from '@/utils/docs-search-entry';
 import { useEditorWorkspaceActions } from '@/components/editor/useEditorWorkspaceActions';
+import { useCodeToWorkspaceImport } from '@/components/editor/useCodeToWorkspaceImport';
+import { useWorkspaceStats } from '@/components/editor/useWorkspaceStats';
 // 编辑器专属注册只在 /editor 路由加载，避免污染项目列表首屏。
 import '@/blocks';
 import '@/generators/javascript';
@@ -158,6 +169,7 @@ import { useBlocklyLocale, ui } from '@/composables/locale';
 import { useEditorProject } from '@/composables/useEditorProject';
 import { patchProjectEntry, refreshProjectList } from '@/components/editor/useProjectList';
 import { useEditorToast } from '@/composables/useEditorToast';
+
 
 /**
  * /editor 的壳：只做绑定与装配，编排在 src/components/editor/useEditor* 里。
@@ -175,7 +187,14 @@ const codePanel = ref<InstanceType<typeof CodePanel> | null>(null);
 const selectedLanguage = ref<CodeLanguage>(CODE_LANGUAGES.PYTHON);
 const exportFormat = ref<'json' | 'xml'>('json');
 const importFormat = ref<'auto' | 'json' | 'xml'>('auto');
-const blockCount = ref(0);
+
+const currentWorkspace = computed(() => blocklyEditor.value?.workspaceRef || null);
+
+/** 状态栏积木数与「画布变了」的共同出口：文件操作、导入、代码载入都要经过它。 */
+const { blockCount, refreshBlockCount, onWorkspaceChanged } = useWorkspaceStats({
+  workspace: () => currentWorkspace.value,
+  markDirty: () => cleanupWorkspaceHandler?.(),
+});
 
 // Toast 先建立：面板与文件操作都靠它回执（保存提示、入口提示、删除拒绝）。
 const {
@@ -327,23 +346,25 @@ const {
   afterWorkspaceReplaced: onWorkspaceChanged,
 });
 
-const currentWorkspace = computed(() => blocklyEditor.value?.workspaceRef || null);
-
 /** 状态栏显示的语言名（与代码栏下拉一致的标签）。 */
 const languageLabel = computed(
   () => LANGUAGE_LABELS[selectedLanguage.value] ?? selectedLanguage.value,
 );
 
-/** 只刷新底部积木数（切换文件 / 新建文件这类「画布被换掉」的场景）。 */
-function refreshBlockCount(): void {
-  blockCount.value = currentWorkspace.value?.getAllBlocks(false).length ?? 0;
-}
 
-/** 用户真的改了画布：刷新积木数并交给保存层置脏。 */
-function onWorkspaceChanged(): void {
-  refreshBlockCount();
-  if (cleanupWorkspaceHandler) cleanupWorkspaceHandler();
-}
+// ---- 代码 → 工作区（A/B 线入口；当前只开 B1：本平台生成的 Python）----
+// 编排在 useCodeToWorkspaceImport；这里只给三个口子：编辑器载入、收菜单、替换后的补偿。
+const {
+  codeToWorkspaceVisible,
+  openCodeToWorkspace,
+  closeCodeToWorkspace,
+  onApplyReversedWorkspace,
+} = useCodeToWorkspaceImport({
+  loadWorkspace: (state) => blocklyEditor.value?.loadWorkspace(JSON.stringify(state), 'json') ?? false,
+  notify: showToast,
+  afterApplied: onWorkspaceChanged,
+  beforeOpen: closeMenus,
+});
 
 async function onManualSave(): Promise<void> {
   if (!(await doSave())) return;
