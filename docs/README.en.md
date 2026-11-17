@@ -119,7 +119,7 @@ These pages record extraction, splitting, evidence ledgers, and certification pr
 
 | File | Description |
 |------|------|
-| [README.en.md](../README.en.md) | Project intro, quick start |
+| [README.md](../README.md) | Project intro, quick start |
 | [RULES.md](../RULES.md) | Engineering behavior rules |
 | [eslint.config.js](../eslint.config.js) | ESLint rules |
 | [tsconfig.json](../tsconfig.json) | TypeScript config |

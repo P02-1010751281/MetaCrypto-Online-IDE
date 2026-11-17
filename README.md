@@ -1,52 +1,56 @@
-# MetaCrypto Online IDE · 薛定喵编辑器
+# MetaCrypto Online IDE · Schrödinger's Cat Editor
 
-🐱 后量子密码学可视化编程平台 — 基于 Blockly 和 Vue 3。
+> [中文](./README.zh-CN.md)
 
-> **v2.0.0 更新**：积木核心、两套代码生成器（Python / JavaScript）与独立编辑器实现。发表版题名 *MetaCrypto online*（*SoftwareX* 35 (2026) 102943）；来源、世系、团队与许可见 [PROVENANCE.md](PROVENANCE.md)。
+🐱 A visual programming platform for post-quantum cryptography — built on Blockly and Vue 3.
+
+> **v2.0.0 update**: the block core, both code generators (Python / JavaScript) and the standalone editor implementation. Published under the title *MetaCrypto online* (*SoftwareX* 35 (2026) 102943). Sources, lineage, team and licence: [PROVENANCE.md](PROVENANCE.md).
 
 > "The cat is both alive and dead until you open the box.  
 > Your cipher is both secure and broken until you audit the code."
 
-## 特性
+## Features
 
-- 🔮 **后量子密码** — 以格基密码为核心，覆盖 NTT/INTT、编码压缩、SampleNTT 等公共原语与算法阶段
-- 🔐 **密码学教学覆盖** — AES 单轮原语与模式、SM4 全轮、哈希函数（SM3/SHA/HMAC）和数论运算
-- 🧮 **算法模板** — 29 个预填教学起始模板；拖出后仍需按标注补全参数或算法步骤
-- ✅ **标准参考向量回归** — SM4/SM3/SM2/ML-KEM 等选定用例在 Python 与 JavaScript 生成代码中核对；不代表算法认证
-- 🧩 **可视化编程** — 拖拽积木块，像搭乐高一样写密码学代码
-- 🌐 **多语言** — 中英文界面，Blockly 积木块同步切换
-- 💻 **代码生成** — 一键生成 JavaScript / Python 可执行代码
-- 📁 **项目管理** — 基于 IndexedDB 的多项目本地管理，自动保存
-- 🖥️ **桌面应用** — Tauri 封装，Windows / Linux / macOS 原生运行
-- 📱 **响应式** — 宽窄屏自适应，拖拽调整面板
+- 🔮 **Post-quantum cryptography** — lattice-focused components and algorithm stages such as NTT/INTT, encode/compress, and SampleNTT
+- 🔐 **Comprehensive crypto coverage** — symmetric ciphers (S-Box, bitwise operations), hash functions (SM3/SHA), number-theoretic operations
+- 🧩 **Visual programming** — drag and drop blocks to write crypto code like building with LEGO
+- 🌐 **Multilingual** — Chinese/English UI, Blockly blocks switch in sync
+- 💻 **Code generation** — generate executable JavaScript / Python code in one click
+- ✅ **Regression checks** — 29 templates receive structural/executability checks; 60 demos receive registered output regressions in JavaScript and Python
+- 📁 **Project management** — multi-project local management based on IndexedDB, with auto-save
+- 🖥️ **Desktop app** — Tauri wrapper, runs natively on Windows / Linux / macOS
+- 📱 **Responsive** — adapts to wide and narrow screens, panels resizable by dragging
 
-## 快速开始
+## Quick Start
 
-第一次使用请先看：[环境搭建与验收](docs/guides/SETUP.md) · [用户完整指南](docs/guides/USER-GUIDE.md) · [能力地图](docs/guides/CAPABILITY-MAP.md) · [Demo 清单](demos/README.md)。
+New users: start with the [setup and acceptance guide](docs/guides/SETUP.en.md), [user guide](docs/guides/USER-GUIDE.en.md), [capability map](docs/guides/CAPABILITY-MAP.en.md), and [demo index](demos/README.en.md).
 
 ```bash
-# 安装依赖
+# Install dependencies
 npm ci
 
-# 启动开发服务器
+# Start the development server
 npm run dev          # → http://localhost:3001
 
-# 构建生产版本
+# Build the production bundle
 npm run build
 npm run build:check-bundle
 
-# Tauri 桌面应用
-npm run tauri:dev    # 开发模式
-npm run tauri:build  # 打包
+# Tauri desktop app
+npm run tauri:dev    # development mode
+npm run tauri:build  # package
 
-# 质量门禁
+# Quality gates
 npm run test:unit
 npm run standards:check
 npm run standards:split-check
 npm run standards:formula-check
 npm run standards:inventory
-# 重新生成逐项 source 清单时使用：npm run standards:inventory:write
+# Regenerate the entry-by-entry source inventory when source metadata changes:
+# npm run standards:inventory:write
 npm run cycles:check
+
+# Regression gates
 npm run lint:check
 npm run type-check
 npm run docs:titles:check
@@ -55,76 +59,75 @@ npm run verify:all
 npm run docs:check-links
 ```
 
-## 技术栈
+## Tech Stack
 
-| 层 | 技术 |
+| Layer | Technology |
 |---|---|
-| 前端框架 | Vue 3 (Composition API + TypeScript) |
-| 可视化编程 | Blockly 13.x |
-| 代码高亮 | highlight.js |
-| 文档渲染 | marked + mermaid |
-| 桌面封装 | Tauri 2.x |
-| 构建工具 | Vite + vue-tsc |
-| 代码规范 | ESLint 10.x |
-| 本地存储 | 浏览器 IndexedDB |
+| Frontend framework | Vue 3 (Composition API + TypeScript) |
+| Visual programming | Blockly 13.2.x |
+| Code highlighting | highlight.js |
+| Desktop wrapper | Tauri 2.x |
+| Build tooling | Vite + vue-tsc |
+| Code standards | ESLint 10.x |
+| Local storage | Browser IndexedDB |
 
-## 项目结构
+## Project Structure
 
 ```text
 src/
-├── App.vue                     # 主编辑器视图
-├── main.ts                     # 应用入口
-├── router/                     # 路由（编辑器 + 文档 + 项目管理）
-├── views/                      # 页面视图（ProjectList / DocsView）
-├── blocks/                     # Blockly 积木块定义（按类目分目录）
+├── App.vue                     # Main editor view
+├── main.ts                     # Application entry
+├── router/                     # Routes (editor + docs + project management)
+├── views/                      # Page views (ProjectList / DocsView)
+├── blocks/                     # Blockly block definitions (grouped by category)
 │   ├── ctrl/ data/ array/ logic/ bitwise/ sbox/ hash/
 │   ├── symmetric/ numtheory/ ecc/ post-quantum/
-│   ├── procedure/              # 函数模板 + Blockly 原生 procedure 覆盖
-│   └── remaining.ts            # 数学原语 + HMAC + 编码工具
-├── generators/                 # 代码生成器
-│   ├── javascript/             # JavaScript 生成
-│   └── python/                 # Python 生成
+│   ├── procedure/              # Function templates + Blockly native procedure overrides
+│   └── remaining.ts            # Math primitives + HMAC + encoding utilities
+├── generators/                 # Code generators
+│   ├── javascript/             # JavaScript generation
+│   └── python/                 # Python generation
 ├── composables/                # Vue Composables
-│   ├── locale.ts               # 国际化（中/英）
-│   ├── generator.ts            # 代码生成逻辑
-│   ├── useEditorProject.ts     # 项目管理
-│   └── useProjectDB.ts         # IndexedDB 操作
-├── constants/                  # 常量配置
-│   ├── block-types.ts          # 类型系统
-│   ├── code-languages.ts       # 支持的语言
-│   └── workspace-config.ts     # Blockly 工作区配置
-├── components/                 # 通用组件
-│   ├── BlocklyEditor.vue       # Blockly 编辑器组件
-│   ├── CodePreviewer.vue       # 代码预览器
-│   └── CryptoFunctionPanel.vue # 函数模板管理面板
-├── utils/                      # 工具函数（toolbox-config / migration / markdown）
-├── styles/                     # 全局样式 / CSS 变量
-└── assets/                     # 静态资源
-docs/                           # 文档体系（guides/ 核心 + blocks/ 索引 + demos/ + standards/ 40 标准目录 + papers/ 文献索引）
-demos/                          # Blockly 工作区示例（含官方向量期望）
+│   ├── locale.ts               # Internationalization (zh/en)
+│   ├── generator.ts            # Code generation logic
+│   ├── useEditorProject.ts     # Project management
+│   └── useProjectDB.ts         # IndexedDB operations
+├── constants/                  # Constant configuration
+│   ├── block-types.ts          # Type system
+│   ├── code-languages.ts       # Supported languages
+│   └── workspace-config.ts     # Blockly workspace configuration
+├── components/                 # Shared components
+│   ├── BlocklyEditor.vue       # Blockly editor component
+│   ├── CodePreviewer.vue       # Code previewer
+│   └── CryptoFunctionPanel.vue # Function template management panel
+├── utils/                      # Utility functions (toolbox-config / migration / markdown)
+├── styles/                     # Global styles / CSS variables
+└── assets/                     # Static assets
 ```
 
-## 支持的密码学模块（222 个自定义积木块，17 个工具箱类目）
+## Supported Crypto Modules (222 custom blocks, 17 toolbox categories)
 
-| 类目 | 代表能力 |
-|------|----------|
-| 控制流编排 | 循环迭代（`ctrl_iterate`）及 Blockly 控制组合 |
-| 数据处理与转换 | 值与种子输入、位/字节长度、类型转换、Base64/Hex 编解码、字节序 |
-| 位运算单元 | AND/OR/XOR、NOT、移位、循环移位、字节替换、中缀表达式 |
-| 非线性运算单元（S-Box） | 自定义 S-Box 与 AES/SM4/ZUC 预设 |
-| 散列与填充 | SM3、SHA-2/SHA-3、SHAKE、HMAC、HKDF、PBKDF2、DRBG、Argon2 |
-| 对称密码 | AES、SM4、分组模式、CMAC、CCM、XTS、GCM、ASCON |
-| 数论与密钥推导 | NTT、GF(2^m)、模逆/模幂、多项式、RSA |
-| 椭圆曲线与公钥 | EdDSA、ECDSA、ECDH、X25519、SM2、SM9 与曲线/点运算 |
-| 序列密码 | ZUC 状态变换、密钥流及 EEA3 构件 |
-| 后量子密码 | ML-KEM/ML-DSA 格基构件与阶段；另含 SLH-DSA、纠错码教学构件 |
-| 函数与 Blockly 原生类目 | 29 个函数模板及变量、数学、数组、逻辑等 Blockly 原生块 |
+| Category | Representative capabilities |
+|------|--------|
+| Control flow | Iteration and Blockly control composition |
+| Data and conversion | Byte/seed inputs, lengths, type conversion, Base64/Hex and endianness |
+| Bitwise | Logic, shifts, rotates, substitution and expressions |
+| S-Box | Custom S-box plus AES/SM4/ZUC presets |
+| Hashing and padding | SHA-2, SHA-3, SHAKE, SM3, HMAC, KDF and DRBG |
+| Symmetric cryptography | AES, SM4, block modes, CMAC/CCM/GCM/XTS and Ascon |
+| Number theory and KDF | NTT, GF(2^m), polynomials, RSA and related primitives |
+| Elliptic curves and public-key cryptography | ECDH, X25519, ECDSA, EdDSA, SM2 and SM9 |
+| Stream ciphers | ZUC state transformations, keystream and EEA3 components |
+| Post-quantum cryptography | ML-KEM/ML-DSA lattice components and stages; SLH-DSA and code-based teaching components |
+| Functions and Blockly-native categories | 29 function-template registrations and native variables, math, arrays and logic |
 
-> 总数按 `src/blocks/index.ts` 的 `ALL_BLOCK_TYPES` 递归展开、去重得到 222 个活动块类型。另有 29 个函数模板注册项，其中 3 个基础 `crypto_*` 块已计入这 222 个类型，26 个 `proc_*` 模板是额外类型；块与模板合并去重后共 248 个类型。此外还注册 1 个仅供存量工作区加载的兼容身份 `ctrl_assign`（不在工具箱、不计入 222 与 248）。工具箱 17 类目含 4 个 Blockly 原生类目。上表用于说明能力范围，不提供可能重叠的分类小计。以上计数以本 tag 指向的树为准（222 项逐条清单见 [docs/standards/CONFORMANCE-INVENTORY.md](docs/standards/CONFORMANCE-INVENTORY.md) 与 [docs/blocks/INDEX.md](docs/blocks/INDEX.md)），主分支继续演进后数字会变化。
+> The authoritative total is 222 active custom block types after recursively expanding and deduplicating `ALL_BLOCK_TYPES` in `src/blocks/index.ts`. There are 29 function-template registrations: three base `crypto_*` blocks are already included in the 222, while 26 `proc_*` templates are additional types. The deduplicated union contains 248 types. One further identity, `ctrl_assign`, is registered only so legacy workspaces still load: it is absent from the toolbox and excluded from both 222 and 248. The 17 toolbox categories include four Blockly-native categories. The table describes scope, not additive category counts. The counts above belong to the tree this tag points at (the 222-entry itemized list is in [docs/standards/CONFORMANCE-INVENTORY.md](docs/standards/CONFORMANCE-INVENTORY.md) and [docs/blocks/INDEX.md](docs/blocks/INDEX.md)); they drift as the main branch evolves. This educational surface is not a CAVP/ACVTS, CMVP/FIPS 140-3 or formal-verification claim.
 
-## 代码生成示例
+The browser is for Blockly editing, code generation and user trials. Trusted randomness assessment, statistical testing, isolated execution and final reports belong to the `metacrypt_server` backend.
 
-拖拽积木块 → 一键生成可执行代码，以 Kyber (FIPS 203) NTT 后量子原语为例：
+## Code Generation Example
+
+Drag blocks → generate executable code in one click, using the Kyber (FIPS 203) NTT post-quantum primitive as an example:
 
 ### Python
 
@@ -155,7 +158,7 @@ def ntt(a, q=3329, n=256):
         stride >>= 1
     return res
 
-# NTT 域逐点乘法
+# Pointwise multiplication in the NTT domain
 result = ntt_mul(ntt_a, ntt_b, q=3329)
 ```
 
@@ -191,6 +194,6 @@ function ntt(a, q = 3329, n = 256) {
 }
 ```
 
-## 许可证
+## License
 
 [AGPL-3.0-or-later](LICENSE)

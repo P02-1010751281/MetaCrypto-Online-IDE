@@ -118,7 +118,7 @@
 
 | 文件 | 说明 |
 |------|------|
-| [README.md](../README.md) | 项目介绍、快速开始 |
+| [README.zh-CN.md](../README.zh-CN.md) | 项目介绍、快速开始 |
 | [RULES.md](../RULES.md) | 工程行为准则 |
 | [eslint.config.js](../eslint.config.js) | ESLint 规则 |
 | [tsconfig.json](../tsconfig.json) | TypeScript 配置 |

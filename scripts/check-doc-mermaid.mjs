@@ -19,7 +19,7 @@ import process from 'node:process';
 import { JSDOM } from 'jsdom';
 
 const root = process.cwd();
-const SCAN_ROOTS = ['docs', 'README.md', 'README.en.md'];
+const SCAN_ROOTS = ['docs', 'README.md', 'README.zh-CN.md'];
 const SKIP_DIRS = new Set(['node_modules', '.git', '.agents', 'tmp', 'dist', 'dist-verify', 'paper']);
 const BLOCK_PATTERN = /```mermaid\r?\n([\s\S]*?)```/g;
 
