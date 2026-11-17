@@ -90,14 +90,16 @@ describe('procedure code generators', () => {
     block.setFieldValue('transform', 'NAME');
     block.loadExtraState!({ params: [{ name: 'input', id: 'param_input', type: 'bytes' }] });
 
-    const python = generateDefreturnPy(block);
-    const javascript = generateDefreturnJS(block);
-    expect(python).toContain('def transform(input: bytes) -> None:');
+    // `input` 是 Python 内建名，NameDB 会把参数写成 `input2`（体内引用同一张表）；
+    // 走 workspaceToCode 才是真实出码路径，直接调块生成器不初始化 nameDB 的变量表。
+    const python = pythonGenerator.workspaceToCode(workspace);
+    const javascript = javascriptGenerator.workspaceToCode(workspace);
+    expect(python).toContain('def transform(input2: bytes) -> None:');
     expect(python).toContain('return None');
-    expect(python).not.toContain('return input');
+    expect(python).not.toContain('return input2');
     expect(javascript).toContain('@returns {undefined}');
     expect(javascript).toContain('return undefined;');
-    expect(javascript).not.toContain('return input;');
+    expect(javascript).not.toMatch(/return input\b/);
     workspace.dispose();
   });
 

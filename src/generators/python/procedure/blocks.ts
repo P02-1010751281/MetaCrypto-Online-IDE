@@ -5,6 +5,7 @@ import { pythonGenerator, Order } from 'blockly/python';
 import type { Block } from 'blockly/core';
 import { TYPE_MAP } from '@cc/constants/block-types';
 import { TEMPLATE_TYPES } from '@cc/blocks/procedure/blocks';
+import { paramCodeName } from '@cc/generators/procedure-params';
 
 pythonGenerator.forBlock['crypto_return'] = function (
   block: Block,
@@ -50,7 +51,10 @@ export function generateDefreturnPy(block: Block): string {
   const argNodes = mutation ? Array.from(mutation.getElementsByTagName('arg')) : [];
   const params: string[] = [];
   argNodes.forEach((arg, i) => {
-    const name = arg.getAttribute('name') || 'arg' + i;
+    // 参数名走 NameDB：保留字/非法标识符要改成与体内 variables_get 相同的合法名
+    const name = paramCodeName(
+      pythonGenerator, block.workspace, arg.getAttribute('name') || 'arg' + i, arg.getAttribute('varid'),
+    );
     const type = arg.getAttribute('type') || 'bytes';
     const pyType = TYPE_MAP_PY[type] || type;
     params.push(name + ': ' + pyType);
@@ -105,7 +109,7 @@ export function generateTemplatePy(block: Block): string {
   const body = pythonGenerator.statementToCode(block, 'BODY') ||
     '# TODO: implement ' + funcName + ' algorithm\n';
   const returnValue = pythonGenerator.valueToCode(block, 'RETURN', Order.NONE) ||
-    ((block.getFieldValue('PARAM_NAME') as string) || 'arg');
+    paramCodeName(pythonGenerator, block.workspace, (block.getFieldValue('PARAM_NAME') as string) || 'arg');
   // statementToCode 已按 INDENT（2 空格）缩进，函数体需 4 空格 → 再补一层 INDENT
   const bodyIndented = pythonGenerator.prefixLines(body, pythonGenerator.INDENT);
 
@@ -116,7 +120,8 @@ export function generateTemplatePy(block: Block): string {
       const n = block.getFieldValue('PARAM_NAME_' + i);
       if (n === null || n === undefined) break;
       const t = (block.getFieldValue('PARAM_TYPE_' + i) as string) || 'bytes';
-      params.push(n + ': ' + (TYPE_MAP_PY[t] || t));
+      const name = paramCodeName(pythonGenerator, block.workspace, String(n));
+      params.push(name + ': ' + (TYPE_MAP_PY[t] || t));
     }
     const retType = (block.getFieldValue('PARAM_TYPE_0') as string) || 'bytes';
     const sig = 'def ' + funcName + '(' + params.join(', ') + ') -> ' + (TYPE_MAP_PY[retType] || retType) + ':'; 
@@ -124,7 +129,9 @@ export function generateTemplatePy(block: Block): string {
       bodyIndented, '    return ' + returnValue, ''].join('\n');
   }
 
-  const paramName = (block.getFieldValue('PARAM_NAME') as string) || 'arg';
+  const paramName = paramCodeName(
+    pythonGenerator, block.workspace, (block.getFieldValue('PARAM_NAME') as string) || 'arg',
+  );
   const paramType = (block.getFieldValue('PARAM_TYPE') as string) || 'bytes';
   const typeHint = TYPE_MAP_PY[paramType] || paramType;
 

@@ -5,6 +5,7 @@ import { javascriptGenerator, Order } from 'blockly/javascript';
 import type { Block } from 'blockly/core';
 import { TYPE_MAP } from '@cc/constants/block-types';
 import { TEMPLATE_TYPES } from '@cc/blocks/procedure/blocks';
+import { paramCodeName } from '@cc/generators/procedure-params';
 
 javascriptGenerator.forBlock['crypto_return'] = function (
   block: Block,
@@ -48,7 +49,10 @@ export function generateDefreturnJS(block: Block): string {
   const params: string[] = [];
   const jsdoc: string[] = [];
   argNodes.forEach((arg, i) => {
-    const name = arg.getAttribute('name') || 'arg' + i;
+    // 参数名走 NameDB：保留字/非法标识符要改成与体内 variables_get 相同的合法名
+    const name = paramCodeName(
+      javascriptGenerator, block.workspace, arg.getAttribute('name') || 'arg' + i, arg.getAttribute('varid'),
+    );
     const type = arg.getAttribute('type') || 'bytes';
     const jsType = TYPE_MAP_JS[type] || type;
     params.push(name);
@@ -103,7 +107,7 @@ export function generateTemplateJS(block: Block): string {
   const body = javascriptGenerator.statementToCode(block, 'BODY') ||
     '  // TODO: implement ' + funcName + ' algorithm\n';
   const returnValue = javascriptGenerator.valueToCode(block, 'RETURN', Order.NONE) ||
-    ((block.getFieldValue('PARAM_NAME') as string) || 'arg');
+    paramCodeName(javascriptGenerator, block.workspace, (block.getFieldValue('PARAM_NAME') as string) || 'arg');
 
   // 多参数模板：探测 PARAM_NAME_i（PARAM_NAME_0 存在即多参数，如 ML-KEM-Encaps 的 ek/m）
   if (block.getField('PARAM_NAME_0') !== null) {
@@ -113,8 +117,9 @@ export function generateTemplateJS(block: Block): string {
       const n = block.getFieldValue('PARAM_NAME_' + i);
       if (n === null || n === undefined) break;
       const t = (block.getFieldValue('PARAM_TYPE_' + i) as string) || 'bytes';
-      params.push(n as string);
-      docs.push(' * @param {' + (TYPE_MAP_JS[t] || t) + '} ' + n + ' — ' + t + ' 类型参数');
+      const name = paramCodeName(javascriptGenerator, block.workspace, String(n));
+      params.push(name);
+      docs.push(' * @param {' + (TYPE_MAP_JS[t] || t) + '} ' + name + ' — ' + t + ' 类型参数');
     }
     const retType = (block.getFieldValue('PARAM_TYPE_0') as string) || 'bytes';
     return [
@@ -131,7 +136,9 @@ export function generateTemplateJS(block: Block): string {
     ].join('\n');
   }
 
-  const paramName = (block.getFieldValue('PARAM_NAME') as string) || 'arg';
+  const paramName = paramCodeName(
+    javascriptGenerator, block.workspace, (block.getFieldValue('PARAM_NAME') as string) || 'arg',
+  );
   const paramType = (block.getFieldValue('PARAM_TYPE') as string) || 'bytes';
   const jsType = TYPE_MAP_JS[paramType] || paramType;
   return [
