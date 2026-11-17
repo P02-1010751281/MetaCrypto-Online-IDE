@@ -3,7 +3,7 @@ import { extname, resolve, dirname, relative } from 'node:path';
 import process from 'node:process';
 
 const root = process.cwd();
-const scanRoots = ['README.md', 'README.en.md', 'RULES.md', 'docs', 'demos', 'paper/references'];
+const scanRoots = ['README.md', 'README.zh-CN.md', 'RULES.md', 'docs', 'demos', 'paper/references'];
 const ignoredDirectories = new Set(['.git', 'node_modules', 'dist', 'dist-verify', 'target']);
 const publicAssetRoots = ['public', 'frontend/public'].map((path) => resolve(root, path));
 const markdownFiles = [];
