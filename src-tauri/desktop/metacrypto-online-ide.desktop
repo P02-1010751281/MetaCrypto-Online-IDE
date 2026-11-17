@@ -1,9 +1,10 @@
 [Desktop Entry]
-Categories=Development;Education;
+Categories=Development;
 Comment={{comment}}
 Exec={{exec}}
 StartupWMClass={{exec}}
 Icon={{icon}}
+Keywords=education;teaching;cryptography;blockly;post-quantum;
 Name={{name}}
 Terminal=false
 Type=Application

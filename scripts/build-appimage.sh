@@ -53,9 +53,25 @@ ensure_runtime() {
 
 ensure_runtime
 
+# tauri 的 appimage 打包先在 bundle/appimage_deb/data 放一份 deb 式暂存树，再灌进 AppDir；
+# 两处都是增量写入、从不清空。改名（productName 或 mainBinaryName）后旧名字的文件会留在里面，
+# 被原样复制进新 AppDir，症状是 AppDir 根同时存在新旧两个 .desktop 与两套图标，
+# appimagetool 报 "metacrypto-online-ide{.png,...} defined in desktop file but not found" 并拒绝出包。
+# 故构建前清掉这两处暂存目录——它们只由 tauri build 重新生成，删掉无信息损失。
+STALE_DIRS=("$BUNDLE_DIR" "src-tauri/target/release/bundle/appimage_deb")
+for d in "${STALE_DIRS[@]}"; do
+  case "$ROOT/$d" in
+    "$ROOT"/src-tauri/target/release/bundle/*) ;;
+    *) fail "拒绝清理 bundle 之外的路径: $ROOT/$d" ;;
+  esac
+  rm -rf -- "$ROOT/$d"
+  log "清空暂存目录: $d"
+done
+
 log "构建并打包（tauri build --bundles appimage）"
-# tauri build 在这一步仍会失败：它自己调 appimagetool 时同样下载不到 runtime。
-# 失败后 AppDir 已完整生成，由下面的手动打包步骤接手完成。
+# tauri build 仍可能失败：它自己调 appimagetool 时下载不到 runtime（不跟 HTTP 302），
+# 或 linuxdeploy 因暂存目录残留而拒绝出包。失败时 AppDir 已完整生成，由下面的手动打包步骤接手。
+# 2026-11-17 实测：暂存目录清理干净后，这一句直接 rc=0 出包，手动分支不会被触发。
 export APPIMAGE_EXTRACT_AND_RUN=1
 export NO_STRIP=1
 set +e
