@@ -1,7 +1,8 @@
 # v2.0.0 冻结记录（SoftwareX 更新稿对应版本）
 
 日期：2026-11-16
-冻结对象：tag `v2.0.0` → 提交 `f7f6bc0`
+冻结对象：tag `v2.0.0` → 冻结树 `841bfee`
+（冻结当日先钉在 `f7f6bc0`；此后两个文档提交 `11b7b3d`、`841bfee` 把它前移了一次，`git diff --stat f7f6bc0..841bfee` 只有 3 个文件——`PROVENANCE.md`、`README.md`(+2) 与本记录，`src/`、`demos/`、`tests/` 零改动，故下文全部结构数字与门禁结论不受影响。2026-11-16 23:2x 起又做过数次前移，每次只含身份、品牌、产物元信息与执行层命名，见文末各节；当前指向一律以 `git rev-parse 'v2.0.0^{commit}'` 为准）
 门禁：CipherCat type-check 0 / lint 0 / 单测 1018 通过 1 跳过 / `verify:all` RC=0
 （metacrypt 镜像侧同期基线：type-check 0 / lint 0 / 单测 978 / build:prod 0）
 
@@ -111,3 +112,23 @@ git archive v2.0.0 | tar -x -C /tmp/v200 && cd /tmp/v200 && npm ci && npm run ve
 > 为从旧包平滑升级，deb 另声明 `Provides` / `Conflicts` / `Replaces` = `cipher-cat`（旧包名），
 > 使 `dpkg -i` 新包时自动移除 1.0.0 旧包，而不是并存两个图标。
 > 当前指向仍以 `git rev-parse 'v2.0.0^{commit}'` 为准。
+
+> **2026-11-17 10:2x 前移（AppImage 打包链与桌面条目分类，自 `841bfee` 起第 5 次）**：本轮把
+> `scripts/build-appimage.sh` 与桌面模板的修复纳入 tag 树，并把上文「冻结对象」行更正为 `841bfee`
+> ——此前该行只写到 `f7f6bc0`，与树内实际谱系不符（更正版原先只在 main 侧，派生链没有带上）。
+> - **AppImage**：`tauri build --bundles appimage` 复用 `bundle/appimage_deb/data` 与 `bundle/appimage`
+>   做增量暂存，改名后旧名文件（`usr/bin/ciphercat`、`CipherCat.desktop`、`ciphercat.png`）残留，
+>   被原样复制进新 AppDir，appimagetool 报 `metacrypto-online-ide{.png,...} defined in desktop file but not found`
+>   而拒绝出包。脚本改为构建前清空这两处暂存目录（带路径守卫，只允许删 `src-tauri/target/release/bundle/` 之下）。
+>   清理后 `tauri build` 直接 rc=0，产出 `MetaCrypto Online IDE_2.0.0_amd64.AppImage`（128 MB，AppDir 329 MB）。
+> - **桌面条目**：`Categories=Development;Education;` 含两个主类目，`desktop-file-validate` 与 appimagetool
+>   均报「contains more than one main category」（应用会在菜单里出现两次）；改为单一主类目
+>   `Categories=Development;`，教育语义移入 `Keywords=education;teaching;cryptography;blockly;post-quantum;`。
+>   重打后 `desktop-file-validate` 无 hint。
+> - **实测**：deb 内 `usr/bin/metacrypto-online-ide`、`Package: meta-crypto-online-ide`、
+>   `Provides` / `Conflicts` / `Replaces` = `cipher-cat`；AppImage 在 Wayland 下以
+>   `APPIMAGE_EXTRACT_AND_RUN=1` 实跑通，窗口标题 `MetaCrypto Online IDE`、应用 ID `Metacrypto-online-ide`。
+> - **树内数字不变**：单测 89 文件、演示 62、积木 222、`docs/` Markdown 437、链接覆盖 443
+>   （`node scripts/check-doc-links.mjs` → `files=443 broken=0`）。稿件四源与四份产物本轮无须改动：
+>   正文只写「仓库同时提供 Web 构建与桌面封装」，不含 AppImage / deb / desktop 字段的具体陈述。
+> - 当前指向仍以 `git rev-parse 'v2.0.0^{commit}'` 为准。
