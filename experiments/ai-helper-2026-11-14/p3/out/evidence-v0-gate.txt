@@ -1,0 +1,29 @@
+# V0 开火证据（2026-11-17 20:40 本地）
+# 做法：cp samples/bing-sm4-sbox.c /tmp/bing.orig；printf '\n' >> samples/bing-sm4-sbox.c；跑 --stage v0；再 cp 回去。
+# 恢复后 sha256：d7dbb1809c533d0a1c408dd1c04574b24bea0c3d39d2ef3df39f9bd03f66e157  samples/bing-sm4-sbox.c
+
+P3 第一步切片读数（B 线：外部 C 参考实现 → Blockly 工作区）
+生成时间 2026-11-17T12:41:44.644Z  git 4cfc12f  node v26.13.1
+gcc: gcc (GCC) 16.2.1 20260810
+python: Python 3.14.10
+harness: dist-verify/verify-demo.js sha256=3330d03154c34b35…
+
+V0 样本哈希/来源/行数 + 别名可审
+id                      lines  sha256(ok)  source
+jia-aes-round             39  OK        自撰，非第三方参考实现
+yi-aes-ecb                28  OK        自撰，非第三方参考实现
+bing-sm4-sbox             24  MISMATCH  自撰，非第三方参考实现
+别名 6 条，全部在契约键内且证据行可定位：是；V0 总判定 FAIL
+
+V1 结构解析（N=样本数 / 通过 / 诊断）
+id                      fns  for if assigns calls indexR indexW  unsupported  drift
+（本次未运行 V1：--stage v0）
+
+V2 映射（别名命中 / 结构骨架 / 工作区可生成）
+（本次未运行 V2：--stage v0/v1）
+
+V3 差分：（本次未运行 V3：--stage v0/v1/v2）
+
+说明：V3 的 Python 侧代码由 dist-verify/verify-demo.js 载入 V2 生成的工作区后，用本仓库 Python 生成器输出；C 侧由 gcc 编译样本 + 生成的驱动。两侧跑同一组向量。
+
+JSON: experiments/ai-helper-2026-11-14/p3/out/p3-summary.json

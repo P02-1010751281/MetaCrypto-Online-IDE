@@ -1,0 +1,63 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "procedures_defreturn",
+        "id": "yi-aes-ecb_def",
+        "x": 100,
+        "y": 100,
+        "extraState": {
+          "params": [
+            {
+              "name": "in_",
+              "id": "p_in",
+              "type": "bytes"
+            },
+            {
+              "name": "key",
+              "id": "p_key",
+              "type": "bytes"
+            }
+          ],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "P3_AES_ECB_Block"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "mode_ecb_encrypt",
+              "id": "yi_aes_ecb_n3",
+              "inputs": {
+                "DATA": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "yi_aes_ecb_n1",
+                    "fields": {
+                      "VAR": {
+                        "id": "p_in"
+                      }
+                    }
+                  }
+                },
+                "KEY": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "yi_aes_ecb_n2",
+                    "fields": {
+                      "VAR": {
+                        "id": "p_key"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

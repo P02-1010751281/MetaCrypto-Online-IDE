@@ -3142,4 +3142,207 @@ def cut(state, i):
 3. `range(a, b)` 非常量端点：缺「起点 + 次数」计数循环；
 4. 语句位置的原语调用与多 return（§41/§43.5）不变。
 
+> 第 1–3 条已被 §47 关闭（新增 `arr_append`/`ctrl_range` + 复用原生 `math_constrain`）。本节保留为当时判定。
 
+## 47. 三块收口：§44.6 缺口关闭 + P3/P4 第一条切片（2026-11-17 夜）
+
+owner 批准「新增块类型」并选择「P3 与 P4 两条并行」。本轮四件事：加块 → 反解析接线 →
+P3 第一步读数 → P4 纵向切片；外加 metacrypt 的 `verify:build` 空门禁。
+
+### 47.1 新增两个块，第三个原语复用原生块
+
+| 块 | 形态 | Python | JavaScript | 存在理由 |
+|---|---|---|---|---|
+| `arr_append` | 语句；`LIST`(IntList) / `VALUE`(Number) | `LIST.append(VALUE)` | `LIST.push(VALUE);` | 块模型此前没有任何 append：`lists_setIndex` 被覆盖成只做按下标赋值 |
+| `ctrl_range` | 语句；`VAR` 字段 + `FROM`/`TO` 值输入 + `DO` | `for VAR in range(FROM, TO):` | `for (let VAR = FROM; VAR < TO; VAR++)` | `TO` 独占，逐字对应 `range(a, b)`；`controls_for` 是闭区间、起点大于终点会倒序 |
+| `math_constrain`（**原生，未新增**） | 值块；`VALUE`/`LOW`/`HIGH` | `min(max(v, low), high)` | `Math.min(Math.max(v, low), high)` | 切片钳位的正确原语；`src/utils/toolbox-config.ts:101` 早已放进 Math 类目 |
+
+- 契约键 **222 → 224**（`npm run block-io:write` 重新生成，未手写）；`CONFORMANCE-INVENTORY` 的活动块/合并类目/工具箱口径同步成 224/250/225。
+- 生成产物随契约刷新：`reverse/{field-templates,closure-names}.json`、`block-index.json`、`doc-index.json`、`code-signatures.json`（`FIELD_CHECK ok blocks=224`、`CLOSURE_CHECK ok names=226` 是刷新后的读数）。
+- `VALUE` 取 `Number` 而非 `null` 是刻意的：未标注类型的槽位（`variables_get`、原生列表取值块）按通配放行，明确输出 `IntList`/`Bytes` 的容器块被拒——否则「把容器当元素追加」会静默生成嵌套容器。
+
+### 47.2 §44.6 五件事的落点
+
+| # | 改动 | 结果 |
+|---|---|---|
+| 1 | 两参 `range(a, b)`（步长 1，含三参步长 1）两条路径都改指 `ctrl_range` | `RANGE_EMPTY` / `RANGE_ENDPOINT` 两条诊断删除；常量空区间现在**精确**（一次不执行） |
+| 2 | `a[i:]` 长度 = `math_constrain(len(源) - i, 0, len(源))` | `i<0` / `0≤i≤len` / `i>len` 三种情况与 Python 一致，`SLICE_TAIL_DRIFT` 删除 |
+| 3 | `a[i:j]` 长度 = `math_constrain(j - i, 0, len(源))`；**至少一端非字面量**仍报 `SLICE_DYNAMIC_SIGN` | 常量同号精确；常量异号仍 `SLICE_SIGN`；`a[-2:j]` 实测块得 `[3,4]`、Python 得 `[3]`——所以保留诊断而不是静默 |
+| 4 | 推导式脱糖：`target = [... for v in range(...)]` → `target = []` → 循环 → `arr_append`；`if` 用 `controls_if`；`for x in <列表>` 用 `controls_forEach` | 只认赋值右侧且单生成器；多生成器非全字面量报 `COMP_NESTED`，表达式位置报 `COMP_ASSIGN_ONLY`；变量遮蔽按已有名字集合确定性改名（`v → v_1`） |
+| 5 | 两条路径同形 + 闭链 7 段样本；诊断文案共用 `diagnostics.ts` | 指纹（类型+输入+字段+extraState，变量 id→名）逐字相等 |
+
+拆分只为守 500 行：`blocks.ts` 460 → 289（拆出 `ast/block-ctx.ts`、`ast/expr-blocks.ts`），模板路径新增 `core/comprehension.ts`。
+
+### 47.3 浏览器 e2e 抓到的真 bug：语句链被覆盖（单测漏掉）
+
+新脚本 `c2w-s44-closure-e2e.mjs` 第一次跑就红：解析 **33 块 / 0 诊断**，但再生成代码里只有
+`table = []` / `odds = []`，**没有循环、没有 append**，也没有一条诊断——等于静默丢语句。
+
+根因在 `serialize.ts` 的串联：推导式脱糖后一条语句单元是 `chain` 虚拟节点（空列表 + 循环 + append），
+`toChain` 把 `toBlock` 返回的**链头**当游标去接下一句，于是 `assign.next = 下一条语句` 覆盖掉了
+`assign.next = loop`。单测没抓到是因为它们的样本都把推导式放在函数体**末尾**，后面没有语句可覆盖。
+
+修复：新增 `tailOf()`，`toChain` 与 `chain` 分支都按**链尾**接下一句。回归测试
+`ai-helper-reverse-comprehension-chain.test.ts` 用「推导式后面还有语句」的样本钉住；**阴性对照**：
+把 `cursor = tailOf(block)` 改回 `cursor = block`，该用例立刻变红（`ctrl_iterate` 数量 2→0）。
+
+修复后 e2e：**49 块 / 1 函数 / 0 处诊断**，再生成含
+`table = []`、`table.append(v * 2)`、`odds = []`、`if v > 2:`、`odds.append(v)`、
+`min(max(len(state) - i, 0), len(state))`、`range(0, len(state))`。
+
+### 47.4 P3 第一步读数（`proposals/P3-FIRST-SLICE.md`）
+
+三份 ≤40 行 C 样本，**均自撰、非第三方参考实现**（按 FIPS 197 / SP 800-38A / GB/T 32907 附录表转写，
+文件头与报告双写；sha256 钉在 `p3/samples/manifest.json`）。
+
+| 样本 | V0 哈希/来源 | V1 结构扫描 | V2 别名命中 | V3 双侧差分 |
+|---|---|---|---|---|
+| 甲 AES 轮函数（39 行） | 通过 | 已知 90 / 未知 0，诊断 5 | 8 条（4 定义 + 4 调用点） | 1/1（FIPS 197 C.1 第 1 轮） |
+| 乙 AES-ECB（28 行） | 通过（含依赖甲） | 已知 85 / 未知 0，诊断 4 | 1 条（整函数 `mode_ecb_encrypt`） | 5/5（SP 800-38A F.1.1 + FIPS 197 C.1） |
+| 丙 SM4 S 盒（23 行） | 通过 | 已知 5 / 未知 0，诊断 1 | 1 条（`sm4_sbox`） | 3/3（GB/T 32907 附录 A） |
+
+- V3 是**双侧**：C 侧 gcc 16.2.1 编译样本 + 脚本生成的驱动；Python 侧由 `dist-verify/verify-demo.js`
+  载入 V2 工作区、用本仓库生成器出码，同一组 hex 输入逐行比对。合计 **9/9 向量**。
+- **阴性对照**：把 `sub_bytes` 的别名改成 `aes_shift_rows`（类型仍可生成），向量当场变红
+  （`ed416f36…` ≠ `89d810e8…`）——说明这张人工真值表确实被差分守着。
+- 边界：V3 只覆盖两种函数形态（整函数被别名吸收 / 纯原语调用链）；`expand_key` 这类带分支循环的体
+  **没有** V3 读数；7 条 `semantic-drift`（uint8 截断 vs 32 位块语义）在给定向量上未显现，不等于任意输入等价。
+- 顺带抓到一个**产品层真缺陷**（未修，属维护者线）：procedure 块把参数名原样写进签名，`in` 在 Python
+  与 JS 都是保留字 → `def f(in: bytes)` / `function f(in, key)` 语法错。切片只在映射层清洗成 `in_`。
+
+### 47.5 P4 纵向切片读数（`proposals/P4-FIRST-SLICE.md`）
+
+| 段 | 实测 |
+|---|---|
+| 锚点抽取器（`scripts/p4-anchors.mjs`） | FIPS 180-4 的 5 个条目 → **14 个条款单元，14/14 可点**（`#L` 行区间 + 切片 sha256），节级 0；另抓到 **2 处**声明锚点落在错的小节 |
+| 三档判定器（`scripts/p4-verdicts.ts`） | **能搭 1 / 部分 3 / 不能 1**；证据层 L1 5、L2 0、L3 0；缺口 11 条；全程不读「项目状态」 |
+| 试点工程（`p4/build-project.py`） | **2 个 block 文件 + 1 个 ProjectRecord**，`entryFileId=file-main`，**33 块**（algo 28 + main 5），12 种块类型，0 未知类型 |
+| verify-project（`scripts/verify-project.ts`） | Python **PASS** / JS **PASS**，都是 `248d6a61…19db06c1`；单分组阴性对照双语言 PASS（`85e655d6…` ≠ 期望）；Python 90 行 / JS 110 行 |
+
+- 独立复跑：`anchors.json` 与 `verdicts.json` 重跑后**逐字节相同**，向量重跑仍 PASS（主线程复验过，不是抄子 agent）。
+- 两处判据修正：① P4-SCOPE 的「typecheck 0 unknown」不可达——24 对配对里 0 mismatch，但 24 全 unknown
+  （15 对是 `variables_get`/`math_*` 本身无契约，9 对是父块输入 `setCheck(null)`），建议改判「0 mismatch +
+  unknown 逐条归因」；② L2（tooltip 反引标准号）对 FIPS 180-4 是死的：222 个块只有 3 个 tooltip 提到
+  FIPS 180-4，且**没有任何 SHA-256 pad/compress 块**，判定只能押在 L1 上。
+- 缺口是实测的：缺 `words→bytes` 大端打包块，`05-Digest` 永远到不了「能搭」，本轮 digest 只能由 driver 格式化。
+
+### 47.6 metacrypt 的 `verify:build` 空门禁已修
+
+`vite.verify.config.ts` 缺 `@cc/*` 别名（`vite.config.ts` / `vitest.config.ts` 都有），`@cc/migration`
+解析失败使这条门禁一直报错。补 7 条别名（具体项排在 `@` 之前）后实跑：
+
+| 项 | 结果 |
+|---|---|
+| `npm run verify:build` | **rc=0**（此前 Rollup 解析失败） |
+| `npm run verify:templates` | **29/29 PASS** |
+| `node scripts/verify-demos.mjs` | **60/60 PASS** |
+| `npx vue-tsc --noEmit` / `npm run lint:check` | 0 / 0 |
+| `npx vitest run ../tests/frontend/unit/blockly` | **53 文件 / 483 通过** |
+
+### 47.7 门禁（整树实跑）
+
+| 项 | 结果 |
+|---|---|
+| 单测 | **114 文件 / 1261 通过 1 跳过（1262）**（§46 是 111 / 1217） |
+| lint / 类型 | `eslint .` 0 错误 0 警告 / `vue-tsc` 0 |
+| `npm run verify:all` | **rc=0**（contract 0 errors、`FIELD_CHECK ok blocks=224`、`CLOSURE_CHECK ok names=226`、模板 29/29、demos 60/60） |
+| 浏览器 e2e | `c2w-s44-closure-e2e.mjs`：**49 块 / 0 处诊断 / 载入画布 49 块 / 再生成 8/8 片段** |
+| P3 复跑 | `node …/p3/run-p3.mjs`：rc=0，V3 9/9，阴性对照开火 |
+| P4 复跑 | `p4-anchors.mjs` / `p4-verdicts.ts` / `verify-project.ts`：读数逐字节相同，向量 PASS |
+
+### 47.8 仍然缺什么
+
+1. **语句位置的原语调用**与**多 return**（§41/§43.5）不变；
+2. **多生成器且不全是字面量**的推导式（`COMP_NESTED`）与**表达式位置**的推导式（`COMP_ASSIGN_ONLY`）；
+3. **推导式循环变量泄漏**：`arr = [v for v in range(n)]` 之后原文 `return v` 是 NameError，展开后 `v` 存在——
+   只在同名冲突时改名，泄漏本身未处理（已在 `S44-CLOSURE.md` 记录）；
+4. **两参切片的运行期异号**：已用 `SLICE_DYNAMIC_SIGN` 明示，但没有运行期符号判定原语；
+5. ~~**JS `ctrl_range` 的 `TO` 每轮重新求值**~~ —— 已由 §48 关闭：`ctrl_range` 的 `TO` 与 `ctrl_iterate`
+   的 `TIMES` 现在都在进循环前绑定，两个语言次数一致；
+6. ~~**procedure 参数名保留字**（`in`/`class`/…）会生成非法代码~~ —— 已由 §49 关闭：签名侧也走 NameDB；
+
+7. P3 的 V3 不覆盖带分支循环的函数体；P4 的语义等价仍 `unverified`（交人签核）。
+
+## 48. 循环端点只求值一次：`ctrl_range` / `ctrl_iterate` 的 JS 侧收口（2026-11-17 夜）
+
+§47.8 第 5 条当场修掉，不再挂着。`ctrl_range` 的 `TO` 与 `ctrl_iterate` 的 `TIMES` 在 JS 里是
+`for` **条件**的一部分，每轮重算；Python 的 `range(...)` 只在进循环前求值一次。两边因此能跑出
+不同次数，两种写法都会踩到：
+
+- 端点有副作用：`range(0, next())`；
+- 循环体改了端点变量：`for i in range(0, len(x)): x.append(0)` —— Python 跑 `len(x)` 次，
+  JS 会一直追着自己的尾巴跑（列表越长、次数越多），直到耗尽内存。
+
+**落法**：新增 `src/generators/javascript/ctrl/loop-bound.ts`，非常量端点先绑临时变量再比较——
+`for (let i = n, __ctrl_range_to__ = m; i < __ctrl_range_to__; i++)`（`ctrl_iterate` 用
+`__ctrl_iterate_times__`）。**字面量不绑**：`for (let i = 0; i < 5; i++)` 本来就不会变，多一个
+临时变量只会让教学出码更难读。`FROM` 只在初始化里出现一次，不需要处理；Python 侧不动（本来就一次）。
+
+**阳性/阴性**（`tests/unit/ctrl-range-append-contract.test.ts`、`tests/unit/control-logic-block-contract.test.ts`）：
+
+| 用例 | 断言 |
+|---|---|
+| 循环体改终点变量（`range(0, m)` 里 `m += 1`） | 两种语言都是 `[0, 1, 2]`（m0=3） |
+| 循环体改次数变量（`range(times)` 里 `times += 1`） | 两种语言都是 `[0, 1, 2]`（times0=3） |
+| 字面量端点 | JS 出码仍是 `for (let i = 0; i < 5; i++)`，不含 `__ctrl_range_to__` |
+| 端点是变量 | JS 出码含 `, __ctrl_range_to__ = m` |
+
+阴性对照：把 `captureLoopBound` 临时改成恒返回「不绑定」，上表前两条当场变红——JS 侧抛
+`Error: loop bound re-evaluated`，不会挂死（循环体带 64 轮守卫），变异打完已还原。
+
+**门禁（整树实跑）**：单测 **114 文件 / 1264 通过 1 跳过（1265）**（§47 是 114 / 1261）；
+`lint:check` 0 错误 0 警告；`vue-tsc` 0；`npm run verify:all` **rc=0**（`DOC_INDEX_CHECK ok`、
+`FIELD_CHECK ok blocks=224`、`CLOSURE_CHECK ok names=226`、模板 29/29、demos 60/60、
+`CONTRACT_GATE_SUMMARY errors=0`）。
+
+**文档同步**：`docs/blocks/ecc-sbox.md` 与 `.en.md` 补一段「区间在进入循环前定格」（含临时变量名与
+那个 append 例子）；`ctrl_range` 块注释指向 `loop-bound.ts`。改完跑 `npm run docs:index` 重建
+索引（437 篇 / hash `2f58a2c5…`），否则 `verify:all` 的 `DOC_INDEX_CHECK` 会报语料不一致。
+
+## 49. 函数封装参数名走 NameDB（2026-11-17 夜，owner 指示「先修再提交」）
+
+§47.8 第 6 条，本轮修掉。签名侧一直直接抄工作区变量名，而函数体里的 `variables_get` 走的是
+NameDB——两边不同源，于是：
+
+```
+def f(in: bytes):      # 语法错（in 是 Python 保留字）
+    return in2         # 体内引用已被 NameDB 改名
+```
+
+不是「语法错」一处问题：**签名与引用同时错位**。命中面比 `in`/`class` 这些关键字更宽——
+Blockly 的 Python 保留字表把内建名也算进去（`bytes`、`input`、`int`、`list` … 实测表长 1961
+字符），所以「参数名叫 `bytes`」这种很自然的写法同样会坏；JS 侧的 `class`/`in` 同理。
+
+**落法**（`src/generators/procedure-params.ts` 的 `paramCodeName`）：签名侧过同一次
+`getVariableName`，并且**按名字查表而不是按变量 id**——`getName(id)` 依赖 `setVariableMap`
+（只有 `workspaceToCode` 常规路径装好），离屏直接调块生成器会退化成把 id 当名字；名字查询在
+两种调用方式下一致，也与体内引用收敛到同一条 `getDistinctName` 记录。覆盖四处：def 多参数
+（Python/JS）、模板块单参数与多参数（Python/JS），外加模板 `RETURN` 留空时兜底返回的参数名。
+
+| 输入参数名 | Python 签名 | JS 签名 | 说明 |
+|---|---|---|---|
+| `in` | `in2` | `in2` | 两种语言都保留 |
+| `class` | `class2` | `class2` | 同上 |
+| `bytes` | `bytes2` | `bytes` | Python 内建名算保留字；JS 合法，不强改 |
+| `my param` | `my_param` | `my_param` | 非法标识符合法化 |
+| `key` | `key` | `key` | 合法名原样保留（阴性项） |
+
+**阳性读数**（`tests/unit/procedure-param-name-reserved.test.ts`，6 条）：除了文本断言，还把生成
+代码真跑一遍——Python `python3` 调 `f(b"ab")`、JavaScript `new Function` 调 `f(Uint8Array([97,98]))`，
+两边都必须返回 `6162`。签名与引用不同名时这两处会直接抛错，绕不过去。
+
+**阴性对照**：把 `paramCodeName` 改成恒返回原名 → 5/6 变红（`def f(in: bytes)` 对不上期望
+`in2`），只有「合法名 `key` 不改」那条保持绿（变异矩阵只红目标项）；改完已还原。
+
+**顺带修的一处测试夹具问题**：`procedure-generator.test.ts` 里两条用例直接调块生成器
+（`generateDefreturnPy(block)`），它不初始化 nameDB 的变量表；现在改为走 `workspaceToCode`
+真实路径，并把 `input` 的期望改成 `input2`——这正是真实出码行为。
+
+**门禁（整树实跑）**：单测 **115 文件 / 1270 通过 1 跳过（1271）**（§48 是 114 / 1264，本轮 +6
+条）；`lint:check` 0 错误 0 警告；`vue-tsc` 0；`npm run verify:all` **rc=0**
+（`DOC_INDEX_CHECK ok`、`FIELD_CHECK ok blocks=224`、`CLOSURE_CHECK ok names=226`、模板 29/29、
+demos 60/60、`CONTRACT_GATE_SUMMARY errors=0`）。文档同步：`docs/blocks/ecc-sbox{,.en}.md`
+的函数封装节补了这条规则；改完跑 `npm run docs:index` 重建索引（437 篇 / hash `16202ad8…`）。
+
+仍未做：`metacrypt_server` 的镜像同步（`sync-to-metacrypt.sh`）——它是第二仓，工作区里还有别的
+未提交改动，等 owner 决定何时同步。

@@ -1,0 +1,101 @@
+{
+  "project": "experiments/ai-helper-2026-11-14/p4/project/sha256-multiblock.project.json",
+  "name": "FIPS 180-4 SHA-256 多分组（src 58d09d35）",
+  "language": "python",
+  "structure": {
+    "files": 2,
+    "names": [
+      "algo.sha256.block.json",
+      "main.block.json"
+    ],
+    "entryFileId": "file-main",
+    "entryMatches": true,
+    "perFile": [
+      {
+        "name": "algo.sha256.block.json",
+        "serializedBlocks": 28,
+        "loadedBlocks": 28,
+        "ok": true
+      },
+      {
+        "name": "main.block.json",
+        "serializedBlocks": 5,
+        "loadedBlocks": 5,
+        "ok": true
+      }
+    ]
+  },
+  "symbols": [
+    {
+      "name": "SHA256_Multiblock",
+      "params": [
+        {
+          "name": "msg",
+          "type": "message"
+        }
+      ],
+      "path": "algo.sha256.block.json",
+      "fileId": "file-algo-sha256"
+    }
+  ],
+  "generation": {
+    "pythonLines": 90,
+    "javascriptLines": 110,
+    "pythonFnv1a64": "cfb33505b629c970",
+    "javascriptFnv1a64": "1db9ee7fabd4f5cd",
+    "iterationProof": {
+      "pythonLoop": true,
+      "javascriptLoop": true,
+      "pythonChunk": true,
+      "javascriptChunk": true
+    }
+  },
+  "typecheck": {
+    "pairs": 24,
+    "ok": 0,
+    "mismatch": 0,
+    "unknown": 24,
+    "unknownCauses": {
+      "coreBlockNoContract": 15,
+      "parentInputNoCheck": 9,
+      "childOutputNoCheck": 0
+    },
+    "findings": []
+  },
+  "vector": {
+    "name": "FIPS 180-4 Appendix B.2 (448-bit message)",
+    "expect": "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1",
+    "python": {
+      "lang": "Python",
+      "pass": true,
+      "got": "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1",
+      "expect": "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"
+    },
+    "javascript": {
+      "lang": "JS",
+      "pass": true,
+      "got": "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1",
+      "expect": "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"
+    },
+    "control": {
+      "note": "单分组对照：只对第一个 512-bit 分组调用 compress，输出必须 ≠ 官方向量",
+      "mustDifferFrom": "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1",
+      "results": [
+        {
+          "lang": "Python",
+          "got": "85e655d6417a17953363376a624cde5c76e09589cac5f811cc4b32c1f20e533a",
+          "differ": true,
+          "error": ""
+        },
+        {
+          "lang": "JS",
+          "got": "85e655d6417a17953363376a624cde5c76e09589cac5f811cc4b32c1f20e533a",
+          "differ": true,
+          "error": ""
+        }
+      ]
+    }
+  },
+  "pass": true,
+  "problems": []
+}

@@ -1,0 +1,47 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "procedures_defreturn",
+        "id": "bing-sm4-sbox_def",
+        "x": 100,
+        "y": 100,
+        "extraState": {
+          "params": [
+            {
+              "name": "x",
+              "id": "p_x",
+              "type": "int"
+            }
+          ],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "P3_SM4_Sbox"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "sm4_sbox",
+              "id": "bing_sm4_sbox_n2",
+              "inputs": {
+                "INPUT": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "bing_sm4_sbox_n1",
+                    "fields": {
+                      "VAR": {
+                        "id": "p_x"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

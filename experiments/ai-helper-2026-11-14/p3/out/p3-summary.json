@@ -1,0 +1,1510 @@
+{
+  "schema": 1,
+  "generatedAt": "2026-11-17T13:17:51.953Z",
+  "stage": "all",
+  "env": {
+    "node": "v26.13.1",
+    "platform": "linux-x64",
+    "gcc": "gcc (GCC) 16.2.1 20260810",
+    "python": "Python 3.14.10",
+    "gitHead": "4cfc12f",
+    "harness": {
+      "ok": true,
+      "path": "dist-verify/verify-demo.js",
+      "sha256": "262f8fe5eccef739dc5b788be846408ba2946f099e16d5c16274f9cc36cca4b3",
+      "mtime": "2026-11-17T13:12:50.941Z"
+    }
+  },
+  "v0": {
+    "ok": true,
+    "contractKeys": 224,
+    "sampleCount": 3,
+    "aliasCount": 6,
+    "aliasesOk": true,
+    "samples": [
+      {
+        "id": "jia-aes-round",
+        "file": "jia-aes-round.c",
+        "exists": true,
+        "expectedSha256": "68bd0d7c2b13464d0ee8a5e155c1fe4ff3faf5aafa873d8c8b5c56899f73792c",
+        "actualSha256": "68bd0d7c2b13464d0ee8a5e155c1fe4ff3faf5aafa873d8c8b5c56899f73792c",
+        "hashOk": true,
+        "lines": 39,
+        "linesOk": true,
+        "source": "自撰，非第三方参考实现",
+        "provenance": "按 FIPS 197 §5.1.1–5.1.4 的四个变换定义与 §5.1.1 的 S 盒表转写；未取用任何第三方代码，也未从第三方实现裁剪",
+        "standard": "FIPS 197 (2001) §5.1.1 SubBytes / §5.1.2 ShiftRows / §5.1.3 MixColumns / §5.1.4 AddRoundKey",
+        "license": "AGPL-3.0-or-later（随本仓库；标准附录表格本身非版权对象主张）",
+        "retrieved": "2026-11-17",
+        "verifyCommand": "sha256sum jia-aes-round.c",
+        "dependsOn": [],
+        "ok": true
+      },
+      {
+        "id": "yi-aes-ecb",
+        "file": "yi-aes-ecb.c",
+        "exists": true,
+        "expectedSha256": "677df19bce0354a2fafe3815e8be40159f0b55ba2d8268d32980985b0c511ad8",
+        "actualSha256": "677df19bce0354a2fafe3815e8be40159f0b55ba2d8268d32980985b0c511ad8",
+        "hashOk": true,
+        "lines": 28,
+        "linesOk": true,
+        "source": "自撰，非第三方参考实现",
+        "provenance": "密钥扩展按 FIPS 197 §5.2 的定义编写；轮函数与 S 盒来自同目录样本甲（显式 #include），本文件只写扩展与 10 轮编排",
+        "standard": "FIPS 197 (2001) §5.1/§5.2；SP 800-38A (2001) §6.1 ECB",
+        "license": "AGPL-3.0-or-later（随本仓库）",
+        "retrieved": "2026-11-17",
+        "verifyCommand": "sha256sum yi-aes-ecb.c",
+        "dependsOn": [
+          {
+            "file": "jia-aes-round.c",
+            "sha256": "68bd0d7c2b13464d0ee8a5e155c1fe4ff3faf5aafa873d8c8b5c56899f73792c",
+            "exists": true
+          }
+        ],
+        "ok": true
+      },
+      {
+        "id": "bing-sm4-sbox",
+        "file": "bing-sm4-sbox.c",
+        "exists": true,
+        "expectedSha256": "d7dbb1809c533d0a1c408dd1c04574b24bea0c3d39d2ef3df39f9bd03f66e157",
+        "actualSha256": "d7dbb1809c533d0a1c408dd1c04574b24bea0c3d39d2ef3df39f9bd03f66e157",
+        "hashOk": true,
+        "lines": 23,
+        "linesOk": true,
+        "source": "自撰，非第三方参考实现",
+        "provenance": "按 GB/T 32907-2016 §7.3 τ 变换与附录 A 的 S 盒逐字节转写；查表函数为自写，未取用第三方实现",
+        "standard": "GB/T 32907-2016 §7.3 / 附录 A（S 盒）",
+        "license": "AGPL-3.0-or-later（随本仓库；标准附录表格本身非版权对象主张）",
+        "retrieved": "2026-11-17",
+        "verifyCommand": "sha256sum bing-sm4-sbox.c",
+        "dependsOn": [],
+        "ok": true
+      }
+    ],
+    "aliases": [
+      {
+        "c": "sub_bytes",
+        "block": "aes_sub_bytes",
+        "inContract": true,
+        "duplicateCName": false,
+        "evidence": [
+          {
+            "label": "blockDef",
+            "file": "src/blocks/symmetric/aes/blocks.ts",
+            "line": 15,
+            "found": true,
+            "lineText": "Blockly.Blocks['aes_sub_bytes'] = {"
+          },
+          {
+            "label": "generator",
+            "file": "src/generators/python/symmetric/aes/blocks.ts",
+            "line": 35,
+            "found": true,
+            "lineText": "pythonGenerator.forBlock['aes_sub_bytes'] = function (block: Block): [string, number] {"
+          }
+        ],
+        "evidenceOk": true,
+        "ok": true
+      },
+      {
+        "c": "shift_rows",
+        "block": "aes_shift_rows",
+        "inContract": true,
+        "duplicateCName": false,
+        "evidence": [
+          {
+            "label": "blockDef",
+            "file": "src/blocks/symmetric/aes/blocks.ts",
+            "line": 27,
+            "found": true,
+            "lineText": "Blockly.Blocks['aes_shift_rows'] = {"
+          },
+          {
+            "label": "generator",
+            "file": "src/generators/python/symmetric/aes/blocks.ts",
+            "line": 48,
+            "found": true,
+            "lineText": "pythonGenerator.forBlock['aes_shift_rows'] = function (block: Block): [string, number] {"
+          }
+        ],
+        "evidenceOk": true,
+        "ok": true
+      },
+      {
+        "c": "mix_columns",
+        "block": "aes_mix_columns",
+        "inContract": true,
+        "duplicateCName": false,
+        "evidence": [
+          {
+            "label": "blockDef",
+            "file": "src/blocks/symmetric/aes/blocks.ts",
+            "line": 39,
+            "found": true,
+            "lineText": "Blockly.Blocks['aes_mix_columns'] = {"
+          },
+          {
+            "label": "generator",
+            "file": "src/generators/python/symmetric/aes/blocks.ts",
+            "line": 65,
+            "found": true,
+            "lineText": "pythonGenerator.forBlock['aes_mix_columns'] = function (block: Block): [string, number] {"
+          }
+        ],
+        "evidenceOk": true,
+        "ok": true
+      },
+      {
+        "c": "add_round_key",
+        "block": "aes_add_round_key",
+        "inContract": true,
+        "duplicateCName": false,
+        "evidence": [
+          {
+            "label": "blockDef",
+            "file": "src/blocks/symmetric/aes/blocks.ts",
+            "line": 51,
+            "found": true,
+            "lineText": "Blockly.Blocks['aes_add_round_key'] = {"
+          },
+          {
+            "label": "generator",
+            "file": "src/generators/python/symmetric/aes/blocks.ts",
+            "line": 87,
+            "found": true,
+            "lineText": "pythonGenerator.forBlock['aes_add_round_key'] = function (block: Block): [string, number] {"
+          }
+        ],
+        "evidenceOk": true,
+        "ok": true
+      },
+      {
+        "c": "sm4_sbox",
+        "block": "sm4_sbox",
+        "inContract": true,
+        "duplicateCName": false,
+        "evidence": [
+          {
+            "label": "blockDef",
+            "file": "src/blocks/symmetric/sm4/blocks.ts",
+            "line": 17,
+            "found": true,
+            "lineText": "Blockly.Blocks['sm4_sbox'] = {"
+          },
+          {
+            "label": "generator",
+            "file": "src/generators/python/symmetric/sm4/blocks.ts",
+            "line": 45,
+            "found": true,
+            "lineText": "pythonGenerator.forBlock['sm4_sbox'] = function (block: Block): [string, number] {"
+          }
+        ],
+        "evidenceOk": true,
+        "ok": true
+      },
+      {
+        "c": "aes_ecb_block",
+        "block": "mode_ecb_encrypt",
+        "inContract": true,
+        "duplicateCName": false,
+        "evidence": [
+          {
+            "label": "blockDef",
+            "file": "src/blocks/symmetric/modes/blocks.ts",
+            "line": 19,
+            "found": true,
+            "lineText": "Blockly.Blocks['mode_ecb_encrypt'] = {"
+          },
+          {
+            "label": "generator",
+            "file": "src/generators/python/symmetric/modes/blocks.ts",
+            "line": 5,
+            "found": true,
+            "lineText": "pythonGenerator.forBlock['mode_ecb_encrypt'] = function(block: Block): [string, number] {"
+          }
+        ],
+        "evidenceOk": true,
+        "ok": true
+      }
+    ]
+  },
+  "v1": {
+    "ok": true,
+    "samples": [
+      {
+        "id": "jia-aes-round",
+        "file": "jia-aes-round.c",
+        "ok": true,
+        "functions": [
+          {
+            "name": "xtime",
+            "line": 23,
+            "returnType": "static uint8_t",
+            "params": [
+              {
+                "name": "x",
+                "type": "uint8_t",
+                "arraySize": null,
+                "isConst": false
+              }
+            ],
+            "statements": 1
+          },
+          {
+            "name": "sub_bytes",
+            "line": 24,
+            "returnType": "static void",
+            "params": [
+              {
+                "name": "s",
+                "type": "uint8_t",
+                "arraySize": 16,
+                "isConst": false
+              }
+            ],
+            "statements": 1
+          },
+          {
+            "name": "shift_rows",
+            "line": 25,
+            "returnType": "static void",
+            "params": [
+              {
+                "name": "s",
+                "type": "uint8_t",
+                "arraySize": 16,
+                "isConst": false
+              }
+            ],
+            "statements": 3
+          },
+          {
+            "name": "mix_columns",
+            "line": 30,
+            "returnType": "static void",
+            "params": [
+              {
+                "name": "s",
+                "type": "uint8_t",
+                "arraySize": 16,
+                "isConst": false
+              }
+            ],
+            "statements": 1
+          },
+          {
+            "name": "add_round_key",
+            "line": 37,
+            "returnType": "static void",
+            "params": [
+              {
+                "name": "s",
+                "type": "uint8_t",
+                "arraySize": 16,
+                "isConst": false
+              },
+              {
+                "name": "rk",
+                "type": "const uint8_t",
+                "arraySize": 16,
+                "isConst": true
+              }
+            ],
+            "statements": 1
+          },
+          {
+            "name": "aes_round",
+            "line": 39,
+            "returnType": "void",
+            "params": [
+              {
+                "name": "s",
+                "type": "uint8_t",
+                "arraySize": 16,
+                "isConst": false
+              },
+              {
+                "name": "rk",
+                "type": "const uint8_t",
+                "arraySize": 16,
+                "isConst": true
+              }
+            ],
+            "statements": 4
+          }
+        ],
+        "globals": [
+          {
+            "name": "SBOX",
+            "type": "uint8_t",
+            "arraySize": 256,
+            "initKind": "list",
+            "initLength": 256
+          }
+        ],
+        "preprocs": [
+          {
+            "line": 4,
+            "text": "#include <stdint.h>"
+          }
+        ],
+        "constructCounts": {
+          "functions": 6,
+          "params": 8,
+          "returns": 1,
+          "for": 5,
+          "while": 0,
+          "if": 0,
+          "else": 0,
+          "compound": 1,
+          "assignments": 13,
+          "declarations": 13,
+          "arrayInitializers": 1,
+          "subscriptReads": 17,
+          "subscriptWrites": 8,
+          "calls": 8,
+          "casts": 1,
+          "break": 0,
+          "continue": 0,
+          "binaryOps": 38,
+          "binaryByOp": {
+            "^": 16,
+            "<<": 1,
+            "*": 3,
+            ">>": 1,
+            "<": 5,
+            "+": 8,
+            "%": 3,
+            "/": 1
+          }
+        },
+        "callSites": [
+          {
+            "callee": "xtime",
+            "line": 33,
+            "argc": 1,
+            "fn": "mix_columns"
+          },
+          {
+            "callee": "xtime",
+            "line": 33,
+            "argc": 1,
+            "fn": "mix_columns"
+          },
+          {
+            "callee": "xtime",
+            "line": 34,
+            "argc": 1,
+            "fn": "mix_columns"
+          },
+          {
+            "callee": "xtime",
+            "line": 34,
+            "argc": 1,
+            "fn": "mix_columns"
+          },
+          {
+            "callee": "sub_bytes",
+            "line": 39,
+            "argc": 1,
+            "fn": "aes_round"
+          },
+          {
+            "callee": "shift_rows",
+            "line": 39,
+            "argc": 1,
+            "fn": "aes_round"
+          },
+          {
+            "callee": "mix_columns",
+            "line": 39,
+            "argc": 1,
+            "fn": "aes_round"
+          },
+          {
+            "callee": "add_round_key",
+            "line": 39,
+            "argc": 2,
+            "fn": "aes_round"
+          }
+        ],
+        "diagnostics": [
+          {
+            "stage": "V1",
+            "line": 4,
+            "kind": "unsupported",
+            "code": "preprocessor",
+            "message": "预处理行未展开：#include <stdint.h>",
+            "snippet": "#include <stdint.h>"
+          },
+          {
+            "stage": "V1",
+            "line": 23,
+            "kind": "semantic-drift",
+            "code": "narrow-cast",
+            "message": "显式转换 (uint8_t) 的截断语义在块模型里没有对应（按 32 位整数）",
+            "snippet": "static uint8_t xtime(uint8_t x) { return (uint8_t)((x << 1) ^ ((x >> 7) * 0x1b)); }"
+          },
+          {
+            "stage": "V1",
+            "line": 32,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "声明初始化：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "int i = 4 * c; uint8_t a0 = s[i], a1 = s[i + 1], a2 = s[i + 2], a3 = s[i + 3], t = a0 ^ a1 ^ a2 ^ a3;"
+          },
+          {
+            "stage": "V1",
+            "line": 33,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "s[i] = a0 ^ t ^ xtime(a0 ^ a1); s[i + 1] = a1 ^ t ^ xtime(a1 ^ a2);"
+          },
+          {
+            "stage": "V1",
+            "line": 34,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "s[i + 2] = a2 ^ t ^ xtime(a2 ^ a3); s[i + 3] = a3 ^ t ^ xtime(a3 ^ a0);"
+          }
+        ],
+        "diagnosticSummary": {
+          "total": 5,
+          "byKind": {
+            "unsupported": 1,
+            "semantic-drift": 4
+          },
+          "byCode": {
+            "preprocessor": 1,
+            "narrow-cast": 1,
+            "implicit-narrowing": 3
+          }
+        },
+        "error": null
+      },
+      {
+        "id": "yi-aes-ecb",
+        "file": "yi-aes-ecb.c",
+        "ok": true,
+        "functions": [
+          {
+            "name": "expand_key",
+            "line": 5,
+            "returnType": "static void",
+            "params": [
+              {
+                "name": "key",
+                "type": "const uint8_t",
+                "arraySize": 16,
+                "isConst": true
+              },
+              {
+                "name": "rk",
+                "type": "uint8_t",
+                "arraySize": 176,
+                "isConst": false
+              }
+            ],
+            "statements": 3
+          },
+          {
+            "name": "aes_ecb_block",
+            "line": 18,
+            "returnType": "void",
+            "params": [
+              {
+                "name": "in",
+                "type": "const uint8_t",
+                "arraySize": 16,
+                "isConst": true
+              },
+              {
+                "name": "key",
+                "type": "const uint8_t",
+                "arraySize": 16,
+                "isConst": true
+              },
+              {
+                "name": "out",
+                "type": "uint8_t",
+                "arraySize": 16,
+                "isConst": false
+              }
+            ],
+            "statements": 8
+          }
+        ],
+        "globals": [],
+        "preprocs": [
+          {
+            "line": 4,
+            "text": "#include \"jia-aes-round.c\""
+          }
+        ],
+        "constructCounts": {
+          "functions": 2,
+          "params": 5,
+          "returns": 0,
+          "for": 7,
+          "while": 0,
+          "if": 1,
+          "else": 0,
+          "compound": 3,
+          "assignments": 17,
+          "declarations": 12,
+          "arrayInitializers": 1,
+          "subscriptReads": 24,
+          "subscriptWrites": 9,
+          "calls": 9,
+          "casts": 0,
+          "break": 0,
+          "continue": 0,
+          "binaryOps": 18,
+          "binaryByOp": {
+            "<": 7,
+            "==": 1,
+            "%": 1,
+            "^": 3,
+            "+": 4,
+            "-": 1,
+            "*": 1
+          }
+        },
+        "callSites": [
+          {
+            "callee": "xtime",
+            "line": 13,
+            "argc": 1,
+            "fn": "expand_key"
+          },
+          {
+            "callee": "expand_key",
+            "line": 20,
+            "argc": 2,
+            "fn": "aes_ecb_block"
+          },
+          {
+            "callee": "sub_bytes",
+            "line": 24,
+            "argc": 1,
+            "fn": "aes_ecb_block"
+          },
+          {
+            "callee": "shift_rows",
+            "line": 24,
+            "argc": 1,
+            "fn": "aes_ecb_block"
+          },
+          {
+            "callee": "mix_columns",
+            "line": 24,
+            "argc": 1,
+            "fn": "aes_ecb_block"
+          },
+          {
+            "callee": "add_round_key",
+            "line": 24,
+            "argc": 2,
+            "fn": "aes_ecb_block"
+          },
+          {
+            "callee": "sub_bytes",
+            "line": 27,
+            "argc": 1,
+            "fn": "aes_ecb_block"
+          },
+          {
+            "callee": "shift_rows",
+            "line": 27,
+            "argc": 1,
+            "fn": "aes_ecb_block"
+          },
+          {
+            "callee": "add_round_key",
+            "line": 27,
+            "argc": 2,
+            "fn": "aes_ecb_block"
+          }
+        ],
+        "diagnostics": [
+          {
+            "stage": "V1",
+            "line": 4,
+            "kind": "unsupported",
+            "code": "preprocessor",
+            "message": "预处理行未展开：#include \"jia-aes-round.c\"",
+            "snippet": "#include \"jia-aes-round.c\""
+          },
+          {
+            "stage": "V1",
+            "line": 12,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "t[0] = SBOX[t[1]] ^ rcon; t[1] = SBOX[t[2]]; t[2] = SBOX[t[3]]; t[3] = SBOX[u];"
+          },
+          {
+            "stage": "V1",
+            "line": 15,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "for (int j = 0; j < 4; j++) rk[i + j] = rk[i - 16 + j] ^ t[j];"
+          },
+          {
+            "stage": "V1",
+            "line": 21,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "for (int i = 0; i < 16; i++) out[i] = in[i] ^ rk[i];"
+          }
+        ],
+        "diagnosticSummary": {
+          "total": 4,
+          "byKind": {
+            "unsupported": 1,
+            "semantic-drift": 3
+          },
+          "byCode": {
+            "preprocessor": 1,
+            "implicit-narrowing": 3
+          }
+        },
+        "error": null
+      },
+      {
+        "id": "bing-sm4-sbox",
+        "file": "bing-sm4-sbox.c",
+        "ok": true,
+        "functions": [
+          {
+            "name": "sm4_sbox",
+            "line": 23,
+            "returnType": "uint8_t",
+            "params": [
+              {
+                "name": "x",
+                "type": "uint8_t",
+                "arraySize": null,
+                "isConst": false
+              }
+            ],
+            "statements": 1
+          }
+        ],
+        "globals": [
+          {
+            "name": "SM4_SBOX",
+            "type": "uint8_t",
+            "arraySize": 256,
+            "initKind": "list",
+            "initLength": 256
+          }
+        ],
+        "preprocs": [
+          {
+            "line": 4,
+            "text": "#include <stdint.h>"
+          }
+        ],
+        "constructCounts": {
+          "functions": 1,
+          "params": 1,
+          "returns": 1,
+          "for": 0,
+          "while": 0,
+          "if": 0,
+          "else": 0,
+          "compound": 0,
+          "assignments": 0,
+          "declarations": 1,
+          "arrayInitializers": 1,
+          "subscriptReads": 1,
+          "subscriptWrites": 0,
+          "calls": 0,
+          "casts": 0,
+          "break": 0,
+          "continue": 0,
+          "binaryOps": 0,
+          "binaryByOp": {}
+        },
+        "callSites": [],
+        "diagnostics": [
+          {
+            "stage": "V1",
+            "line": 4,
+            "kind": "unsupported",
+            "code": "preprocessor",
+            "message": "预处理行未展开：#include <stdint.h>",
+            "snippet": "#include <stdint.h>"
+          }
+        ],
+        "diagnosticSummary": {
+          "total": 1,
+          "byKind": {
+            "unsupported": 1,
+            "semantic-drift": 0
+          },
+          "byCode": {
+            "preprocessor": 1
+          }
+        },
+        "error": null
+      }
+    ]
+  },
+  "v2": {
+    "ok": true,
+    "samples": [
+      {
+        "id": "jia-aes-round",
+        "ok": true,
+        "entry": "aes_round",
+        "aliasHits": [
+          {
+            "scope": "whole-function",
+            "fn": "sub_bytes",
+            "line": 24,
+            "block": "aes_sub_bytes",
+            "signature": "void sub_bytes(uint8_t s[16])",
+            "absorbedStatements": 1
+          },
+          {
+            "scope": "whole-function",
+            "fn": "shift_rows",
+            "line": 25,
+            "block": "aes_shift_rows",
+            "signature": "void shift_rows(uint8_t s[16])",
+            "absorbedStatements": 3
+          },
+          {
+            "scope": "whole-function",
+            "fn": "mix_columns",
+            "line": 30,
+            "block": "aes_mix_columns",
+            "signature": "void mix_columns(uint8_t s[16])",
+            "absorbedStatements": 1
+          },
+          {
+            "scope": "whole-function",
+            "fn": "add_round_key",
+            "line": 37,
+            "block": "aes_add_round_key",
+            "signature": "void add_round_key(uint8_t s[16], const uint8_t rk[16])",
+            "absorbedStatements": 1
+          },
+          {
+            "scope": "call-site",
+            "fn": "aes_round",
+            "line": 39,
+            "block": "aes_sub_bytes",
+            "callee": "sub_bytes"
+          },
+          {
+            "scope": "call-site",
+            "fn": "aes_round",
+            "line": 39,
+            "block": "aes_shift_rows",
+            "callee": "shift_rows"
+          },
+          {
+            "scope": "call-site",
+            "fn": "aes_round",
+            "line": 39,
+            "block": "aes_mix_columns",
+            "callee": "mix_columns"
+          },
+          {
+            "scope": "call-site",
+            "fn": "aes_round",
+            "line": 39,
+            "block": "aes_add_round_key",
+            "callee": "add_round_key"
+          }
+        ],
+        "absorbed": [
+          {
+            "fn": "sub_bytes",
+            "statements": 1,
+            "note": "函数体整体被 aes_sub_bytes 吸收，内部构造不做结构映射"
+          },
+          {
+            "fn": "shift_rows",
+            "statements": 3,
+            "note": "函数体整体被 aes_shift_rows 吸收，内部构造不做结构映射"
+          },
+          {
+            "fn": "mix_columns",
+            "statements": 1,
+            "note": "函数体整体被 aes_mix_columns 吸收，内部构造不做结构映射"
+          },
+          {
+            "fn": "add_round_key",
+            "statements": 1,
+            "note": "函数体整体被 aes_add_round_key 吸收，内部构造不做结构映射"
+          }
+        ],
+        "skeleton": [
+          {
+            "function": "xtime",
+            "line": 23,
+            "nodes": [
+              {
+                "construct": "return",
+                "block": "procedures_defreturn.RETURN",
+                "line": 23
+              }
+            ],
+            "blockHistogram": {
+              "procedures_defreturn.RETURN": 1
+            }
+          },
+          {
+            "function": "aes_round",
+            "line": 39,
+            "nodes": [
+              {
+                "construct": "alias-call",
+                "block": "aes_sub_bytes",
+                "line": 39,
+                "hit": true
+              },
+              {
+                "construct": "alias-call",
+                "block": "aes_shift_rows",
+                "line": 39,
+                "hit": true
+              },
+              {
+                "construct": "alias-call",
+                "block": "aes_mix_columns",
+                "line": 39,
+                "hit": true
+              },
+              {
+                "construct": "alias-call",
+                "block": "aes_add_round_key",
+                "line": 39,
+                "hit": true
+              }
+            ],
+            "blockHistogram": {
+              "aes_sub_bytes": 1,
+              "aes_shift_rows": 1,
+              "aes_mix_columns": 1,
+              "aes_add_round_key": 1
+            }
+          }
+        ],
+        "globalTables": [
+          {
+            "name": "SBOX",
+            "line": 5,
+            "elements": 256,
+            "candidateBlock": "data_int_list",
+            "note": "被整体命中的别名块吸收（S 盒在生成器闭包里）"
+          }
+        ],
+        "buildable": {
+          "ok": true,
+          "defName": "P3_AES_Round",
+          "params": [
+            {
+              "name": "s",
+              "id": "p_s",
+              "cName": "s",
+              "type": "int_list"
+            },
+            {
+              "name": "rk",
+              "id": "p_rk",
+              "cName": "rk",
+              "type": "int_list"
+            }
+          ],
+          "returnBlock": {
+            "type": "aes_add_round_key",
+            "id": "jia_aes_round_n5",
+            "inputs": {
+              "STATE": {
+                "block": {
+                  "type": "aes_mix_columns",
+                  "id": "jia_aes_round_n4",
+                  "inputs": {
+                    "STATE": {
+                      "block": {
+                        "type": "aes_shift_rows",
+                        "id": "jia_aes_round_n3",
+                        "inputs": {
+                          "STATE": {
+                            "block": {
+                              "type": "aes_sub_bytes",
+                              "id": "jia_aes_round_n2",
+                              "inputs": {
+                                "STATE": {
+                                  "block": {
+                                    "type": "variables_get",
+                                    "id": "jia_aes_round_n1",
+                                    "fields": {
+                                      "VAR": {
+                                        "id": "p_s"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "ROUND_KEY": {
+                "block": {
+                  "type": "variables_get",
+                  "id": "jia_aes_round_n6",
+                  "fields": {
+                    "VAR": {
+                      "id": "p_rk"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "calls": [
+            {
+              "block": "aes_sub_bytes",
+              "line": 39
+            },
+            {
+              "block": "aes_shift_rows",
+              "line": 39
+            },
+            {
+              "block": "aes_mix_columns",
+              "line": 39
+            },
+            {
+              "block": "aes_add_round_key",
+              "line": 39
+            }
+          ],
+          "paramRenames": [],
+          "note": "C 的原地多语句改写折叠成嵌套返回链（顺序 = 语句顺序）",
+          "entry": "aes_round",
+          "sourceFile": "jia-aes-round.c",
+          "via": "chain-fold"
+        },
+        "diagnostics": [
+          {
+            "stage": "V1",
+            "line": 4,
+            "kind": "unsupported",
+            "code": "preprocessor",
+            "message": "预处理行未展开：#include <stdint.h>",
+            "snippet": "#include <stdint.h>"
+          },
+          {
+            "stage": "V1",
+            "line": 23,
+            "kind": "semantic-drift",
+            "code": "narrow-cast",
+            "message": "显式转换 (uint8_t) 的截断语义在块模型里没有对应（按 32 位整数）",
+            "snippet": "static uint8_t xtime(uint8_t x) { return (uint8_t)((x << 1) ^ ((x >> 7) * 0x1b)); }"
+          },
+          {
+            "stage": "V1",
+            "line": 32,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "声明初始化：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "int i = 4 * c; uint8_t a0 = s[i], a1 = s[i + 1], a2 = s[i + 2], a3 = s[i + 3], t = a0 ^ a1 ^ a2 ^ a3;"
+          },
+          {
+            "stage": "V1",
+            "line": 33,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "s[i] = a0 ^ t ^ xtime(a0 ^ a1); s[i + 1] = a1 ^ t ^ xtime(a1 ^ a2);"
+          },
+          {
+            "stage": "V1",
+            "line": 34,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "s[i + 2] = a2 ^ t ^ xtime(a2 ^ a3); s[i + 3] = a3 ^ t ^ xtime(a3 ^ a0);"
+          }
+        ],
+        "diagnosticSummary": {
+          "total": 5,
+          "byKind": {
+            "unsupported": 1,
+            "semantic-drift": 4
+          },
+          "byCode": {
+            "preprocessor": 1,
+            "narrow-cast": 1,
+            "implicit-narrowing": 3
+          }
+        }
+      },
+      {
+        "id": "yi-aes-ecb",
+        "ok": true,
+        "entry": "aes_ecb_block",
+        "aliasHits": [
+          {
+            "scope": "whole-function",
+            "fn": "aes_ecb_block",
+            "line": 18,
+            "block": "mode_ecb_encrypt",
+            "signature": "void aes_ecb_block(const uint8_t in[16], const uint8_t key[16], uint8_t out[16])",
+            "absorbedStatements": 8
+          }
+        ],
+        "absorbed": [
+          {
+            "fn": "aes_ecb_block",
+            "statements": 8,
+            "note": "函数体整体被 mode_ecb_encrypt 吸收，内部构造不做结构映射"
+          }
+        ],
+        "skeleton": [
+          {
+            "function": "expand_key",
+            "line": 5,
+            "nodes": [
+              {
+                "construct": "for",
+                "block": "controls_for",
+                "line": 6
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 6
+              },
+              {
+                "construct": "declaration",
+                "block": "variables_set",
+                "line": 7,
+                "name": "rcon"
+              },
+              {
+                "construct": "for",
+                "block": "controls_for",
+                "line": 8
+              },
+              {
+                "construct": "array-initializer",
+                "block": "data_int_list",
+                "line": 9,
+                "name": "t"
+              },
+              {
+                "construct": "if",
+                "block": "controls_if",
+                "line": 10
+              },
+              {
+                "construct": "declaration",
+                "block": "variables_set",
+                "line": 11,
+                "name": "u"
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 12
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 12
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 12
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 12
+              },
+              {
+                "construct": "assignment",
+                "block": "variables_set",
+                "line": 13
+              },
+              {
+                "construct": "for",
+                "block": "controls_for",
+                "line": 15
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 15
+              }
+            ],
+            "blockHistogram": {
+              "controls_for": 3,
+              "lists_setIndex": 6,
+              "variables_set": 3,
+              "data_int_list": 1,
+              "controls_if": 1
+            }
+          }
+        ],
+        "globalTables": [],
+        "buildable": {
+          "ok": true,
+          "defName": "P3_AES_ECB_Block",
+          "params": [
+            {
+              "name": "in_",
+              "id": "p_in",
+              "cName": "in",
+              "type": "bytes"
+            },
+            {
+              "name": "key",
+              "id": "p_key",
+              "cName": "key",
+              "type": "bytes"
+            }
+          ],
+          "paramRenames": [
+            {
+              "from": "in",
+              "to": "in_",
+              "why": "保留字/非法标识符"
+            }
+          ],
+          "returnBlock": {
+            "type": "mode_ecb_encrypt",
+            "id": "yi_aes_ecb_n3",
+            "inputs": {
+              "DATA": {
+                "block": {
+                  "type": "variables_get",
+                  "id": "yi_aes_ecb_n1",
+                  "fields": {
+                    "VAR": {
+                      "id": "p_in"
+                    }
+                  }
+                }
+              },
+              "KEY": {
+                "block": {
+                  "type": "variables_get",
+                  "id": "yi_aes_ecb_n2",
+                  "fields": {
+                    "VAR": {
+                      "id": "p_key"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "outParam": "out",
+          "note": "C 的输出参数落成块的返回值",
+          "entry": "aes_ecb_block",
+          "sourceFile": "yi-aes-ecb.c",
+          "via": "whole-function-alias"
+        },
+        "diagnostics": [
+          {
+            "stage": "V1",
+            "line": 4,
+            "kind": "unsupported",
+            "code": "preprocessor",
+            "message": "预处理行未展开：#include \"jia-aes-round.c\"",
+            "snippet": "#include \"jia-aes-round.c\""
+          },
+          {
+            "stage": "V1",
+            "line": 12,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "t[0] = SBOX[t[1]] ^ rcon; t[1] = SBOX[t[2]]; t[2] = SBOX[t[3]]; t[3] = SBOX[u];"
+          },
+          {
+            "stage": "V1",
+            "line": 15,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "for (int j = 0; j < 4; j++) rk[i + j] = rk[i - 16 + j] ^ t[j];"
+          },
+          {
+            "stage": "V1",
+            "line": 21,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "for (int i = 0; i < 16; i++) out[i] = in[i] ^ rk[i];"
+          }
+        ],
+        "diagnosticSummary": {
+          "total": 4,
+          "byKind": {
+            "unsupported": 1,
+            "semantic-drift": 3
+          },
+          "byCode": {
+            "preprocessor": 1,
+            "implicit-narrowing": 3
+          }
+        }
+      },
+      {
+        "id": "bing-sm4-sbox",
+        "ok": true,
+        "entry": "sm4_sbox",
+        "aliasHits": [
+          {
+            "scope": "whole-function",
+            "fn": "sm4_sbox",
+            "line": 23,
+            "block": "sm4_sbox",
+            "signature": "uint8_t sm4_sbox(uint8_t x)",
+            "absorbedStatements": 1
+          }
+        ],
+        "absorbed": [
+          {
+            "fn": "sm4_sbox",
+            "statements": 1,
+            "note": "函数体整体被 sm4_sbox 吸收，内部构造不做结构映射"
+          }
+        ],
+        "skeleton": [],
+        "globalTables": [
+          {
+            "name": "SM4_SBOX",
+            "line": 5,
+            "elements": 256,
+            "candidateBlock": "data_int_list",
+            "note": "被整体命中的别名块吸收（S 盒在生成器闭包里）"
+          }
+        ],
+        "buildable": {
+          "ok": true,
+          "defName": "P3_SM4_Sbox",
+          "params": [
+            {
+              "name": "x",
+              "id": "p_x",
+              "cName": "x",
+              "type": "int"
+            }
+          ],
+          "paramRenames": [],
+          "returnBlock": {
+            "type": "sm4_sbox",
+            "id": "bing_sm4_sbox_n2",
+            "inputs": {
+              "INPUT": {
+                "block": {
+                  "type": "variables_get",
+                  "id": "bing_sm4_sbox_n1",
+                  "fields": {
+                    "VAR": {
+                      "id": "p_x"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "outParam": null,
+          "note": "C 的返回值与块输出同义",
+          "entry": "sm4_sbox",
+          "sourceFile": "bing-sm4-sbox.c",
+          "via": "whole-function-alias"
+        },
+        "diagnostics": [
+          {
+            "stage": "V1",
+            "line": 4,
+            "kind": "unsupported",
+            "code": "preprocessor",
+            "message": "预处理行未展开：#include <stdint.h>",
+            "snippet": "#include <stdint.h>"
+          }
+        ],
+        "diagnosticSummary": {
+          "total": 1,
+          "byKind": {
+            "unsupported": 1,
+            "semantic-drift": 0
+          },
+          "byCode": {
+            "preprocessor": 1
+          }
+        }
+      }
+    ]
+  },
+  "v3": {
+    "ok": true,
+    "negativeControl": {
+      "ran": true,
+      "mutation": "sub_bytes → aes_shift_rows（同一 C 函数，语义错误；类型仍可生成）",
+      "vector": "fips197-c1-round1",
+      "expect": "89d810e8855ace682d1843d8cb128fe4",
+      "got": "ed416f36a904297161cde3ba2d80adf5",
+      "detected": true,
+      "workspace": "experiments/ai-helper-2026-11-14/p3/out/ws-negative-control.json",
+      "generatedPython": "experiments/ai-helper-2026-11-14/p3/out/gen-negative-control.py"
+    },
+    "harness": {
+      "ok": true,
+      "path": "dist-verify/verify-demo.js",
+      "sha256": "262f8fe5eccef739dc5b788be846408ba2946f099e16d5c16274f9cc36cca4b3",
+      "mtime": "2026-11-17T13:12:50.941Z"
+    },
+    "totals": {
+      "samples": 3,
+      "reachable": 3,
+      "cases": 9,
+      "passed": 9,
+      "unreachable": 0
+    },
+    "samples": [
+      {
+        "id": "jia-aes-round",
+        "reachable": true,
+        "reason": null,
+        "kind": "inplace16",
+        "pyFn": "P3_AES_Round",
+        "cFn": "aes_round",
+        "vectors": [
+          {
+            "id": "fips197-c1-round1",
+            "expect": "89d810e8855ace682d1843d8cb128fe4",
+            "c": "89d810e8855ace682d1843d8cb128fe4",
+            "py": "89d810e8855ace682d1843d8cb128fe4",
+            "pass": true,
+            "source": "FIPS 197 C.1 第 1 轮：SubBytes 63cab704…、ShiftRows 6353e08c…、MixColumns 5f726415…（标准附录给出的中间态）经 AddRoundKey 与轮密钥 1 d6aa74fd… 逐字节异或"
+          }
+        ],
+        "passed": 1,
+        "total": 1,
+        "workspace": "experiments/ai-helper-2026-11-14/p3/out/ws-jia-aes-round.json",
+        "generatedPython": "experiments/ai-helper-2026-11-14/p3/out/gen-jia-aes-round.py",
+        "cDriver": "experiments/ai-helper-2026-11-14/p3/out/driver-jia-aes-round.c"
+      },
+      {
+        "id": "yi-aes-ecb",
+        "reachable": true,
+        "reason": null,
+        "kind": "ecb-block",
+        "pyFn": "P3_AES_ECB_Block",
+        "cFn": "aes_ecb_block",
+        "vectors": [
+          {
+            "id": "sp800-38a-f11-b1",
+            "expect": "3ad77bb40d7a3660a89ecaf32466ef97",
+            "c": "3ad77bb40d7a3660a89ecaf32466ef97",
+            "py": "3ad77bb40d7a3660a89ecaf32466ef97",
+            "pass": true,
+            "source": "SP 800-38A F.1.1 ECB-AES128.Encrypt 第 1 块；另用 pycryptodome 3.20.0 复核"
+          },
+          {
+            "id": "sp800-38a-f11-b2",
+            "expect": "f5d3d58503b9699de785895a96fdbaaf",
+            "c": "f5d3d58503b9699de785895a96fdbaaf",
+            "py": "f5d3d58503b9699de785895a96fdbaaf",
+            "pass": true,
+            "source": "SP 800-38A F.1.1 ECB-AES128.Encrypt 第 2 块；另用 pycryptodome 3.20.0 复核"
+          },
+          {
+            "id": "sp800-38a-f11-b3",
+            "expect": "43b1cd7f598ece23881b00e3ed030688",
+            "c": "43b1cd7f598ece23881b00e3ed030688",
+            "py": "43b1cd7f598ece23881b00e3ed030688",
+            "pass": true,
+            "source": "SP 800-38A F.1.1 ECB-AES128.Encrypt 第 3 块；另用 pycryptodome 3.20.0 复核"
+          },
+          {
+            "id": "sp800-38a-f11-b4",
+            "expect": "7b0c785e27e8ad3f8223207104725dd4",
+            "c": "7b0c785e27e8ad3f8223207104725dd4",
+            "py": "7b0c785e27e8ad3f8223207104725dd4",
+            "pass": true,
+            "source": "SP 800-38A F.1.1 ECB-AES128.Encrypt 第 4 块；另用 pycryptodome 3.20.0 复核"
+          },
+          {
+            "id": "fips197-c1-block",
+            "expect": "69c4e0d86a7b0430d8cdb78070b4c55a",
+            "c": "69c4e0d86a7b0430d8cdb78070b4c55a",
+            "py": "69c4e0d86a7b0430d8cdb78070b4c55a",
+            "pass": true,
+            "source": "FIPS 197 附录 C.1 示例（AES-128 单块）；pycryptodome 3.20.0 复核"
+          }
+        ],
+        "passed": 5,
+        "total": 5,
+        "workspace": "experiments/ai-helper-2026-11-14/p3/out/ws-yi-aes-ecb.json",
+        "generatedPython": "experiments/ai-helper-2026-11-14/p3/out/gen-yi-aes-ecb.py",
+        "cDriver": "experiments/ai-helper-2026-11-14/p3/out/driver-yi-aes-ecb.c"
+      },
+      {
+        "id": "bing-sm4-sbox",
+        "reachable": true,
+        "reason": null,
+        "kind": "byte",
+        "pyFn": "P3_SM4_Sbox",
+        "cFn": "sm4_sbox",
+        "vectors": [
+          {
+            "id": "gb32907-a-s00",
+            "expect": "d6",
+            "c": "d6",
+            "py": "d6",
+            "pass": true,
+            "source": "GB/T 32907-2016 附录 A S 盒第 0 项；与 demos/procedures/SM4-Sbox.json 的闭包表一致"
+          },
+          {
+            "id": "gb32907-a-s01",
+            "expect": "90",
+            "c": "90",
+            "py": "90",
+            "pass": true,
+            "source": "GB/T 32907-2016 附录 A S 盒第 1 项；demos/tests.json 里 SM4-Sbox 的 expect=144 即此值"
+          },
+          {
+            "id": "gb32907-a-sff",
+            "expect": "48",
+            "c": "48",
+            "py": "48",
+            "pass": true,
+            "source": "GB/T 32907-2016 附录 A S 盒第 255 项"
+          }
+        ],
+        "passed": 3,
+        "total": 3,
+        "workspace": "experiments/ai-helper-2026-11-14/p3/out/ws-bing-sm4-sbox.json",
+        "generatedPython": "experiments/ai-helper-2026-11-14/p3/out/gen-bing-sm4-sbox.py",
+        "cDriver": "experiments/ai-helper-2026-11-14/p3/out/driver-bing-sm4-sbox.c"
+      }
+    ]
+  },
+  "ok": true
+}

@@ -3,25 +3,25 @@
   "sources": {
     "contract": {
       "path": "docs/blocks/BLOCK-IO-CONTRACT.json",
-      "contentFnv1a64": "89d72b63fa60b61c"
+      "contentFnv1a64": "4cc66eea8a22bdbb"
     },
     "signatures": {
       "path": "experiments/ai-helper-2026-11-14/out/code-signatures.json",
-      "contentFnv1a64": "a3a0d1bb7905af27"
+      "contentFnv1a64": "146a538163254d90"
     }
   },
   "stats": {
-    "blockTypes": 222,
-    "localizedZh": 32,
+    "blockTypes": 224,
+    "localizedZh": 34,
     "creationErrors": [],
     "labelCoverage": {
       "en": {
-        "labeled": 222,
-        "total": 222
+        "labeled": 224,
+        "total": 224
       },
       "zh": {
-        "labeled": 222,
-        "total": 222
+        "labeled": 224,
+        "total": 224
       }
     },
     "unlabeled": {
@@ -350,6 +350,45 @@
       "tooltips": {
         "en": "Argon2 v1.3（RFC 9106）教学实现：拒绝非整数及越界参数、mCost < 8×lanes、mCost > 65,536 KiB、tCost > 10、lanes > 16、tagLen > 1,024 字节及 mCost×tCost > 65,536 KiB-pass。这些是项目执行上限，不是 RFC 最大值；RFC 推荐 16 字节盐。该实现不支持 RFC 推荐的生产参数配置。",
         "zh": "Argon2 v1.3（RFC 9106）教学实现：拒绝非整数及越界参数、mCost < 8×lanes、mCost > 65,536 KiB、tCost > 10、lanes > 16、tagLen > 1,024 字节及 mCost×tCost > 65,536 KiB-pass。这些是项目执行上限，不是 RFC 最大值；RFC 推荐 16 字节盐。该实现不支持 RFC 推荐的生产参数配置。"
+      }
+    },
+    {
+      "blockType": "arr_append",
+      "inputs": [
+        {
+          "name": "LIST",
+          "type": 1,
+          "check": [
+            "IntList"
+          ]
+        },
+        {
+          "name": "VALUE",
+          "type": 1,
+          "check": [
+            "Number"
+          ]
+        }
+      ],
+      "outputCheck": null,
+      "previousStatement": null,
+      "nextStatement": null,
+      "pythonTemplate": "zzsigv_LIST.append(zzsigv_VALUE)\n",
+      "pythonDefinitions": [],
+      "labels": {
+        "en": [
+          "Append to",
+          "value"
+        ],
+        "zh": [
+          "追加到",
+          "值"
+        ]
+      },
+      "options": [],
+      "tooltips": {
+        "en": "Append the value to the end of the list, mutating it in place. Appending to a temporary literal (such as a freshly created empty list) has no effect: the list must be a variable or an addressable list expression.",
+        "zh": "把值追加到列表末尾，原地修改（mutating）。追加到临时字面量（例如新建的空列表）上没有意义：列表必须是变量或可寻址的列表表达式。"
       }
     },
     {
@@ -2504,7 +2543,7 @@
       "outputCheck": null,
       "previousStatement": null,
       "nextStatement": null,
-      "pythonTemplate": "for i in range(32):\n    zzsigs_DO",
+      "pythonTemplate": "for i in range(zzsigv_TIMES):\n    zzsigs_DO",
       "pythonDefinitions": [],
       "labels": {
         "en": [
@@ -2524,6 +2563,56 @@
       "tooltips": {
         "en": "Custom iteration loop",
         "zh": "自定义迭代循环"
+      }
+    },
+    {
+      "blockType": "ctrl_range",
+      "inputs": [
+        {
+          "name": "FROM",
+          "type": 1,
+          "check": [
+            "Number"
+          ]
+        },
+        {
+          "name": "TO",
+          "type": 1,
+          "check": [
+            "Number"
+          ]
+        },
+        {
+          "name": "DO",
+          "type": 3,
+          "check": null
+        }
+      ],
+      "outputCheck": null,
+      "previousStatement": null,
+      "nextStatement": null,
+      "pythonTemplate": "for i in range(zzsigv_FROM, zzsigv_TO):\n    zzsigs_DO",
+      "pythonDefinitions": [],
+      "labels": {
+        "en": [
+          "Var",
+          "i",
+          "from",
+          "to (exclusive)",
+          "Do"
+        ],
+        "zh": [
+          "变量",
+          "i",
+          "从",
+          "到（不含）",
+          "执行"
+        ]
+      },
+      "options": [],
+      "tooltips": {
+        "en": "Equivalent to Python range(FROM, TO): TO is an exclusive bound, so the body never runs when FROM >= TO. control_for (controls_for) is inclusive and counts down when FROM > TO; only this block maps literally to range(a, b). FROM/TO are value inputs, so variables and expressions are accepted.",
+        "zh": "等价 Python 的 range(FROM, TO)：TO 是独占终点，FROM ≥ TO 时循环体一次也不执行。与 controls_for 的区别是后者为闭区间，起点大于终点会倒序执行；只有本块逐字对应 range(a, b)。FROM/TO 是值输入，可接变量与表达式。"
       }
     },
     {
@@ -2741,7 +2830,7 @@
       ],
       "previousStatement": null,
       "nextStatement": null,
-      "pythonTemplate": "",
+      "pythonTemplate": "[0, 0, 0, 0]",
       "pythonDefinitions": [],
       "labels": {
         "en": [

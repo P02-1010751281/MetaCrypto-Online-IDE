@@ -1,0 +1,25 @@
+# 本切片首跑 V3 的两个真实失败（摘录，均在映射层修复后重跑通过）
+# 时间：2026-11-17 20:41 前后（本地）；首跑输出即红，说明 V3 不是只会在绿上打勾。
+
+## 1) C 形参名 `in` 直接进工作区 → 双生成器都产出非法代码
+
+Python（verify-demo 生成后 python3 执行）：
+  File ".../out/gen-yi-aes-ecb.py", line 75
+    def P3_AES_ECB_Block(in: bytes, key: bytes) -> bytes:
+                         ^^
+SyntaxError: invalid syntax
+
+JavaScript（同一工作区，harness 打印的 JS 段）：
+  function P3_AES_ECB_Block(in, key) {
+
+原因：procedure 块的双生成器把参数名原样写进函数签名，没有做保留字/标识符清洗；`in` 在 Python 与 JS 都是保留字。
+修复（本切片，映射层）：sanitizeParam() 把保留字/非法标识符改成 `in_`，并在 V2 输出 `参数改名：in→in_`。
+未修的部分（属块层/产品线）：用户在界面上把 procedure 参数命名成 `in`/`class` 仍会生成非法代码；本轮不改 src/blocks、src/generators。
+
+## 2) 样本已 #include 依赖，又单独编译依赖 → 重复定义
+
+  /usr/bin/ld: /tmp/cczqa3eb.o: in function `aes_round':
+  jia-aes-round.c:(.text+0x0): multiple definition of `aes_round'; /tmp/ccFe1oJ8.o:yi-aes-ecb.c:(.text+0x194): first defined here
+  collect2: error: ld 返回 1
+
+修复（本切片，V3 编译阶段）：manifest 的 dependsOn 只在该样本未 #include 依赖时才追加编译单元。

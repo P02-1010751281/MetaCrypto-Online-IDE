@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-11-14T09:00:58.915Z",
+  "generatedAt": "2026-11-17T11:21:01.409Z",
   "stats": {
-    "total": 221,
-    "pythonOk": 219,
-    "javascriptOk": 219,
-    "leafPython": 8,
+    "total": 224,
+    "pythonOk": 222,
+    "javascriptOk": 222,
+    "leafPython": 9,
     "withDefinitionsPython": 121,
     "withDefinitionsJavascript": 111,
     "errors": 2
@@ -124,6 +124,21 @@
         "definitions": [
           "argon2Hash"
         ],
+        "error": null
+      }
+    },
+    {
+      "type": "arr_append",
+      "python": {
+        "template": "zzsigv_LIST.append(zzsigv_VALUE)\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "zzsigv_LIST.push(zzsigv_VALUE);\n",
+        "order": null,
+        "definitions": [],
         "error": null
       }
     },
@@ -838,13 +853,28 @@
     {
       "type": "ctrl_iterate",
       "python": {
-        "template": "for i in range(32):\n    zzsigs_DO",
+        "template": "for i in range(zzsigv_TIMES):\n    zzsigs_DO",
         "order": null,
         "definitions": [],
         "error": null
       },
       "javascript": {
-        "template": "// 迭代循环\nfor (let i = 0; i < 32; i++) {\nzzsigs_DO}\n",
+        "template": "// 迭代循环\nfor (let i = 0; i < zzsigv_TIMES; i++) {\nzzsigs_DO}\n",
+        "order": null,
+        "definitions": [],
+        "error": null
+      }
+    },
+    {
+      "type": "ctrl_range",
+      "python": {
+        "template": "for i in range(zzsigv_FROM, zzsigv_TO):\n    zzsigs_DO",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "// 范围循环（TO 独占）\nfor (let i = zzsigv_FROM; i < zzsigv_TO; i++) {\nzzsigs_DO}\n",
         "order": null,
         "definitions": [],
         "error": null
@@ -934,6 +964,21 @@
         "definitions": [
           "cryptoConvertToInt"
         ],
+        "error": null
+      }
+    },
+    {
+      "type": "data_int_list",
+      "python": {
+        "template": "[0, 0, 0, 0]",
+        "order": null,
+        "definitions": [],
+        "error": null
+      },
+      "javascript": {
+        "template": "[0, 0, 0, 0]",
+        "order": null,
+        "definitions": [],
         "error": null
       }
     },

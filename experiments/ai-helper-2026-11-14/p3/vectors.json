@@ -1,0 +1,106 @@
+{
+  "schema": 1,
+  "note": "V3 向量：同一组输入分别喂给 gcc 编译的 C 样本与「V2 映射产物经本项目 Python 生成器再生成的代码」。expectHex 的独立来源逐条写在 source 字段。",
+  "samples": {
+    "jia-aes-round": {
+      "kind": "inplace16",
+      "pyFn": "P3_AES_Round",
+      "vectors": [
+        {
+          "id": "fips197-c1-round1",
+          "inputs": [
+            "00102030405060708090a0b0c0d0e0f0",
+            "d6aa74fdd2af72fadaa678f1d6ab76fe"
+          ],
+          "expectHex": "89d810e8855ace682d1843d8cb128fe4",
+          "source": "FIPS 197 C.1 第 1 轮：SubBytes 63cab704…、ShiftRows 6353e08c…、MixColumns 5f726415…（标准附录给出的中间态）经 AddRoundKey 与轮密钥 1 d6aa74fd… 逐字节异或",
+          "note": "输入 state 是 C.1 里初始 AddRoundKey 之后的状态，不是明文；第二轮密钥由 FIPS 197 §5.2 展开给出"
+        }
+      ],
+      "fn": "aes_round"
+    },
+    "yi-aes-ecb": {
+      "kind": "ecb-block",
+      "pyFn": "P3_AES_ECB_Block",
+      "vectors": [
+        {
+          "id": "sp800-38a-f11-b1",
+          "inputs": [
+            "6bc1bee22e409f96e93d7e117393172a",
+            "2b7e151628aed2a6abf7158809cf4f3c"
+          ],
+          "expectHex": "3ad77bb40d7a3660a89ecaf32466ef97",
+          "source": "SP 800-38A F.1.1 ECB-AES128.Encrypt 第 1 块；另用 pycryptodome 3.20.0 复核"
+        },
+        {
+          "id": "sp800-38a-f11-b2",
+          "inputs": [
+            "ae2d8a571e03ac9c9eb76fac45af8e51",
+            "2b7e151628aed2a6abf7158809cf4f3c"
+          ],
+          "expectHex": "f5d3d58503b9699de785895a96fdbaaf",
+          "source": "SP 800-38A F.1.1 ECB-AES128.Encrypt 第 2 块；另用 pycryptodome 3.20.0 复核"
+        },
+        {
+          "id": "sp800-38a-f11-b3",
+          "inputs": [
+            "30c81c46a35ce411e5fbc1191a0a52ef",
+            "2b7e151628aed2a6abf7158809cf4f3c"
+          ],
+          "expectHex": "43b1cd7f598ece23881b00e3ed030688",
+          "source": "SP 800-38A F.1.1 ECB-AES128.Encrypt 第 3 块；另用 pycryptodome 3.20.0 复核"
+        },
+        {
+          "id": "sp800-38a-f11-b4",
+          "inputs": [
+            "f69f2445df4f9b17ad2b417be66c3710",
+            "2b7e151628aed2a6abf7158809cf4f3c"
+          ],
+          "expectHex": "7b0c785e27e8ad3f8223207104725dd4",
+          "source": "SP 800-38A F.1.1 ECB-AES128.Encrypt 第 4 块；另用 pycryptodome 3.20.0 复核"
+        },
+        {
+          "id": "fips197-c1-block",
+          "inputs": [
+            "00112233445566778899aabbccddeeff",
+            "000102030405060708090a0b0c0d0e0f"
+          ],
+          "expectHex": "69c4e0d86a7b0430d8cdb78070b4c55a",
+          "source": "FIPS 197 附录 C.1 示例（AES-128 单块）；pycryptodome 3.20.0 复核"
+        }
+      ],
+      "fn": "aes_ecb_block"
+    },
+    "bing-sm4-sbox": {
+      "kind": "byte",
+      "pyFn": "P3_SM4_Sbox",
+      "vectors": [
+        {
+          "id": "gb32907-a-s00",
+          "inputs": [
+            "00"
+          ],
+          "expectHex": "d6",
+          "source": "GB/T 32907-2016 附录 A S 盒第 0 项；与 demos/procedures/SM4-Sbox.json 的闭包表一致"
+        },
+        {
+          "id": "gb32907-a-s01",
+          "inputs": [
+            "01"
+          ],
+          "expectHex": "90",
+          "source": "GB/T 32907-2016 附录 A S 盒第 1 项；demos/tests.json 里 SM4-Sbox 的 expect=144 即此值"
+        },
+        {
+          "id": "gb32907-a-sff",
+          "inputs": [
+            "ff"
+          ],
+          "expectHex": "48",
+          "source": "GB/T 32907-2016 附录 A S 盒第 255 项"
+        }
+      ],
+      "fn": "sm4_sbox"
+    }
+  }
+}

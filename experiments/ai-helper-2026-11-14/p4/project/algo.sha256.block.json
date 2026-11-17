@@ -1,0 +1,329 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "procedures_defreturn",
+        "id": "procedures_defreturn_028",
+        "x": 40,
+        "y": 40,
+        "extraState": {
+          "params": [
+            {
+              "name": "msg",
+              "id": "algo_param_msg",
+              "type": "message"
+            }
+          ],
+          "hasStatements": true
+        },
+        "fields": {
+          "NAME": "SHA256_Multiblock"
+        },
+        "inputs": {
+          "STACK": {
+            "block": {
+              "type": "variables_set",
+              "id": "variables_set_023",
+              "fields": {
+                "VAR": {
+                  "id": "algo_var_padded",
+                  "name": "padded"
+                }
+              },
+              "inputs": {
+                "VALUE": {
+                  "block": {
+                    "type": "hash_sha256_pad",
+                    "id": "hash_sha256_pad_002",
+                    "inputs": {
+                      "INPUT": {
+                        "block": {
+                          "type": "variables_get",
+                          "id": "variables_get_001",
+                          "fields": {
+                            "VAR": {
+                              "id": "algo_param_msg",
+                              "name": "msg"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "next": {
+                "block": {
+                  "type": "variables_set",
+                  "id": "variables_set_025",
+                  "fields": {
+                    "VAR": {
+                      "id": "algo_var_state",
+                      "name": "state"
+                    }
+                  },
+                  "inputs": {
+                    "VALUE": {
+                      "block": {
+                        "type": "data_value",
+                        "id": "data_value_024",
+                        "fields": {
+                          "NUM": "[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19]"
+                        }
+                      }
+                    }
+                  },
+                  "next": {
+                    "block": {
+                      "type": "variables_set",
+                      "id": "variables_set_026",
+                      "fields": {
+                        "VAR": {
+                          "id": "algo_var_blocks",
+                          "name": "blocks"
+                        }
+                      },
+                      "inputs": {
+                        "VALUE": {
+                          "block": {
+                            "type": "math_round",
+                            "id": "math_round_007",
+                            "fields": {
+                              "OP": "ROUNDDOWN"
+                            },
+                            "inputs": {
+                              "NUM": {
+                                "block": {
+                                  "type": "math_arithmetic",
+                                  "id": "math_arithmetic_006",
+                                  "fields": {
+                                    "OP": "DIVIDE"
+                                  },
+                                  "inputs": {
+                                    "A": {
+                                      "block": {
+                                        "type": "data_bit_length",
+                                        "id": "data_bit_length_004",
+                                        "inputs": {
+                                          "X": {
+                                            "block": {
+                                              "type": "variables_get",
+                                              "id": "variables_get_003",
+                                              "fields": {
+                                                "VAR": {
+                                                  "id": "algo_var_padded",
+                                                  "name": "padded"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "B": {
+                                      "block": {
+                                        "type": "data_value",
+                                        "id": "data_value_005",
+                                        "fields": {
+                                          "NUM": "512"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "next": {
+                        "block": {
+                          "type": "ctrl_iterate",
+                          "id": "ctrl_iterate_022",
+                          "fields": {
+                            "VAR": "i"
+                          },
+                          "inputs": {
+                            "TIMES": {
+                              "block": {
+                                "type": "variables_get",
+                                "id": "variables_get_021",
+                                "fields": {
+                                  "VAR": {
+                                    "id": "algo_var_blocks",
+                                    "name": "blocks"
+                                  }
+                                }
+                              }
+                            },
+                            "DO": {
+                              "block": {
+                                "type": "variables_set",
+                                "id": "variables_set_011",
+                                "fields": {
+                                  "VAR": {
+                                    "id": "algo_var_offset",
+                                    "name": "offset"
+                                  }
+                                },
+                                "inputs": {
+                                  "VALUE": {
+                                    "block": {
+                                      "type": "math_arithmetic",
+                                      "id": "math_arithmetic_010",
+                                      "fields": {
+                                        "OP": "MULTIPLY"
+                                      },
+                                      "inputs": {
+                                        "A": {
+                                          "block": {
+                                            "type": "variables_get",
+                                            "id": "variables_get_008",
+                                            "fields": {
+                                              "VAR": {
+                                                "id": "algo_var_i",
+                                                "name": "i"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "B": {
+                                          "block": {
+                                            "type": "data_value",
+                                            "id": "data_value_009",
+                                            "fields": {
+                                              "NUM": "64"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "next": {
+                                  "block": {
+                                    "type": "variables_set",
+                                    "id": "variables_set_020",
+                                    "fields": {
+                                      "VAR": {
+                                        "id": "algo_var_state",
+                                        "name": "state"
+                                      }
+                                    },
+                                    "inputs": {
+                                      "VALUE": {
+                                        "block": {
+                                          "type": "hash_sha256_compress",
+                                          "id": "hash_sha256_compress_019",
+                                          "inputs": {
+                                            "V": {
+                                              "block": {
+                                                "type": "variables_get",
+                                                "id": "variables_get_018",
+                                                "fields": {
+                                                  "VAR": {
+                                                    "id": "algo_var_state",
+                                                    "name": "state"
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "W": {
+                                              "block": {
+                                                "type": "pq_bytes_slice",
+                                                "id": "pq_bytes_slice_017",
+                                                "inputs": {
+                                                  "INPUT": {
+                                                    "block": {
+                                                      "type": "variables_get",
+                                                      "id": "variables_get_012",
+                                                      "fields": {
+                                                        "VAR": {
+                                                          "id": "algo_var_padded",
+                                                          "name": "padded"
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "START": {
+                                                    "block": {
+                                                      "type": "variables_get",
+                                                      "id": "variables_get_013",
+                                                      "fields": {
+                                                        "VAR": {
+                                                          "id": "algo_var_offset",
+                                                          "name": "offset"
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "END": {
+                                                    "block": {
+                                                      "type": "math_arithmetic",
+                                                      "id": "math_arithmetic_016",
+                                                      "fields": {
+                                                        "OP": "ADD"
+                                                      },
+                                                      "inputs": {
+                                                        "A": {
+                                                          "block": {
+                                                            "type": "variables_get",
+                                                            "id": "variables_get_014",
+                                                            "fields": {
+                                                              "VAR": {
+                                                                "id": "algo_var_offset",
+                                                                "name": "offset"
+                                                              }
+                                                            }
+                                                          }
+                                                        },
+                                                        "B": {
+                                                          "block": {
+                                                            "type": "data_value",
+                                                            "id": "data_value_015",
+                                                            "fields": {
+                                                              "NUM": "64"
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "RETURN": {
+            "block": {
+              "type": "variables_get",
+              "id": "variables_get_027",
+              "fields": {
+                "VAR": {
+                  "id": "algo_var_state",
+                  "name": "state"
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

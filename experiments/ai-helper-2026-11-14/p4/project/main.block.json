@@ -1,0 +1,74 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "variables_set",
+        "id": "variables_set_030",
+        "fields": {
+          "VAR": {
+            "id": "main_var_msg",
+            "name": "msg"
+          }
+        },
+        "inputs": {
+          "VALUE": {
+            "block": {
+              "type": "data_value",
+              "id": "data_value_029",
+              "fields": {
+                "NUM": "\"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq\""
+              }
+            }
+          }
+        },
+        "next": {
+          "block": {
+            "type": "variables_set",
+            "id": "variables_set_033",
+            "fields": {
+              "VAR": {
+                "id": "main_var_digest",
+                "name": "digest"
+              }
+            },
+            "inputs": {
+              "VALUE": {
+                "block": {
+                  "type": "procedures_callreturn",
+                  "id": "procedures_callreturn_032",
+                  "fields": {
+                    "NAME": "SHA256_Multiblock"
+                  },
+                  "extraState": {
+                    "params": [
+                      {
+                        "name": "msg",
+                        "id": "main_param_msg",
+                        "type": "message"
+                      }
+                    ]
+                  },
+                  "inputs": {
+                    "ARG0": {
+                      "block": {
+                        "type": "variables_get",
+                        "id": "variables_get_031",
+                        "fields": {
+                          "VAR": {
+                            "id": "main_var_msg",
+                            "name": "msg"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

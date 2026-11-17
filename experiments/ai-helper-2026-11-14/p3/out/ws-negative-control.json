@@ -1,0 +1,87 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "procedures_defreturn",
+        "id": "neg_def",
+        "x": 100,
+        "y": 100,
+        "extraState": {
+          "params": [
+            {
+              "name": "s",
+              "id": "p_s",
+              "type": "int_list"
+            },
+            {
+              "name": "rk",
+              "id": "p_rk",
+              "type": "int_list"
+            }
+          ],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "P3_AES_Round"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "aes_add_round_key",
+              "id": "negative_control_n5",
+              "inputs": {
+                "STATE": {
+                  "block": {
+                    "type": "aes_mix_columns",
+                    "id": "negative_control_n4",
+                    "inputs": {
+                      "STATE": {
+                        "block": {
+                          "type": "aes_shift_rows",
+                          "id": "negative_control_n3",
+                          "inputs": {
+                            "STATE": {
+                              "block": {
+                                "type": "aes_shift_rows",
+                                "id": "negative_control_n2",
+                                "inputs": {
+                                  "STATE": {
+                                    "block": {
+                                      "type": "variables_get",
+                                      "id": "negative_control_n1",
+                                      "fields": {
+                                        "VAR": {
+                                          "id": "p_s"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "ROUND_KEY": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "negative_control_n6",
+                    "fields": {
+                      "VAR": {
+                        "id": "p_rk"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

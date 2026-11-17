@@ -1,0 +1,695 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "scripts/p4-anchors.mjs",
+  "scope": {
+    "standardId": "fips180-4-SHA2",
+    "entries": 5,
+    "note": "只做 FIPS 180-4 相关条目，不铺全语料"
+  },
+  "standard": {
+    "id": "fips180-4-SHA2",
+    "name": "NIST FIPS 180-4",
+    "version": "180-4",
+    "source_url": "https://csrc.nist.gov/pubs/fips/180-4/final",
+    "source_checked_at": "2026-09-12",
+    "artifacts": [
+      {
+        "path": "NIST.FIPS.180-4.pdf",
+        "sha256": "0455b406d89648d20cbde375561e19c245b9815e894164c2670772e3d54deb82"
+      },
+      {
+        "path": "vectors/shabytetestvectors.zip",
+        "sha256": "929ef80b7b3418aca026643f6f248815913b60e01741a44bba9e118067f4c9b8",
+        "kind": "CAVP-zip"
+      }
+    ]
+  },
+  "source": {
+    "path": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+    "lines": 1325,
+    "sha256": "58d09d35fbc77df80e1bff78351b48d8729ae801824524e606eb0c7b0cfdb6cd"
+  },
+  "counts": {
+    "entries": 5,
+    "declaredLineStart": 7,
+    "declaredLineRange": 1,
+    "declaredHeadingOnly": 0,
+    "clauseUnits": 14,
+    "clauseUnitsClickable": 14,
+    "clauseUnitsSectionLevel": 0,
+    "clauseUnitsWithoutHeading": 0,
+    "entryAnchorMismatch": 0,
+    "declaredOutsideSections": 2
+  },
+  "entries": [
+    {
+      "clauseId": "01-SHA2",
+      "entryPath": "docs/standards/fips180-4-SHA2/01-SHA2.md",
+      "standardPosition": "§6.1–§6.7",
+      "declaredPosition": "[提取稿 §6.1–§6.7，行 886–1237](./00-Standard-Source.md#L886-L1237)；PDF 物理页需结合同目录 PDF 核对",
+      "declaredAnchors": [
+        {
+          "kind": "line-range",
+          "line_start": 886,
+          "line_end": 1237
+        }
+      ],
+      "resolvedSections": [
+        {
+          "section": "6.1",
+          "expandedFrom": "§6.1–§6.7",
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 886,
+          "line_end": 1028,
+          "heading": "SHA-1",
+          "firstLine": "6.1       SHA-1",
+          "slice_sha256": "82fe60e32dadfde548345a97c63d66f05be16e7e11b874f74b367b0c7c02c712",
+          "matchesDeclared": true
+        },
+        {
+          "section": "6.2",
+          "expandedFrom": "§6.1–§6.7",
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 1029,
+          "line_end": 1115,
+          "heading": "SHA-256",
+          "firstLine": "6.2      SHA-256",
+          "slice_sha256": "8f6fd95b07405462b79d77d17770fc038173c364431bd8d482d3033e227644be",
+          "matchesDeclared": false
+        },
+        {
+          "section": "6.3",
+          "expandedFrom": "§6.1–§6.7",
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 1116,
+          "line_end": 1129,
+          "heading": "SHA-224",
+          "firstLine": "6.3      SHA-224",
+          "slice_sha256": "edfd26bf8c850982f15b0422913177988e7ae20ac6a5b3af7d1baf683521a843",
+          "matchesDeclared": false
+        },
+        {
+          "section": "6.4",
+          "expandedFrom": "§6.1–§6.7",
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 1130,
+          "line_end": 1215,
+          "heading": "SHA-512",
+          "firstLine": "6.4       SHA-512",
+          "slice_sha256": "89f1335d023136e46b56e043cae6c64333f2f23bdee4005af7472b6342cae5c0",
+          "matchesDeclared": false
+        },
+        {
+          "section": "6.5",
+          "expandedFrom": "§6.1–§6.7",
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 1216,
+          "line_end": 1226,
+          "heading": "SHA-384",
+          "firstLine": "6.5      SHA-384",
+          "slice_sha256": "fb78460d0f750eeee5f49b8713a065c5b70dceaed7ebcc0a834ceeb26067b1c7",
+          "matchesDeclared": false
+        },
+        {
+          "section": "6.6",
+          "expandedFrom": "§6.1–§6.7",
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 1227,
+          "line_end": 1236,
+          "heading": "SHA-512/224",
+          "firstLine": "6.6      SHA-512/224",
+          "slice_sha256": "cf6d919f121fbd2e625039b29dfd00788c7f51005c3964b36ce96d69c4c81ed5",
+          "matchesDeclared": false
+        },
+        {
+          "section": "6.7",
+          "expandedFrom": "§6.1–§6.7",
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 1237,
+          "line_end": 1250,
+          "heading": "SHA-512/256",
+          "firstLine": "6.7      SHA-512/256",
+          "slice_sha256": "171349d2057ab314bdb9556929e1aeb418873b7fbddf5197a035572d70f8238b",
+          "matchesDeclared": false
+        }
+      ],
+      "anchorMismatch": [],
+      "declaredOutsideSections": [],
+      "entryLevelAnchor": {
+        "kind": "line-range",
+        "line_start": 886,
+        "line_end": 1237
+      }
+    },
+    {
+      "clauseId": "02-Padding",
+      "entryPath": "docs/standards/fips180-4-SHA2/02-Padding.md",
+      "standardPosition": "FIPS 180-4 §5.1，§5.2",
+      "declaredPosition": "PDF 物理第 18–19 页（标准页 13–14）；[提取稿 §5.1](./00-Standard-Source.md#L652)",
+      "declaredAnchors": [
+        {
+          "kind": "line-start",
+          "line_start": 652,
+          "line_end": null
+        }
+      ],
+      "resolvedSections": [
+        {
+          "section": "5.1",
+          "expandedFrom": null,
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 652,
+          "line_end": 692,
+          "heading": "Padding the Message",
+          "firstLine": "5.1      Padding the Message",
+          "slice_sha256": "77d65407b9ef99d70cb9f77277f761e07400d460526f6dd1178c35219144934f",
+          "matchesDeclared": true
+        },
+        {
+          "section": "5.2",
+          "expandedFrom": null,
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 693,
+          "line_end": 707,
+          "heading": "Parsing the Message",
+          "firstLine": "\f5.2        Parsing the Message",
+          "slice_sha256": "32e1e6da012cddf3e3c2f1da3878ddf127f9dbe9142045db6e5d9ceaafae4718",
+          "matchesDeclared": false
+        }
+      ],
+      "anchorMismatch": [],
+      "declaredOutsideSections": [],
+      "entryLevelAnchor": {
+        "kind": "line-start",
+        "line_start": 652,
+        "line_end": null
+      }
+    },
+    {
+      "clauseId": "03-MessageExpansion",
+      "entryPath": "docs/standards/fips180-4-SHA2/03-MessageExpansion.md",
+      "standardPosition": "FIPS 180-4 §6.2.2、§6.4.2",
+      "declaredPosition": "SHA-256：[提取稿第 1052 行](./00-Standard-Source.md#L1052)；SHA-512：[第 1142 行](./00-Standard-Source.md#L1142)",
+      "declaredAnchors": [
+        {
+          "kind": "line-start",
+          "line_start": 1052,
+          "line_end": null
+        },
+        {
+          "kind": "line-start",
+          "line_start": 1142,
+          "line_end": null
+        }
+      ],
+      "resolvedSections": [
+        {
+          "section": "6.2.2",
+          "expandedFrom": null,
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 1052,
+          "line_end": 1115,
+          "heading": "SHA-256 Hash Computation",
+          "firstLine": "6.2.2 SHA-256 Hash Computation",
+          "slice_sha256": "2517ea9090ee5cf606a6ccfa6958f5907164866a2056cb8c0bcfee06a0c84b81",
+          "matchesDeclared": true
+        },
+        {
+          "section": "6.4.2",
+          "expandedFrom": null,
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 1148,
+          "line_end": 1215,
+          "heading": "SHA-512 Hash Computation",
+          "firstLine": "6.4.2 SHA-512 Hash Computation",
+          "slice_sha256": "04cb533da9484c74c446dfb5bfec86e43f01ce479360403ca60aa37156cd22af",
+          "matchesDeclared": false
+        }
+      ],
+      "anchorMismatch": [],
+      "declaredOutsideSections": [
+        {
+          "declared": {
+            "kind": "line-start",
+            "line_start": 1142,
+            "line_end": null
+          },
+          "lineText": "6.4.1     SHA-512 Preprocessing"
+        }
+      ],
+      "entryLevelAnchor": {
+        "kind": "line-start",
+        "line_start": 1052,
+        "line_end": null
+      }
+    },
+    {
+      "clauseId": "04-Compression",
+      "entryPath": "docs/standards/fips180-4-SHA2/04-Compression.md",
+      "standardPosition": "FIPS 180-4 §6.2.2、§6.4.2",
+      "declaredPosition": "SHA-256：[提取稿第 1052 行](./00-Standard-Source.md#L1052)；SHA-512：[第 1142 行](./00-Standard-Source.md#L1142)",
+      "declaredAnchors": [
+        {
+          "kind": "line-start",
+          "line_start": 1052,
+          "line_end": null
+        },
+        {
+          "kind": "line-start",
+          "line_start": 1142,
+          "line_end": null
+        }
+      ],
+      "resolvedSections": [
+        {
+          "section": "6.2.2",
+          "expandedFrom": null,
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 1052,
+          "line_end": 1115,
+          "heading": "SHA-256 Hash Computation",
+          "firstLine": "6.2.2 SHA-256 Hash Computation",
+          "slice_sha256": "2517ea9090ee5cf606a6ccfa6958f5907164866a2056cb8c0bcfee06a0c84b81",
+          "matchesDeclared": true
+        },
+        {
+          "section": "6.4.2",
+          "expandedFrom": null,
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 1148,
+          "line_end": 1215,
+          "heading": "SHA-512 Hash Computation",
+          "firstLine": "6.4.2 SHA-512 Hash Computation",
+          "slice_sha256": "04cb533da9484c74c446dfb5bfec86e43f01ce479360403ca60aa37156cd22af",
+          "matchesDeclared": false
+        }
+      ],
+      "anchorMismatch": [],
+      "declaredOutsideSections": [
+        {
+          "declared": {
+            "kind": "line-start",
+            "line_start": 1142,
+            "line_end": null
+          },
+          "lineText": "6.4.1     SHA-512 Preprocessing"
+        }
+      ],
+      "entryLevelAnchor": {
+        "kind": "line-start",
+        "line_start": 1052,
+        "line_end": null
+      }
+    },
+    {
+      "clauseId": "05-Digest",
+      "entryPath": "docs/standards/fips180-4-SHA2/05-Digest.md",
+      "standardPosition": "FIPS 180-4 §6",
+      "declaredPosition": "SHA-256：[提取稿 §6.2 第 1029 行](./00-Standard-Source.md#L1029)；SHA-512：[§6.4 第 1130 行](./00-Standard-Source.md#L1130)",
+      "declaredAnchors": [
+        {
+          "kind": "line-start",
+          "line_start": 1029,
+          "line_end": null
+        },
+        {
+          "kind": "line-start",
+          "line_start": 1130,
+          "line_end": null
+        }
+      ],
+      "resolvedSections": [
+        {
+          "section": "6",
+          "expandedFrom": null,
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 874,
+          "line_end": 1250,
+          "heading": "SECURE HASH ALGORITHMS",
+          "firstLine": "\f6.        SECURE HASH ALGORITHMS",
+          "slice_sha256": "33c1ef2c2ca387e075b3639d5571f40c11a41ff446421d22184dcb1107351fd5",
+          "matchesDeclared": false
+        }
+      ],
+      "anchorMismatch": [],
+      "declaredOutsideSections": [],
+      "entryLevelAnchor": {
+        "kind": "line-start",
+        "line_start": 1029,
+        "line_end": null
+      }
+    }
+  ],
+  "clauseUnits": [
+    {
+      "clauseId": "01-SHA2#§6.1",
+      "entryId": "01-SHA2",
+      "entryPath": "docs/standards/fips180-4-SHA2/01-SHA2.md",
+      "section": "6.1",
+      "expandedFrom": "§6.1–§6.7",
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": true,
+      "click": {
+        "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 886,
+        "line_end": 1028
+      },
+      "source": {
+        "path": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 886,
+        "line_end": 1028,
+        "heading": "SHA-1",
+        "firstLine": "6.1       SHA-1",
+        "slice_sha256": "82fe60e32dadfde548345a97c63d66f05be16e7e11b874f74b367b0c7c02c712"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "01-SHA2#§6.2",
+      "entryId": "01-SHA2",
+      "entryPath": "docs/standards/fips180-4-SHA2/01-SHA2.md",
+      "section": "6.2",
+      "expandedFrom": "§6.1–§6.7",
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": false,
+      "click": {
+        "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1029,
+        "line_end": 1115
+      },
+      "source": {
+        "path": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1029,
+        "line_end": 1115,
+        "heading": "SHA-256",
+        "firstLine": "6.2      SHA-256",
+        "slice_sha256": "8f6fd95b07405462b79d77d17770fc038173c364431bd8d482d3033e227644be"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "01-SHA2#§6.3",
+      "entryId": "01-SHA2",
+      "entryPath": "docs/standards/fips180-4-SHA2/01-SHA2.md",
+      "section": "6.3",
+      "expandedFrom": "§6.1–§6.7",
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": false,
+      "click": {
+        "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1116,
+        "line_end": 1129
+      },
+      "source": {
+        "path": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1116,
+        "line_end": 1129,
+        "heading": "SHA-224",
+        "firstLine": "6.3      SHA-224",
+        "slice_sha256": "edfd26bf8c850982f15b0422913177988e7ae20ac6a5b3af7d1baf683521a843"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "01-SHA2#§6.4",
+      "entryId": "01-SHA2",
+      "entryPath": "docs/standards/fips180-4-SHA2/01-SHA2.md",
+      "section": "6.4",
+      "expandedFrom": "§6.1–§6.7",
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": false,
+      "click": {
+        "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1130,
+        "line_end": 1215
+      },
+      "source": {
+        "path": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1130,
+        "line_end": 1215,
+        "heading": "SHA-512",
+        "firstLine": "6.4       SHA-512",
+        "slice_sha256": "89f1335d023136e46b56e043cae6c64333f2f23bdee4005af7472b6342cae5c0"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "01-SHA2#§6.5",
+      "entryId": "01-SHA2",
+      "entryPath": "docs/standards/fips180-4-SHA2/01-SHA2.md",
+      "section": "6.5",
+      "expandedFrom": "§6.1–§6.7",
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": false,
+      "click": {
+        "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1216,
+        "line_end": 1226
+      },
+      "source": {
+        "path": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1216,
+        "line_end": 1226,
+        "heading": "SHA-384",
+        "firstLine": "6.5      SHA-384",
+        "slice_sha256": "fb78460d0f750eeee5f49b8713a065c5b70dceaed7ebcc0a834ceeb26067b1c7"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "01-SHA2#§6.6",
+      "entryId": "01-SHA2",
+      "entryPath": "docs/standards/fips180-4-SHA2/01-SHA2.md",
+      "section": "6.6",
+      "expandedFrom": "§6.1–§6.7",
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": false,
+      "click": {
+        "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1227,
+        "line_end": 1236
+      },
+      "source": {
+        "path": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1227,
+        "line_end": 1236,
+        "heading": "SHA-512/224",
+        "firstLine": "6.6      SHA-512/224",
+        "slice_sha256": "cf6d919f121fbd2e625039b29dfd00788c7f51005c3964b36ce96d69c4c81ed5"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "01-SHA2#§6.7",
+      "entryId": "01-SHA2",
+      "entryPath": "docs/standards/fips180-4-SHA2/01-SHA2.md",
+      "section": "6.7",
+      "expandedFrom": "§6.1–§6.7",
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": false,
+      "click": {
+        "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1237,
+        "line_end": 1250
+      },
+      "source": {
+        "path": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1237,
+        "line_end": 1250,
+        "heading": "SHA-512/256",
+        "firstLine": "6.7      SHA-512/256",
+        "slice_sha256": "171349d2057ab314bdb9556929e1aeb418873b7fbddf5197a035572d70f8238b"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "02-Padding#§5.1",
+      "entryId": "02-Padding",
+      "entryPath": "docs/standards/fips180-4-SHA2/02-Padding.md",
+      "section": "5.1",
+      "expandedFrom": null,
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": true,
+      "click": {
+        "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 652,
+        "line_end": 692
+      },
+      "source": {
+        "path": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 652,
+        "line_end": 692,
+        "heading": "Padding the Message",
+        "firstLine": "5.1      Padding the Message",
+        "slice_sha256": "77d65407b9ef99d70cb9f77277f761e07400d460526f6dd1178c35219144934f"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "02-Padding#§5.2",
+      "entryId": "02-Padding",
+      "entryPath": "docs/standards/fips180-4-SHA2/02-Padding.md",
+      "section": "5.2",
+      "expandedFrom": null,
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": false,
+      "click": {
+        "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 693,
+        "line_end": 707
+      },
+      "source": {
+        "path": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 693,
+        "line_end": 707,
+        "heading": "Parsing the Message",
+        "firstLine": "\f5.2        Parsing the Message",
+        "slice_sha256": "32e1e6da012cddf3e3c2f1da3878ddf127f9dbe9142045db6e5d9ceaafae4718"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "03-MessageExpansion#§6.2.2",
+      "entryId": "03-MessageExpansion",
+      "entryPath": "docs/standards/fips180-4-SHA2/03-MessageExpansion.md",
+      "section": "6.2.2",
+      "expandedFrom": null,
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": true,
+      "click": {
+        "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1052,
+        "line_end": 1115
+      },
+      "source": {
+        "path": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1052,
+        "line_end": 1115,
+        "heading": "SHA-256 Hash Computation",
+        "firstLine": "6.2.2 SHA-256 Hash Computation",
+        "slice_sha256": "2517ea9090ee5cf606a6ccfa6958f5907164866a2056cb8c0bcfee06a0c84b81"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "03-MessageExpansion#§6.4.2",
+      "entryId": "03-MessageExpansion",
+      "entryPath": "docs/standards/fips180-4-SHA2/03-MessageExpansion.md",
+      "section": "6.4.2",
+      "expandedFrom": null,
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": false,
+      "click": {
+        "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1148,
+        "line_end": 1215
+      },
+      "source": {
+        "path": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1148,
+        "line_end": 1215,
+        "heading": "SHA-512 Hash Computation",
+        "firstLine": "6.4.2 SHA-512 Hash Computation",
+        "slice_sha256": "04cb533da9484c74c446dfb5bfec86e43f01ce479360403ca60aa37156cd22af"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "04-Compression#§6.2.2",
+      "entryId": "04-Compression",
+      "entryPath": "docs/standards/fips180-4-SHA2/04-Compression.md",
+      "section": "6.2.2",
+      "expandedFrom": null,
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": true,
+      "click": {
+        "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1052,
+        "line_end": 1115
+      },
+      "source": {
+        "path": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1052,
+        "line_end": 1115,
+        "heading": "SHA-256 Hash Computation",
+        "firstLine": "6.2.2 SHA-256 Hash Computation",
+        "slice_sha256": "2517ea9090ee5cf606a6ccfa6958f5907164866a2056cb8c0bcfee06a0c84b81"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "04-Compression#§6.4.2",
+      "entryId": "04-Compression",
+      "entryPath": "docs/standards/fips180-4-SHA2/04-Compression.md",
+      "section": "6.4.2",
+      "expandedFrom": null,
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": false,
+      "click": {
+        "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1148,
+        "line_end": 1215
+      },
+      "source": {
+        "path": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 1148,
+        "line_end": 1215,
+        "heading": "SHA-512 Hash Computation",
+        "firstLine": "6.4.2 SHA-512 Hash Computation",
+        "slice_sha256": "04cb533da9484c74c446dfb5bfec86e43f01ce479360403ca60aa37156cd22af"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "05-Digest#§6",
+      "entryId": "05-Digest",
+      "entryPath": "docs/standards/fips180-4-SHA2/05-Digest.md",
+      "section": "6",
+      "expandedFrom": null,
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": false,
+      "click": {
+        "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 874,
+        "line_end": 1250
+      },
+      "source": {
+        "path": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+        "line_start": 874,
+        "line_end": 1250,
+        "heading": "SECURE HASH ALGORITHMS",
+        "firstLine": "\f6.        SECURE HASH ALGORITHMS",
+        "slice_sha256": "33c1ef2c2ca387e075b3639d5571f40c11a41ff446421d22184dcb1107351fd5"
+      },
+      "reason": null
+    }
+  ]
+}
