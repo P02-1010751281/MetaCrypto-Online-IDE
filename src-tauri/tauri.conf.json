@@ -30,6 +30,8 @@
     "active": true,
     "targets": ["deb", "rpm", "appimage", "msi", "nsis", "dmg"],
     "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png"],
+    "shortDescription": "Post-quantum cryptography visual programming platform",
+    "longDescription": "A visual cryptography programming platform based on Blockly and Vue 3. Workspaces are assembled from reusable atomic blocks, JavaScript and Python code is generated from them, and the generated code runs in a browser sandbox.",
     "linux": {
       "deb": {
         "files": {
