@@ -1821,3 +1821,403 @@ holdout5 6/3；负例 **7/7 全部拒答**（含新加的 Go/gRPC 与「明天�
 | 类型 | `npx vue-tsc --noEmit` | 0 |
 | 构建 | `npm run build` | 0 |
 | 索引 | `npx tsx scripts/ai-helper-docindex.ts index` | `sections=4007 terms=57620 postings=374860 hash=ac43e6dcf4fbbf41`（与本轮改动前逐项相同：本轮只改排序期过滤，不碰索引） |
+
+## 31. B1b 第一刀：procedure 形参、序列化与 60/60 代码级往返（2026-11-17 上午）
+
+上一轮（§28.1）把反解析器抽成浏览器纯函数，但只到 `ParsedNode` 树：没有「树 → 可加载的
+Blockly 状态」这一步，也没有 procedure 形参。本轮补完这两块，并把判据从「树同构」
+（脚本侧、且需要真值工作区）换成**代码级往返**（浏览器侧、不需要真值）。
+
+### 31.1 改了什么
+
+- `reverse/layout.ts`：`parseSignature` 从 `def name(a: int, b: list[int]) -> bytes:` 抓
+  形参名与类型提示；`scanTopLevelDefs` 扫出所有顶格 def；`procedureUnits` 从脚本侧搬进
+  纯模块（去缩进、剔 docstring、切语句、摘 `return` 表达式）；`isGeneratedProcedure`
+  用生成器固定写的 `Crypto function:` docstring 判别「这是块 procedure 还是内嵌实现」。
+- `reverse/serialize.ts`：`ParsedNode` → Blockly 序列化状态。procedure 发
+  `procedures_defreturn/defnoreturn` + `extraState.params`（`param-<名>` 作变量 id）+
+  `STACK` 链 + `RETURN`；顶层语句按 y 递增排布；未识别语句只进诊断、不产出替代块。
+- `reverse/code-to-workspace.ts`：`reverseCode(code, payload)` 一条龙（定位块代码区 →
+  切 procedure/顶层 → 模板匹配 → 序列化），无 fs / Blockly 依赖。
+
+### 31.2 判据与实测
+
+判据 v1（本轮定的）：**生成的 Python 逐块相等**。两边都先剔除生成器的 `X = None`
+前导行，再按「每个 def（含体）+ 每条顶层语句」切块比较；只放宽块的先后（坐标顺序不是
+证据），函数体内顺序与每个词仍然逐字比。
+
+| 集合 | 结果 |
+|---|---|
+| `demos/`（6 个工作区）+ `demos/procedures/`（54 个） | **60/60 逐块相等，诊断 0** |
+| 手工用例：原子块、procedure、全在 def 体里的 CCM、未知语句 | 4/4（未知语句只出诊断，块集为空） |
+
+`tests.json` / `evidence.json` 是数据文件不是工作区，按 `blocks` 键排除——分母 60 与
+`verify:demos` 的 60 一致。
+
+### 31.3 三个被实测打出来的坑
+
+1. **`hasStatements` 不是装饰**：自定义 def 块在 `hasStatements:false` 时会
+   `removeInput('STACK')`，而状态里若还带 `STACK`，加载直接报
+   `missing a(n) STACK connection`。空体必须同时置 false 且不发 STACK。
+2. **函数名在 `NAME` 字段**：漏了它，生成器退化成 `unnamedN`，往返红。
+3. **类型提示是有损的**：`key/seed/message` 都写 `bytes`、`poly` 与 `int_list` 都写
+   `list[int]`；但 `string` 这类词生成器原样照打，反填时必须同名（猜成 `bytes`
+   会改签名，SM2-KeyExchange 就是这样红的）。生成代码不读类型标签，故只影响编辑器标签精度。
+
+### 31.4 仍缺什么（B1b 余下）
+
+- 面板入口与「载入工作区」确认还没接（运行时载荷已进 src，见 §32）。
+- 只验证过 Python 生成形态；JS 侧当年只采了模板（219/221），反解析从未验证。
+- 外部 C/C++ 参考实现（B2）不在本轮范围。
+
+## 32. 运行时模板载荷进 src + 新鲜度门禁（2026-11-17 上午）
+
+§31.4 的第一条：反解析要的 `field-templates.json`（160 KB，222 块）此前只在
+`experiments/ai-helper-2026-11-14/out/`，浏览器拿不到。本轮把它变成随 src 交付的产物，
+并给它一条会真的开火的新鲜度门禁。
+
+### 32.1 改了什么
+
+- `scripts/ai-helper-variants.ts`：产物写两处（`src/services/ai-helper/reverse/field-templates.json`
+  运行时 + `experiments/.../out/field-templates.json` 存档），内容逐字相同；新增 `check` 子命令。
+- `reverse/payload.ts`：`parseFieldPayload(text)`（结构不对就抛，不许半份模板上岗）+
+  `loadFieldPayload()`（按需 `import('./field-templates.json?raw')`，160 KB 不进主包，同页只解析一次）。
+- 三个反解析测试改读运行时载荷（此前读 experiments 存档）：测试与交付物是同一份文件。
+- `tests/unit/ai-helper-reverse-payload.test.ts`：类型集合与 `ALL_BLOCK_TYPES` 逐项相等；
+  采不到模板的只剩两个点名例外（sbox 旧变量块）；每个有模板的块都真能构建出匹配器；
+  src 与存档逐字相同；结构不对的文本抛错。
+
+### 32.2 新鲜度判据：重算后逐字段比对，不用 mtime
+
+`npm run reverse:templates:check` 走一次真实采集（jsdom + Blockly + 生成器扫描），忽略
+`generatedAt` 后与交付产物逐块比对，差异按块名列出。选它而不是 mtime 的理由是 mtime 在
+克隆/检出/打包时会被重写成检出时间：既可能漏报（产物比块源码新）也可能误报。代价是
+一次采集（实测 ~2 s 含打包，单跑采集 ~1.7 s），可接受。
+
+`verify:all` 里排在 `verify:build` 之后（`node dist-verify/ai-helper-variants.js check`），
+复用同一份全量构建产物，不再额外打包一次。
+
+### 32.3 门禁与阴性对照（都实跑）
+
+| 项 | 命令 | 结果 |
+|---|---|---|
+| 新鲜度（正常） | `node dist-verify/ai-helper-variants.js check` | `FIELD_CHECK ok blocks=222`，`npm run reverse:templates:check` 同 |
+| 阴性对照 A：从产物删一块 | 删 `zuc_s1` 后跑 check | 退出码 1，报 `zuc_s1：运行时产物里没有这一块` |
+| 阴性对照 B：改一个模板词 | 把 `aes_sub_bytes` 的 `zzsigv_STATE` 改掉 | 退出码 1，报 `aes_sub_bytes：模板或字段结论变了` |
+| 确定性 | 连采两次比内容（除 `generatedAt`） | 逐字节相同 |
+| 载荷测试 | `npx vitest run tests/unit/ai-helper-reverse-payload.test.ts` | 5/5 通过 |
+
+### 32.3.1 这条门禁上线时立刻抓到一次真实过期
+
+存档里那份产物是 2026-11-14 采的（221 块）。本轮重新采集得到 222 块，唯一的差异是
+`data_int_list`（11-15 新增的整型数组块）不在旧载荷里——意味着在它进载荷之前，反解析
+遇到这个块的代码只能判 UNRESOLVED。重新采集后 `invisible_field_blocks` 从 4 变 5、
+`invisible_fields` 从 8 变 9，其余 221 块逐字段相同（`collisions` 也完全一致），说明
+采集本身是确定的，差的只是新块。60/60 往返在新载荷下仍然全绿。
+
+这正是要门禁而不是"记得重跑"的理由：产物与块清单之间存在时间差，而这个差不会自己报错，
+只会在用户粘贴到相关代码时表现为"这段识别不出来"。
+
+### 32.4 仍未做（面板入口已在 §33 接上）
+
+- ~~面板入口（粘贴代码 → 解析 → 确认后载入工作区）尚未接~~ → §33。
+- ~~JS 侧反解析仍未验证~~ → §34：实测 0/60 能还原，已改成先判别再明确拒绝。
+- B2（外部 C/C++）不在范围。
+
+## 33. B1b 第二刀：A/B 入口落到界面（从代码生成工作区），真实浏览器跑通（2026-11-17 上午）
+
+§32.4 的第二条：反解析器有了载荷、有了序列化，但用户在界面上还没有入口。本轮把入口接上，
+并在无头 Chromium 里真的走了一遍；过程中抓到两个真缺陷。
+
+### 33.1 入口放在哪：不并进检索助手
+
+A/B 与 D 是并列的两条线（D 是检索助手，不是 A/B 的外壳）。所以入口做成**独立浮层**，
+从顶栏「更多」菜单里进（与「导入工作区」相邻但语义不同：导入的是既有工作区文件，这一项是
+从代码反解析出新工作区）：
+
+- `src/components/ai-helper/CodeToWorkspaceDialog.vue`：粘贴/选文件 → 解析 → 逐条诊断 → 显式「载入工作区」。
+  诊断只列前 20 条、总数照实报；一块都没认出来时载入按钮禁用并说明原因。
+- `src/components/editor/useCodeToWorkspaceImport.ts`：浮层开合与载入回执（载入仍走编辑器自己的
+  `loadWorkspace`——JSON 深嵌套检查、`migrateJsonState`、失败回滚都在那条路上）。
+- `src/components/editor/useWorkspaceStats.ts`：把「状态栏积木数 + 画布已变」抽成单一出口
+  （`App.vue` 原本已 519 行，超过 500 行上限，抽取后 500 行整）。
+- 菜单项与 emit 链：`WorkspaceMenu` → `EditorHeaderActions` → `App.vue`；全部文案走 `ui()/uiFormat()`，中英键集与占位符由 `locale-ui-messages` 门禁守。
+
+### 33.2 两个真缺陷（都是真实浏览器里看出来的，单测此前不覆盖）
+
+1. **同一条未识别语句被报两次。** 子块认不出时子层记一条诊断，父层 withheld 时又用同一段
+   原文记一条——用户会以为有两处错误。修法见 `serialize.ts`：只有在没有任何子层报过时才由
+   父层补记；新增回归用例钉住「两条语句 → 恰好两条诊断」。
+2. **面板报的块数比画布少。** 面板数的是顶层根节点（AES 那段代码 2 个），载入后状态栏是
+   画布全部块（4 个，含嵌套子块与 `next` 链）。新增 `countStateBlocks()` 并改成数全树；
+   `loadjson` 用例直接断言 `loadJson` 之后 `getAllBlocks().length === countStateBlocks(state)`。
+
+### 33.3 判据：真实浏览器端到端（不是截图看看）
+
+本机无 Chrome/Chromium 可给截图工具用，但 playwright 缓存里有 `chrome-headless-shell`。
+用 CDP 直连（Node 自带 WebSocket）写了临时驱动 `work/c2w-e2e.mjs`，对一个干净的
+`vite --port 5199` 实例跑完整路径，控制台错误 0：
+
+| 步骤 | 观测 |
+|---|---|
+| 编辑器就绪 | `#/editor/1`，`.blocklySvg` 已注入 |
+| 打开入口 | 「更多」→「从代码生成工作区」，`.c2w` 浮层出现 |
+| 解析 | `识别结果：4 个块，1 个函数，2 条顶层语句，2 条未识别。`，诊断恰好两条且不重复 |
+| 载入 | Toast `已从代码载入工作区`，画布 4 个块、状态栏「块 4」，与面板数字一致 |
+
+证据截图：`out/c2w-dialog.png`（解析后）、`out/c2w-applied.png`（载入后）。
+
+判据的边界要写清楚：这证明的是「入口可用 + 状态能被编辑器接受 + 数字自洽」，**不证明**
+语义正确；语义那一层仍由 §31 的代码级往返（60/60）与 B 线的官方向量差分承担。
+
+### 33.4 仍未做
+
+- A 线（文档 → 工程）在这版入口里还没有：现在只认本平台生成的 Python 形态，C/C++ 与文档
+  会如实报成「未识别」。
+- ~~JS 生成形态的反解析仍未验证~~ → §34：实测 0/60 能还原；当前版本判成 JS 会明确拒绝。
+
+### 33.5 本轮门禁（整树实跑）
+
+| 项 | 命令 | 结果 |
+|---|---|---|
+| 单测 | `npx vitest run` | **98 文件 / 1086 通过 1 跳过**（上一轮 97 / 1082：本轮 +1 文件 loadjson、+4 用例，诊断去重与块数口径各一条） |
+| lint | `npm run lint:check` | 0 错误 / 0 警告（未改规则、未加 disable） |
+| 类型 | `npx vue-tsc --noEmit` | 0 |
+| 构建 | `npm run build` | 0；入口 55295 / 65536 字节，模板载荷独立懒加载 chunk 167 KB |
+| 全量门禁 | `npm run verify:all` | rc=0，含新增的 `FIELD_CHECK ok blocks=222`、`DEMO_SUMMARY total=60 pass=60 fail=0`、`DOC_LINK_SUMMARY broken=0` |
+| 行数上限 | `wc -l src/App.vue` | 500（上限 500；入口接上后曾 519，已抽 `useWorkspaceStats`） |
+
+## 34. B1b 收口：JS 生成形态实测 0/60，改成明确拒绝（2026-11-17 上午）
+
+§33.4 的最后一条：JS 形态从未验证。本轮先把它量清楚，再决定「支持」还是「说清楚不支持」。
+结论是后者——不是偷懒，是 JS 与 Python 的差异分布在布局、语句、命名、字面量四层，
+不是补几条正则能收口的。
+
+### 34.1 实测：同一批 60 个 demo 的 JS 产物，0/60 能还原
+
+做法与 §31 的 Python 往返同源：`demos/` + `demos/procedures/` 里按 `blocks` 键排除
+`tests.json` / `evidence.json`，共 60 个真工作区；每个用 `javascriptGenerator.workspaceToCode`
+生成 JS，喂给现成的 `reverseCode`，统计诊断与块数。
+
+| 指标 | 结果 |
+|---|---|
+| demo 数 | 60 |
+| 0 诊断（能还原） | **0** |
+| 至少 1 条诊断 | 60 |
+| 典型诊断（诊断最少的一批） | 只剩一条 `}`——定位层把 `function … {` 外壳当生成器前缀剥掉了，后半段再无可识别行 |
+
+四个差异层（这也是为什么不能只补正则）：
+
+1. **布局**：`function name(...) {` + 花括号闭合，Python 侧是 `def name(...):` + 缩进；
+   procedure 题头是 JSDoc `/** … */`，Python 侧是 `"""` 三引号。
+2. **语句**：JS 行尾分号、`var/const/let` 前导声明；Python 的「已声明未赋值」是 `x = None`。
+3. **命名**：JS 生成器用 camelCase（`aesAddRoundKey`），Python 模板表是 snake_case
+   （`aes_add_round_key`）——模板匹配层拿到的词典就是错的。
+4. **字面量**：`new Uint8Array([...])`、`true/false/null` 都不在 Python 的原子字面量集合里。
+
+模板表的现状：`field-templates.json` 只采过 Python（变体采集脚本 `ai-helper-variants.ts`
+只 import `pythonGenerator`）；JS 模板只在 P0 的 `out/code-signatures.json` 存档里有静态形态，
+没有做过字段变体与可见性采集，因此不能直接当反解析词典用。
+
+### 34.2 做法：先判别语言，判成 JS 就短路
+
+- `src/services/ai-helper/reverse/language.ts`（新）：`detectInputLanguage()` 只分两档。
+  有 `def` 就是 Python；否则看 JS 强痕迹（`function name(`、JSDoc 的 `Crypto function:`、
+  或 `const/let/var` 声明加行尾分号）。其余形态（短 Python 片段、C/C++）仍按 Python 路径走，
+  认不出的语句照旧逐条进诊断——把不认识的形态一律说成 JS 是更糟的谎。
+- `reverseCode`：判成 `javascript` 时**不再硬跑 Python 匹配**，直接返回零块 +
+  `[{ text: '', reason: 'unsupported' }]`，stats 各项归零；新增 `language` 字段与
+  `options.language` 强制入口。
+- 面板（`CodeToWorkspaceDialog.vue`）：`unsupportedLanguage` 时只显示一句可读说明，
+  隐藏「识别结果」与逐条诊断（那条诊断的 text 是空的，列出来只会是一行空白），载入按钮禁用。
+- 文案：新增 `codeToWorkspaceUnsupportedJs` 中英两键，`codeToWorkspaceHintOnlyGenerated`
+  补上 JavaScript；键集与占位符由 `locale-ui-messages` 门禁守。
+
+### 34.3 判据（单测 + 真浏览器 + 整树门禁）
+
+新增 `tests/unit/ai-helper-reverse-language.test.ts`（8 条）：生成器的 JS 与手写 JS 都判 JS；
+Python 片段（含 `var = 1` 这种变量名）不误判；短路形态恰好一条 `unsupported`、零块、stats 不虚报；
+同一 demo 的 Python 路径不受影响；显式 `language` 覆盖自动判别。
+
+真实无头 Chromium（CDP 直连，干净 `vite --port 5199`）走「更多 → 从代码生成工作区 →
+粘贴 JS → 解析」：
+
+| 观测 | 值 |
+|---|---|
+| 面板说明 | `这段代码是 JavaScript 形态；当前反解析只支持本平台生成的 Python 形态，因此不会载入任何块。` |
+| 逐条诊断行数 | 0 |
+| 「识别结果」摘要行数 | 0 |
+| 载入按钮 | disabled |
+
+截图：`out/c2w-js-unsupported.png`。驱动方式：本机 playwright 缓存里的 `chrome-headless-shell` 开 `--remote-debugging-port`，Node 自带 WebSocket 直连 CDP，对干净的 `vite --port 5199` 依次点「更多 → 从代码生成工作区」、往 `.c2w-text` 写 JS、点解析，再读 `.c2w-hint--warn` 文本与按钮 disabled（脚本属一次性驱动，不入库，以免 lint 扫描 `.mjs` 的 Node 全局）。
+
+### 34.4 本轮门禁（整树实跑）
+
+| 项 | 命令 | 结果 |
+|---|---|---|
+| 单测 | `npx vitest run` | **99 文件 / 1094 通过 1 跳过**（§33 是 98 / 1086：+1 文件、+8 用例） |
+| lint | `npm run lint:check` | 0 错误 / 0 警告 |
+| 类型 | `npx vue-tsc --noEmit` | 0 |
+| 构建 | `npm run build` | rc=0；入口 55665 / 65536 字节（§33 是 55295，+370 来自语言判别与面板分支） |
+| 全量门禁 | `npm run verify:all` | rc=0 |
+
+### 34.5 要真的支持 JS 反解析，还差这些（不是本轮范围）
+
+1. **JS 字段变体载荷**：把 `ai-helper-variants.ts` 的生成器参数化，采第二份载荷（约 160 KB），
+   并让 `parseFieldPayload` 接受带语言维度的结构；产物新鲜度门禁同时覆盖两份。
+2. **语言参数化的 layout**：`function`/花括号/JSDoc 的块代码区定位与 procedure 切分；
+   语句切分按分号而不是只按行。
+3. **表达式层**：`Uint8Array` 字面量、`true/false/null`、JS 优先级括号差异。
+4. **判据可复用**：序列化层与状态是语言中立的，仍然用「demo → JS → 反解析 → 再生成 JS 的
+   chunk 逐块相等」，不需要另造一套判据。
+
+在此之前，B1 的能力边界就是「本平台生成的 Python 形态」；判成 JS 会明确拒绝，而不是给出
+一堆看不懂的「未识别」。
+
+## 35. B1b 产物过类型门禁：60 demo 0 mismatch / 0 unknown（2026-11-17 中午）
+
+§34 把 JS 形态说清楚了，但 B1b 的验收一直只有一条判据：**代码逐块相等**（§31 的 60/60）。
+代码相等证明不了产物类型自洽——而项目自己的检查器（`scripts/ai-helper-validate.ts`，与
+`validate` CLI 同一份 `analyze`）从 §22 起就记着一笔：老的 `reverse --gate` 路径下
+1237 对里有 387 对（31.3%）只能记 unknown，因为它走 ParsedNode、W' 里没有过程形参声明。
+本轮把**产品路径**（`reverseCode` → 序列化状态）的产物直接送进同一个检查器。
+
+### 35.1 方法
+
+60 个 demo（`demos/` 6 + `demos/procedures/` 54，数据文件按 `blocks` 键排除）逐个：
+demo JSON → `pythonGenerator.workspaceToCode` → `reverseCode` → `analyze(W'.blocks, contract)`。
+检查器与 CLI 是同一个导出函数，不是另写一份判定。
+
+### 35.2 结果
+
+| 口径 | blocks | pairs | ok | mismatch | unknown |
+|---|---|---|---|---|---|
+| demo 基线（当前检查器） | 2151 | 1237 | 1234 | 0 | 3 |
+| **反解析产物 W'** | 2151 | **1237** | **1237** | **0** | **0** |
+
+配对数与基线完全相同（1237）说明检查器看到的是同一批父子连接，不是「少判所以零未知」；
+60 个文件的诊断数也都是 0（与 §31 的代码往返一致）。
+
+### 35.3 那 3 条 unknown 去哪了：有损类型标签被抹平，不是反解析更会定型
+
+基线里唯一的 3 条 unknown 是 SHA3 / SHA384 / SHA512：它们把形参声明成 `message`，
+而检查器词表里没有这一档（§22 的「词表未映射 3」）。生成器写出的 Python 提示是
+`msg: bytes`，反解析只能照提示回填 `bytes`，于是这 3 对变成可判定的 ok。
+
+所以这条判据的分工要写清楚：**真正承重的是 mismatch 0 与配对数不缩水**；
+「unknown 0」有一半是类型标签有损（`message` → `bytes`）的结果。要连标签一起还原，
+需要生成器把领域类型写进代码形态，或反解析拿到真值——都不在本轮范围。
+
+老 `reverse --gate`（ParsedNode 形态）的 31.3% 没有被这条判据改动：那条路径仍不重建
+形参声明，数字照旧；本轮只覆盖产品路径。
+
+### 35.4 回归钉
+
+`tests/unit/ai-helper-reverse-gate.test.ts`：60 demo 全量、逐文件诊断 0、`mismatch` 0、
+`unknown` 0，并把 totals 钉成 `blocks=2151 / pairs=1237 / ok=1237`（少判或缩水会直接红）。
+单跑约 0.6 s。
+
+### 35.5 本轮门禁（整树实跑）
+
+| 项 | 命令 | 结果 |
+|---|---|---|
+| 单测 | `npx vitest run` | **100 文件 / 1095 通过 1 跳过**（§34 是 99 / 1094：+1 文件、+1 用例） |
+| lint | `npm run lint:check` | 0 错误 / 0 警告 |
+| 类型 | `npx vue-tsc --noEmit` | 0 |
+
+本轮只新增测试与 RESULTS，未改 `src/`，故未重跑 `build` / `verify:all`（§34 的 rc=0 仍对当前源码成立）。
+
+## 36. B1b 字段变异扫：抓到「双下拉同翻」整条判不出，采集器补组合探测（2026-11-17 中午）
+
+§31 的 60/60 与 §35 的 0 mismatch 证明的都只是「**demo 里那些字段取值**能还原」。
+用户真正会遇到的是同一批块、不同取值的工作区，所以这一轮换成「改取值再走同一条链」来量。
+
+### 36.1 变异面
+
+对 60 个 demo 各加载一次工作区，按字段类型改值后重走「生成 Python → 反解析 → 再生成」，
+判据沿用 §31：代码块逐块相等、诊断必须为 0。
+
+| 变异 | 改法 | 覆盖 |
+|---|---|---|
+| 下拉 | 除 `VAR`（变量名由工作区决定）外每个下拉换到下一个有效选项，四轮不同位移 | RATE 这类 5 档字段能取遍全部选项 |
+| 文本 | `data_value.NUM` 与各文本字段换成 `7` / `0x1f` / `1011` / `abc` | 十进制、十六进制、位串、标识符四种字面量形态 |
+| 数字 | `math_number.NUM` 换成 0 / 7 / 255 / 1234 | 数值字面量 |
+
+### 36.2 第一次跑就红：ML-KEM-Encaps 54 条诊断
+
+修复前：下拉 19 次里 1 次失败——`demos/procedures/ML-KEM-Encaps.json` 变异后 `diag=54`，
+整条 `H = sha3_squeeze(sha3_absorb([0] * 25, sha3_pad(ek, rate_bytes=168, suffix=0x1F), ...))`
+被判成 unresolved。文本 35/35、数字 2/2 全过。
+
+### 36.3 根因：单字段变体只覆盖「其余字段取默认值」
+
+`sponge_pad` 有 RATE（5 档）与 SUFFIX（2 档）两个可见下拉。产物里 RATE 的 4 条变体全部带
+`suffix=0x06`，SUFFIX 的变体只有 `rate_bytes=136`——**采样是逐字段做的**，
+`RATE=1344 × SUFFIX=0x1F` 这个组合从来没人采过。于是平台自己生成的代码反解析不出来，
+与「只认本平台生成的 Python 形态」这条承诺直接冲突。
+
+这不是补一条正则能修的：组合是取值域上的笛卡尔积，而匹配是按逐字骨架走的。
+
+### 36.4 修法：采集器补组合探测，匹配器按组合注册
+
+- `scripts/ai-helper-variants.ts`：新增 `probeCombos()`，对可见下拉做笛卡尔积（上限 64，
+  只记与默认值差异 ≥2 个的组合，差异 1 个的已由单字段变体覆盖），记录字段取值与模板；
+  组合模板一并进 `allTemplates` 参与歧义复查，`FIELD_SUMMARY` 增 `combo_blocks` / `combos`。
+- `src/services/ai-helper/reverse/matchers.ts`：`BlockFieldTemplate` 增可选 `combos`，
+  每条组合按 `{...默认值, ...组合取值}` 注册一个匹配器，命中即可回填全部字段。
+- 产物重采（`npm run reverse:templates`）：`combo_blocks=4 combos=11`
+  （`sponge_pad` 4、`sbox` 4、`pq_ntt_butterfly` 2、`pq_sample_poly_cbd` 1）；
+  `field-templates.json` 160 845 → 173 549 字节（+12.7 KB）。构建后是独立懒加载块
+  `field-templates-*.js` 180 505 字节 / gzip 15 132，入口 chunk 不变（55 665 / 65 536）。
+
+### 36.5 修复后
+
+| 口径 | dropdown | text | number |
+|---|---|---|---|
+| 修复前 | 18 / 19 | 35 / 35 | 2 / 2 |
+| 修复后 | **76 / 76**（19 demo × 4 轮位移） | 35 / 35 | 2 / 2 |
+
+### 36.6 回归钉（两条）
+
+- `tests/unit/ai-helper-reverse-mutate.test.ts`：60 demo、三类变异、失败列表必须为空，
+  并把覆盖量钉成 `{dropdownRuns: 76, textRuns: 35, numberRuns: 2}`（变异面缩水直接红）。单跑约 2.1 s。
+- `tests/unit/ai-helper-reverse-combo.test.ts`：只钉失败那一对（`sponge_pad` RATE=1344 ×
+  SUFFIX=0x1F）——先断言生成器仍吐出 `rate_bytes=168, suffix=0x1F`（复现前提没变），
+  再断言反解析零诊断、1 个函数、再生成逐块相等。单跑约 0.3 s。
+  它的输入同时是浏览器复核的夹具，重写夹具：`AI_HELPER_FIXTURE_WRITE=1 npx vitest run tests/unit/ai-helper-reverse-combo.test.ts`。
+
+### 36.7 边界（不当作「任意代码都能反解析」）
+
+- 变异只覆盖这 60 个 demo 里出现的块与字段；demo 之外的块类型没有变异往返证据，
+  只保证采集器采到了它们的组合模板。
+- 组合只采笛卡尔积 ≤64 的块，超限不采（当前最大组合积 10）。将来出现更大组合的块，
+  两个以上字段同时翻值仍会判不出。
+- 文本变异只用了四个形态，没有覆盖引号、反斜杠、中文与超长串；`data_value` 的校验器
+  是否放行这些值未经测量，故不写进结论。
+
+### 36.8 本轮门禁（整树实跑）
+
+| 项 | 命令 | 结果 |
+|---|---|---|
+| 单测 | `npx vitest run` | **102 文件 / 1097 通过 1 跳过**（§35 是 100 / 1095：+2 文件 +2 用例） |
+| lint | `npm run lint:check` | 0 错误 / 0 警告 |
+| 类型 | `npx vue-tsc --noEmit` | 0 |
+| 构建 | `npm run build` | rc=0；入口 55 665 / 65 536 字节 |
+| 载荷新鲜度 | `npm run reverse:templates:check` | `FIELD_CHECK ok blocks=222`（combo_blocks=4 combos=11） |
+| 整树门禁 | `npm run verify:all` | **rc=0**；demos 60/60、contract 0 errors、docs 链接 0 broken |
+
+### 36.9 真实浏览器复核（无头 Chromium）
+
+修复后把失败那一对取值做成夹具，在真实浏览器里走完整路径
+（脚本 `experiments/ai-helper-2026-11-14/c2w-combo-fixed-e2e.mjs`，输入 `out/c2w-mutated-mlkem.py`
+= ML-KEM-Encaps 的 `sponge_pad` 固定 `RATE=1344`、`SUFFIX=0x1F` 后生成的 524 行代码）：
+
+| 步骤 | 实测 |
+|---|---|
+| 更多菜单 → 「从代码生成工作区」 | 浮层打开 |
+| 粘贴 524 行 → 解析 | 「识别结果：**1494 个块**，1 个函数，0 条顶层语句，**0 条未识别**」 |
+| 诊断列表 | 0 条（修复前同一段代码是 54 条） |
+| 载入按钮 | 可用；点击后画布 **1494 块**、提示「已从代码载入工作区」 |
+| 控制台错误 | 0 |
+
+![组合取值修复后](out/c2w-combo-fixed.png)
