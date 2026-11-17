@@ -140,7 +140,12 @@ export function toWorkspaceState(
     // 诊断要指回原文：复合语句的子节点自带文本（核心语法层填的），没有就用外层。
     const source = node.text ?? text;
     if (node.type.startsWith(UNRESOLVED_PREFIX)) {
-      diagnostics.push({ text: source, reason: 'unresolved' });
+      // 核心语法层给出的原因与说明优先（`blocked`）：同一条语句只报一次，且能说清缺什么原语。
+      diagnostics.push({
+        text: source,
+        reason: node.blocked?.reason ?? 'unresolved',
+        detail: node.blocked?.detail,
+      });
       return null;
     }
     if (node.type === 'EMPTY') return null;

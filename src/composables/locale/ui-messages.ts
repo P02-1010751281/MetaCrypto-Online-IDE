@@ -286,8 +286,9 @@ export const UI_MESSAGES: Record<BlocklyLocale, Record<string, string>> = {
     codeToWorkspaceParsing: '解析中…',
     codeToWorkspaceEmpty: '先粘贴代码或选择一个文件。',
     codeToWorkspaceResult:
-      '识别结果：{blocks} 个块，{procedures} 个函数，{topLevel} 条顶层语句，{diagnostics} 条未识别。',
-    codeToWorkspaceDiagnostics: '未识别的语句（显示 {shown} 条，共 {total} 条）',
+      '识别结果：{blocks} 个块，{procedures} 个函数，{topLevel} 条顶层语句，{diagnostics} 处诊断。',
+    codeToWorkspaceDiagnostics:
+      '诊断（显示 {shown} 条，共 {total} 条，逐条标注「未识别」或「语义可能不同」）',
     codeToWorkspaceUnresolved: '未识别',
     codeToWorkspaceNoBlocks: '没有识别出任何块，无法载入。',
     codeToWorkspaceReplaceWarn: '载入会替换当前画布上的 {count} 个块，且无法撤销。',
@@ -593,8 +594,9 @@ export const UI_MESSAGES: Record<BlocklyLocale, Record<string, string>> = {
     codeToWorkspaceParsing: 'Parsing...',
     codeToWorkspaceEmpty: 'Paste code or choose a file first.',
     codeToWorkspaceResult:
-      'Recognised: {blocks} blocks, {procedures} functions, {topLevel} top-level statements, {diagnostics} unrecognised.',
-    codeToWorkspaceDiagnostics: 'Unrecognised statements ({shown} shown of {total})',
+      'Recognised: {blocks} blocks, {procedures} functions, {topLevel} top-level statements, {diagnostics} diagnostics.',
+    codeToWorkspaceDiagnostics:
+      'Diagnostics ({shown} shown of {total}; each one labelled unrecognised or semantics may differ)',
     codeToWorkspaceUnresolved: 'Unrecognised',
     codeToWorkspaceNoBlocks: 'No block was recognised, so nothing can be loaded.',
     codeToWorkspaceReplaceWarn: 'Loading replaces the {count} blocks currently on the canvas, and cannot be undone.',

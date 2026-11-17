@@ -51,6 +51,8 @@ export type IrExpr =
   | { kind: 'primitive'; primitive: PrimitiveCall; args: IrExpr[]; line?: number }
   | { kind: 'list'; items: IrExpr[]; line?: number }
   | { kind: 'index'; value: IrExpr; at: IrExpr; line?: number }
+  /** `len(x)`：原生列表长度块（`blocks.ts` 落 `lists_length`，Python 生成就是 `len(...)`）。 */
+  | { kind: 'length'; value: IrExpr; line?: number }
   | { kind: 'ifexp'; test: IrExpr; then: IrExpr; otherwise: IrExpr; line?: number };
 
 export type IrStmt =

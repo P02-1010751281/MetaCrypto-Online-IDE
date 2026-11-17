@@ -84,10 +84,27 @@ describe('模板路径：切片', () => {
     expect(shape(parseValue('a[-2:-1]', context()))).toContain('LENGTH:data_value(NUM=1)');
   });
 
-  it('省略终点 / 步长 / 起终点异号 / 终点小于起点都拒绝', () => {
-    for (const text of ['a[1:]', 'a[1:2:3]', 'a[-2:2]', 'a[2:1]']) {
+  it('省略终点：a[i:] / a[:] 用 len(源) - 起点补长度（lists_length 生成就是 len）', () => {
+    expect(shape(parseValue('a[i:]', context()))).toBe(
+      'arr_slice{LIST:variables_get(VAR=a) START:variables_get(VAR=i) '
+        + 'LENGTH:math_arithmetic(OP=MINUS){A:lists_length{VALUE:variables_get(VAR=a)} B:variables_get(VAR=i)}}',
+    );
+    expect(shape(parseValue('a[:]', context()))).toBe(
+      'arr_slice{LIST:variables_get(VAR=a) START:data_value(NUM=0) '
+        + 'LENGTH:math_arithmetic(OP=MINUS){A:lists_length{VALUE:variables_get(VAR=a)} B:data_value(NUM=0)}}',
+    );
+    // 负起点同样走同一个减法块：arr_slice 的负起点先按长度归一，等价于 a[-2:]。
+    expect(shape(parseValue('a[-2:]', context()))).toContain('LENGTH:math_arithmetic(OP=MINUS)');
+  });
+
+  it('步长 / 起终点异号 / 终点小于起点都拒绝，并说清原因', () => {
+    for (const text of ['a[1:2:3]', 'a[-2:2]', 'a[2:1]']) {
       expect(shape(parseValue(text, context()))).toContain('UNRESOLVED');
     }
+    // 拒绝的理由要具体，不是笼统的 UNRESOLVED。
+    expect(parseValue('a[1:2:3]', context()).blocked?.detail).toContain('步长');
+    expect(parseValue('a[-2:2]', context()).blocked?.detail).toContain('一正一负');
+    expect(parseValue('a[2:1]', context()).blocked?.detail).toContain('非负');
   });
 
   it('起终点不是字面量：出块，但必须记漂移诊断', () => {
@@ -119,10 +136,30 @@ describe('模板路径：推导式', () => {
     expect(shape(parseValue('[v for v in range(4, 2)]', context()))).toBe('lists_create_empty');
   });
 
-  it('非常量区间 / 带 if / 多生成器都拒绝', () => {
-    for (const text of ['[v for v in range(n)]', '[v for v in range(2) if v]', '[v for v in range(2) for w in range(2)]']) {
-      expect(shape(parseValue(text, context()))).toContain('UNRESOLVED');
+  it('非字面量区间 / 带 if 拒绝，且诊断点名缺 list append', () => {
+    for (const text of ['[v for v in range(n)]', '[v for v in range(2) if v]']) {
+      const parsed = parseValue(text, context());
+      expect(shape(parsed)).toContain('UNRESOLVED');
+      expect(parsed.blocked?.reason).toBe('unsupported');
+      expect(parsed.blocked?.detail).toContain('append');
     }
+    // 迭代器不是 range 的写法同样要落到 append 这个原语上。
+    expect(parseValue('[v for v in xs]', context()).blocked?.detail).toContain('append');
+  });
+
+  it('多个生成器：字面量区间按笛卡尔积展开（外层 for 变化最慢）', () => {
+    expect(shape(parseValue('[v for v in range(2) for w in range(2)]', context()))).toBe(
+      'lists_create_with{ADD0:data_value(NUM=0) ADD1:data_value(NUM=0) '
+        + 'ADD2:data_value(NUM=1) ADD3:data_value(NUM=1)}',
+    );
+    const summed = shape(parseValue('[v + w for v in range(2) for w in range(2)]', context()));
+    expect(summed.match(/math_arithmetic\(OP=ADD\)/g)?.length).toBe(4);
+  });
+
+  it('展开后超过上限的推导式报诊断，不静默截断', () => {
+    const parsed = parseValue('[v for v in range(8) for w in range(8) for u in range(2)]', context());
+    expect(parsed.type).toBe('UNRESOLVED');
+    expect(parsed.blocked?.detail).toContain('128');
   });
 
   it('语句里同样成立：SBOX = [v ^ 0x63 for v in range(4)]', () => {
@@ -141,10 +178,26 @@ describe.skipIf(!hasPython)('AST 路径：切片与推导式', () => {
     expect(state.diagnostics).toEqual([]);
   });
 
-  it('a[i:j] 出块并记漂移；a[1:] / a[1:2:3] 拒绝', () => {
+  it('a[i:j] 出块并记漂移；a[i:] 用 len 补长度；a[1:2:3] 拒绝', () => {
     expect(astState(['def f(a, i, j):', '    return a[i:j]', ''].join('\n')).diagnostics[0]?.reason).toBe('semantic-drift');
-    expect(flatten(astState(['def f(a):', '    return a[1:]', ''].join('\n'))).some((b) => b.type === 'arr_slice')).toBe(false);
+
+    const tail = astState(['def f(a, i):', '    return a[i:]', ''].join('\n'));
+    const slice = flatten(tail).find((block) => block.type === 'arr_slice');
+    expect(Object.keys(slice?.inputs ?? {}).sort()).toEqual(['LENGTH', 'LIST', 'START']);
+    expect(slice?.inputs?.LENGTH?.block.type).toBe('math_arithmetic');
+    expect(slice?.inputs?.LENGTH?.block.inputs?.A?.block.type).toBe('lists_length');
+    // 起点为正时源可能更短 → 负长度会被块拒绝，Python 返回空列表：一条漂移诊断。
+    expect(tail.diagnostics).toHaveLength(1);
+    expect(tail.diagnostics[0].reason).toBe('semantic-drift');
+
     expect(flatten(astState(['def f(a):', '    return a[1:2:3]', ''].join('\n'))).some((b) => b.type === 'arr_slice')).toBe(false);
+  });
+
+  it('多个生成器：AST 路径与模板路径展开出同样的项（范围 2×3）', () => {
+    const state = astState(['def f():', '    return [v * 10 + w for v in range(2) for w in range(3)]', ''].join('\n'));
+    const list = flatten(state).find((block) => block.type === 'lists_create_with');
+    expect(list?.extraState).toEqual({ itemCount: 6 });
+    expect(state.diagnostics).toEqual([]);
   });
 
   it('[v for v in range(4)] 展开成 lists_create_with / math_number', () => {

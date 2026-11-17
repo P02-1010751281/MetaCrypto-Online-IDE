@@ -222,8 +222,9 @@ describe.skipIf(!hasPython)('不支持的部分必须逐条带行号报出来', 
   });
 
   it('调用了工作区里没有的函数：报出来，不搭一个空调用块', () => {
-    const state = toWorkspace(['def f(x):', '    return len(x)', ''].join('\n'));
-    expect(state.diagnostics.some((diag) => (diag.detail ?? '').includes('len'))).toBe(true);
+    // `len()` 现在有对应块（lists_length），所以样本换成真正没有对应块的名字。
+    const state = toWorkspace(['def f(x):', '    return unknown_helper(x)', ''].join('\n'));
+    expect(state.diagnostics.some((diag) => (diag.detail ?? '').includes('unknown_helper'))).toBe(true);
     expect(flatten(state).some((block) => block.type === 'procedures_callreturn')).toBe(false);
   });
 });

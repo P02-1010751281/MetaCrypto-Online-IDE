@@ -6,7 +6,10 @@
 
 import { matchStatementSpan, parseStatement } from '../parser';
 import type { ParsedNode } from '../parser';
-import { child, node, parseValue, splitTopLevel, unresolved } from './expressions';
+import { RANGE_ARITY, RANGE_EMPTY, RANGE_ENDPOINT, RANGE_STEP } from '../diagnostics';
+import { blocked, child, node, unresolved } from './nodes';
+import { splitTopLevel } from './text';
+import { parseValue } from './expressions';
 import type { CoreContext, ParsedStatement } from './types';
 
 // ---------------------------------------------------------------------------
@@ -253,7 +256,9 @@ function buildForNode(
   ctx: CoreContext,
 ): ParsedNode | null {
   if (!chain || !resolvable(parsed)) return null;
-  if (args.length < 1 || args.length > 3) return null;
+  if (args.length < 1 || args.length > 3) {
+    return blocked(RANGE_ARITY);
+  }
 
   // `range(n)`：只有 ctrl_iterate 能逐字表达——TIMES 是值输入，n ≤ 0 时一次也不执行，
   // 而 controls_for 的闭区间在起点大于终点时会倒序执行（§41.2 的漂移）。
@@ -269,24 +274,19 @@ function buildForNode(
 
   const fromText = args[0];
   const stopText = args[1];
-  if (args.length === 3 && args[2].trim() !== '1') return null;
+  if (args.length === 3 && args[2].trim() !== '1') return blocked(RANGE_STEP);
   const INTEGER = /^\d+$/;
   const fromValue = INTEGER.test(fromText.trim()) ? Number(fromText) : null;
   const stopValue = INTEGER.test(stopText.trim()) ? Number(stopText) : null;
   // 空区间：Python 一次也不执行，而块模型会倒序执行——常量能判定的直接不产出（§41.2），
   // 非常量的照样出块，但必须记一条与 AST 路径同口径的漂移诊断。
   if (fromValue !== null && stopValue !== null && fromValue >= stopValue) {
-    ctx.diagnostics?.push({
-      text: `for ${variable} in range(${args.join(', ')}):`,
-      detail: 'range 在常量上是空区间（起点 ≥ 终点）：Python 不执行循环体，块模型没有空区间',
-      reason: 'unsupported',
-    });
-    return null;
+    return blocked(RANGE_EMPTY);
   }
   if (fromValue === null || stopValue === null) {
     ctx.diagnostics?.push({
       text: `for ${variable} in range(${args.join(', ')}):`,
-      detail: 'range 的起点/终点不是字面量：空区间时块模型会倒序执行循环体，Python 一次也不执行',
+      detail: RANGE_ENDPOINT,
       reason: 'semantic-drift',
     });
   }

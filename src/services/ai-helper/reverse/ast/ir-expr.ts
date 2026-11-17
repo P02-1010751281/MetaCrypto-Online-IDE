@@ -8,6 +8,8 @@
 import type { AstNode } from './dump';
 import type { IrExpr, IrStmt } from './ir-shared';
 import type { PrimitiveCall } from '../primitive-calls';
+import { SLICE_DRIFT, SLICE_LENGTH, SLICE_SIGN, SLICE_STEP, SLICE_TAIL_DRIFT } from '../diagnostics';
+import { listCompToIr } from './ir-comprehension';
 import {
   ARITHMETIC_OPS,
   COMPARE_OPS,
@@ -123,7 +125,7 @@ export function exprToIr(node: AstNode | null, ctx: Ctx): IrExpr | null {
       return { kind: 'index', value, at, line };
     }
     case 'ListComp':
-      return listCompToIr(node, ctx);
+      return listCompToIr(node, ctx, exprToIr);
     case 'IfExp': {
       const test = exprToIr(child(node, 'test'), ctx);
       const then = test ? exprToIr(child(node, 'body'), ctx) : null;
@@ -172,6 +174,18 @@ export function callToIr(node: AstNode, ctx: Ctx, mode: 'value' | 'statement'): 
     return { kind: 'call', name, args, line };
   }
 
+  // `len(x)`：Python 的长度原语，落原生列表长度块（生成代码就是 `len(...)`，逐字对应）。
+  // 本模块真定义了 `len` 的话上面那条分支已经接走；判据与模板路径的原子层一致。
+  if (name === 'len') {
+    if (keywords.length || hasSpill || argNodes.length !== 1) {
+      return report(ctx, node, 'len() 只接一个位置参数：它对应的是列表长度块（lists_length）');
+    }
+    if (mode === 'statement') return report(ctx, node, 'len() 是值块，不能单独作语句');
+    const value = exprToIr(argNodes[0], ctx);
+    if (!value) return null;
+    return { kind: 'length', value, line };
+  }
+
   const primitive = ctx.primitives?.lookup(name, argNodes.length) ?? null;
   if (primitive) {
     if (keywords.length || hasSpill) {
@@ -204,19 +218,9 @@ const ARR_SLICE: PrimitiveCall = {
   statement: false,
 };
 
-/** `range(...)` 的字面量区间：返回 [start, stop)；非字面量或步长不是 1 时返回 null。 */
-function literalRange(range: AstNode): { start: number; stop: number } | null {
-  const args = children(range, 'args');
-  if (children(range, 'keywords').length || args.length < 1 || args.length > 3) return null;
-  const values: number[] = [];
-  for (const arg of args) {
-    if (arg._ !== 'Constant' || typeof arg.value !== 'number') return null;
-    values.push(arg.value);
-  }
-  if (values.length === 3 && values[2] !== 1) return null;
-  const start = values.length >= 2 ? values[0] : 0;
-  const stop = values.length >= 2 ? values[1] : values[0];
-  return { start, stop };
+/** `len(x)`：原生列表长度块（`blocks.ts` 落 `lists_length`，Python 生成就是 `len(...)`）。 */
+function lengthOf(value: IrExpr, line?: number): IrExpr {
+  return { kind: 'length', value, line };
 }
 
 /**
@@ -224,109 +228,58 @@ function literalRange(range: AstNode): { start: number; stop: number } | null {
  *
  * 块的语义是 `crypto_array_slice(list, start, length)`（起点可从末尾负计、长度须非负），
  * 与 Python 的 `a[i:j]` 只在「起终点同号且 j ≥ i」时逐字等价：
- *   - 省略终点（`a[i:]`）要长度，块模型没有 len()；
  *   - 起终点一正一负（`a[-2:2]`）时 `j - i` 不是 Python 的元素个数；
  *   - 起终点不是字面量时，`j < i` 会被块判成非法长度并抛错，而 Python 返回空列表。
- * 前两种拒绝，第三种出块并记一条漂移诊断。
+ * 这两类拒绝/报漂移；**省略终点**（`a[i:]`）用 `len(a) - i` 补出长度——`len` 是 Python 的
+ * 长度原语，`lists_length` 的生成代码就是 `len(...)`。起点为 0 或负数时长度必然非负，
+ * 逐字等价；起点为正时源可能比它还短，长度会变负、块抛错（Python 返回空列表），所以那条
+ * 路径记 `semantic-drift`（列表块里没有标量 min/钳位原语）。
+ * 不用 `data_byte_length`：它对 list 返回 `len(list)`，但对 str/bytes 按字节数换算
+ * （`generators/python/data/measurement.ts`），拿它当切片长度会在 str/bytes 源上静默切错。
  */
 function sliceToIr(node: AstNode, slice: AstNode, ctx: Ctx): IrExpr | null {
-  if (child(slice, 'step')) return report(ctx, node, '带步长的切片没有对应块');
-  const upper = child(slice, 'upper');
-  if (!upper) return report(ctx, node, '省略终点的切片（a[i:]）需要长度，块模型没有对应表示');
+  if (child(slice, 'step')) return report(ctx, node, SLICE_STEP);
   const source = exprToIr(child(node, 'value'), ctx);
   if (!source) return null;
   const lower = child(slice, 'lower');
+  const upper = child(slice, 'upper');
   let start: IrExpr = { kind: 'num', value: '0' };
   if (lower) {
     const converted = exprToIr(lower, ctx);
     if (!converted) return null;
     start = converted;
   }
+
+  // `a[i:]` / `a[:]`：长度 = len(源) - 起点；起点省略时写成 `len(源) - 0`，与模板路径同形。
+  // 起点为 0 或负数时长度必然非负（`a[:]`、`a[-2:]` 逐字等价）；起点为正时源可能比它还短，
+  // 块会算出负长度并抛错（Python 返回空列表）——没有 min/钳位原语，只能报漂移。
+  if (!upper) {
+    const startValue = integerValue(start);
+    if (startValue === null || startValue > BigInt(0)) reportDrift(ctx, node, SLICE_TAIL_DRIFT);
+    const length: IrExpr = {
+      kind: 'binop',
+      op: 'MINUS',
+      left: lengthOf(source, lineOf(node)),
+      right: start,
+      line: lineOf(node),
+    };
+    return { kind: 'primitive', primitive: ARR_SLICE, args: [source, start, length], line: lineOf(node) };
+  }
+
   const end = exprToIr(upper, ctx);
   if (!end) return null;
   const startValue = integerValue(start);
   const endValue = integerValue(end);
   let length: IrExpr;
   if (startValue !== null && endValue !== null) {
-    if ((startValue < BigInt(0)) !== (endValue < BigInt(0))) {
-      return report(ctx, node, '切片起终点一正一负：块的负起点会先按长度归一，`j - i` 不再是元素个数');
-    }
-    if (endValue < startValue) return report(ctx, node, '切片终点小于起点：块要求长度非负');
+    if ((startValue < BigInt(0)) !== (endValue < BigInt(0))) return report(ctx, node, SLICE_SIGN);
+    if (endValue < startValue) return report(ctx, node, SLICE_LENGTH);
     length = { kind: 'num', value: (endValue - startValue).toString(), line: lineOf(node) };
   } else {
-    reportDrift(ctx, node, '切片起终点不是字面量：终点小于起点时块会因负长度报错，Python 返回空列表');
+    reportDrift(ctx, node, SLICE_DRIFT);
     length = { kind: 'binop', op: 'MINUS', left: end, right: start, line: lineOf(node) };
   }
   return { kind: 'primitive', primitive: ARR_SLICE, args: [source, start, length], line: lineOf(node) };
 }
 
-/** 把表达式树里对 `name` 的引用换成字面量：推导式展开时代换循环变量。 */
-function replaceName(expr: IrExpr, name: string, value: string): IrExpr {
-  switch (expr.kind) {
-    case 'name':
-      return expr.name === name ? { kind: 'num', value, line: expr.line } : expr;
-    case 'num':
-    case 'str':
-    case 'bool':
-    case 'none':
-      return expr;
-    case 'binop':
-      return { ...expr, left: replaceName(expr.left, name, value), right: replaceName(expr.right, name, value) };
-    case 'neg':
-    case 'not':
-      return { ...expr, operand: replaceName(expr.operand, name, value) };
-    case 'compare':
-    case 'boolop':
-      return { ...expr, left: replaceName(expr.left, name, value), right: replaceName(expr.right, name, value) };
-    case 'call':
-    case 'primitive':
-      return { ...expr, args: expr.args.map((arg) => replaceName(arg, name, value)) };
-    case 'list':
-      return { ...expr, items: expr.items.map((item) => replaceName(item, name, value)) };
-    case 'index':
-      return { ...expr, value: replaceName(expr.value, name, value), at: replaceName(expr.at, name, value) };
-    case 'ifexp':
-      return {
-        ...expr,
-        test: replaceName(expr.test, name, value),
-        then: replaceName(expr.then, name, value),
-        otherwise: replaceName(expr.otherwise, name, value),
-      };
-    default:
-      return expr;
-  }
-}
-
-/**
- * 推导式 → 列表块。
- *
- * 块模型没有「映射/收集」原语，所以只认**字面量区间**的单个生成器：把循环变量代换成每个
- * 取值，直接展开成 `lists_create_with`。区间不是字面量时不猜——展开次数未知，硬套循环需要
- * append 之类工作区里没有的块（`lists_setIndex` 被覆盖成只做按下标赋值）。
- */
-function listCompToIr(node: AstNode, ctx: Ctx): IrExpr | null {
-  const generators = children(node, 'generators');
-  if (generators.length !== 1) return report(ctx, node, '只支持单个 for 的推导式');
-  if (children(generators[0], 'ifs').length) return report(ctx, node, '带 if 的推导式没有对应块');
-  const target = child(generators[0], 'target');
-  if (!target || target._ !== 'Name') return report(ctx, node, '只支持 for 单个循环变量的推导式');
-  const iter = child(generators[0], 'iter');
-  if (!iter || iter._ !== 'Call' || nameOf(child(iter, 'func')) !== 'range') {
-    return report(ctx, node, '只支持 for ... in range(...) 的推导式');
-  }
-  const bounds = literalRange(iter);
-  if (!bounds) return report(ctx, node, '推导式的 range 必须是字面量且步长为 1（展开次数要能静态确定）');
-  const count = Math.max(0, bounds.stop - bounds.start);
-  if (count > MAX_LIST_ITEMS) {
-    return report(ctx, node, `推导式展开后过长（${count} 项，上限 ${MAX_LIST_ITEMS}）`);
-  }
-  const element = exprToIr(child(node, 'elt'), ctx);
-  if (!element) return null;
-  const variable = nameOf(target);
-  const items: IrExpr[] = [];
-  for (let index = 0; index < count; index += 1) {
-    items.push(replaceName(element, variable, String(bounds.start + index)));
-  }
-  return { kind: 'list', items, line: lineOf(node) };
-}
 

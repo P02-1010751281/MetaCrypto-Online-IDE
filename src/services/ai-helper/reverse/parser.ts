@@ -20,6 +20,18 @@ export interface ParsedNode {
   extraState?: Record<string, unknown>;
   /** 这一段的原文：诊断要指回用户看到的那一行（复合语句尤其需要）。 */
   text?: string;
+  /**
+   * 认不出的原因与说明（只有核心语法层会填）。序列化层按它出**一条**诊断：既能说清缺的是
+   * 哪个原语，也不会在「子块失败 + 父块 withheld」时把同一条语句报两次。
+   * 缺省（没有这一项）时按通用 `unresolved` 记。
+   */
+  blocked?: { reason: 'unsupported' | 'semantic-drift'; detail: string };
+  /**
+   * 模板槽位捕获到的原文（模板层填）。模板层只认密码块的代码形态，槽位里的子表达式若是
+   * 普通算术（`crypto_array_slice(a, i, (len(a) - i))` 的长度就是这样），它会原样留成
+   * UNRESOLVED；核心语法层拿这段原文补拆，块本身不动。
+   */
+  raw?: string;
 }
 
 const IDENTIFIER_RE = /^[A-Za-z_]\w*$/;
@@ -115,7 +127,11 @@ function matchNode(source: string, matchers: Matcher[], depth: number, relaxed: 
       const previous = seen.get(segment.input);
       if (previous !== undefined && previous === captured) continue;
       seen.set(segment.input, captured);
-      children.push({ input: segment.input, node: parseExpression(captured, matchers, depth + 1) });
+      // 只有认不出的子输入才留原文：核心语法层会拿它补拆（认得出的块不需要，也别让
+      // `raw` 混进任何按值比较的结构断言里）。
+      const parsedChild = parseExpression(captured, matchers, depth + 1);
+      const node = parsedChild.type.startsWith('UNRESOLVED') ? { ...parsedChild, raw: captured } : parsedChild;
+      children.push({ input: segment.input, node });
     }
     return { type: matcher.type, fields, children };
   }

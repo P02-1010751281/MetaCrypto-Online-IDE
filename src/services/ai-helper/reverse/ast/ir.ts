@@ -14,6 +14,7 @@
  */
 
 import type { AstNode } from './dump';
+import { RANGE_ARITY, RANGE_EMPTY, RANGE_ENDPOINT, RANGE_STEP } from '../diagnostics';
 import { callToIr, exprToIr } from './ir-expr';
 import { child, children, integerValue, lineOf, minusOne, nameOf, report, reportDrift, snippet } from './ir-shared';
 import type { Ctx, IrBinOp, IrDiag, IrExpr, IrStmt } from './ir-shared';
@@ -143,7 +144,7 @@ function stmtToIr(node: AstNode, ctx: Ctx): IrStmt | null {
       if (args.some((arg) => !arg)) return null;
       const values = args as IrExpr[];
       if (values.length < 1 || values.length > 3) {
-        return report(ctx, node, 'range 参数个数不支持');
+        return report(ctx, node, RANGE_ARITY);
       }
       // 一参数 `range(n)` 与 Python 的「执行 n 次」逐字对应：落到 ctrl_iterate（TIMES 是值输入），
       // 既没有空区间倒序问题，也不需要按字面量分档。
@@ -161,7 +162,7 @@ function stmtToIr(node: AstNode, ctx: Ctx): IrStmt | null {
       if (values.length === 3) {
         const step = integerValue(values[2]);
         if (step !== BigInt(1)) {
-          return report(ctx, node, '只支持步长为 1 的 range（步长靠 TO 的闭区间语义表达不了）');
+          return report(ctx, node, RANGE_STEP);
         }
       }
       // 块模型的循环方向是自适应的（FROM > TO 时倒序执行），而 Python 的 range 在起点 ≥ 终点时
@@ -171,10 +172,10 @@ function stmtToIr(node: AstNode, ctx: Ctx): IrStmt | null {
       const stopValue = integerValue(toSource);
       if (fromValue !== null && stopValue !== null) {
         if (fromValue >= stopValue) {
-          return report(ctx, node, 'range 在常量上是空区间（起点 ≥ 终点）：Python 不执行循环体，块模型没有空区间');
+          return report(ctx, node, RANGE_EMPTY);
         }
       } else {
-        reportDrift(ctx, node, 'range 的起点/终点不是字面量：空区间时块模型会倒序执行循环体，Python 一次也不执行');
+        reportDrift(ctx, node, RANGE_ENDPOINT);
       }
       return {
         kind: 'for',

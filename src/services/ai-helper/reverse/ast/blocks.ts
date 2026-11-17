@@ -178,6 +178,12 @@ function exprBlock(expr: IrExpr, ctx: Ctx): SerializedBlock | null {
         inputs: { VALUE: { block: value }, AT: { block: at } },
       };
     }
+    case 'length': {
+      // 原生列表长度块：Python 生成就是 `len(...)`，与 AST 里的 `len(x)` 逐字对应。
+      const value = exprBlock(expr.value, ctx);
+      if (!value) return null;
+      return { type: 'lists_length', id: newId(ctx), inputs: { VALUE: { block: value } } };
+    }
     case 'ifexp': {
       const test = exprBlock(expr.test, ctx);
       const then = test ? exprBlock(expr.then, ctx) : null;

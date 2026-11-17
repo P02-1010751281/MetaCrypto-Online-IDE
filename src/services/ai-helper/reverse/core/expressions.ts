@@ -1,107 +1,50 @@
 /**
  * 核心语法层 · 表达式：按 Python 运算符优先级把一段文本拆成块节点。
  *
- * 与语句层（`statements.ts`）一起构成模板路径的核心语法层；公共类型在 `types.ts`。
- * 纪律：拆不动就返回 null（调用方保留 UNRESOLVED），绝不换成相近的块。
+ * 与语句层（`statements.ts`）一起构成模板路径的核心语法层。按职责拆开（守住单文件 ≤ 500 行）：
+ * `types.ts` 公共类型、`nodes.ts` 节点构造、`text.ts` 文本切分、`containers.ts` 切片与
+ * 推导式、本文件按优先级拆表达式。
+ *
+ * 纪律：拆不动就返回 `blocked(...)`（带原因与说明）或 null（调用方保留 UNRESOLVED），
+ * 绝不换成相近的块。
  */
 
 import { parseExpression } from '../parser';
 import type { ParsedNode } from '../parser';
 import type { CoreContext } from './types';
+import { child, node } from './nodes';
+import { isBinaryAt, lastUseful, matchParens, splitTopLevel, topLevelTokens } from './text';
+import { listCompNode, sliceNode, splitSlice } from './containers';
 
 const IDENTIFIER = /^[A-Za-z_]\w*$/;
 const NUMBER = /^(?:0[xX][0-9a-fA-F]+|\d+(?:\.\d+)?)$/;
-/** 切片端点与 range 参数只认十进制整数（负号也算字面量的一部分）。 */
-const INTEGER_LITERAL = /^-?\d+$/;
-/** 推导式展开上限：与 AST 路径的 `MAX_LIST_ITEMS` 同一个数。 */
-const MAX_LIST_ITEMS = 64;
-const OPENERS = '([{';
-const CLOSERS = ')]}';
-
-/**
- * 顶层扫描：返回所有「深度 0、且不在字符串里」的 token 位置。
- *
- * 运算符拆分全靠它：括号里的 `+` 属于子表达式，字符串里的 `+` 是字符。token 按长度降序
- * 尝试，保证 `<=` 不会被拆成 `<`，`**` 不会被拆成 `*`。
- */
-function topLevelTokens(text: string, tokens: string[]): Array<{ index: number; token: string }> {
-  const ordered = [...tokens].sort((a, b) => b.length - a.length);
-  const found: Array<{ index: number; token: string }> = [];
-  let depth = 0;
-  let quote = '';
-  for (let index = 0; index < text.length; index += 1) {
-    const char = text[index];
-    if (quote) {
-      if (char === '\\') index += 1;
-      else if (char === quote) quote = '';
-      continue;
-    }
-    if (char === '"' || char === "'") {
-      quote = char;
-      continue;
-    }
-    if (OPENERS.includes(char)) {
-      depth += 1;
-      continue;
-    }
-    if (CLOSERS.includes(char)) {
-      depth -= 1;
-      continue;
-    }
-    if (depth !== 0) continue;
-    const token = ordered.find((candidate) => text.startsWith(candidate, index));
-    if (!token) continue;
-    // 词形运算符（and/or/not）必须整词命中：`android` 不是 `and`。
-    if (/^[a-z]+$/.test(token)) {
-      const before = text[index - 1] ?? ' ';
-      const after = text[index + token.length] ?? ' ';
-      if (/[A-Za-z0-9_]/.test(before) || /[A-Za-z0-9_]/.test(after)) continue;
-    }
-    found.push({ index, token });
-    index += token.length - 1;
-  }
-  return found;
-}
-
-/** 该位置是不是二元运算符：前一个非空字符是操作数结尾（变量、字面量、右括号）。 */
-function isBinaryAt(text: string, index: number): boolean {
-  for (let cursor = index - 1; cursor >= 0; cursor -= 1) {
-    const char = text[cursor];
-    if (char === ' ' || char === '\t') continue;
-    return /[A-Za-z0-9_)\]}"']/.test(char);
-  }
-  return false;
-}
-
-/** 在给定 token 里挑最后一个可用位置（左结合）；`binaryOnly` 时跳过一元位置。 */
-function lastUseful(
-  text: string,
-  tokens: string[],
-  binaryOnly = true,
-): { index: number; token: string } | null {
-  const all = topLevelTokens(text, tokens).filter((item) => !binaryOnly || isBinaryAt(text, item.index));
-  return all.length ? all[all.length - 1] : null;
-}
-
-export function node(type: string, fields: Record<string, string> = {}, children: ParsedNode['children'] = []): ParsedNode {
-  return { type, fields, children };
-}
-
-export function child(input: string, value: ParsedNode): ParsedNode['children'][number] {
-  return { input, node: value };
-}
-
-export function unresolved(): ParsedNode {
-  return node('UNRESOLVED');
-}
 
 /** 模板层优先：密码块的代码形态、字面量与变量名都由它认。 */
 export function parseValue(text: string, ctx: CoreContext, depth = 0): ParsedNode {
   const source = text.trim();
   const templated = parseExpression(source, ctx.matchers);
-  if (!templated.type.startsWith('UNRESOLVED')) return templated;
+  if (!templated.type.startsWith('UNRESOLVED')) return upgradeCaptured(templated, ctx, depth);
   const core = parseCoreExpression(source, ctx, depth);
-  return core ?? templated;
+  return core ? upgradeCaptured(core, ctx, depth) : templated;
+}
+
+/**
+ * 模板命中后，槽位里的子表达式还没拆：模板层只认密码块的代码形态，槽位里若是普通算术
+ * （`crypto_array_slice(a, i, (len(a) - i))` 的长度就是这样），它会原样留成 UNRESOLVED。
+ * 这里拿捕获时留下的原文（`raw`）交回本层补拆，块本身不动——否则「导出再导入」会在
+ * 切片这类块上断链（模板层认得出块、认不出块里的算术）。
+ */
+function upgradeCaptured(value: ParsedNode, ctx: CoreContext, depth: number): ParsedNode {
+  if (!value.children.length) return value;
+  return {
+    ...value,
+    children: value.children.map((item) => {
+      const current = item.node.type.startsWith('UNRESOLVED') && item.node.raw
+        ? parseValue(item.node.raw, ctx, depth + 1)
+        : item.node;
+      return { input: item.input, node: upgradeCaptured(current, ctx, depth + 1) };
+    }),
+  };
 }
 
 /** 二元运算符 → 块。`%` 走 `math_modulo`（无 OP 字段），其余走 `math_arithmetic`。 */
@@ -229,7 +172,7 @@ export function parseCoreExpression(text: string, ctx: CoreContext, depth = 0): 
   return atomNode(source, ctx, depth);
 }
 
-/** 原子：括号、列表、下标、调用（只认本模块 procedure）、变量与数字。 */
+/** 原子：括号、列表、下标/切片、len()、调用（只认本模块 procedure）、变量与数字。 */
 function atomNode(source: string, ctx: CoreContext, depth: number): ParsedNode | null {
   const inner = (value: string): ParsedNode => parseValue(value, ctx, depth + 1);
 
@@ -240,12 +183,12 @@ function atomNode(source: string, ctx: CoreContext, depth: number): ParsedNode |
     if (!wrapped.type.startsWith('UNRESOLVED')) return wrapped;
   }
 
-  // 列表字面量：AST 路径用 lists_create_with + itemCount。
+  // 列表字面量 / 推导式：AST 路径用 lists_create_with + itemCount。
   if (source.startsWith('[') && source.endsWith(']')) {
     const body = source.slice(1, -1).trim();
     // 推导式优先：`[f(v) for v in range(3)]` 里也有逗号与方括号，先按 `for` 拆。
     const forTokens = topLevelTokens(body, ['for']);
-    if (forTokens.length) return listCompNode(body, forTokens, ctx, depth);
+    if (forTokens.length) return listCompNode(body, forTokens, inner);
     const items = body ? splitTopLevel(body) : [];
     const children: ParsedNode['children'] = [];
     for (let index = 0; index < items.length; index += 1) {
@@ -254,17 +197,29 @@ function atomNode(source: string, ctx: CoreContext, depth: number): ParsedNode |
     return { type: 'lists_create_with', fields: {}, children, extraState: { itemCount: items.length } };
   }
 
-  // 下标 / 切片：`a[i]` 与 `a[i:j]` 分开处理（AST 路径同口径）。
+  // 下标 / 切片：`a[i]` 与 `a[i:j]` / `a[i:]` / `a[:]` 分开处理（AST 路径同口径）。
   const subscript = matchBracketTail(source);
   if (subscript) {
     const indexText = subscript.indexText.trim();
     const parts = splitSlice(indexText);
-    if (parts.length > 1) return sliceNode(subscript.base, parts, ctx, depth);
+    if (indexText === '' || parts.length > 1) {
+      return sliceNode(subscript.base, indexText === '' ? ['', ''] : parts, ctx, inner);
+    }
     if (!NUMBER.test(indexText)) return null;
     return node('lists_getIndex', { MODE: 'GET', WHERE: 'FROM_START' }, [
       child('VALUE', inner(subscript.base)),
       child('AT', inner(indexText)),
     ]);
+  }
+
+  // `len(x)` → 原生列表长度块（它的 Python 生成就是 `len(...)`，逐字对应 Python 的长度原语）。
+  // 与 AST 路径同一判据：本模块真定义了 `len` 时优先当 procedure 调用。
+  if (!ctx.procedures.has('len')) {
+    const lengthCall = /^len\s*\(([\s\S]*)\)$/.exec(source);
+    if (lengthCall && matchParens(source, source.indexOf('('))) {
+      const argument = lengthCall[1].trim();
+      if (argument) return node('lists_length', {}, [child('VALUE', inner(argument))]);
+    }
   }
 
   // 调用：只认本模块 procedure——密码块由模板层先接走，走到这里说明模板没命中。
@@ -280,104 +235,6 @@ function atomNode(source: string, ctx: CoreContext, depth: number): ParsedNode |
   // 数字/True/False/None 由模板层（parseExpression 的字面量分支）先认，走到这里只剩变量名。
   if (IDENTIFIER.test(source)) return node('variables_get', { VAR: source });
   return null;
-}
-
-/** 按顶层冒号切切片端点：`a[1:2]` → ['1','2']，`a[1:2:3]` → 3 段（步长不支持）。 */
-function splitSlice(text: string): string[] {
-  const parts: string[] = [];
-  let depth = 0;
-  let quote = '';
-  let start = 0;
-  for (let index = 0; index < text.length; index += 1) {
-    const char = text[index];
-    if (quote) {
-      if (char === '\\') index += 1;
-      else if (char === quote) quote = '';
-      continue;
-    }
-    if (char === '"' || char === "'") {
-      quote = char;
-      continue;
-    }
-    if (OPENERS.includes(char)) depth += 1;
-    else if (CLOSERS.includes(char)) depth -= 1;
-    else if (char === ':' && depth === 0) {
-      parts.push(text.slice(start, index));
-      start = index + 1;
-    }
-  }
-  parts.push(text.slice(start));
-  return parts.map((part) => part.trim());
-}
-
-/**
- * 切片 → `arr_slice`。与 AST 路径同一套等价判据（见 `ast/ir-expr.ts` 的 `sliceToIr`）：
- * 省略终点、带步长、起终点一正一负、终点小于起点都不出块；起终点不是字面量时出块但记漂移。
- */
-function sliceNode(base: string, parts: string[], ctx: CoreContext, depth: number): ParsedNode | null {
-  if (parts.length > 2) return null;
-  const endText = parts[1];
-  if (!endText) return null;
-  const startText = parts[0] || '0';
-  const inner = (value: string): ParsedNode => parseValue(value, ctx, depth + 1);
-  let length: ParsedNode;
-  if (INTEGER_LITERAL.test(startText) && INTEGER_LITERAL.test(endText)) {
-    const start = Number(startText);
-    const end = Number(endText);
-    if ((start < 0) !== (end < 0)) return null;
-    if (end < start) return null;
-    length = inner(String(end - start));
-  } else {
-    ctx.diagnostics?.push({
-      text: `[${startText}:${endText}]`,
-      detail: '切片起终点不是字面量：终点小于起点时块会因负长度报错，Python 返回空列表',
-      reason: 'semantic-drift',
-    });
-    length = node('math_arithmetic', { OP: 'MINUS' }, [child('A', inner(endText)), child('B', inner(startText))]);
-  }
-  return node('arr_slice', {}, [
-    child('LIST', inner(base)),
-    child('START', inner(startText)),
-    child('LENGTH', length),
-  ]);
-}
-
-/** 把节点树里对 `name` 的引用换成字面量（推导式展开用，与 AST 路径的 replaceName 同口径）。 */
-function replaceVariable(nodeValue: ParsedNode, name: string, value: string, ctx: CoreContext, depth: number): ParsedNode {
-  if (nodeValue.type === 'variables_get' && nodeValue.fields.VAR === name) {
-    return parseValue(value, ctx, depth + 1);
-  }
-  return {
-    ...nodeValue,
-    children: nodeValue.children.map((item) => ({
-      input: item.input,
-      node: replaceVariable(item.node, name, value, ctx, depth),
-    })),
-  };
-}
-
-/** 推导式 → 列表块：只认字面量 range，把循环变量代换成每个取值后展开。 */
-function listCompNode(body: string, forTokens: Array<{ index: number }>, ctx: CoreContext, depth: number): ParsedNode | null {
-  if (forTokens.length !== 1) return null;
-  const head = body.slice(0, forTokens[0].index).trim();
-  const rest = body.slice(forTokens[0].index + 3).trim();
-  const match = /^([A-Za-z_]\w*)\s+in\s+range\(([\s\S]*)\)$/.exec(rest);
-  if (!match || !matchParens(rest, rest.indexOf('('))) return null;
-  const args = splitTopLevel(match[2]);
-  if (!args.length || args.length > 3 || !args.every((arg) => INTEGER_LITERAL.test(arg))) return null;
-  if (args.length === 3 && Number(args[2]) !== 1) return null;
-  const start = args.length >= 2 ? Number(args[0]) : 0;
-  const stop = args.length >= 2 ? Number(args[1]) : Number(args[0]);
-  const count = Math.max(0, stop - start);
-  if (count > MAX_LIST_ITEMS) return null;
-  const element = parseValue(head, ctx, depth + 1);
-  if (element.type.startsWith('UNRESOLVED')) return null;
-  if (!count) return node('lists_create_empty');
-  const children: ParsedNode['children'] = [];
-  for (let index = 0; index < count; index += 1) {
-    children.push(child(`ADD${index}`, replaceVariable(element, match[1], String(start + index), ctx, depth)));
-  }
-  return { type: 'lists_create_with', fields: {}, children, extraState: { itemCount: count } };
 }
 
 /** `base[index]` 的最外层方括号：base 与 indexText 分开返回。 */
@@ -405,56 +262,4 @@ function matchBracketTail(source: string): { base: string; indexText: string } |
     }
   }
   return null;
-}
-
-/** `name(...)` 的右括号是否正好在末尾：避免把 `f(a) + g(b)` 当成一个调用。 */
-function matchParens(source: string, openAt: number): boolean {
-  let depth = 0;
-  let quote = '';
-  for (let index = openAt; index < source.length; index += 1) {
-    const char = source[index];
-    if (quote) {
-      if (char === '\\') index += 1;
-      else if (char === quote) quote = '';
-      continue;
-    }
-    if (char === "'" || char === '"') {
-      quote = char;
-      continue;
-    }
-    if (char === '(') depth += 1;
-    else if (char === ')') {
-      depth -= 1;
-      if (depth === 0) return index === source.length - 1;
-    }
-  }
-  return false;
-}
-
-/** 顶层逗号切分（列表项、调用实参；语句层拆 range 参数也用它）。 */
-export function splitTopLevel(text: string): string[] {
-  const parts: string[] = [];
-  let depth = 0;
-  let quote = '';
-  let start = 0;
-  for (let index = 0; index < text.length; index += 1) {
-    const char = text[index];
-    if (quote) {
-      if (char === '\\') index += 1;
-      else if (char === quote) quote = '';
-      continue;
-    }
-    if (char === "'" || char === '"') {
-      quote = char;
-      continue;
-    }
-    if (OPENERS.includes(char)) depth += 1;
-    else if (CLOSERS.includes(char)) depth -= 1;
-    else if (char === ',' && depth === 0) {
-      parts.push(text.slice(start, index).trim());
-      start = index + 1;
-    }
-  }
-  parts.push(text.slice(start).trim());
-  return parts.filter(Boolean);
 }
