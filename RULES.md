@@ -1,10 +1,10 @@
-# RULES.md — CipherCat 工程行为准则
+# RULES.md — MetaCrypto Online IDE 工程行为准则
 
-本文件定义 CipherCat 项目的唯一工程行为准则，与 `CLAUDE.md` 分工明确：后者约束 AI 即时协作行为，本文件约束代码资产的结构性规则。
+本文件定义 MetaCrypto Online IDE 项目的唯一工程行为准则，与 `CLAUDE.md` 分工明确：后者约束 AI 即时协作行为，本文件约束代码资产的结构性规则。
 
 ## 概述与适用范围
 
-- **适用项目**：CipherCat 项目
+- **适用项目**：MetaCrypto Online IDE 项目
 - **生效范围**：所有源代码、配置文件、测试代码
 - **优先级**：本文件 > 历史习惯 > 个人偏好；与 `CLAUDE.md` 冲突时以本文件为准
 
@@ -93,7 +93,7 @@ npm run cycles:check    # TypeScript/Vue 循环依赖检查
 标准相关目录必须记录精确版本/发布日期、官方来源 URL、向量来源、已知 errata、实现状态和安全边界。通过 demo 或选定向量只表示功能回归通过，不得表述为 CAVP/ACVTS、CMVP/FIPS 140-3、constant-time 或形式化验证通过。
 
 ### R-TEST-05 可信测评执行面
-CipherCat 前端只提供 Blockly 编辑、代码生成和用户试运行；随机性样本生成、统计测评、隔离执行和最终报告必须在 `metacrypt_server` 后端完成。前端结果不得替代后端可信测评。
+MetaCrypto Online IDE 前端只提供 Blockly 编辑、代码生成和用户试运行；随机性样本生成、统计测评、隔离执行和最终报告必须在 `metacrypt_server` 后端完成。前端结果不得替代后端可信测评。
 
 ### R-TEST-03 测试可维护性
 测试必须编码「为什么」而非仅「是什么」：

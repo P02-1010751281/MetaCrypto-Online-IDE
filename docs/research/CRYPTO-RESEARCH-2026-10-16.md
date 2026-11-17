@@ -1,7 +1,7 @@
 # ShannonProver 与 AI 在密码学工具链中的接入调研
 
 **核验日期：** 2026-10-16
-**范围：** 公开的 ShannonProver（论文 + 仓库 + 官方页面）与相邻的 AI/形式化验证生态；评估它们与本项目（CipherCat / metacrypt_server：教学 + 测评 + 密码分析）的融合方式。
+**范围：** 公开的 ShannonProver（论文 + 仓库 + 官方页面）与相邻的 AI/形式化验证生态；评估它们与本项目（MetaCrypto Online IDE / metacrypt_server：教学 + 测评 + 密码分析）的融合方式。
 **边界：** 本文是调研与方案，不是符合性结论，也不是对任何工具能力的背书。所有引用的数字都注明来源口径。
 
 ## 结论

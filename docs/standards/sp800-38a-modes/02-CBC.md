@@ -46,4 +46,4 @@ P_j = CIPH_K⁻¹(C_j) xor C_(j-1)      2 ≤ j ≤ n
 
 CBC 需要完整分组并配合明确的填充规则；它本身不提供认证。
 
-CipherCat：`mode_cbc_encrypt`；示例见 `demos/procedures/Mode-CBC.json`。
+MetaCrypto Online IDE：`mode_cbc_encrypt`；示例见 `demos/procedures/Mode-CBC.json`。

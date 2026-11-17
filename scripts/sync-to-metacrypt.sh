@@ -1,6 +1,6 @@
 #!/bin/bash
-# CipherCat → metacrypt_server 同步脚本（2026-08-01 重写）
-# 将 CipherCat 的 Blockly 核心改动同步到 metacrypt_server
+# MetaCrypto Online IDE → metacrypt_server 同步脚本（2026-08-01 重写）
+# 将 MetaCrypto Online IDE 的 Blockly 核心改动同步到 metacrypt_server
 #
 # 背景：2026-08-01 平台重构 Step2 features 化后，metacrypt 的 Blockly 核心
 # 从 frontend/src/blockly/ 移至 frontend/src/features/blockly/core/。
@@ -9,15 +9,15 @@
 # 本次重写为"全量镜像 + 目录映射 + 旧文件清理"。
 #
 # 使用方法：
-#   1. CipherCat 侧修复完成并自验（vue-tsc/build）后运行
+#   1. MetaCrypto Online IDE 侧修复完成并自验（vue-tsc/build）后运行
 #   2. 运行此脚本，然后在 metacrypt_server 运行 npm run build 验证
 #   3. 若 metacrypt 镜像区有未提交改动，脚本会中止；确认可丢弃后加 --overwrite-local
 #
-# 导入别名转换（CipherCat @/ → metacrypt @/features/blockly/core/）：
+# 导入别名转换（MetaCrypto Online IDE @/ → metacrypt @/features/blockly/core/）：
 #   @/constants/block-types          → @/features/blockly/core/constants/block-types
 #   @/blocks/procedure/blocks        → @/features/blockly/core/blocks/procedure/blocks
 #   @/utils/migration                → @/features/blockly/core/utils/migration
-# 注意：镜像后 metacrypt 的 blocks/index.ts 会被 CipherCat 版本覆盖（含 REMAINING_BLOCK_TYPES
+# 注意：镜像后 metacrypt 的 blocks/index.ts 会被 MetaCrypto Online IDE 版本覆盖（含 REMAINING_BLOCK_TYPES
 # 合并进 ALL_BLOCK_TYPES，这是期望行为——metacrypt 旧 index 漏了 remaining）。
 # metacrypt 专属文件（generators/mcl/、utils/workspace/、blockly-patches.ts、generator/、
 # constants/mcl-highlight.ts）不在镜像范围，保留。utils/locale/ 与 utils/migration/ 自
@@ -29,7 +29,7 @@ set -e
 # 包内别名（@cc/*）由两仓各自的 vite / vitest / tsconfig 解析，同步时原样保留——
 # 镜像文件不再被 sed 改写导入语句。这是 2026-11-16 包边界改造的结果：
 # 之前这里是 14 条手工枚举的文件级映射，新增块引用新的 @/blocks/* 时会静默漏配。
-# 相对目录名：CipherCat 的 generators/bit、generators/postquantum 在 metacrypt 叫
+# 相对目录名：MetaCrypto Online IDE 的 generators/bit、generators/postquantum 在 metacrypt 叫
 # bitwise / post-quantum，目录内相对导入（'./bit'、'../postquantum/'）必须跟着改。
 fix_imports() {
   sed -i \
@@ -78,7 +78,7 @@ exports_of() {
   ' "$1" | sort -u
 }
 
-# 打印镜像配对（CipherCat 源<TAB>metacrypt 目标），与步骤 1–3.6 的映射保持一致。
+# 打印镜像配对（MetaCrypto Online IDE 源<TAB>metacrypt 目标），与步骤 1–3.6 的映射保持一致。
 # 新增镜像项时必须同步这里，否则回归预检会漏检。
 mirror_pairs() {
   ( cd "$CIPHER/src/blocks" && find . -name "*.ts" | sed 's|^\./||' | while read -r f; do
@@ -138,7 +138,7 @@ SYNC_TARGETS=("$CORE" "$COMPONENTS" "$PROJECT_PORT" "$RUNTIME")
 SYNC_WRITE_PREFIXES=("$CORE/blocks" "$CORE/generators" "$CORE/constants" "$COMPONENTS" "$PROJECT_PORT" "$RUNTIME" "$CORE/utils/locale" "$CORE/utils/migration")
 
 # ─── 0. 预检：镜像区未提交改动（防静默覆盖）───
-# 全量镜像会用 CipherCat 版本覆盖上述目录，metacrypt 侧任何未提交的本地修改会静默丢失。
+# 全量镜像会用 MetaCrypto Online IDE 版本覆盖上述目录，metacrypt 侧任何未提交的本地修改会静默丢失。
 # 2026-11-13 就因此删掉了 core/blocks/{hash,pq}/index.ts 里的分组导出，
 # 导致 build:prod 报 "HASH_ALGORITHM_BLOCK_GROUPS is not exported"。
 # 默认遇到脏就中止；确认可以丢弃后加 --overwrite-local 强跑。
@@ -151,7 +151,7 @@ done
 # 工作树干净不代表安全：metacrypt 的增量若已提交（如 2026-10-21 的 1b7ef44 给
 # core/blocks/{hash,pq}/index.ts 加了分组导出），git 检查完全看不见它，
 # 下一次全量镜像照样把它覆盖掉，11-13 那次的构建失败就是这么来的。
-# 判据：镜像目标里有、CipherCat 源里没有的导出名 —— 同步后必然消失。
+# 判据：镜像目标里有、MetaCrypto Online IDE 源里没有的导出名 —— 同步后必然消失。
 MIRROR_LIST=$(mirror_pairs)
 MIRROR_TARGETS=$(printf '%s\n' "$MIRROR_LIST" | cut -f2)
 # 配对目标必须落在同步会写入的子树内：落在别处的映射不会报错，只会表现为 [ -f "$dst" ] 不成立、
@@ -187,8 +187,8 @@ if [ "$PAIRS_SKIPPED" -gt 0 ]; then
 fi
 
 # ─── 0b. 报告：shared 但不在镜像范围的文件（只报告，不覆盖）───
-# 除 blocks/、generators/ 外，metacrypt core 里还有与 CipherCat 同名的 utils/、constants/、
-# components/ 文件，脚本从不镜像它们。这类文件在 CipherCat 侧修了 bug 后 metacrypt 永远收不到，
+# 除 blocks/、generators/ 外，metacrypt core 里还有与 MetaCrypto Online IDE 同名的 utils/、constants/、
+# components/ 文件，脚本从不镜像它们。这类文件在 MetaCrypto Online IDE 侧修了 bug 后 metacrypt 永远收不到，
 # 也没有任何提示。这里只报差异：小差异（≤20 行）通常就是一次没落到 metacrypt 的修复。
 SHARED_TOTAL=0
 SHARED_SAME=0
@@ -230,12 +230,12 @@ fi
 
 if [ -n "$EXPORT_LOSS" ]; then
   if [ "$OVERWRITE_LOCAL" -eq 0 ]; then
-    echo "✗ 预检失败：metacrypt 镜像区存在 CipherCat 没有的导出（同步后必被删除）："
+    echo "✗ 预检失败：metacrypt 镜像区存在 MetaCrypto Online IDE 没有的导出（同步后必被删除）："
     printf '%s' "$EXPORT_LOSS" | head -40
     echo ""
     echo "  这些增量只长在镜像区，下一次同步就会丢。处理方式三选一："
     echo "    a) 上移：把实现移到非镜像层（如 features/blockly/algorithms/），镜像文件只留转发；"
-    echo "    b) 反向补齐：把同名导出加进 CipherCat 权威源，让镜像成为超集；"
+    echo "    b) 反向补齐：把同名导出加进 MetaCrypto Online IDE 权威源，让镜像成为超集；"
     echo "    c) 确认可以丢弃 → 重跑：$(basename "$0") --overwrite-local"
     exit 1
   fi
@@ -260,20 +260,20 @@ if [ -n "$DIRTY_LOCAL" ]; then
   printf '%s\n' "$DIRTY_LOCAL" | sed 's/^/    /'
 fi
 
-echo "=== CipherCat → metacrypt_server 同步（features/blockly/core 全量镜像）==="
+echo "=== MetaCrypto Online IDE → metacrypt_server 同步（features/blockly/core 全量镜像）==="
 
-# ─── 1. blocks/ 全量镜像（CipherCat 为权威源）───
+# ─── 1. blocks/ 全量镜像（MetaCrypto Online IDE 为权威源）───
 echo "[1/4] blocks/ 全量镜像"
 # 先清空目标 blocks 内容区（保留目录结构），再复制
 # 注意：不能用 rm -rf 整个目录（可能有未跟踪文件），改为：
-#   a) 复制 CipherCat 全部 .ts
-#   b) 删除 metacrypt 中 CipherCat 不存在的 .ts（旧文件清理）
+#   a) 复制 MetaCrypto Online IDE 全部 .ts
+#   b) 删除 metacrypt 中 MetaCrypto Online IDE 不存在的 .ts（旧文件清理）
 cd "$CIPHER/src/blocks"
 find . -name "*.ts" | while read -r f; do
   mkdir -p "$CORE/blocks/$(dirname "$f")"
   cp "$f" "$CORE/blocks/$f"
 done
-# 删除 metacrypt 残留但 CipherCat 已不存在的块文件
+# 删除 metacrypt 残留但 MetaCrypto Online IDE 已不存在的块文件
 (cd "$CORE/blocks" && find . -name "*.ts" | while read -r f; do
   [ -f "$CIPHER/src/blocks/$f" ] || { echo "  DEL blocks/$f"; rm "$f"; }
 done)
@@ -283,7 +283,7 @@ echo "[2/4] generators/ 全量镜像（bit→bitwise, postquantum→post-quantum
 for gen in python javascript; do
   cd "$CIPHER/src/generators/$gen"
   find . -name "*.ts" | while read -r f; do
-    # 目录映射：CipherCat bit/ → metacrypt bitwise/，postquantum/ → post-quantum/
+    # 目录映射：MetaCrypto Online IDE bit/ → metacrypt bitwise/，postquantum/ → post-quantum/
     mf=$(echo "$f" | sed -e 's|^\./bit/|./bitwise/|' -e 's|^\./postquantum/|./post-quantum/|')
     mkdir -p "$CORE/generators/$gen/$(dirname "$mf")"
     cp "$f" "$CORE/generators/$gen/$mf"
@@ -316,13 +316,13 @@ cp "$CIPHER/src/constants/sbox-presets.ts" "$CORE/constants/sbox-presets.ts"
 cp "$CIPHER/src/constants/grid-shape.ts" "$CORE/constants/grid-shape.ts"
 cp "$CIPHER/src/constants/list-bridge.ts" "$CORE/constants/list-bridge.ts"
 
-# ─── 3.5 Function Manager 面板（CipherCat 单源 → metacrypt features/blockly/components）───
+# ─── 3.5 Function Manager 面板（MetaCrypto Online IDE 单源 → metacrypt features/blockly/components）───
 echo "[3.5/4] Function Manager 面板（CryptoFunctionPanel.vue）"
 cp "$CIPHER/src/components/CryptoFunctionPanel.vue" "$META/frontend/src/features/blockly/components/CryptoFunctionPanel.vue"
 fix_imports "$META/frontend/src/features/blockly/components/CryptoFunctionPanel.vue"
 sed -i 's|ciphercat_templates.json|function_templates.json|g' "$META/frontend/src/features/blockly/components/CryptoFunctionPanel.vue"
 
-# ─── 3.6 项目存储端口（ProjectStore）—— 权威源在 CipherCat，metacrypt 只镜像接口 ───
+# ─── 3.6 项目存储端口（ProjectStore）—— 权威源在 MetaCrypto Online IDE，metacrypt 只镜像接口 ───
 # 只镜像 ProjectStore.ts（纯类型 + 错误类，零依赖）；
 # httpProjectStore.ts / index.ts 是 metacrypt 专属实现，不覆盖。
 # 目标路径是 features/blockly/services/projects（与 core 平级），不是 core 内部：
@@ -367,8 +367,8 @@ else
   echo "  OK runtime/ 别名已全部转换"
 fi
 
-# ─── 3.8 界面文案 locale/ 与块迁移器 migration/ —— 权威源在 CipherCat ───
-# 这两族此前只存在于 metacrypt 的镜像区（那里自行拆了文件），CipherCat 侧一直是
+# ─── 3.8 界面文案 locale/ 与块迁移器 migration/ —— 权威源在 MetaCrypto Online IDE ───
+# 这两族此前只存在于 metacrypt 的镜像区（那里自行拆了文件），MetaCrypto Online IDE 侧一直是
 # 926 / 835 行的单文件。2026-11-15 把拆分搬回权威源后，两族按文件 1:1 镜像：
 #   src/composables/locale/*.ts → core/utils/locale/*.ts
 #   src/utils/migration/*.ts    → core/utils/migration/*.ts
@@ -440,7 +440,7 @@ echo ""
 echo "⚠️  以下 metacrypt 专属/手工文件未被覆盖，需人工核对："
 echo ""
 echo " 1. $CORE/blocks/remaining.ts 中的 MCL 专属块（base64/hex 等）"
-echo "    → 若 CipherCat 已删同名块，metacrypt 侧对应生成器也会被删，需确认无残留引用"
+echo "    → 若 MetaCrypto Online IDE 已删同名块，metacrypt 侧对应生成器也会被删，需确认无残留引用"
 echo ""
 echo " 2. $CORE/utils/toolbox-config.ts"
 echo "    → metacrypt 有 MCL 专属类目，全量镜像未覆盖 utils/；确认块类目仍完整"

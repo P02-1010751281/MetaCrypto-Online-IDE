@@ -12,7 +12,7 @@ Checked: 2026-09-23. This page records located official public materials. It doe
 
 ## Boundary of the Project’s Implementation
 
-CipherCat’s implementation status for ML-KEM (FIPS 203) and ML-DSA (FIPS 204) is a project capability. Consult the corresponding standard pages, coverage matrix, and test results. This does not establish conformance to any Chinese standard or compatibility with a future or different algorithm standard.
+MetaCrypto Online IDE’s implementation status for ML-KEM (FIPS 203) and ML-DSA (FIPS 204) is a project capability. Consult the corresponding standard pages, coverage matrix, and test results. This does not establish conformance to any Chinese standard or compatibility with a future or different algorithm standard.
 
 This page tracks public Chinese post-quantum cryptography research and standardization materials. The U.S. National Security Agency’s Commercial National Security Algorithm Suite (CNSA) is outside its scope.
 

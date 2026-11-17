@@ -16,7 +16,7 @@ The linked source range covers the standard’s test-suite decision rules and sa
 
 ## Source Notes (Paraphrase, Not a Verbatim Quote)
 
-GM/T 0005 defines the tested sample count, per-test pass-rate threshold, distribution-uniformity decision, and sample-length-specific settings. It does not prescribe CipherCat’s frontend/backend architecture. The execution boundary below is a project design constraint, not a requirement attributed to the standard.
+GM/T 0005 defines the tested sample count, per-test pass-rate threshold, distribution-uniformity decision, and sample-length-specific settings. It does not prescribe MetaCrypto Online IDE’s frontend/backend architecture. The execution boundary below is a project design constraint, not a requirement attributed to the standard.
 
 ## Scope
 

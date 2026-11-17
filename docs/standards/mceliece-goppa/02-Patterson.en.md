@@ -18,7 +18,7 @@
 
 > Original reference: Patterson 1975, “The Algebraic Decoding of Goppa Codes.” The DOI and source-access status are listed in [00-Research-Source.md](./00-Research-Source.md#L17).
 
-Patterson decoding obtains an error-locator polynomial from a syndrome using algebra over the finite field. CipherCat implements a small teaching instance, not the standardized Classic McEliece KEM.
+Patterson decoding obtains an error-locator polynomial from a syndrome using algebra over the finite field. MetaCrypto Online IDE implements a small teaching instance, not the standardized Classic McEliece KEM.
 
 ## Formula or Pseudocode
 
@@ -45,7 +45,7 @@ For the teaching case t=2, deg T=1=⌊t/2⌋, so the Euclidean loop does not ite
 - The modular square root is computed as an inverse Frobenius map over GF(2^m)[z]/(G). The implementation builds the GF(2)-linear Frobenius matrix in basis `{z^i·2^j}`, inverts it, and applies it to the target.
 - The matrix orientation is easy to transpose accidentally; the local demo checks known outputs and error-correction round trips.
 
-## CipherCat Block Mapping
+## MetaCrypto Online IDE Block Mapping
 
 - `goppa_decode(y, g, l)` performs the teaching Patterson closure: extended Euclid, Frobenius square root, Chien search, and correction for the t=2, n=14, GF(16)-subfield instance.
 - The demo composes `arr_slice` and `syndrome_calc` for the syndrome-side atomic chain; the iterative decoding remains a black-box block.

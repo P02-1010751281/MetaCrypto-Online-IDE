@@ -54,7 +54,7 @@ G(z) = ∏ᵢ (z − αᵢ), with every αᵢ in the support set and G(αᵢ) �
 
 In characteristic 2, subtraction equals addition. The teaching implementation multiplies coefficient polynomials over the AES field GF(2^8), using polynomial representation 0x11B.
 
-## CipherCat Block Mapping
+## MetaCrypto Online IDE Block Mapping
 
 - `goppa_gen_poly(alpha)` returns low-degree-first coefficients of G(z)=∏(z−αᵢ).
 - `syndrome_calc(h, y, m, n)` computes s=H·y mod 2 for a flattened binary matrix H.

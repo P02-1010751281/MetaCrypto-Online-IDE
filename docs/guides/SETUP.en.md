@@ -1,6 +1,6 @@
 # Setup and acceptance guide
 
-This guide covers local startup, production preview, desktop builds, and the checks needed to confirm that CipherCat's documentation, code generation, and demo paths work. It covers the CipherCat frontend only; platform-side backend randomness assessment runs in the separate `metacrypt_server` backend.
+This guide covers local startup, production preview, desktop builds, and the checks needed to confirm that MetaCrypto Online IDE's documentation, code generation, and demo paths work. It covers the MetaCrypto Online IDE frontend only; platform-side backend randomness assessment runs in the separate `metacrypt_server` backend.
 
 ## 1. Requirements
 
@@ -18,7 +18,7 @@ Run from the repository root:
 
 ```bash
 git clone <repository-url>
-cd CipherCat
+cd MetaCrypto Online IDE
 npm ci
 ```
 

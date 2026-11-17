@@ -1,12 +1,12 @@
-# CipherCat 全网调研与标准审查报告
+# MetaCrypto Online IDE 全网调研与标准审查报告
 
 **调研日期**：2026-09-12；文档完整性复核补充：2026-09-13
-**范围**：CipherCat 前端、生成器、模板、demo、标准文档和测试门禁；与 `metacrypt_server` 的后端测评边界；NIST、RFC、中国国家/行业标准、实现保证研究和密码学教学研究。
+**范围**：MetaCrypto Online IDE 前端、生成器、模板、demo、标准文档和测试门禁；与 `metacrypt_server` 的后端测评边界；NIST、RFC、中国国家/行业标准、实现保证研究和密码学教学研究。
 **本地文献包**：[paper/references/README.md](../../paper/references/README.md)
 
 ## 1. 结论摘要
 
-CipherCat 当前定位应明确为“密码算法结构与代码生成的教学/研究前端”，而不是密码模块认证产品。前端可以让用户试运行自己生成的 JavaScript/Python 代码；平台后端随机性测评、检测和判定由 `metacrypt_server` 后端完成。浏览器输出不能作为后端测评、CAVP/ACVTS、CMVP/FIPS 140-3 或形式化验证的替代品；平台测评本身也不构成认证或熵源质量证明。
+MetaCrypto Online IDE 当前定位应明确为“密码算法结构与代码生成的教学/研究前端”，而不是密码模块认证产品。前端可以让用户试运行自己生成的 JavaScript/Python 代码；平台后端随机性测评、检测和判定由 `metacrypt_server` 后端完成。浏览器输出不能作为后端测评、CAVP/ACVTS、CMVP/FIPS 140-3 或形式化验证的替代品；平台测评本身也不构成认证或熵源质量证明。
 
 本报告的项目基线记录于 2026-09-12：140 个去重后的自定义块、29 个函数模板、57 个注册 demo、37 个算法标准目录。该数字是当时的审查快照，不作为当前计数；截至 2026-09-25，`ALL_BLOCK_TYPES` 静态展开为 194 个唯一自定义块，自动化验收覆盖 59 个注册 Demo（见 [当前 Demo 指南](../guides/DEMO.md)）。本地验证证明工程回归与选定向量上的功能一致性，不是完整安全性证明。
 
@@ -32,7 +32,7 @@ CipherCat 当前定位应明确为“密码算法结构与代码生成的教学/
 
 ## 3. 标准状态与项目映射
 
-| 领域 | 现行依据/状态 | CipherCat 映射 | 需要保持的边界 |
+| 领域 | 现行依据/状态 | MetaCrypto Online IDE 映射 | 需要保持的边界 |
 |---|---|---|---|
 | AES/SHA-2/SHA-3 | FIPS 197 于 2023 年更新为编辑性修订；FIPS 180-4、FIPS 202 仍是项目引用基础 | 原子块、模板和 demo | 说明标准版本；不得把编辑性更新写成算法改变 |
 | ML-KEM | FIPS 203 最终版，包含 512/768/1024 参数集；官方页面带后续修订/errata 提示 | `fips203-ML-KEM/`、PQC 原语和 Encaps 模板 | 参数集、编码、随机性、失败处理必须与标准向量绑定；不能因 demo 通过宣称合规 |
@@ -54,17 +54,17 @@ CipherCat 当前定位应明确为“密码算法结构与代码生成的教学/
 3. **算法验证层**：使用 CAVP/ACVTS 或等价的独立验证流程；CAVP 的算法前置条件页面明确说明底层算法/依赖需要分别满足要求。
 4. **模块/高保证层**：CMVP/FIPS 140-3、形式化验证、constant-time 和侧信道评估；需要独立的密码模块、工具链、证明和实验记录。
 
-当前 CipherCat 已有第 1 层和部分第 2 层的工程验证；没有宣称第 3/4 层。`metacrypt_server` 的后端随机性测评属于独立的测评执行面，也不应仅凭前端生成代码获得认证结论。
+当前 MetaCrypto Online IDE 已有第 1 层和部分第 2 层的工程验证；没有宣称第 3/4 层。`metacrypt_server` 的后端随机性测评属于独立的测评执行面，也不应仅凭前端生成代码获得认证结论。
 
 FIPS 140-3 Implementation Guidance 会涉及已知答案测试、条件测试、模块边界和验证解释。现有 `verify:all` 是开发回归门禁，不是 CMVP 提交材料。HACL*、机器检查密码标准和 constant-time 验证研究也都表明，高保证需要规范、实现、证明/分析工具和可信计算基的完整链路，不能由普通 lint 或 demo 通过自动推出。
 
-## 5. 对 CipherCat 的审查结论
+## 5. 对 MetaCrypto Online IDE 的审查结论
 
 ### 已确认并修正
 
 - ESLint 现在排除验证构建产物，并把验证脚本中的跨平台子进程、`unknown` 错误处理、类型约束和生产代码冗余成功日志整理完毕；`npm run lint:check` 为 0 errors、0 warnings。
 - 生产构建通过 Terser 移除 `console.log`、`console.debug` 和 `debugger`，保留 `console.warn/error`。
-- Tauri 产品名/窗口标题已统一为 CipherCat，避免桌面包出现旧项目名。
+- Tauri 产品名/窗口标题已统一为 MetaCrypto Online IDE，避免桌面包出现旧项目名。
 - ZUC 模板已归入 ZUC 类目，不再误归类为 PQC；程序类目异常不再静默吞掉。
 - 增加 `verify:all`、`verify:demos`、`verify:templates` 和 `docs:check-links`，把已有的人工检查变成可重复门禁。
 - 文献 PDF 已通过 `pdfinfo` 检查可读取，并记录 SHA-256；重复的 FIPS 140-3 IG 文件已去重。

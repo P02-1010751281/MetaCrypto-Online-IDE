@@ -59,7 +59,7 @@ ZUC 属于流密码：算法生成密钥流，再与明文逐位异或；EEA3 �
 
 项目当前有 `zuc_keystream`、`zuc_eia3` 块，以及 EEA3/EIA3 Blockly Demo；当前 EIA3 向量范围见 [05-EEA3-EIA3](./05-EEA3-EIA3.md)。
 
-## CipherCat 覆盖边界
+## MetaCrypto Online IDE 覆盖边界
 
 | 能力 | 当前状态 |
 |---|---|

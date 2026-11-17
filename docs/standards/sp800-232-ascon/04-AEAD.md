@@ -38,7 +38,7 @@ Ascon-AEAD128 使用 16-byte key、16-byte nonce、16-byte rate 和 16-byte tag�
 
 每个阶段要使用标准规定的域分离和末块 `0x01` 分隔填充。
 
-## CipherCat 映射
+## MetaCrypto Online IDE 映射
 
 `ascon_encrypt(key, nonce, ad, msg)` 和 `ascon_decrypt(key, nonce, ad, ciphertext_with_tag)` 已接入
 AEAD128 路径，Demo：`demos/procedures/ASCON.json` 与 `ASCON-Extended.json`。

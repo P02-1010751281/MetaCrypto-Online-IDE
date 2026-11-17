@@ -50,7 +50,7 @@ C3 = SM3(x2 || M || y2)
 
 当 `t` 全为零时必须重新选择 `k`。项目示例采用 `C1 || C3 || C2` 编码。
 
-## CipherCat 映射
+## MetaCrypto Online IDE 映射
 
 - `sm2_encrypt`：输入明文、公钥坐标和确定性 `k`，输出 `C1||C3||C2` 十六进制。
 - `sm2_decrypt`：恢复明文并验证 `C3`；标签不一致时拒绝输出。

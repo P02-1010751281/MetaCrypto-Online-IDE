@@ -83,7 +83,7 @@ Q1 = P1; Q2 = P2
 
 ## 项目映射
 
-实现面是 `metacrypt_server` Go 后端随机性检测模块；CipherCat 前端只提交用户测试数据或展示
+实现面是 `metacrypt_server` Go 后端随机性检测模块；MetaCrypto Online IDE 前端只提交用户测试数据或展示
 后端报告。没有对应 Blockly 检测块，也不使用浏览器样本作为最终测评来源。
 
 ## 核验与缺项

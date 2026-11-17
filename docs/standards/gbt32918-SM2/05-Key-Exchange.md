@@ -60,7 +60,7 @@ B10. Optionally compute S2 = Hash(0x03 || yV || Hash(xV || ZA || ZB || x1 || y1 
 
 双方分别拥有静态密钥、临时密钥和身份绑定值 `ZA/ZB`。协议使用静态/临时公钥点组合计算共享点，再将共享点坐标和身份绑定信息送入 KDF；确认值用于证明双方得到同一共享密钥。
 
-## CipherCat 映射
+## MetaCrypto Online IDE 映射
 
 `sm2_key_exchange` 当前实现第 3 部分 §6.1 中响应方 B 的 B1–B7 共享密钥派生路径：
 

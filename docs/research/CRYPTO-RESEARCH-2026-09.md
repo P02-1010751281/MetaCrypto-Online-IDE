@@ -3,7 +3,7 @@
 **调研日期**：2026-09-07
 > 历史快照：请优先阅读 [2026-09-12 全网调研与标准审查报告](./CRYPTO-RESEARCH-2026-09-12.md)。本文保留 2026-09-07 的原始基线和研究记录，不代表最新标准状态。
 
-**范围**：CipherCat / metacrypt_server 的文档、积木块、JavaScript/Python 生成器、模板与 demo；同时覆盖标准、后量子密码、实现保证和密码学教学研究。
+**范围**：MetaCrypto Online IDE / metacrypt_server 的文档、积木块、JavaScript/Python 生成器、模板与 demo；同时覆盖标准、后量子密码、实现保证和密码学教学研究。
 **文献包**：[paper/references/README.md](../../paper/references/README.md)
 
 ## 1. 项目现状基线
@@ -63,7 +63,7 @@ Kyber、Dilithium 和 SPHINCS+ 论文适合解释“标准名称”与“原始�
 
 CryptoScratch 将 AES、RSA、SHA-256 等密码算法做成视觉积木，并引入任务块和反馈机制；论文报告了 16 名中学生的初步可用性研究。它支持本项目继续采用“原子块 + 可观察中间态 + 任务/向量反馈”的教学路线，但样本小、场景特定，不能直接外推为学习效果结论。[CryptoScratch](https://arxiv.org/abs/2302.11606)
 
-对 CipherCat 的直接启示：
+对 MetaCrypto Online IDE 的直接启示：
 
 1. 原子块负责展示算法状态和标准步骤；一键模板负责快速进入可运行结果，两者必须明确标注层级。
 2. Demo 除了输出最终值，还应说明输入、参数集、标准章节和失败条件。

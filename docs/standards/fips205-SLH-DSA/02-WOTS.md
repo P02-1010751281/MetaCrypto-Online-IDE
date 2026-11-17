@@ -73,7 +73,7 @@ csum 拆为 len2 = 3 个 base-w 数字（MSB 在前）
 - 签名：`sig[i] = chain(sk[i], 0, msg[i])`（消息数字 + 校验和数字各走一条链）
 - 公钥：所有链终点 `chain(sk[i], 0, w−1)` 再压缩 `pk = Tℓ(ADRS(WOTS_PK, kp))`
 
-## CipherCat 块实现
+## MetaCrypto Online IDE 块实现
 
 - `hash_chain(input, iters)`：WOTS+ 链式哈希 c^i(x) = H^i(x)（SHAKE-256 32B），
   迭代 ITERATIONS 次。

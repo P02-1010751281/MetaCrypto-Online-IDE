@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "ciphercat/spec-card/v0",
-  "title": "CipherCat SpecCard v0",
+  "title": "MetaCrypto Online IDE SpecCard v0",
   "description": "把一个标准/参考条目的原文锚点、接口与块映射固化成机器可校验的规格卡。卡片只写事实与来源，不写机器可复核的结论（哈希、引文匹配由 scripts/check-spec-cards.mjs 重算）。",
   "type": "object",
   "additionalProperties": false,

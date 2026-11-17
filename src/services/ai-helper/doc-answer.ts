@@ -380,7 +380,7 @@ export async function answerHits(
    */
   const anchored = drafts.filter(aboutAnchor);
   // 点名了实体却没有任何一篇出处在讲它 → 直接拒答。这一条不能省：候选为空时若回退到
-  // 全部草稿，「CipherCat 支持哪些区块链共识算法」会答到教程页、「CSS 毛玻璃」会答到
+  // 全部草稿，「MetaCrypto Online IDE 支持哪些区块链共识算法」会答到教程页、「CSS 毛玻璃」会答到
   // 研究综述页——两题正文里都没有它们，只是共用词凑出了覆盖度（RESULTS §25 阴性对照）。
   const head =
     anchorPhrases.length === 0

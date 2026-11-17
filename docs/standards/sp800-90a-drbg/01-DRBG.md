@@ -57,7 +57,7 @@ V = HMAC(K, V)
 
 Generate 反复执行 `V = HMAC(K, V)` 产生请求字节数，生成后再次更新状态。Additional input、reseed、重播保护、请求上限、健康测试和预测抗性仍需按标准逐项处理。
 
-## CipherCat 覆盖边界
+## MetaCrypto Online IDE 覆盖边界
 
 - `drbg_generate(entropy, nonce, perso, bits)`：一次性 HMAC-SHA-256 生成路径。
 - Demo：`demos/procedures/DRBG.json`；现有登记用例为少量固定回归，并非完整 NIST CAVP HMAC-DRBG 向量集。

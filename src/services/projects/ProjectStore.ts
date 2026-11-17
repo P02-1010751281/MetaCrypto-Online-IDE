@@ -2,7 +2,7 @@
  * 项目存储端口（ProjectStore）—— IDE 与「项目怎么存」之间的唯一缝。
  *
  * 视图层（项目列表、编辑器保存/加载）只依赖本接口，具体实现由各宿主提供：
- * - CipherCat（单机/桌面）：IndexedDB，见 ./indexedDbProjectStore.ts
+ * - MetaCrypto Online IDE（单机/桌面）：IndexedDB，见 ./indexedDbProjectStore.ts
  * - metacrypt_server（服务器）：HTTP 后端，见
  *   frontend/src/features/blockly/services/projects/httpProjectStore.ts
  *
@@ -15,7 +15,7 @@ export type ProjectId = number | string;
 /**
  * 项目内的一个积木文件。
  *
- * 单机版（CipherCat）一个项目可以有多个 block 文件，编译时按文件拼成一份代码；
+ * 单机版（MetaCrypto Online IDE）一个项目可以有多个 block 文件，编译时按文件拼成一份代码；
  * metacrypt 侧有自己的 ProjectFile（含 kind/content/version），不复用本结构。
  */
 export interface ProjectFileRecord {

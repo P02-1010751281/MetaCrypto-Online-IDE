@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build CipherCat for Linux: deb + rpm (+ appimage if FUSE available)
+# Build MetaCrypto Online IDE for Linux: deb + rpm (+ appimage if FUSE available)
 set -e
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 IMAGE="localhost/ciphercat:tauri"

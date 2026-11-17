@@ -36,6 +36,6 @@ Ti = U1 xor U2 xor ... xor Uc
 
 所有 `U` 保持 PRF 输出长度，块编号从 1 开始；最后将 `T1||T2||...` 截断到 `dkLen`。
 
-## CipherCat 映射
+## MetaCrypto Online IDE 映射
 
 `pbkdf2` 支持 SHA-256 和 SM3-HMAC 两条路径；外层 KDF、PRF、迭代和截断在一键块中完成，没有独立的 `U`/`T` Blockly 原语。

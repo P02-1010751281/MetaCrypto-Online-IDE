@@ -3,7 +3,7 @@
 来源: IETF RFC 8017 — PKCS #1: RSA Cryptography Specifications Version 2.2
       https://www.rfc-editor.org/rfc/rfc8017.txt      (2016-11，取代 RFC 3447/2437/2313)
 
-> RFC 8017 定义 RSA 方案，不定义密钥生成。CipherCat 的 `rsa_encrypt/decrypt/sign/verify` 是相应方案的教学实现；`rsa_keygen` 是项目自定义教学辅助，不属于 RFC 8017，也未声明符合 FIPS 186-5。
+> RFC 8017 定义 RSA 方案，不定义密钥生成。MetaCrypto Online IDE 的 `rsa_encrypt/decrypt/sign/verify` 是相应方案的教学实现；`rsa_keygen` 是项目自定义教学辅助，不属于 RFC 8017，也未声明符合 FIPS 186-5。
 
 ## 算法清单
 

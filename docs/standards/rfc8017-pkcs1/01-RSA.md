@@ -35,7 +35,7 @@ EM = 0x00 ‖ 0x02 ‖ PS ‖ 0x00 ‖ M
 - PS = 至少 8 字节随机非零字节（加密随机化；不满足长度则报错）
 - `c = EM^e mod n`；解密 `m = c^d mod n`，检查前导 0x00‖0x02 结构并剥离 PS
 
-CipherCat 块：`rsa_encrypt(pub, m)` / `rsa_decrypt(priv, c)`（EM-PKCS1-v1_5 语义）。
+MetaCrypto Online IDE 块：`rsa_encrypt(pub, m)` / `rsa_decrypt(priv, c)`（EM-PKCS1-v1_5 语义）。
 
 ### PKCS#1 v1.5 签名（RFC 8017 §8.2，SHA-256）
 
@@ -46,5 +46,5 @@ EM = 0x00 ‖ 0x01 ‖ FF…FF(≥8) ‖ 0x00 ‖ DigestInfo(SHA-256)
 - DigestInfo = DER 编码的算法标识符 + 摘要（`30 31 30 0d 06 09 60 86 48 01 65 03 04 02 01 05 00 04 20 ‖ H`）
 - `s = EM^d mod n`；验签 `EM' = s^e mod n` 与重组 EM 比对
 
-CipherCat 块：`rsa_sign(priv, m)` / `rsa_verify(pub, m, sig)`。
+MetaCrypto Online IDE 块：`rsa_sign(priv, m)` / `rsa_verify(pub, m, sig)`。
 验证：项目固定回归（签名与验签正/负例，JS/Python 双语言），见 `RSA-Sign.json`；仓库内无第三方实现交叉复算。

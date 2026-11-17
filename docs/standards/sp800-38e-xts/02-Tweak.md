@@ -35,7 +35,7 @@ T(i+1) = α · Ti  in GF(2^128)
 
 这里的 `α` 是按 XTS 规定字节序和约减规则的乘 `x`。不要复用 CMAC 的 `Rb=0x87` 代码而不核对字节序。
 
-## CipherCat 映射
+## MetaCrypto Online IDE 映射
 
 `xts_tweak_mul` 单独承担 §3 的 `α·T` 加倍（最高位进位时按 XTS 字节序约化，与 CMAC 的 `Rb` 路径相反）；
 `xts_encrypt` 内部再用它推进 `T0→T1→…`。验证入口：`cmac-xts-primitives-contract.test.ts`

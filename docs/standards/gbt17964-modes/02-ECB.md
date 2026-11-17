@@ -35,6 +35,6 @@ P_i = D_K(C_i)
 
 相同明文分组会产生相同密文分组，因此会泄露结构，不适用于一般数据保密。
 
-## CipherCat 映射
+## MetaCrypto Online IDE 映射
 
 `mode_ecb_encrypt` / `mode_ecb_decrypt` 展示 AES-128 路径；与 GB/T 17964 的 SM4 使用约定不能从块名称自动推断，调用方需明确底层密码。

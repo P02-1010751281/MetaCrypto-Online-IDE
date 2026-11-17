@@ -64,7 +64,7 @@ HT 签名 ← 对 d 层 XMSS 子树逐层签名（每层 WOTS+ 密钥对由 SK.s
 → 最终根与 PK.root 比对。**与签名侧计算路径完全对称**（可验证性来自 Merkle 树
 结构的确定性重建）。
 
-## CipherCat 覆盖
+## MetaCrypto Online IDE 覆盖
 
 - **结构件原子块**（可拼装教学）：`hash_chain` · `wots_checksum` · `merkle_leaf`
   · `merkle_node` · `merkle_root` · `merkle_auth_path` · `slh_addr` · `slh_adrs_full`

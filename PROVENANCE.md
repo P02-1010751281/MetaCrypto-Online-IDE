@@ -1,6 +1,6 @@
 # 来源与世系说明（PROVENANCE）
 
-本文件说明 CipherCat 与已发表软件 **MetaCrypto Online** 的关系，供审稿、引用与合规核对使用。
+本文件说明 MetaCrypto Online IDE 与已发表软件 **MetaCrypto Online** 的关系，供审稿、引用与合规核对使用。
 
 ## 1. 对应关系
 

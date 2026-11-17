@@ -1,7 +1,7 @@
 [package]
 name = "ciphercat"
 version = "2.0.0"
-description = "CipherCat - Post-quantum cryptography visual programming platform"
+description = "MetaCrypto Online IDE - Post-quantum cryptography visual programming platform"
 authors = [""]
 edition = "2021"
 rust-version = "1.90"
