@@ -122,7 +122,7 @@ demos/                          # Blockly 工作区示例（含官方向量期�
 | 后量子密码 | ML-KEM/ML-DSA 格基构件与阶段；另含 SLH-DSA、纠错码教学构件 |
 | 函数与 Blockly 原生类目 | 29 个函数模板及变量、数学、数组、逻辑等 Blockly 原生块 |
 
-> 总数按 `src/blocks/index.ts` 的 `ALL_BLOCK_TYPES` 递归展开、去重得到 224 个活动块类型。另有 29 个函数模板注册项，其中 3 个基础 `crypto_*` 块已计入这 224 个类型，26 个 `proc_*` 模板是额外类型；块与模板合并去重后共 250 个类型。此外还注册 1 个仅供存量工作区加载的兼容身份 `ctrl_assign`（不在工具箱、不计入 224 与 250）。工具箱 17 类目含 4 个 Blockly 原生类目。上表用于说明能力范围，不提供可能重叠的分类小计。计数口径见 [`docs/standards/CONFORMANCE-INVENTORY.md`](docs/standards/CONFORMANCE-INVENTORY.md)，由 `npm run verify:templates` 枚举全部已注册类型守住；上面四个数随主分支变动，历史版本以该版本树内的清单为准（`v2.0.0` tag 树为 222 个活动块、248 个合并类型）。这一教学面向不构成 CAVP/ACVTS、CMVP/FIPS 140-3 认证或形式化验证声明。
+> 计数：`ALL_BLOCK_TYPES` 去重后 **224** 个活动块类型，29 个函数模板在 224 内的 3 个 `crypto_*` 之外再加 26 个 `proc_*`，合并去重共 **250**；兼容身份 `ctrl_assign` 两边都不计。工具箱 17 类目含 4 个 Blockly 原生类目。口径与逐条清单见 [CONFORMANCE-INVENTORY.md](docs/standards/CONFORMANCE-INVENTORY.md)，由 `npm run verify:templates` 守住；数字随主分支变动，`v2.0.0` tag 树为 222 / 248。这一教学面向不构成 CAVP/ACVTS、CMVP/FIPS 140-3 认证或形式化验证声明。
 
 浏览器内负责 Blockly 编辑、代码生成与用户试用；可信随机性评估、统计检验、隔离执行与最终报告由 `metacrypt_server` 后端承担。
 
