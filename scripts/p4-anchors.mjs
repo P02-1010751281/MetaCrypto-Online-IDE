@@ -16,23 +16,72 @@
  * 复跑：node scripts/p4-anchors.mjs
  */
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const ROOT = process.cwd();
-const STANDARD_DIR = 'docs/standards/fips180-4-SHA2';
 const SOURCE_NAME = '00-Standard-Source.md';
 const MANIFEST = 'docs/standards/standards-manifest.json';
-const MANIFEST_ID = 'fips180-4-SHA2';
-const ENTRY_FILES = ['01-SHA2.md', '02-Padding.md', '03-MessageExpansion.md', '04-Compression.md', '05-Digest.md'];
-const OUT = resolve(ROOT, 'experiments/ai-helper-2026-11-14/p4/anchors.json');
+const P4_DIR = 'experiments/ai-helper-2026-11-14/p4';
 
 /**
- * 小节标题行：行首无缩进、编号（可带章号后的点）+ 空白 + 大写开头的标题。
+ * 每个标准一份抽取配置。判定口径（三档、证据层）不在本脚本里，这里只解决「怎么把语料里的
+ * 声明变成可点的行区间」——语料版式不同，标题识别与 § 出处也不同，所以这三项按标准配置：
+ *
+ * - `layout`：`strict-column0` = 标题顶格（FIPS 180-4 的提取稿）；`indented` = 标题被
+ *   pdftotext -layout 缩进到固定列（SP 800-38B），只认「编号 + 两个以上空格 + 纯字母标题」，
+ *   正文步骤（`1.     Let L = CIPHK(0b).`）因为带 `=()0` 不会被当成标题。
+ * - `sectionRef`：条款单元从哪取 § 号。`standard-position` = 只认条目元数据的「标准定位」；
+ *   `position-fallback` = 「标准定位」没有 § 时退回「原文位置」里的 §（CMAC 三页都是后者）。
+ * - `appendices`：提取稿末尾的 `Appendix A: …` 是否算一级标题。不算时章级跨度会一路吃掉附录，
+ *   把 §6 的锚点撑到文件尾；FIPS 180-4 保持关闭以维持既有产物逐字节不变。
+ */
+const STANDARDS = {
+  'fips180-4-SHA2': {
+    dir: 'docs/standards/fips180-4-SHA2',
+    entries: ['01-SHA2.md', '02-Padding.md', '03-MessageExpansion.md', '04-Compression.md', '05-Digest.md'],
+    layout: 'strict-column0',
+    sectionRef: 'standard-position',
+    appendices: false,
+    out: `${P4_DIR}/anchors.json`,
+    note: '只做 FIPS 180-4 相关条目，不铺全语料',
+  },
+  'sp800-38b-cmac': {
+    dir: 'docs/standards/sp800-38b-cmac',
+    entries: ['01-CMAC.md', '02-Subkeys.md', '03-MAC.md'],
+    layout: 'indented',
+    sectionRef: 'position-fallback',
+    appendices: true,
+    out: `${P4_DIR}/anchors-sp800-38b-cmac.json`,
+    note: '第二份标准切片（非哈希标准）：SP 800-38B CMAC 三个条目页；同一套锚点口径，只换版式适配',
+  },
+};
+
+function selectStandard(argv) {
+  const at = argv.indexOf('--standard');
+  const id = at >= 0 ? argv[at + 1] : 'fips180-4-SHA2';
+  const config = STANDARDS[id];
+  if (!config) {
+    console.error(`未知标准 ${id}；可选：${Object.keys(STANDARDS).join(' / ')}`);
+    process.exit(2);
+  }
+  return { id, ...config };
+}
+
+/**
+ * 小节标题行（顶格版式）：行首无缩进、编号（可带章号后的点）+ 空白 + 大写开头的标题。
  * 三条排除：目录点线（`....`）、带冒号/花括号的行（正文里的编号步骤 `1. Prepare the message schedule, {Wt}:`）、
  * 以及缩进行（PDF 提取稿把正文步骤缩进了，标题都顶格）。分页控制符 \f 先剥掉。
  */
 const HEADING_RE = /^(\d+(?:\.\d+)*)\.?\s+([A-Z][^:{}]{2,80})$/;
+
+/**
+ * 缩进版式（SP 800-38B 这类 `pdftotext -layout` 提取稿）：标题被推到固定列，正文步骤缩得更深。
+ * 区分靠标题形状而不是缩进深度：编号后**两个以上空格**、标题只由字母/空格/连字符组成。
+ * 正文步骤带 `=`、`(`、数字或逗号，因此不会被误认；`Appendix A: …` 由 APPENDIX_RE 单独认。
+ */
+const INDENTED_HEADING_RE = /^[ \t]*(\d+(?:\.\d+)*)\.?[ ]{2,}([A-Z][A-Za-z]*(?:[ ][A-Za-z][A-Za-z-]*){0,7})\s*$/;
+const APPENDIX_RE = /^[ \t]*Appendix\s+([A-Z]):\s+([A-Za-z][A-Za-z -]{2,60})\s*$/;
 
 function sha256(text) {
   return createHash('sha256').update(text, 'utf8').digest('hex');
@@ -43,19 +92,32 @@ function readText(relPath) {
 }
 
 /** 抽取源文件的小节标题表：编号 → {line, title, level, end}。 */
-function buildHeadings(lines) {
+function buildHeadings(lines, config) {
   const headings = [];
   lines.forEach((line, index) => {
     const cleaned = line.replace(/\f/g, '');
-    const match = HEADING_RE.exec(cleaned);
-    if (!match) return;
     if (cleaned.includes('....')) return;
-    const number = match[1];
-    if (number.startsWith('0')) return;
+    const pattern = config.layout === 'indented' ? INDENTED_HEADING_RE : HEADING_RE;
+    const match = pattern.exec(cleaned);
+    if (match) {
+      const number = match[1];
+      if (number.startsWith('0')) return;
+      headings.push({
+        number,
+        title: match[2].trim(),
+        level: number.split('.').length,
+        line: index + 1,
+      });
+      return;
+    }
+    if (!config.appendices) return;
+    const appendix = APPENDIX_RE.exec(cleaned);
+    if (!appendix) return;
+    // 附录按一级标题处理：它的编号不是数字，但同样要截断前一章的跨度。
     headings.push({
-      number,
-      title: match[2].trim(),
-      level: number.split('.').length,
+      number: `Appendix ${appendix[1]}`,
+      title: appendix[2].trim(),
+      level: 1,
       line: index + 1,
     });
   });
@@ -116,14 +178,15 @@ function parseDeclaredAnchors(cell) {
 }
 
 function main() {
+  const config = selectStandard(process.argv.slice(2));
   const manifest = JSON.parse(readText(MANIFEST));
-  const standard = manifest.entries.find((entry) => entry.id === MANIFEST_ID);
-  if (!standard) throw new Error(`manifest 缺 ${MANIFEST_ID}`);
+  const standard = manifest.entries.find((entry) => entry.id === config.id);
+  if (!standard) throw new Error(`manifest 缺 ${config.id}`);
 
-  const sourcePath = `${STANDARD_DIR}/${SOURCE_NAME}`;
+  const sourcePath = `${config.dir}/${SOURCE_NAME}`;
   const sourceText = readText(sourcePath);
   const lines = sourceText.split('\n');
-  const headings = buildHeadings(lines);
+  const headings = buildHeadings(lines, config);
   if (headings.length === 0) throw new Error('源文件未解析出任何小节标题，口径失效');
 
   const entries = [];
@@ -141,13 +204,16 @@ function main() {
     declaredOutsideSections: 0,
   };
 
-  for (const file of ENTRY_FILES) {
-    const entryPath = `${STANDARD_DIR}/${file}`;
+  for (const file of config.entries) {
+    const entryPath = `${config.dir}/${file}`;
     const text = readText(entryPath);
     const positionCell = metadataRow(text, '原文位置');
     const scopeCell = metadataRow(text, '标准定位');
     const declared = parseDeclaredAnchors(positionCell);
-    const refs = parseSectionRefs(scopeCell);
+    // 「标准定位」没有 § 的语料（CMAC 三页）退回「原文位置」里的 §；两处都没有才真的无条款单元。
+    const refs = config.sectionRef === 'position-fallback' && parseSectionRefs(scopeCell).length === 0
+      ? parseSectionRefs(positionCell)
+      : parseSectionRefs(scopeCell);
     const clauseId = file.replace(/\.md$/, '');
 
     counts.entries += 1;
@@ -274,10 +340,43 @@ function main() {
     }
   }
 
+  // SPEC-CARD（有的话）是第二种证据：它把原文片段按「空白归一化后的整段文本」钉哈希。
+  // 本脚本顺带复算它，避免「锚点行区间还在、内容已经漂了」这种静默失效。
+  // 允许用 `--spec-card <路径>` 指向一份副本：阴性对照要在「内容被改过」的卡片上跑，
+  // 不能为了证明核对会开火去改仓库里的语料。
+  const argv = process.argv.slice(2);
+  const specCardArg = argv.indexOf('--spec-card');
+  const specCardPath = specCardArg >= 0 ? argv[specCardArg + 1] : `${config.dir}/SPEC-CARD.json`;
+  let specCard = null;
+  if (existsSync(resolve(ROOT, specCardPath))) {
+    const card = JSON.parse(readText(specCardPath));
+    const checks = card.anchors.map((item) => {
+      const [start, end] = item.line_range;
+      const normalized = lines.slice(start - 1, end).join('\n').replace(/\s+/g, ' ').trim();
+      const contained = clauseUnits.some((unit) => unit.anchorLevel === 'line'
+        && unit.source.line_start <= start && end <= unit.source.line_end);
+      return {
+        id: item.id,
+        line_range: item.line_range,
+        quoteTextMatch: normalized === item.quote,
+        quoteHashMatch: sha256(normalized) === item.quote_sha256,
+        insideResolvedSpan: contained,
+      };
+    });
+    specCard = {
+      path: specCardPath,
+      anchors: checks.length,
+      quoteTextMatch: checks.filter((item) => item.quoteTextMatch).length,
+      quoteHashMatch: checks.filter((item) => item.quoteHashMatch).length,
+      insideResolvedSpan: checks.filter((item) => item.insideResolvedSpan).length,
+      checks,
+    };
+  }
+
   const payload = {
     schemaVersion: 1,
     generatedBy: 'scripts/p4-anchors.mjs',
-    scope: { standardId: MANIFEST_ID, entries: ENTRY_FILES.length, note: '只做 FIPS 180-4 相关条目，不铺全语料' },
+    scope: { standardId: config.id, entries: config.entries.length, note: config.note },
     standard: {
       id: standard.id,
       name: standard.standard,
@@ -294,7 +393,9 @@ function main() {
     counts,
     entries,
     clauseUnits,
+    ...(specCard ? { specCard } : {}),
   };
+  const OUT = resolve(ROOT, config.out);
   writeFileSync(OUT, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
 
   console.log(`ANCHORS ok entries=${counts.entries} clauseUnits=${counts.clauseUnits} ` +
@@ -302,6 +403,10 @@ function main() {
     `unresolved=${counts.clauseUnitsWithoutHeading} mismatch=${counts.entryAnchorMismatch} ` +
     `outsideSections=${counts.declaredOutsideSections}`);
   console.log(`ANCHORS source=${sourcePath} lines=${lines.length} sha256=${payload.source.sha256.slice(0, 12)}…`);
+  if (specCard) {
+    console.log(`ANCHORS specCard=${specCard.anchors} quoteText=${specCard.quoteTextMatch} ` +
+      `quoteHash=${specCard.quoteHashMatch} insideSpan=${specCard.insideResolvedSpan}`);
+  }
   console.log(`ANCHORS out=${OUT.replace(`${ROOT}/`, '')}`);
 }
 

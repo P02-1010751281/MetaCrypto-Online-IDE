@@ -1,0 +1,118 @@
+{
+  "project": "experiments/ai-helper-2026-11-14/p4/project-cmac/cmac-rfc4493.project.json",
+  "name": "NIST SP 800-38B CMAC（src a1e96171）",
+  "language": "python",
+  "structure": {
+    "files": 2,
+    "names": [
+      "algo.cmac.block.json",
+      "main.block.json"
+    ],
+    "entryFileId": "file-main",
+    "entryMatches": true,
+    "perFile": [
+      {
+        "name": "algo.cmac.block.json",
+        "serializedBlocks": 7,
+        "loadedBlocks": 7,
+        "ok": true
+      },
+      {
+        "name": "main.block.json",
+        "serializedBlocks": 34,
+        "loadedBlocks": 34,
+        "ok": true
+      }
+    ]
+  },
+  "symbols": [
+    {
+      "name": "CMAC_AES",
+      "params": [
+        {
+          "name": "key",
+          "type": "bytes"
+        },
+        {
+          "name": "msg",
+          "type": "bytes"
+        }
+      ],
+      "path": "algo.cmac.block.json",
+      "fileId": "file-algo-cmac"
+    },
+    {
+      "name": "CMAC_SUBKEYS",
+      "params": [
+        {
+          "name": "subkey",
+          "type": "bytes"
+        }
+      ],
+      "path": "algo.cmac.block.json",
+      "fileId": "file-algo-cmac"
+    }
+  ],
+  "generation": {
+    "pythonLines": 171,
+    "javascriptLines": 159,
+    "pythonFnv1a64": "051a660dda0e509d",
+    "javascriptFnv1a64": "e11ea9818ea7e22a",
+    "iterationProof": {
+      "pythonLoop": false,
+      "javascriptLoop": false,
+      "pythonChunk": false,
+      "javascriptChunk": false,
+      "pythonHasFor": true,
+      "javascriptHasFor": true
+    }
+  },
+  "typecheck": {
+    "pairs": 32,
+    "ok": 0,
+    "mismatch": 0,
+    "unknown": 32,
+    "unknownCauses": {
+      "coreBlockNoContract": 17,
+      "parentInputNoCheck": 13,
+      "childOutputNoCheck": 2
+    },
+    "findings": []
+  },
+  "vector": {
+    "name": "RFC 4493 §4 (AES-128)",
+    "expect": "bb1d6929e95937287fa37d129b756746\n070a16b46b4d4144f79bdd9dd04a287c\ndfa66747de9ae63030ca32611497c827\n51f0bebf7e3b9d92fc49741779363cfe\nfbeed618357133667c85e08f7236a8def7ddac306ae266ccf90bc11ee46d513b",
+    "python": {
+      "lang": "Python",
+      "pass": true,
+      "got": "bb1d6929e95937287fa37d129b756746\n070a16b46b4d4144f79bdd9dd04a287c\ndfa66747de9ae63030ca32611497c827\n51f0bebf7e3b9d92fc49741779363cfe\nfbeed618357133667c85e08f7236a8def7ddac306ae266ccf90bc11ee46d513b",
+      "expect": "bb1d6929e95937287fa37d129b756746\n070a16b46b4d4144f79bdd9dd04a287c\ndfa66747de9ae63030ca32611497c827\n51f0bebf7e3b9d92fc49741779363cfe\nfbeed618357133667c85e08f7236a8def7ddac306ae266ccf90bc11ee46d513b"
+    },
+    "javascript": {
+      "lang": "JS",
+      "pass": true,
+      "got": "bb1d6929e95937287fa37d129b756746\n070a16b46b4d4144f79bdd9dd04a287c\ndfa66747de9ae63030ca32611497c827\n51f0bebf7e3b9d92fc49741779363cfe\nfbeed618357133667c85e08f7236a8def7ddac306ae266ccf90bc11ee46d513b",
+      "expect": "bb1d6929e95937287fa37d129b756746\n070a16b46b4d4144f79bdd9dd04a287c\ndfa66747de9ae63030ca32611497c827\n51f0bebf7e3b9d92fc49741779363cfe\nfbeed618357133667c85e08f7236a8def7ddac306ae266ccf90bc11ee46d513b"
+    },
+    "control": {
+      "note": "15 字节对照：末块由「整块 xor K1」改走「pad 后 xor K2」，输出必须 ≠ 16 字节官方向量",
+      "mustDifferFrom": "070a16b46b4d4144f79bdd9dd04a287c",
+      "results": [
+        {
+          "lang": "Python",
+          "got": "f212d4c2154c8766de60c18c98fa0c93",
+          "differ": true,
+          "error": ""
+        },
+        {
+          "lang": "JS",
+          "got": "f212d4c2154c8766de60c18c98fa0c93",
+          "differ": true,
+          "error": ""
+        }
+      ]
+    }
+  },
+  "pass": true,
+  "problems": []
+}

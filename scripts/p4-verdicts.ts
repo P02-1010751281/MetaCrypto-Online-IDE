@@ -26,12 +26,42 @@ import { search, type BlockIndex, type SearchHit } from '@/services/ai-helper/bl
 
 const ROOT = process.cwd();
 const OUT_DIR = resolve(ROOT, 'experiments/ai-helper-2026-11-14/p4');
-const ANCHORS = resolve(OUT_DIR, 'anchors.json');
-const VERDICTS = resolve(OUT_DIR, 'verdicts.json');
 const INDEX = resolve(ROOT, 'src/services/ai-helper/block-index.json');
 const MANIFEST = resolve(ROOT, 'docs/standards/standards-manifest.json');
-const STANDARD_ID = 'fips180-4-SHA2';
-const STANDARD_NUMBER_RE = /FIPS\s*180-4|180-4/i;
+
+/**
+ * 每个标准一份判定配置。**判定口径本身不在这里**（档位规则、证据层优先级、语义等价永远
+ * unverified 都是共享代码），这里只放「随语料版式变化」的三项：
+ *
+ * - `anchors` / `out`：第 1 段的产物与本文产物路径；
+ * - `standardNumberRe`：L2 用的标准号写法（tooltip 里怎么引这部标准）；
+ * - `mappingHeading`：条目页里「块映射到哪」那一节的标题。FIPS 180-4 的五个条目页用「…映射」，
+ *   SP 800-38B 的 03-MAC 用「…边界」（原文就写着「没有独立验证、截断策略」），只认「映射」会
+ *   把 03 的 L1 证据整段漏掉——这是第二份切片抓到的第一处口径耦合。
+ *
+ * `designPartition` / `variantRe`：`sameVariant` 的判法随标准不同（FIPS 的条款只认 256 路径，
+ * CMAC 的条款只认 cmac_* 块）。
+ */
+interface StandardConfig {
+  id: string;
+  anchors: string;
+  out: string;
+  standardNumberRe: RegExp;
+  mappingHeading: RegExp;
+  variantRe: RegExp;
+  models: ClauseModel[];
+}
+
+function selectStandard(argv: string[]): StandardConfig {
+  const at = argv.indexOf('--standard');
+  const id = at >= 0 ? argv[at + 1] : 'fips180-4-SHA2';
+  const config = CONFIGS[id];
+  if (!config) {
+    console.error(`未知标准 ${id}；可选：${Object.keys(CONFIGS).join(' / ')}`);
+    process.exit(2);
+  }
+  return config;
+}
 
 type Tier = 'build' | 'partial' | 'missing';
 type Visibility = 'canvas' | 'internal' | 'none';
@@ -121,6 +151,76 @@ const CLAUSE_MODELS: ClauseModel[] = [
   },
 ];
 
+/**
+ * SP 800-38B CMAC 的步骤表（人工语义分解，依据 01/02/03 三页的「原文摘录」与「公式或伪代码」）。
+ *
+ * 与 FIPS 切片同样的口径：**整段过程被一个块吸收时，被吸收的那些步骤记 internal，不记 canvas**。
+ * CMAC 这里对应 `cmac_mac`（子密钥 + 最后块掩码 + CBC-MAC + 截断全在一个闭包里），所以
+ * 「最后块掩码」这一步不能因为「cmac_mac 能算」就算能搭；能算的是它外圈的通用块组合。
+ */
+const CMAC_CLAUSE_MODELS: ClauseModel[] = [
+  {
+    entryId: '01-CMAC',
+    steps: [
+      { id: 's1', section: '§6', text: '子密钥生成（L=E_K(0^b)，K1/K2 加倍）', blocks: ['cmac_subkeys', 'cmac_double'], visibility: 'canvas' },
+      { id: 's2', section: '§6', text: '最后块掩码（整块 xor K1；空消息/不完整块 pad 后 xor K2）', blocks: ['cmac_mac'], visibility: 'internal', note: '只在 cmac_mac 闭包里；画布没有「与 K1/K2 异或 + 10^j 填充」的独立块' },
+      { id: 's3', section: '§6', text: '以 X0=0 做 CBC-MAC：Xi=E_K(X(i−1) xor Mi)', blocks: ['mode_cbc_encrypt', 'ctrl_iterate'], visibility: 'canvas', note: '用零 IV 的 mode_cbc_encrypt 组合；不是专门的 CMAC 链块' },
+      { id: 's4', section: '§6', text: '输出 Xn，必要时按协议指定长度截断', blocks: ['arr_slice'], visibility: 'canvas', note: '按字节切片；标准允许任意 bit 长度 Tlen' },
+    ],
+    claimBoundaries: ['标准允许 1 ≤ Tlen ≤ b 的任意 bit 长度；块模型按字节切片，bit 级截断不表达'],
+    extraGaps: [],
+  },
+  {
+    entryId: '02-Subkeys',
+    steps: [
+      { id: 's1', section: '§6.1', text: 'L = CIPH_K(0^b)', blocks: ['mode_ecb_encrypt', 'cmac_subkeys'], visibility: 'internal', note: '唯一能在画布上产出 L 的块 mode_ecb_encrypt 输出 Bytes，而 cmac_double 只收 IntList，224 块里没有 Bytes→IntList 转换块（探针 connect-probe subkey-l 被拒）；能用的是 cmac_subkeys 内部那一步' },
+      { id: 's2', section: '§6.1', text: 'MSB1(L)=0 → K1=L<<1，否则 K1=(L<<1) xor Rb', blocks: ['cmac_double'], visibility: 'internal', note: 'cmac_double 只吃 IntList，接不上 s1 的 Bytes 产物（探针 subkey-l）；该步随 cmac_subkeys 闭包一起被吸收' },
+      { id: 's3', section: '§6.1', text: 'MSB1(K1)=0 → K2=K1<<1，否则 K2=(K1<<1) xor Rb', blocks: ['cmac_double'], visibility: 'internal', note: '同上：加倍链在 cmac_double/cmac_subkeys 闭包内完成' },
+      { id: 's4', section: '§6.1', text: 'Return K1, K2', blocks: ['cmac_subkeys'], visibility: 'canvas', note: 'cmac_subkeys 返回 K1‖K2；过程只能返回一个值，拆包在调用方' },
+    ],
+    claimBoundaries: ['Rb 的取值依赖分组长度（128 位为 0x87）；块固定 128 位路径，SM4 同构但 b=128 相同'],
+    extraGaps: [
+      '§6.1 的四步在画布上拼不出来：L 的产物是 Bytes、cmac_double 入口是 IntList，画布拒绝这次连接且没有转换块（p4/connect-probe-sp800-38b.json 三条用例：两条被拒 + Bytes→cmac_mac 正对照通过）',
+    ],
+  },
+  {
+    entryId: '03-MAC',
+    steps: [
+      { id: 's1', section: '§6.2', text: 'Apply SUBK(K) from §6.1 to produce K1 and K2', blocks: ['cmac_subkeys'], visibility: 'canvas' },
+      { id: 's2', section: '§6.2', text: 'Mlen=0 → n=1，否则 n=ceil(Mlen/b)', blocks: ['data_bit_length', 'math_arithmetic', 'math_round'], visibility: 'canvas' },
+      { id: 's3', section: '§6.2', text: '把 M 切成 M1..M(n-1), Mn*', blocks: ['arr_partition_to_array', 'ctrl_iterate'], visibility: 'canvas' },
+      { id: 's4', section: '§6.2', text: 'Mn* 整块 → Mn=K1 xor Mn*；否则 Mn=K2 xor (Mn*‖1‖0^j)', blocks: ['cmac_mac'], visibility: 'internal', note: '只在 cmac_mac 闭包里；画布没有「最后块条件掩码」块' },
+      { id: 's5', section: '§6.2', text: 'C0 = 0^b', blocks: ['data_value'], visibility: 'canvas' },
+      { id: 's6', section: '§6.2', text: 'for i=1..n: Ci = CIPH_K(C(i−1) xor Mi)', blocks: ['mode_cbc_encrypt', 'ctrl_iterate'], visibility: 'canvas', note: '零 IV 的 CBC 链；单分组加密走同块的 ECB/AES 路径' },
+      { id: 's7', section: '§6.2', text: 'T = MSB_Tlen(Cn)', blocks: ['arr_slice'], visibility: 'canvas', note: '按字节切片；bit 级 Tlen 不表达' },
+      { id: 's8', section: '§6.2', text: 'Return T', blocks: ['procedures_defreturn'], visibility: 'canvas' },
+    ],
+    claimBoundaries: ['块模型不表达 bit 级截断（Tlen 非 8 的倍数）', '没有独立验证块（VER 路径不在块集合里）'],
+    extraGaps: [],
+  },
+];
+
+const CONFIGS: Record<string, StandardConfig> = {
+  'fips180-4-SHA2': {
+    id: 'fips180-4-SHA2',
+    anchors: `${OUT_DIR}/anchors.json`,
+    out: `${OUT_DIR}/verdicts.json`,
+    standardNumberRe: /FIPS\s*180-4|180-4/i,
+    mappingHeading: /^## .*映射/,
+    variantRe: /^(?!.*(?:224|512)).*256/,
+    models: CLAUSE_MODELS,
+  },
+  'sp800-38b-cmac': {
+    id: 'sp800-38b-cmac',
+    anchors: `${OUT_DIR}/anchors-sp800-38b-cmac.json`,
+    out: `${OUT_DIR}/verdicts-sp800-38b-cmac.json`,
+    standardNumberRe: /SP\s*800-38B|800-38B/i,
+    mappingHeading: /^## .*(映射|边界)/,
+    variantRe: /cmac/,
+    models: CMAC_CLAUSE_MODELS,
+  },
+};
+
 interface EntryPage {
   entryId: string;
   entryPath: string;
@@ -150,9 +250,9 @@ function sectionOf(md: string, heading: RegExp): { text: string; line: number } 
   return { text: lines.slice(start + 1, end).join('\n').trim(), line: start + 1 };
 }
 
-function loadEntryPage(entry: { clauseId: string; entryPath: string }): EntryPage {
+function loadEntryPage(entry: { clauseId: string; entryPath: string }, mappingHeading: RegExp): EntryPage {
   const md = readFileSync(resolve(ROOT, entry.entryPath), 'utf8');
-  const mapping = sectionOf(md, /^## .*映射/);
+  const mapping = sectionOf(md, mappingHeading);
   const definition = sectionOf(md, /^## 标准定义/);
   const formula = sectionOf(md, /^## 公式或伪代码/);
   const title = (md.split('\n').find((line) => line.startsWith('# ')) || '').replace(/^#\s*/, '');
@@ -182,12 +282,12 @@ function mappingBlocks(text: string, index: BlockIndex): Array<{ blockType: stri
   return [...found.entries()].map(([blockType, quote]) => ({ blockType, quote }));
 }
 
-/** 块 tooltip 里引了标准号的块（L2 的候选池）。 */
-function tooltipStandardBlocks(index: BlockIndex): Map<string, string> {
+/** 块 tooltip 里引了标准号的块（L2 的候选池）。标准号写法随标准不同，由配置给。 */
+function tooltipStandardBlocks(index: BlockIndex, standardNumberRe: RegExp): Map<string, string> {
   const out = new Map<string, string>();
   for (const block of index.blocks) {
     const tooltip = `${block.tooltips.en}\n${block.tooltips.zh}`;
-    if (!STANDARD_NUMBER_RE.test(tooltip)) continue;
+    if (!standardNumberRe.test(tooltip)) continue;
     out.set(block.blockType, tooltip.replace(/\s+/g, ' ').slice(0, 160));
   }
   return out;
@@ -209,18 +309,19 @@ function tierOf(model: ClauseModel, layer: Layer): { tier: Tier; reason: string 
 }
 
 function main(): void {
-  const anchors = readJson<AnchorFile>(ANCHORS);
+  const config = selectStandard(process.argv.slice(2));
+  const anchors = readJson<AnchorFile>(config.anchors);
   const index = readJson<BlockIndex>(INDEX);
   const manifest = readJson<{ entries: Array<{ id: string; standard: string; version: string }> }>(MANIFEST);
-  const standard = manifest.entries.find((entry) => entry.id === STANDARD_ID);
-  if (!standard) throw new Error(`manifest 缺 ${STANDARD_ID}`);
-  if (anchors.standard.id !== standard.id) throw new Error('anchors.json 与 manifest 的标准 id 不一致，先重跑第 1 段');
+  const standard = manifest.entries.find((entry) => entry.id === config.id);
+  if (!standard) throw new Error(`manifest 缺 ${config.id}`);
+  if (anchors.standard.id !== standard.id) throw new Error('anchors 与 manifest 的标准 id 不一致，先重跑第 1 段');
 
-  const standardBlocks = tooltipStandardBlocks(index);
-  const clauses = CLAUSE_MODELS.map((model) => {
+  const standardBlocks = tooltipStandardBlocks(index, config.standardNumberRe);
+  const clauses = config.models.map((model) => {
     const anchorEntry = anchors.entries.find((entry) => entry.clauseId === model.entryId);
-    if (!anchorEntry) throw new Error(`anchors.json 缺条目 ${model.entryId}`);
-    const page = loadEntryPage(anchorEntry);
+    if (!anchorEntry) throw new Error(`anchors 缺条目 ${model.entryId}`);
+    const page = loadEntryPage(anchorEntry, config.mappingHeading);
     const l1Blocks = mappingBlocks(page.mappingText, index);
     const hits: SearchHit[] = search(index, {
       inTypes: [],
@@ -234,8 +335,8 @@ function main(): void {
       .map((hit) => ({
         blockType: hit.blockType,
         tooltip: standardBlocks.get(hit.blockType) || '',
-        /** 是否就是本条路径的变体（SHA-256 条款只认 256 的块；224/512 的块不能算命中）。 */
-        sameVariant: /256/.test(hit.blockType) && !/224|512/.test(hit.blockType),
+        /** 是否就是本条路径的变体：FIPS 的条款只认 256 路径；CMAC 的条款只认 cmac_* 块。 */
+        sameVariant: config.variantRe.test(hit.blockType),
       }));
     const layer: Layer = l1Blocks.length > 0 ? 'L1' : l2Blocks.length > 0 ? 'L2' : top5.length > 0 ? 'L3' : 'none';
     const { tier, reason } = tierOf(model, layer);
@@ -305,7 +406,7 @@ function main(): void {
     generatedBy: 'scripts/p4-verdicts.ts',
     standard: { id: standard.id, name: standard.standard, version: standard.version, source_checked_at: anchors.standard.source_checked_at },
     inputs: {
-      anchors: 'experiments/ai-helper-2026-11-14/p4/anchors.json',
+      anchors: config.anchors.replace(`${ROOT}/`, ''),
       anchorsSource: anchors.source,
       blockIndex: 'src/services/ai-helper/block-index.json',
       blockTypes: index.blocks.length,
@@ -328,7 +429,7 @@ function main(): void {
     },
     clauses,
   };
-  writeFileSync(VERDICTS, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+  writeFileSync(config.out, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
 
   for (const clause of clauses) {
     console.log(`VERDICT ${clause.clauseId.padEnd(22)} ${clause.tier.padEnd(8)} layer=${clause.evidenceLayer} ` +
@@ -337,7 +438,7 @@ function main(): void {
   }
   console.log(`VERDICTS build=${count('build')} partial=${count('partial')} missing=${count('missing')} ` +
     `layers=${JSON.stringify(layers)} gaps=${payload.counts.gaps}`);
-  console.log(`VERDICTS out=${VERDICTS.replace(`${ROOT}/`, '')}`);
+  console.log(`VERDICTS out=${config.out.replace(`${ROOT}/`, '')}`);
 }
 
 main();

@@ -1,0 +1,514 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "scripts/p4-verdicts.ts",
+  "standard": {
+    "id": "sp800-38b-cmac",
+    "name": "NIST SP 800-38B",
+    "version": "38B",
+    "source_checked_at": "2026-09-12"
+  },
+  "inputs": {
+    "anchors": "experiments/ai-helper-2026-11-14/p4/anchors-sp800-38b-cmac.json",
+    "anchorsSource": {
+      "path": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+      "lines": 1000,
+      "sha256": "a1e96171e2c31baaf3338a19f68135c12d67b124ceb9b0aae59430b8130cc0d6"
+    },
+    "blockIndex": "src/services/ai-helper/block-index.json",
+    "blockTypes": 224,
+    "tooltipStandardPool": {
+      "size": 3,
+      "blocks": [
+        "cmac_double",
+        "cmac_mac",
+        "cmac_subkeys"
+      ]
+    }
+  },
+  "rules": {
+    "noProjectStatusField": true,
+    "tiers": "build = 全部步骤 canvas 且有 L1/L2；partial = 混合或仅内部；missing = 无可执行单元 / 全无块",
+    "evidence": "L1 映射块名 > L2 tooltip 标准号 ∩ BM25 候选 > L3 BM25 候选（只作候选）",
+    "semanticEquivalence": "unverified"
+  },
+  "counts": {
+    "clauses": 3,
+    "build": 0,
+    "partial": 3,
+    "missing": 0,
+    "evidenceLayers": {
+      "L1": 3,
+      "L2": 0,
+      "L3": 0,
+      "none": 0
+    },
+    "clausesWithSameVariantL2": 3,
+    "gaps": 6
+  },
+  "clauses": [
+    {
+      "clauseId": "01-CMAC",
+      "entryPath": "docs/standards/sp800-38b-cmac/01-CMAC.md",
+      "title": "NIST SP 800-38B — CMAC 参考",
+      "standardPosition": "NIST SP 800-38B — CMAC 参考",
+      "tier": "partial",
+      "tierReason": "mixed-steps",
+      "evidenceLayer": "L1",
+      "anchors": [
+        {
+          "section": "6",
+          "click": {
+            "doc": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+            "line_start": 552,
+            "line_end": 759
+          },
+          "anchorLevel": "line",
+          "matchesDeclared": false,
+          "slice_sha256": "43430801b9f315abd0d4aa592f67dbe440d9308d8374d7f2248816001f8c2d5d",
+          "heading": "CMAC Specification"
+        }
+      ],
+      "evidence": {
+        "l1": {
+          "hit": true,
+          "blocks": [
+            {
+              "blockType": "cmac_mac",
+              "quote": "`cmac_mac` 支持 AES-128 和 SM4，当前输出完整 16 字节标签；没有独立验证/"
+            }
+          ],
+          "source": {
+            "path": "docs/standards/sp800-38b-cmac/01-CMAC.md",
+            "line": 45,
+            "heading": "项目映射"
+          }
+        },
+        "l2": {
+          "hit": true,
+          "blocks": [
+            {
+              "blockType": "cmac_mac",
+              "tooltip": "CMAC 认证标签 (NIST SP 800-38B)：子密钥生成（GF(2^128) 加倍）+ CBC-MAC。已核对 SP 800-38B / RFC 4493 的 AES-128 向量（0/16/40/64 字节）与 SM4 同类结构路径；不是完整 CMAC 测试集或认证。 CMAC 认证标签 (NIST SP ",
+              "sameVariant": true
+            },
+            {
+              "blockType": "cmac_subkeys",
+              "tooltip": "CMAC 子密钥 K1‖K2（SP 800-38B §6.1，AES-128）：L = AES_K(0¹²⁸)，K1 = 2·L，K2 = 2·K1。输出 32 字节；RFC 4493 §4 给出示例密钥的 L/K1/K2。 CMAC 子密钥 K1‖K2（SP 800-38B §6.1，AES-128）：L = AES",
+              "sameVariant": true
+            }
+          ],
+          "note": "标准号取自块 tooltip，且该块须出现在同一查询的前 5 个 BM25 候选里；sameVariant 标出是否就是本条路径的变体"
+        },
+        "l3": {
+          "hit": true,
+          "query": "NIST SP 800-38B NIST SP 800-38B — CMAC 参考 ",
+          "top5": [
+            {
+              "blockType": "cmac_mac",
+              "score": 81.17
+            },
+            {
+              "blockType": "cmac_subkeys",
+              "score": 31.76
+            },
+            {
+              "blockType": "hash_hmac",
+              "score": 25.97
+            },
+            {
+              "blockType": "drbg_update",
+              "score": 16.1
+            },
+            {
+              "blockType": "ccm_cbc_mac",
+              "score": 13.51
+            }
+          ],
+          "note": "L3 只作候选，不单独升级档位"
+        }
+      },
+      "steps": [
+        {
+          "id": "s1",
+          "section": "§6",
+          "text": "子密钥生成（L=E_K(0^b)，K1/K2 加倍）",
+          "blocks": [
+            "cmac_subkeys",
+            "cmac_double"
+          ],
+          "visibility": "canvas"
+        },
+        {
+          "id": "s2",
+          "section": "§6",
+          "text": "最后块掩码（整块 xor K1；空消息/不完整块 pad 后 xor K2）",
+          "blocks": [
+            "cmac_mac"
+          ],
+          "visibility": "internal",
+          "note": "只在 cmac_mac 闭包里；画布没有「与 K1/K2 异或 + 10^j 填充」的独立块"
+        },
+        {
+          "id": "s3",
+          "section": "§6",
+          "text": "以 X0=0 做 CBC-MAC：Xi=E_K(X(i−1) xor Mi)",
+          "blocks": [
+            "mode_cbc_encrypt",
+            "ctrl_iterate"
+          ],
+          "visibility": "canvas",
+          "note": "用零 IV 的 mode_cbc_encrypt 组合；不是专门的 CMAC 链块"
+        },
+        {
+          "id": "s4",
+          "section": "§6",
+          "text": "输出 Xn，必要时按协议指定长度截断",
+          "blocks": [
+            "arr_slice"
+          ],
+          "visibility": "canvas",
+          "note": "按字节切片；标准允许任意 bit 长度 Tlen"
+        }
+      ],
+      "stepCounts": {
+        "total": 4,
+        "canvas": 3,
+        "internal": 1,
+        "none": 0
+      },
+      "gaps": [
+        "§6 步骤「最后块掩码（整块 xor K1；空消息/不完整块 pad 后 xor K2）」只在生成器闭包里，画布无法逐步核"
+      ],
+      "claimBoundaries": [
+        "标准允许 1 ≤ Tlen ≤ b 的任意 bit 长度；块模型按字节切片，bit 级截断不表达"
+      ],
+      "semantic_equivalence": "unverified"
+    },
+    {
+      "clauseId": "02-Subkeys",
+      "entryPath": "docs/standards/sp800-38b-cmac/02-Subkeys.md",
+      "title": "CMAC — 子密钥生成原语",
+      "standardPosition": "CMAC — 子密钥生成原语",
+      "tier": "partial",
+      "tierReason": "mixed-steps",
+      "evidenceLayer": "L1",
+      "anchors": [
+        {
+          "section": "6.1",
+          "click": {
+            "doc": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+            "line_start": 568,
+            "line_end": 599
+          },
+          "anchorLevel": "line",
+          "matchesDeclared": true,
+          "slice_sha256": "05f5166ec6443dd59cc3349770f58b307ef7b65f7774b26278a1c35fd1d39bb8",
+          "heading": "Subkey Generation"
+        }
+      ],
+      "evidence": {
+        "l1": {
+          "hit": true,
+          "blocks": [
+            {
+              "blockType": "cmac_subkeys",
+              "quote": "§6.1 的整段过程有独立块 `cmac_subkeys`（输出 `K1‖K2`），单次 GF(2¹²⁸) 加倍另有 `cmac_doub"
+            },
+            {
+              "blockType": "cmac_double",
+              "quote": "c_subkeys`（输出 `K1‖K2`），单次 GF(2¹²⁸) 加倍另有 `cmac_double` （输出 `dbl(X)`）；`cmac_mac` 也内部完成同一步子密钥生成。"
+            },
+            {
+              "blockType": "cmac_mac",
+              "quote": "(2¹²⁸) 加倍另有 `cmac_double` （输出 `dbl(X)`）；`cmac_mac` 也内部完成同一步子密钥生成。CIPHER 下拉支持 AES-128 和 SM4"
+            }
+          ],
+          "source": {
+            "path": "docs/standards/sp800-38b-cmac/02-Subkeys.md",
+            "line": 55,
+            "heading": "项目映射"
+          }
+        },
+        "l2": {
+          "hit": true,
+          "blocks": [
+            {
+              "blockType": "cmac_mac",
+              "tooltip": "CMAC 认证标签 (NIST SP 800-38B)：子密钥生成（GF(2^128) 加倍）+ CBC-MAC。已核对 SP 800-38B / RFC 4493 的 AES-128 向量（0/16/40/64 字节）与 SM4 同类结构路径；不是完整 CMAC 测试集或认证。 CMAC 认证标签 (NIST SP ",
+              "sameVariant": true
+            },
+            {
+              "blockType": "cmac_subkeys",
+              "tooltip": "CMAC 子密钥 K1‖K2（SP 800-38B §6.1，AES-128）：L = AES_K(0¹²⁸)，K1 = 2·L，K2 = 2·K1。输出 32 字节；RFC 4493 §4 给出示例密钥的 L/K1/K2。 CMAC 子密钥 K1‖K2（SP 800-38B §6.1，AES-128）：L = AES",
+              "sameVariant": true
+            }
+          ],
+          "note": "标准号取自块 tooltip，且该块须出现在同一查询的前 5 个 BM25 候选里；sameVariant 标出是否就是本条路径的变体"
+        },
+        "l3": {
+          "hit": true,
+          "query": "NIST SP 800-38B CMAC — 子密钥生成原语 ",
+          "top5": [
+            {
+              "blockType": "cmac_mac",
+              "score": 83.67
+            },
+            {
+              "blockType": "cmac_subkeys",
+              "score": 50.96
+            },
+            {
+              "blockType": "hash_hmac",
+              "score": 27.67
+            },
+            {
+              "blockType": "ccm_cbc_mac",
+              "score": 20.96
+            },
+            {
+              "blockType": "drbg_update",
+              "score": 16.1
+            }
+          ],
+          "note": "L3 只作候选，不单独升级档位"
+        }
+      },
+      "steps": [
+        {
+          "id": "s1",
+          "section": "§6.1",
+          "text": "L = CIPH_K(0^b)",
+          "blocks": [
+            "mode_ecb_encrypt",
+            "cmac_subkeys"
+          ],
+          "visibility": "internal",
+          "note": "唯一能在画布上产出 L 的块 mode_ecb_encrypt 输出 Bytes，而 cmac_double 只收 IntList，224 块里没有 Bytes→IntList 转换块（探针 connect-probe subkey-l 被拒）；能用的是 cmac_subkeys 内部那一步"
+        },
+        {
+          "id": "s2",
+          "section": "§6.1",
+          "text": "MSB1(L)=0 → K1=L<<1，否则 K1=(L<<1) xor Rb",
+          "blocks": [
+            "cmac_double"
+          ],
+          "visibility": "internal",
+          "note": "cmac_double 只吃 IntList，接不上 s1 的 Bytes 产物（探针 subkey-l）；该步随 cmac_subkeys 闭包一起被吸收"
+        },
+        {
+          "id": "s3",
+          "section": "§6.1",
+          "text": "MSB1(K1)=0 → K2=K1<<1，否则 K2=(K1<<1) xor Rb",
+          "blocks": [
+            "cmac_double"
+          ],
+          "visibility": "internal",
+          "note": "同上：加倍链在 cmac_double/cmac_subkeys 闭包内完成"
+        },
+        {
+          "id": "s4",
+          "section": "§6.1",
+          "text": "Return K1, K2",
+          "blocks": [
+            "cmac_subkeys"
+          ],
+          "visibility": "canvas",
+          "note": "cmac_subkeys 返回 K1‖K2；过程只能返回一个值，拆包在调用方"
+        }
+      ],
+      "stepCounts": {
+        "total": 4,
+        "canvas": 1,
+        "internal": 3,
+        "none": 0
+      },
+      "gaps": [
+        "§6.1 的四步在画布上拼不出来：L 的产物是 Bytes、cmac_double 入口是 IntList，画布拒绝这次连接且没有转换块（p4/connect-probe-sp800-38b.json 三条用例：两条被拒 + Bytes→cmac_mac 正对照通过）",
+        "§6.1 步骤「L = CIPH_K(0^b)」只在生成器闭包里，画布无法逐步核",
+        "§6.1 步骤「MSB1(L)=0 → K1=L<<1，否则 K1=(L<<1) xor Rb」只在生成器闭包里，画布无法逐步核",
+        "§6.1 步骤「MSB1(K1)=0 → K2=K1<<1，否则 K2=(K1<<1) xor Rb」只在生成器闭包里，画布无法逐步核"
+      ],
+      "claimBoundaries": [
+        "Rb 的取值依赖分组长度（128 位为 0x87）；块固定 128 位路径，SM4 同构但 b=128 相同"
+      ],
+      "semantic_equivalence": "unverified"
+    },
+    {
+      "clauseId": "03-MAC",
+      "entryPath": "docs/standards/sp800-38b-cmac/03-MAC.md",
+      "title": "CMAC — CBC-MAC 与标签输出原语",
+      "standardPosition": "CMAC — CBC-MAC 与标签输出原语",
+      "tier": "partial",
+      "tierReason": "mixed-steps",
+      "evidenceLayer": "L1",
+      "anchors": [
+        {
+          "section": "6.2",
+          "click": {
+            "doc": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+            "line_start": 600,
+            "line_end": 712
+          },
+          "anchorLevel": "line",
+          "matchesDeclared": true,
+          "slice_sha256": "bb819847428c2c89ca20d2e7e8b98d0b0611301517df6ea09e93ff29584975fe",
+          "heading": "MAC Generation"
+        }
+      ],
+      "evidence": {
+        "l1": {
+          "hit": true,
+          "blocks": [
+            {
+              "blockType": "cmac_mac",
+              "quote": "`cmac_mac` 当前输出完整 16-byte 标签，已有 AES-CMAC 向量和 SM4 同"
+            }
+          ],
+          "source": {
+            "path": "docs/standards/sp800-38b-cmac/03-MAC.md",
+            "line": 59,
+            "heading": "项目映射"
+          }
+        },
+        "l2": {
+          "hit": true,
+          "blocks": [
+            {
+              "blockType": "cmac_mac",
+              "tooltip": "CMAC 认证标签 (NIST SP 800-38B)：子密钥生成（GF(2^128) 加倍）+ CBC-MAC。已核对 SP 800-38B / RFC 4493 的 AES-128 向量（0/16/40/64 字节）与 SM4 同类结构路径；不是完整 CMAC 测试集或认证。 CMAC 认证标签 (NIST SP ",
+              "sameVariant": true
+            },
+            {
+              "blockType": "cmac_subkeys",
+              "tooltip": "CMAC 子密钥 K1‖K2（SP 800-38B §6.1，AES-128）：L = AES_K(0¹²⁸)，K1 = 2·L，K2 = 2·K1。输出 32 字节；RFC 4493 §4 给出示例密钥的 L/K1/K2。 CMAC 子密钥 K1‖K2（SP 800-38B §6.1，AES-128）：L = AES",
+              "sameVariant": true
+            }
+          ],
+          "note": "标准号取自块 tooltip，且该块须出现在同一查询的前 5 个 BM25 候选里；sameVariant 标出是否就是本条路径的变体"
+        },
+        "l3": {
+          "hit": true,
+          "query": "NIST SP 800-38B CMAC — CBC-MAC 与标签输出原语 ",
+          "top5": [
+            {
+              "blockType": "cmac_mac",
+              "score": 85.34
+            },
+            {
+              "blockType": "ccm_cbc_mac",
+              "score": 42.38
+            },
+            {
+              "blockType": "cmac_subkeys",
+              "score": 33.54
+            },
+            {
+              "blockType": "hash_hmac",
+              "score": 27.75
+            },
+            {
+              "blockType": "drbg_update",
+              "score": 17.25
+            }
+          ],
+          "note": "L3 只作候选，不单独升级档位"
+        }
+      },
+      "steps": [
+        {
+          "id": "s1",
+          "section": "§6.2",
+          "text": "Apply SUBK(K) from §6.1 to produce K1 and K2",
+          "blocks": [
+            "cmac_subkeys"
+          ],
+          "visibility": "canvas"
+        },
+        {
+          "id": "s2",
+          "section": "§6.2",
+          "text": "Mlen=0 → n=1，否则 n=ceil(Mlen/b)",
+          "blocks": [
+            "data_bit_length",
+            "math_arithmetic",
+            "math_round"
+          ],
+          "visibility": "canvas"
+        },
+        {
+          "id": "s3",
+          "section": "§6.2",
+          "text": "把 M 切成 M1..M(n-1), Mn*",
+          "blocks": [
+            "arr_partition_to_array",
+            "ctrl_iterate"
+          ],
+          "visibility": "canvas"
+        },
+        {
+          "id": "s4",
+          "section": "§6.2",
+          "text": "Mn* 整块 → Mn=K1 xor Mn*；否则 Mn=K2 xor (Mn*‖1‖0^j)",
+          "blocks": [
+            "cmac_mac"
+          ],
+          "visibility": "internal",
+          "note": "只在 cmac_mac 闭包里；画布没有「最后块条件掩码」块"
+        },
+        {
+          "id": "s5",
+          "section": "§6.2",
+          "text": "C0 = 0^b",
+          "blocks": [
+            "data_value"
+          ],
+          "visibility": "canvas"
+        },
+        {
+          "id": "s6",
+          "section": "§6.2",
+          "text": "for i=1..n: Ci = CIPH_K(C(i−1) xor Mi)",
+          "blocks": [
+            "mode_cbc_encrypt",
+            "ctrl_iterate"
+          ],
+          "visibility": "canvas",
+          "note": "零 IV 的 CBC 链；单分组加密走同块的 ECB/AES 路径"
+        },
+        {
+          "id": "s7",
+          "section": "§6.2",
+          "text": "T = MSB_Tlen(Cn)",
+          "blocks": [
+            "arr_slice"
+          ],
+          "visibility": "canvas",
+          "note": "按字节切片；bit 级 Tlen 不表达"
+        },
+        {
+          "id": "s8",
+          "section": "§6.2",
+          "text": "Return T",
+          "blocks": [
+            "procedures_defreturn"
+          ],
+          "visibility": "canvas"
+        }
+      ],
+      "stepCounts": {
+        "total": 8,
+        "canvas": 7,
+        "internal": 1,
+        "none": 0
+      },
+      "gaps": [
+        "§6.2 步骤「Mn* 整块 → Mn=K1 xor Mn*；否则 Mn=K2 xor (Mn*‖1‖0^j)」只在生成器闭包里，画布无法逐步核"
+      ],
+      "claimBoundaries": [
+        "块模型不表达 bit 级截断（Tlen 非 8 的倍数）",
+        "没有独立验证块（VER 路径不在块集合里）"
+      ],
+      "semantic_equivalence": "unverified"
+    }
+  ]
+}

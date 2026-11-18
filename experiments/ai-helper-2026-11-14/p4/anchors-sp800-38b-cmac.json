@@ -1,0 +1,264 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "scripts/p4-anchors.mjs",
+  "scope": {
+    "standardId": "sp800-38b-cmac",
+    "entries": 3,
+    "note": "第二份标准切片（非哈希标准）：SP 800-38B CMAC 三个条目页；同一套锚点口径，只换版式适配"
+  },
+  "standard": {
+    "id": "sp800-38b-cmac",
+    "name": "NIST SP 800-38B",
+    "version": "38B",
+    "source_url": "https://csrc.nist.gov/pubs/sp/800/38/b/final",
+    "source_checked_at": "2026-09-12",
+    "artifacts": [
+      {
+        "path": "NIST.SP.800-38B.pdf",
+        "sha256": "da9dc0f1e1f08af917caf4a831a7497cf18997b8046353af89570a812f1ec5a2"
+      }
+    ]
+  },
+  "source": {
+    "path": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+    "lines": 1000,
+    "sha256": "a1e96171e2c31baaf3338a19f68135c12d67b124ceb9b0aae59430b8130cc0d6"
+  },
+  "counts": {
+    "entries": 3,
+    "declaredLineStart": 0,
+    "declaredLineRange": 3,
+    "declaredHeadingOnly": 0,
+    "clauseUnits": 3,
+    "clauseUnitsClickable": 3,
+    "clauseUnitsSectionLevel": 0,
+    "clauseUnitsWithoutHeading": 0,
+    "entryAnchorMismatch": 1,
+    "declaredOutsideSections": 1
+  },
+  "entries": [
+    {
+      "clauseId": "01-CMAC",
+      "entryPath": "docs/standards/sp800-38b-cmac/01-CMAC.md",
+      "standardPosition": "NIST SP 800-38B — CMAC 参考",
+      "declaredPosition": "[提取稿 §6，行 550–752](./00-Standard-Source.md#L550-L752)；PDF 物理页需结合同目录 PDF 核对",
+      "declaredAnchors": [
+        {
+          "kind": "line-range",
+          "line_start": 550,
+          "line_end": 752
+        }
+      ],
+      "resolvedSections": [
+        {
+          "section": "6",
+          "expandedFrom": null,
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 552,
+          "line_end": 759,
+          "heading": "CMAC Specification",
+          "firstLine": "                                                                                             6     CMAC Specification",
+          "slice_sha256": "43430801b9f315abd0d4aa592f67dbe440d9308d8374d7f2248816001f8c2d5d",
+          "matchesDeclared": false
+        }
+      ],
+      "anchorMismatch": [
+        {
+          "declared": {
+            "kind": "line-range",
+            "line_start": 550,
+            "line_end": 752
+          },
+          "detail": "第 550 行不是小节标题行：\"                                                            \""
+        }
+      ],
+      "declaredOutsideSections": [
+        {
+          "declared": {
+            "kind": "line-range",
+            "line_start": 550,
+            "line_end": 752
+          },
+          "lineText": "key. The requirements for the selection of Tlen are given in Appendix A."
+        }
+      ],
+      "entryLevelAnchor": {
+        "kind": "line-range",
+        "line_start": 550,
+        "line_end": 752
+      }
+    },
+    {
+      "clauseId": "02-Subkeys",
+      "entryPath": "docs/standards/sp800-38b-cmac/02-Subkeys.md",
+      "standardPosition": "CMAC — 子密钥生成原语",
+      "declaredPosition": "[提取稿 §6.1，行 568–598](./00-Standard-Source.md#L568-L598)；PDF 第 7 页",
+      "declaredAnchors": [
+        {
+          "kind": "line-range",
+          "line_start": 568,
+          "line_end": 598
+        }
+      ],
+      "resolvedSections": [
+        {
+          "section": "6.1",
+          "expandedFrom": null,
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 568,
+          "line_end": 599,
+          "heading": "Subkey Generation",
+          "firstLine": "                                                                                             6.1    Subkey Generation",
+          "slice_sha256": "05f5166ec6443dd59cc3349770f58b307ef7b65f7774b26278a1c35fd1d39bb8",
+          "matchesDeclared": true
+        }
+      ],
+      "anchorMismatch": [],
+      "declaredOutsideSections": [],
+      "entryLevelAnchor": {
+        "kind": "line-range",
+        "line_start": 568,
+        "line_end": 598
+      }
+    },
+    {
+      "clauseId": "03-MAC",
+      "entryPath": "docs/standards/sp800-38b-cmac/03-MAC.md",
+      "standardPosition": "CMAC — CBC-MAC 与标签输出原语",
+      "declaredPosition": "[提取稿 §6.2，行 600–666](./00-Standard-Source.md#L600-L666)；PDF 第 7–8 页",
+      "declaredAnchors": [
+        {
+          "kind": "line-range",
+          "line_start": 600,
+          "line_end": 666
+        }
+      ],
+      "resolvedSections": [
+        {
+          "section": "6.2",
+          "expandedFrom": null,
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 600,
+          "line_end": 712,
+          "heading": "MAC Generation",
+          "firstLine": "                                                                                             6.2    MAC Generation",
+          "slice_sha256": "bb819847428c2c89ca20d2e7e8b98d0b0611301517df6ea09e93ff29584975fe",
+          "matchesDeclared": true
+        }
+      ],
+      "anchorMismatch": [],
+      "declaredOutsideSections": [],
+      "entryLevelAnchor": {
+        "kind": "line-range",
+        "line_start": 600,
+        "line_end": 666
+      }
+    }
+  ],
+  "clauseUnits": [
+    {
+      "clauseId": "01-CMAC#§6",
+      "entryId": "01-CMAC",
+      "entryPath": "docs/standards/sp800-38b-cmac/01-CMAC.md",
+      "section": "6",
+      "expandedFrom": null,
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": false,
+      "click": {
+        "doc": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+        "line_start": 552,
+        "line_end": 759
+      },
+      "source": {
+        "path": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+        "line_start": 552,
+        "line_end": 759,
+        "heading": "CMAC Specification",
+        "firstLine": "                                                                                             6     CMAC Specification",
+        "slice_sha256": "43430801b9f315abd0d4aa592f67dbe440d9308d8374d7f2248816001f8c2d5d"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "02-Subkeys#§6.1",
+      "entryId": "02-Subkeys",
+      "entryPath": "docs/standards/sp800-38b-cmac/02-Subkeys.md",
+      "section": "6.1",
+      "expandedFrom": null,
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": true,
+      "click": {
+        "doc": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+        "line_start": 568,
+        "line_end": 599
+      },
+      "source": {
+        "path": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+        "line_start": 568,
+        "line_end": 599,
+        "heading": "Subkey Generation",
+        "firstLine": "                                                                                             6.1    Subkey Generation",
+        "slice_sha256": "05f5166ec6443dd59cc3349770f58b307ef7b65f7774b26278a1c35fd1d39bb8"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "03-MAC#§6.2",
+      "entryId": "03-MAC",
+      "entryPath": "docs/standards/sp800-38b-cmac/03-MAC.md",
+      "section": "6.2",
+      "expandedFrom": null,
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": true,
+      "click": {
+        "doc": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+        "line_start": 600,
+        "line_end": 712
+      },
+      "source": {
+        "path": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+        "line_start": 600,
+        "line_end": 712,
+        "heading": "MAC Generation",
+        "firstLine": "                                                                                             6.2    MAC Generation",
+        "slice_sha256": "bb819847428c2c89ca20d2e7e8b98d0b0611301517df6ea09e93ff29584975fe"
+      },
+      "reason": null
+    }
+  ],
+  "specCard": {
+    "path": "docs/standards/sp800-38b-cmac/SPEC-CARD.json",
+    "anchors": 2,
+    "quoteTextMatch": 2,
+    "quoteHashMatch": 2,
+    "insideResolvedSpan": 2,
+    "checks": [
+      {
+        "id": "A1-subkey-steps",
+        "line_range": [
+          586,
+          592
+        ],
+        "quoteTextMatch": true,
+        "quoteHashMatch": true,
+        "insideResolvedSpan": true
+      },
+      {
+        "id": "A2-mac-steps",
+        "line_range": [
+          636,
+          644
+        ],
+        "quoteTextMatch": true,
+        "quoteHashMatch": true,
+        "insideResolvedSpan": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "scripts/p4-connect-probe.ts",
+  "purpose": "判定 SP 800-38B §6.1 的四步能否在画布上拼出来（运行时连接结果，不读契约 JSON）",
+  "cases": [
+    {
+      "id": "subkey-l",
+      "note": "§6.1 第一步 L = CIPH_K(0^b) 的产物接到加倍：Bytes → IntList",
+      "source": "mode_ecb_encrypt",
+      "target": "cmac_double.X",
+      "sourceOutputCheck": [
+        "Bytes"
+      ],
+      "targetInputCheck": [
+        "IntList"
+      ],
+      "contractVerdict": "mismatch",
+      "connected": false,
+      "blocked": true,
+      "error": "connect() 未抛错但连接未建立",
+      "expect": "blocked",
+      "pass": true
+    },
+    {
+      "id": "subkey-K",
+      "note": "§6.1 最后一步返回 K1‖K2：加倍产出的 IntList 接到只收 Bytes 的子密钥块",
+      "source": "cmac_double",
+      "target": "cmac_subkeys.KEY",
+      "sourceOutputCheck": [
+        "IntList"
+      ],
+      "targetInputCheck": [
+        "Bytes"
+      ],
+      "contractVerdict": "mismatch",
+      "connected": false,
+      "blocked": true,
+      "error": "connect() 未抛错但连接未建立",
+      "expect": "blocked",
+      "pass": true
+    },
+    {
+      "id": "mac-key",
+      "note": "正对照：同一份 Bytes 接 cmac_mac 的 KEY（Bytes→Bytes）必须连得上",
+      "source": "mode_ecb_encrypt",
+      "target": "cmac_mac.KEY",
+      "sourceOutputCheck": [
+        "Bytes"
+      ],
+      "targetInputCheck": [
+        "Bytes"
+      ],
+      "contractVerdict": "ok",
+      "connected": true,
+      "blocked": false,
+      "error": "",
+      "expect": "allowed",
+      "pass": true
+    }
+  ],
+  "counts": {
+    "cases": 3,
+    "blocked": 2,
+    "allowed": 1,
+    "pass": 3,
+    "fail": 0
+  }
+}

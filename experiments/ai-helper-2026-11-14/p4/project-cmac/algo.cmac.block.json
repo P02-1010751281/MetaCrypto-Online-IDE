@@ -1,0 +1,109 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "procedures_defreturn",
+        "id": "procedures_defreturn_004",
+        "x": 40,
+        "y": 40,
+        "extraState": {
+          "params": [
+            {
+              "name": "key",
+              "id": "algo_param_key",
+              "type": "bytes"
+            },
+            {
+              "name": "msg",
+              "id": "algo_param_msg",
+              "type": "bytes"
+            }
+          ],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "CMAC_AES"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "cmac_mac",
+              "id": "cmac_mac_003",
+              "fields": {
+                "CIPHER": "aes"
+              },
+              "inputs": {
+                "KEY": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_001",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_param_key",
+                        "name": "key"
+                      }
+                    }
+                  }
+                },
+                "MSG": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_002",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_param_msg",
+                        "name": "msg"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defreturn",
+        "id": "procedures_defreturn_007",
+        "x": 40,
+        "y": 320,
+        "extraState": {
+          "params": [
+            {
+              "name": "subkey",
+              "id": "sub_param_subkey",
+              "type": "bytes"
+            }
+          ],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "CMAC_SUBKEYS"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "cmac_subkeys",
+              "id": "cmac_subkeys_006",
+              "inputs": {
+                "KEY": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_005",
+                    "fields": {
+                      "VAR": {
+                        "id": "sub_param_subkey",
+                        "name": "subkey"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

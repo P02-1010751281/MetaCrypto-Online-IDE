@@ -1,0 +1,443 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "variables_set",
+        "id": "variables_set_010",
+        "fields": {
+          "VAR": {
+            "id": "main_var_key",
+            "name": "key"
+          }
+        },
+        "inputs": {
+          "VALUE": {
+            "block": {
+              "type": "hex_to_bytes",
+              "id": "hex_to_bytes_009",
+              "inputs": {
+                "INPUT": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "data_value_008",
+                    "fields": {
+                      "NUM": "\"2b7e151628aed2a6abf7158809cf4f3c\""
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "next": {
+          "block": {
+            "type": "variables_set",
+            "id": "variables_set_013",
+            "fields": {
+              "VAR": {
+                "id": "main_var_msg",
+                "name": "msg"
+              }
+            },
+            "inputs": {
+              "VALUE": {
+                "block": {
+                  "type": "hex_to_bytes",
+                  "id": "hex_to_bytes_012",
+                  "inputs": {
+                    "INPUT": {
+                      "block": {
+                        "type": "data_value",
+                        "id": "data_value_011",
+                        "fields": {
+                          "NUM": "\"6bc1bee22e409f96e93d7e117393172aae2d8a571e03ac9c9eb76fac45af8e5130c81c46a35ce411e5fbc1191a0a52eff69f2445df4f9b17ad2b417be66c3710\""
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "next": {
+              "block": {
+                "type": "variables_set",
+                "id": "variables_set_020",
+                "fields": {
+                  "VAR": {
+                    "id": "main_var_tag0",
+                    "name": "tag0"
+                  }
+                },
+                "inputs": {
+                  "VALUE": {
+                    "block": {
+                      "type": "procedures_callreturn",
+                      "id": "procedures_callreturn_019",
+                      "fields": {
+                        "NAME": "CMAC_AES"
+                      },
+                      "extraState": {
+                        "params": [
+                          {
+                            "name": "key",
+                            "id": "main_call_key_tag0",
+                            "type": "bytes"
+                          },
+                          {
+                            "name": "msg",
+                            "id": "main_call_msg_tag0",
+                            "type": "bytes"
+                          }
+                        ]
+                      },
+                      "inputs": {
+                        "ARG0": {
+                          "block": {
+                            "type": "variables_get",
+                            "id": "variables_get_018",
+                            "fields": {
+                              "VAR": {
+                                "id": "main_var_key",
+                                "name": "key"
+                              }
+                            }
+                          }
+                        },
+                        "ARG1": {
+                          "block": {
+                            "type": "pq_bytes_slice",
+                            "id": "pq_bytes_slice_017",
+                            "inputs": {
+                              "INPUT": {
+                                "block": {
+                                  "type": "variables_get",
+                                  "id": "variables_get_014",
+                                  "fields": {
+                                    "VAR": {
+                                      "id": "main_var_msg",
+                                      "name": "msg"
+                                    }
+                                  }
+                                }
+                              },
+                              "START": {
+                                "block": {
+                                  "type": "data_value",
+                                  "id": "data_value_015",
+                                  "fields": {
+                                    "NUM": "0"
+                                  }
+                                }
+                              },
+                              "END": {
+                                "block": {
+                                  "type": "data_value",
+                                  "id": "data_value_016",
+                                  "fields": {
+                                    "NUM": "0"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "next": {
+                  "block": {
+                    "type": "variables_set",
+                    "id": "variables_set_027",
+                    "fields": {
+                      "VAR": {
+                        "id": "main_var_tag16",
+                        "name": "tag16"
+                      }
+                    },
+                    "inputs": {
+                      "VALUE": {
+                        "block": {
+                          "type": "procedures_callreturn",
+                          "id": "procedures_callreturn_026",
+                          "fields": {
+                            "NAME": "CMAC_AES"
+                          },
+                          "extraState": {
+                            "params": [
+                              {
+                                "name": "key",
+                                "id": "main_call_key_tag16",
+                                "type": "bytes"
+                              },
+                              {
+                                "name": "msg",
+                                "id": "main_call_msg_tag16",
+                                "type": "bytes"
+                              }
+                            ]
+                          },
+                          "inputs": {
+                            "ARG0": {
+                              "block": {
+                                "type": "variables_get",
+                                "id": "variables_get_025",
+                                "fields": {
+                                  "VAR": {
+                                    "id": "main_var_key",
+                                    "name": "key"
+                                  }
+                                }
+                              }
+                            },
+                            "ARG1": {
+                              "block": {
+                                "type": "pq_bytes_slice",
+                                "id": "pq_bytes_slice_024",
+                                "inputs": {
+                                  "INPUT": {
+                                    "block": {
+                                      "type": "variables_get",
+                                      "id": "variables_get_021",
+                                      "fields": {
+                                        "VAR": {
+                                          "id": "main_var_msg",
+                                          "name": "msg"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "START": {
+                                    "block": {
+                                      "type": "data_value",
+                                      "id": "data_value_022",
+                                      "fields": {
+                                        "NUM": "0"
+                                      }
+                                    }
+                                  },
+                                  "END": {
+                                    "block": {
+                                      "type": "data_value",
+                                      "id": "data_value_023",
+                                      "fields": {
+                                        "NUM": "16"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "next": {
+                      "block": {
+                        "type": "variables_set",
+                        "id": "variables_set_034",
+                        "fields": {
+                          "VAR": {
+                            "id": "main_var_tag40",
+                            "name": "tag40"
+                          }
+                        },
+                        "inputs": {
+                          "VALUE": {
+                            "block": {
+                              "type": "procedures_callreturn",
+                              "id": "procedures_callreturn_033",
+                              "fields": {
+                                "NAME": "CMAC_AES"
+                              },
+                              "extraState": {
+                                "params": [
+                                  {
+                                    "name": "key",
+                                    "id": "main_call_key_tag40",
+                                    "type": "bytes"
+                                  },
+                                  {
+                                    "name": "msg",
+                                    "id": "main_call_msg_tag40",
+                                    "type": "bytes"
+                                  }
+                                ]
+                              },
+                              "inputs": {
+                                "ARG0": {
+                                  "block": {
+                                    "type": "variables_get",
+                                    "id": "variables_get_032",
+                                    "fields": {
+                                      "VAR": {
+                                        "id": "main_var_key",
+                                        "name": "key"
+                                      }
+                                    }
+                                  }
+                                },
+                                "ARG1": {
+                                  "block": {
+                                    "type": "pq_bytes_slice",
+                                    "id": "pq_bytes_slice_031",
+                                    "inputs": {
+                                      "INPUT": {
+                                        "block": {
+                                          "type": "variables_get",
+                                          "id": "variables_get_028",
+                                          "fields": {
+                                            "VAR": {
+                                              "id": "main_var_msg",
+                                              "name": "msg"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "START": {
+                                        "block": {
+                                          "type": "data_value",
+                                          "id": "data_value_029",
+                                          "fields": {
+                                            "NUM": "0"
+                                          }
+                                        }
+                                      },
+                                      "END": {
+                                        "block": {
+                                          "type": "data_value",
+                                          "id": "data_value_030",
+                                          "fields": {
+                                            "NUM": "40"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "next": {
+                          "block": {
+                            "type": "variables_set",
+                            "id": "variables_set_038",
+                            "fields": {
+                              "VAR": {
+                                "id": "main_var_tag64",
+                                "name": "tag64"
+                              }
+                            },
+                            "inputs": {
+                              "VALUE": {
+                                "block": {
+                                  "type": "procedures_callreturn",
+                                  "id": "procedures_callreturn_037",
+                                  "fields": {
+                                    "NAME": "CMAC_AES"
+                                  },
+                                  "extraState": {
+                                    "params": [
+                                      {
+                                        "name": "key",
+                                        "id": "main_call_key_tag64",
+                                        "type": "bytes"
+                                      },
+                                      {
+                                        "name": "msg",
+                                        "id": "main_call_msg_tag64",
+                                        "type": "bytes"
+                                      }
+                                    ]
+                                  },
+                                  "inputs": {
+                                    "ARG0": {
+                                      "block": {
+                                        "type": "variables_get",
+                                        "id": "variables_get_036",
+                                        "fields": {
+                                          "VAR": {
+                                            "id": "main_var_key",
+                                            "name": "key"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "ARG1": {
+                                      "block": {
+                                        "type": "variables_get",
+                                        "id": "variables_get_035",
+                                        "fields": {
+                                          "VAR": {
+                                            "id": "main_var_msg",
+                                            "name": "msg"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "next": {
+                              "block": {
+                                "type": "variables_set",
+                                "id": "variables_set_041",
+                                "fields": {
+                                  "VAR": {
+                                    "id": "main_var_subkeys",
+                                    "name": "subkeys"
+                                  }
+                                },
+                                "inputs": {
+                                  "VALUE": {
+                                    "block": {
+                                      "type": "procedures_callreturn",
+                                      "id": "procedures_callreturn_040",
+                                      "fields": {
+                                        "NAME": "CMAC_SUBKEYS"
+                                      },
+                                      "extraState": {
+                                        "params": [
+                                          {
+                                            "name": "subkey",
+                                            "id": "main_call_subkey",
+                                            "type": "bytes"
+                                          }
+                                        ]
+                                      },
+                                      "inputs": {
+                                        "ARG0": {
+                                          "block": {
+                                            "type": "variables_get",
+                                            "id": "variables_get_039",
+                                            "fields": {
+                                              "VAR": {
+                                                "id": "main_var_key",
+                                                "name": "key"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}
