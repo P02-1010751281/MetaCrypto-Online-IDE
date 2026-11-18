@@ -18,8 +18,12 @@ const NARROW_VIEWPORT_QUERY = '(max-width: 1200px)';
  *
  * `assistant` 是 问答助手（查文档 / 查积木两个 tab 共用一个入口）：两个检索内核在壳里，
  * activity bar 上只留一个图标，切 tab 由 `AssistantPanel` 自己管。
+ *
+ * `code` 是 A/B 线的「从代码生成工作区」。它曾经是中心浮层 + 菜单项，现在也是左栏面板：
+ * 同一份 `CodeToWorkspaceDialog` 加 `docked` 后停靠在栏里，不再盖住画布。面板可见性
+ * 统一由这里拥有，`useCodeToWorkspaceImport` 只负责打开、载入与回执。
  */
-export type EditorPanel = 'projects' | 'files' | 'functions' | 'assistant';
+export type EditorPanel = 'projects' | 'files' | 'functions' | 'assistant' | 'code';
 
 const DEFAULT_PANEL: EditorPanel = 'files';
 
@@ -47,6 +51,14 @@ export function useEditorPanels(options: Options) {
   };
   const closePanel = (): void => {
     activePanel.value = DEFAULT_PANEL;
+  };
+
+  /**
+   * 明确要「打开」某个面板（菜单、文档命中等入口），不 toggle。
+   * `togglePanel` 在「已经在这个面板」时会把面板收掉，从菜单点过去就会看起来没反应。
+   */
+  const openPanel = (panel: EditorPanel): void => {
+    activePanel.value = panel;
   };
 
   /**
@@ -85,6 +97,7 @@ export function useEditorPanels(options: Options) {
     isNarrowViewport,
     togglePanel,
     closePanel,
+    openPanel,
     onOpenDocHit,
   };
 }

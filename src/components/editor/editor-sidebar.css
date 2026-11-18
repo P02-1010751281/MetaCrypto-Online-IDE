@@ -68,22 +68,9 @@
   background: var(--color-primary);
 }
 
-/* A/B 线入口（从代码生成工作区）：左栏里唯一的「动作」，不是互斥面板。
-   沉到底部，并在上方留一条细线——否则第 5 个图标会和四个 panel 图标读成同类。 */
-.activity-btn--action {
-  margin-top: auto;
-}
-
-.activity-btn--action::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: -4px;
-  width: 18px;
-  height: 1px;
-  transform: translateX(-50%);
-  background: var(--color-border);
-}
+/* A/B 线入口（从代码生成工作区）曾经是「动作图标」：沉底 + 细线 + 无选中态。
+   现在它是正常的第 5 个互斥面板，那套装扮（.activity-btn--action）随之下线——
+   留着会让同一排里出现两种语义。 */
 
 .activity-btn:focus-visible {
   outline: 2px solid var(--color-primary);
@@ -212,15 +199,6 @@
 
   /* 横向排列时左侧强调条会飘到图标外，改用底色表达选中。 */
   .activity-btn.active::before {
-    display: none;
-  }
-
-  /* 横条里没有「底部」可沉，那条上分隔线也会变成图标间的杂线，一起撤掉。 */
-  .activity-btn--action {
-    margin-top: 0;
-  }
-
-  .activity-btn--action::after {
     display: none;
   }
 

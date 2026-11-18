@@ -18,7 +18,6 @@
       @delete-file="onDeleteProjectFile"
       @set-entry="onSetEntryFile"
       @toggle-panel="togglePanel"
-      @open-code-to-workspace="openCodeToWorkspace"
     >
       <!-- 互斥面板：同一时刻只渲染一个，与 activity bar 的选中项一一对应。 -->
       <ProjectPanel
@@ -43,6 +42,14 @@
         @close="closePanel"
         @open="onOpenDocHit"
         @browse-all="openDocs"
+      />
+      <CodeToWorkspaceDialog
+        v-else-if="activePanel === 'code'"
+        :visible="true"
+        :current-block-count="blockCount"
+        :docked="!isNarrowViewport"
+        @close="closePanel"
+        @apply="onApplyReversedWorkspace"
       />
     </EditorSidebar>
 
@@ -122,13 +129,6 @@
       :entry-badge="activeProjectFileId === entryProjectFileId"
       @update:language="selectedLanguage = $event"
       @generate="generateCode"
-    />
-
-    <CodeToWorkspaceDialog
-      :visible="codeToWorkspaceVisible"
-      :current-block-count="blockCount"
-      @close="closeCodeToWorkspace"
-      @apply="onApplyReversedWorkspace"
     />
 
     <EditorToast :visible="toastVisible" :message="toastMessage" />
@@ -220,6 +220,7 @@ const {
   isNarrowViewport,
   togglePanel,
   closePanel,
+  openPanel,
   onOpenDocHit,
 } = useEditorPanels({ notify: showToast });
 
@@ -235,11 +236,11 @@ function openDocs(q?: unknown): void {
 }
 const currentProjectId = computed(() => Number(route.params.id) || null);
 
-/** 问答助手（文档/积木检索）要读路径与摘录、函数面板是「名字 + 参数 + 两枚动作」的密排行，
- *  248px 都不够用；进这些面板自动展宽，回文件/项目收回 CSS 缺省宽度。 */
+/** 问答助手（文档/积木检索）要读路径与摘录、函数面板是「名字 + 参数 + 两枚动作」的密排行、
+ *  代码面板要放粘贴框与诊断清单，248px 都不够用；进这些面板自动展宽，回文件/项目收回缺省宽度。 */
 watch(activePanel, (panel) => {
-  const wide = panel === 'assistant' || panel === 'functions';
-  setLeftWidth(wide ? 400 : undefined);
+  const wide = panel === 'assistant' || panel === 'functions' || panel === 'code';
+  setLeftWidth(wide ? (panel === 'code' ? 460 : 400) : undefined);
 });
 
 // 文件操作要置「有未保存改动」，而脏标记由保存层（useEditorProject）提供；
@@ -353,13 +354,12 @@ const languageLabel = computed(
 );
 
 // ---- 代码 → 工作区（A/B 线入口；当前只开 B1：本平台生成的 Python）----
-// 编排在 useCodeToWorkspaceImport；这里只给三个口子：编辑器载入、收菜单、替换后的补偿。
-const {
-  codeToWorkspaceVisible,
-  openCodeToWorkspace,
-  closeCodeToWorkspace,
-  onApplyReversedWorkspace,
-} = useCodeToWorkspaceImport({
+const { openCodeToWorkspace, onApplyReversedWorkspace } = useCodeToWorkspaceImport({
+  openPanel: () => {
+    sidebarVisible.value = true;
+    openPanel('code');
+  },
+  closePanel,
   loadWorkspace: (state) => blocklyEditor.value?.loadWorkspace(JSON.stringify(state), 'json') ?? false,
   notify: showToast,
   afterApplied: onWorkspaceChanged,

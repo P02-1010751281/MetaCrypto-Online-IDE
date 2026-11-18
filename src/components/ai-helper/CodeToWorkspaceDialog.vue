@@ -1,8 +1,19 @@
 <template>
-  <!-- A/B 线入口（当前只开 B1：本平台生成的 Python 代码）。独立浮层，不并入检索助手：
-       检索助手是 D 线，A/B 是另一条线，合成一个面板会让两条线共用一份外壳状态。 -->
-  <div v-if="visible" class="c2w-overlay" @click.self="emit('close')" @keydown.esc="emit('close')">
-    <div class="c2w" role="dialog" aria-modal="true" :aria-label="ui('codeToWorkspaceTitle')">
+  <!-- A/B 线入口（当前只开 B1：本平台生成的 Python 代码）。与检索助手是两个面板：
+       检索助手是 D 线，A/B 是另一条线，合成一个面板会让两条线共用一份外壳状态。
+       同一份内容支持两种形态：`docked`（缺省）停靠在左栏，否则是中心浮层。 -->
+  <div
+    v-if="visible"
+    :class="docked ? 'c2w-dock' : 'c2w-overlay'"
+    @click.self="docked ? undefined : emit('close')"
+    @keydown.esc="emit('close')"
+  >
+    <div
+      class="c2w"
+      role="dialog"
+      :aria-modal="!docked"
+      :aria-label="ui('codeToWorkspaceTitle')"
+    >
       <div class="section-head section-head--divided">
         <span class="section-title">{{ ui('codeToWorkspaceTitle') }}</span>
         <div class="section-actions">
@@ -166,6 +177,8 @@ defineProps<{
   visible: boolean;
   /** 当前画布已有多少块：只用于「将替换 N 块」的提示，不参与判定。 */
   currentBlockCount?: number;
+  /** 停靠在左栏面板里（缺省入口）；false 时是中心浮层，窄屏与其它调用点仍可复用。 */
+  docked?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -299,6 +312,24 @@ function apply(): void {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
   font-size: 13px;
 }
+/* 停靠形态：左栏面板里没有遮罩也没有居中，宽高跟随栏，边线/圆角/阴影交给栏本身，
+   否则浮层那套 720px 宽与 78vh 高会把栏撑出横向滚动条。 */
+.c2w-dock {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.c2w-dock > .c2w {
+  width: 100%;
+  max-height: none;
+  height: 100%;
+  flex: 1;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
 .c2w-body {
   display: flex;
   flex: 1;
@@ -307,8 +338,7 @@ function apply(): void {
   min-height: 0;
   padding: 12px var(--panel-pad-x, 12px);
   overflow: auto;
-}
-.c2w-intro,
+}.c2w-intro,
 .c2w-hint,
 .c2w-note {
   margin: 0;

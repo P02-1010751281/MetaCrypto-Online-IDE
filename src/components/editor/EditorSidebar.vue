@@ -55,15 +55,15 @@
           <path d="M8 9h5M8 12h3" />
         </svg>
       </button>
-      <!-- A/B 线入口（从代码 → 工作区）：它是**动作**不是互斥面板，所以不碰 activePanel、
-           也没有选中态——点开的是遮罩浮层，整屏都被盖住，选中态反而看不见。
-           沉到底部并用一条细线隔开，避免被读成第 5 个「看哪块面板」的图标。 -->
+      <!-- A/B 线入口（代码 → 工作区）：与另外四个一样是互斥面板，面板体是
+           `CodeToWorkspaceDialog` 的停靠形态（由 App 经 slot 传进来）。 -->
       <button
-        class="activity-btn activity-btn--action"
+        class="activity-btn"
+        :class="{ active: activePanel === 'code' }"
         :title="ui('codeToWorkspaceAction')"
         :aria-label="ui('codeToWorkspaceAction')"
-        aria-haspopup="dialog"
-        @click="$emit('open-code-to-workspace')"
+        :aria-pressed="activePanel === 'code'"
+        @click="$emit('toggle-panel', 'code')"
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path d="M3 6h7M3 12h5M3 18h7" />
@@ -150,7 +150,6 @@ const emit = defineEmits<{
   (e: 'delete-file', fileId: string): void;
   (e: 'set-entry', fileId: string): void;
   (e: 'toggle-panel', panel: EditorPanel): void;
-  (e: 'open-code-to-workspace'): void;
 }>();
 
 const fileCountHint = computed(() =>
