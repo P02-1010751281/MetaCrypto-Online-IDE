@@ -13,6 +13,8 @@ node_modules/
 dist/
 dist-ssr/
 dist-verify/
+# 项目内临时工作目录（vite 中间产物、临时 tsconfig/声明、日志与读数副本）
+.tmp-build/
 *.local
 
 # Editor directories and files
