@@ -120,9 +120,11 @@ demos/                          # Blockly 工作区示例（含官方向量期�
 | 椭圆曲线与公钥 | EdDSA、ECDSA、ECDH、X25519、SM2、SM9 与曲线/点运算 |
 | 序列密码 | ZUC 状态变换、密钥流及 EEA3 构件 |
 | 后量子密码 | ML-KEM/ML-DSA 格基构件与阶段；另含 SLH-DSA、纠错码教学构件 |
-| 函数与 Blockly 原生类目 | 29 个函数模板及变量、数学、数组、逻辑等 Blockly 原生块 |
+| 函数与 Blockly 原生类目 | 29 个函数模板及变量、数学、数组、控制流等 Blockly 原生块 |
 
 > 计数：`ALL_BLOCK_TYPES` 去重后 **222** 个活动块类型，29 个函数模板在 222 内的 3 个 `crypto_*` 之外再加 26 个 `proc_*`，合并去重共 **248**；兼容身份 `ctrl_assign` 两边都不计。工具箱 17 类目含 4 个 Blockly 原生类目。口径与逐条清单见 [CONFORMANCE-INVENTORY.md](docs/standards/CONFORMANCE-INVENTORY.md)，由 `npm run verify:templates` 守住；以上为 tag 指向树的计数，主分支已演进到 224 / 250。这一教学面向不构成 CAVP/ACVTS、CMVP/FIPS 140-3 认证或形式化验证声明。
+
+浏览器内负责 Blockly 编辑、代码生成与用户试用；可信随机性评估、统计检验、隔离执行与最终报告由 `metacrypt_server` 后端承担。
 
 ## 代码生成示例
 
