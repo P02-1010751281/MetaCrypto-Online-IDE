@@ -2,14 +2,14 @@
 
 The AI assistant in MetaCrypto Online IDE is a local-first search tool: repository docs, standard PDF page text and block metadata are indexed at build time, and queries run in the browser to return an answer with evidence; no network and no model are required. Model-assisted sentence picking is an optional enhancement: it is off by default, the provider and key are supplied by the user, and the model may only pick among candidate sentences — it cannot rewrite a sentence, add content or replace the evidence.
 
-This page describes the current behaviour of two entry points: **Q&A assistant** in the sidebar (doc search / block search) and **More → Generate workspace from code**. Evaluation readings (recall@5, eval-set pass rates) are not usage instructions; see the [feasibility research](../research/AI-HELPER-RESEARCH-2026-11-13.md) and the records under `experiments/ai-helper-2026-11-14/`.
+This page describes the current behaviour of two entry points: **Q&A assistant** in the sidebar (doc search / block search) and **Generate workspace from code** at the bottom of the left activity bar (the same item is also in the **More** menu). Evaluation readings (recall@5, eval-set pass rates) are not usage instructions; see the [feasibility research](../research/AI-HELPER-RESEARCH-2026-11-13.md) and the records under `experiments/ai-helper-2026-11-14/`.
 
 ## 1. Entry points and boundaries
 
 | Entry | Location | Purpose |
 |---|---|---|
 | Q&A assistant | Assistant icon in the left activity bar; click again to return to the **Files** panel | Doc search and block search share one panel with two tabs |
-| Generate workspace from code | Editor **More** menu, next to **Import workspace** | Reverse-parse pasted or selected code into a block workspace |
+| Generate workspace from code | Action icon at the bottom of the left activity bar (the same item is in the **More** menu) | Reverse-parse pasted or selected code into a block workspace |
 
 Three boundaries come first:
 
@@ -89,7 +89,7 @@ A link only applies the next time the opposite tab is shown; clicking a tab your
 
 ## 5. Generate workspace from code
 
-**More → Generate workspace from code** is the entry point of line B (reference implementation → workspace). It is not the same path as **Import workspace**: importing loads an existing workspace file, while this reverse-parses code into a new workspace.
+The **Generate workspace from code** icon at the bottom of the left activity bar (the same item as in the **More** menu) is the entry point of line B (reference implementation → workspace). It is not the same path as **Import workspace**: importing loads an existing workspace file, while this reverse-parses code into a new workspace. It is an **action**, not a panel: it opens a full-screen overlay, and closing it leaves the current panel unchanged.
 
 The order is fixed: parse, review diagnostics, load. Each step can stop:
 

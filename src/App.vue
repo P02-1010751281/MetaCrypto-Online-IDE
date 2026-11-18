@@ -18,6 +18,7 @@
       @delete-file="onDeleteProjectFile"
       @set-entry="onSetEntryFile"
       @toggle-panel="togglePanel"
+      @open-code-to-workspace="openCodeToWorkspace"
     >
       <!-- 互斥面板：同一时刻只渲染一个，与 activity bar 的选中项一一对应。 -->
       <ProjectPanel
@@ -350,7 +351,6 @@ const {
 const languageLabel = computed(
   () => LANGUAGE_LABELS[selectedLanguage.value] ?? selectedLanguage.value,
 );
-
 
 // ---- 代码 → 工作区（A/B 线入口；当前只开 B1：本平台生成的 Python）----
 // 编排在 useCodeToWorkspaceImport；这里只给三个口子：编辑器载入、收菜单、替换后的补偿。
