@@ -1,0 +1,252 @@
+{
+  "baseUrl": "http://localhost:5242",
+  "fakePort": 9137,
+  "calls": [
+    {
+      "url": "/v1/chat/completions",
+      "body": "{\"model\":\"fake-model\",\"messages\":[{\"role\":\"system\",\"content\":\"你是检索问答里的「选句器」，只做一件事：从给定的候选句里挑出能回答问题的句子。\\n硬性规则：\\n1. 只能引用候选句的 id，不能改写、拼接、概括或新增任何句子；\\n2. 没有能回答的候选时就返回空数组（拒答是合法答案，不要硬凑）；\\n3. `note` 是可选的简短说明，提到依据时必须用 `support` 列出所依据的候选 id；\\n4. 最多选 5 句；\\n5. 只输出一个 JSON 对象，不要 Markdown 围栏、不要解释。\\n输出格式：{\\\"selections\\\":[{\\\"id\\\":\\\"s1\\\"}],\\\"note\\\":\\\"可选\\\",\\\"support\\\":[\\\"s1\\\"]}\"},{\"role\":\"user\",\"content\":\"问题：SM4 密钥扩展\\n\\n候选句：\\ns1 | docs/standards/gbt32907-SM4/03-Algorithm.md:25 | 密钥扩展使用不同的 线性变换  L' ；\"}],\"temperature\":0,\"max_tokens\":300,\"stream\":false}"
+    },
+    {
+      "url": "/v1/chat/completions",
+      "body": "{\"model\":\"fake-model\",\"messages\":[{\"role\":\"system\",\"content\":\"你是检索问答里的「选句器」，只做一件事：从给定的候选句里挑出能回答问题的句子。\\n硬性规则：\\n1. 只能引用候选句的 id，不能改写、拼接、概括或新增任何句子；\\n2. 没有能回答的候选时就返回空数组（拒答是合法答案，不要硬凑）；\\n3. `note` 是可选的简短说明，提到依据时必须用 `support` 列出所依据的候选 id；\\n4. 最多选 5 句；\\n5. 只输出一个 JSON 对象，不要 Markdown 围栏、不要解释。\\n输出格式：{\\\"selections\\\":[{\\\"id\\\":\\\"s1\\\"}],\\\"note\\\":\\\"可选\\\",\\\"support\\\":[\\\"s1\\\"]}\"},{\"role\":\"user\",\"content\":\"问题：SM4 密钥扩展\\n\\n候选句：\\ns1 | docs/standards/gbt32907-SM4/03-Algorithm.md:25 | 密钥扩展使用不同的 线性变换  L' ；\"}],\"temperature\":0,\"max_tokens\":300,\"stream\":false}"
+    },
+    {
+      "url": "/v1/chat/completions",
+      "body": "{\"model\":\"fake-model\",\"messages\":[{\"role\":\"system\",\"content\":\"你是检索问答里的「选句器」，只做一件事：从给定的候选句里挑出能回答问题的句子。\\n硬性规则：\\n1. 只能引用候选句的 id，不能改写、拼接、概括或新增任何句子；\\n2. 没有能回答的候选时就返回空数组（拒答是合法答案，不要硬凑）；\\n3. `note` 是可选的简短说明，提到依据时必须用 `support` 列出所依据的候选 id；\\n4. 最多选 5 句；\\n5. 只输出一个 JSON 对象，不要 Markdown 围栏、不要解释。\\n输出格式：{\\\"selections\\\":[{\\\"id\\\":\\\"s1\\\"}],\\\"note\\\":\\\"可选\\\",\\\"support\\\":[\\\"s1\\\"]}\"},{\"role\":\"user\",\"content\":\"问题：SM4 密钥扩展 轮密钥\\n\\n候选句：\\ns1 | docs/standards/gbt32907-SM4/03-Algorithm.md:25 | 密钥扩展使用不同的 线性变换  L' ；\"}],\"temperature\":0,\"max_tokens\":300,\"stream\":false}"
+    },
+    {
+      "url": "/v1/chat/completions",
+      "body": "{\"model\":\"fake-model\",\"messages\":[{\"role\":\"system\",\"content\":\"你是检索问答里的「选句器」，只做一件事：从给定的候选句里挑出能回答问题的句子。\\n硬性规则：\\n1. 只能引用候选句的 id，不能改写、拼接、概括或新增任何句子；\\n2. 没有能回答的候选时就返回空数组（拒答是合法答案，不要硬凑）；\\n3. `note` 是可选的简短说明，提到依据时必须用 `support` 列出所依据的候选 id；\\n4. 最多选 5 句；\\n5. 只输出一个 JSON 对象，不要 Markdown 围栏、不要解释。\\n输出格式：{\\\"selections\\\":[{\\\"id\\\":\\\"s1\\\"}],\\\"note\\\":\\\"可选\\\",\\\"support\\\":[\\\"s1\\\"]}\"},{\"role\":\"user\",\"content\":\"问题：SM4 密钥扩展\\n\\n候选句：\\ns1 | docs/standards/gbt32907-SM4/03-Algorithm.md:25 | 密钥扩展使用不同的 线性变换  L' ；\"}],\"temperature\":0,\"max_tokens\":300,\"stream\":false}"
+    }
+  ],
+  "results": [
+    {
+      "name": "编辑器就绪",
+      "ok": true
+    },
+    {
+      "name": "问答助手入口可点开",
+      "ok": true
+    },
+    {
+      "name": "助手壳渲染",
+      "ok": true
+    },
+    {
+      "name": "检索命中并落成答案卡",
+      "ok": true
+    },
+    {
+      "name": "答案卡有原文句与 path:line 出处",
+      "ok": true
+    },
+    {
+      "name": "答案区出现模型工具条（开关 + 设置 + 状态位）",
+      "ok": true
+    },
+    {
+      "name": "开关默认关闭",
+      "ok": true
+    },
+    {
+      "name": "开关文案走 locale（让模型选句）",
+      "ok": true
+    },
+    {
+      "name": "默认关时状态位为空（没有「未配置」之类噪音）",
+      "ok": true
+    },
+    {
+      "name": "默认关时一个请求都不发（provider 收到 0 次调用）",
+      "ok": true
+    },
+    {
+      "name": "打开开关后自动弹设置窗",
+      "ok": true
+    },
+    {
+      "name": "未配置时状态位说「未配置模型」且给下一步提示",
+      "ok": true
+    },
+    {
+      "name": "弹窗标题与数据说明在位",
+      "ok": true
+    },
+    {
+      "name": "三项必填校验挡住空保存",
+      "ok": true
+    },
+    {
+      "name": "明文 http 的非本机地址被拒（不是 https 也不是回环）",
+      "ok": true
+    },
+    {
+      "name": "被拒时对话框不关闭、仍是未配置",
+      "ok": true
+    },
+    {
+      "name": "被拒时什么都没写进存储",
+      "ok": true
+    },
+    {
+      "name": "被拒时没有发出任何请求",
+      "ok": true
+    },
+    {
+      "name": "保存后对话框关闭",
+      "ok": true
+    },
+    {
+      "name": "模型调用返回并被采纳（状态位出现「模型选了 1 句」）",
+      "ok": true
+    },
+    {
+      "name": "不勾「记住」时只写会话档（localStorage 为空）",
+      "ok": true
+    },
+    {
+      "name": "provider 恰好收到 1 次请求（一次操作一次调用）",
+      "ok": true
+    },
+    {
+      "name": "请求打到 /v1/chat/completions",
+      "ok": true
+    },
+    {
+      "name": "key 只在 Authorization 头里",
+      "ok": true
+    },
+    {
+      "name": "key 不在请求体里（正文 0 命中）",
+      "ok": true
+    },
+    {
+      "name": "请求体是选句用的确定性形状（temperature 0 / stream false / max_tokens 300）",
+      "ok": true
+    },
+    {
+      "name": "提示词带上了用户问题与候选句（含候选 id 与出处行）",
+      "ok": true
+    },
+    {
+      "name": "模型只缩小/重排同一段句子：选中句来自原答案，出处不变",
+      "ok": true
+    },
+    {
+      "name": "状态位报告选中句数与本次 token/耗时",
+      "ok": true
+    },
+    {
+      "name": "模型自述单独标注「不进答案证据」",
+      "ok": true
+    },
+    {
+      "name": "重载后编辑器就绪",
+      "ok": true
+    },
+    {
+      "name": "重载后按需点开问答助手",
+      "ok": true
+    },
+    {
+      "name": "重载后助手壳渲染",
+      "ok": true
+    },
+    {
+      "name": "重载后答案卡再次出现",
+      "ok": true
+    },
+    {
+      "name": "重载后开关仍是默认关（配置在、开关不自己开）",
+      "ok": true
+    },
+    {
+      "name": "重载后未开开关时仍不发请求",
+      "ok": true
+    },
+    {
+      "name": "重载后会话档配置仍在",
+      "ok": true
+    },
+    {
+      "name": "已配置时打开开关不再弹设置窗",
+      "ok": true
+    },
+    {
+      "name": "重载后打开开关能再次调用并选中",
+      "ok": true
+    },
+    {
+      "name": "第二次调用仍是 1 次请求（共 2 次）",
+      "ok": true
+    },
+    {
+      "name": "429 落成一条结构化失败原因",
+      "ok": true
+    },
+    {
+      "name": "失败时检索答案与出处仍在（不吞答案）",
+      "ok": true
+    },
+    {
+      "name": "失败原因前面有「模型调用失败：」前缀",
+      "ok": true
+    },
+    {
+      "name": "失败后不重试（请求数只 +1）",
+      "ok": true
+    },
+    {
+      "name": "校验失败按类别说话：模型给了说明却没标注依据",
+      "ok": true
+    },
+    {
+      "name": "校验失败不会冒充「句子不在候选里」（URL 越界的说法）",
+      "ok": true
+    },
+    {
+      "name": "校验失败时检索答案与出处仍在",
+      "ok": true
+    },
+    {
+      "name": "校验失败后不重试（请求数只 +1）",
+      "ok": true
+    },
+    {
+      "name": "「模型设置」按钮打开弹窗",
+      "ok": true
+    },
+    {
+      "name": "弹窗回填当前真正在用的配置",
+      "ok": true
+    },
+    {
+      "name": "只改「记住」不重新调用模型（配置内容没变就不该再烧额度）",
+      "ok": true
+    },
+    {
+      "name": "勾「记住」后写持久档并清掉会话档（两份互斥）",
+      "ok": true
+    },
+    {
+      "name": "清除后两个档位都为空",
+      "ok": true
+    },
+    {
+      "name": "清除后开关关闭、状态位清空",
+      "ok": true
+    },
+    {
+      "name": "CSP 未拦截回环 provider（0 条 CSP 违规）",
+      "ok": true
+    },
+    {
+      "name": "页面无未捕获异常",
+      "ok": true
+    },
+    {
+      "name": "控制台无 error（含 CORS/网络错误）",
+      "ok": true
+    }
+  ]
+}

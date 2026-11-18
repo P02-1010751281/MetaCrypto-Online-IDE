@@ -88,6 +88,34 @@ export function docToBlockQuery(doc: DocLinkSource, vocabulary: ReadonlySet<stri
   return docToBlockLink(doc, vocabulary, limit).query;
 }
 
+/**
+ * 带缓存的联动判定：模板里 `v-if` / `title` / `click` 三处都要读同一个派生词，
+ * 不缓存就是每次渲染重跑一遍派生。
+ *
+ * 词表是懒取的（`blockVocabulary` 属性可能晚到），并且**换了词表就丢旧缓存**：
+ * 残留的派生词会指向当前词表里不存在的块，按钮点了必然落空。
+ */
+export function createDocLinkResolver(
+  vocabulary: () => ReadonlySet<string> | null | undefined,
+): (doc: DocLinkSource) => string | undefined {
+  let current: ReadonlySet<string> | null = null;
+  let cache = new WeakMap<DocLinkSource, string>();
+  return (doc) => {
+    const vocab = vocabulary();
+    if (!vocab) return undefined;
+    if (vocab !== current) {
+      current = vocab;
+      cache = new WeakMap();
+    }
+    const cached = cache.get(doc);
+    if (cached !== undefined) return cached;
+    const link = docToBlockLink(doc, vocab);
+    if (!link.linked) return undefined;
+    cache.set(doc, link.query);
+    return link.query;
+  };
+}
+
 /** 标签里的占位标点不是词：`AES AddRoundKey( , rk:` 只该留下 `AES AddRoundKey rk`。 */
 function normalizeLabelQuery(text: string): string {
   return text

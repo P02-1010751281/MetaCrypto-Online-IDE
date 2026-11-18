@@ -68,6 +68,8 @@
   "/docs/demos/sm2.md": "SM2 演示",
   "/docs/demos/sm4.en.md": "SM4 Demos",
   "/docs/demos/sm4.md": "SM4 演示",
+  "/docs/guides/AI-HELPER.en.md": "AI assistant: document search, answer evidence, and model-assisted sentence picking with your own key",
+  "/docs/guides/AI-HELPER.md": "AI 助手：文档检索、答案出处与自带 key 的模型选句",
   "/docs/guides/ARCHITECTURE.en.md": "MetaCrypto Online IDE system architecture",
   "/docs/guides/ARCHITECTURE.md": "MetaCrypto Online IDE 系统架构",
   "/docs/guides/BLOCKLY-GUIDE.en.md": "Blockly usage guide",

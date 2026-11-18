@@ -15,8 +15,7 @@
  */
 import { Buffer } from 'node:buffer';
 import { spawn } from 'node:child_process';
-import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:5240';
@@ -38,7 +37,11 @@ try {
   process.exit(2);
 }
 
-const profile = mkdtempSync(join(tmpdir(), 'aiassist-'));
+// 同 verify-ai-helper-model：profile 放项目里并在退出时删掉，别拿 /tmp 当仓库
+// （/tmp 是 tmpfs，harness 连跑会把它写满，连 shell 都起不来）。
+const PROFILE_ROOT = join(process.cwd(), '.tmp-build');
+mkdirSync(PROFILE_ROOT, { recursive: true });
+const profile = mkdtempSync(join(PROFILE_ROOT, 'chrome-assistant-'));
 const chrome = spawn(
   CHROME,
   [
@@ -337,5 +340,11 @@ try {
   console.log(`\nAI_ASSISTANT_SUMMARY total=${results.length} pass=${results.length - failed} fail=${failed}`);
   ws?.close();
   chrome.kill();
+  try {
+    await sleep(300);
+    rmSync(profile, { recursive: true, force: true });
+  } catch (error) {
+    console.warn(`profile 清理失败（${String(error)}）：${profile}`);
+  }
   process.exit(failed ? 1 : 0);
 }

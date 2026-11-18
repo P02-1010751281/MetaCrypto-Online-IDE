@@ -42,10 +42,11 @@
         {{ ui('docSearchEmpty') }}
       </p>
       <!-- 答案层：有命中就先给「答案 + 出处」，答不出来时明说缺什么（不拿最近段落冒充答案）。 -->
-      <AnswerCard
+      <AnswerSection
         v-if="!status && query.trim() && (answerResult || answerLoading)"
         :result="answerResult"
         :loading="answerLoading"
+        :question="answeredQuery"
         @open="openAnswerEvidence"
       />
       <ul v-if="!status && hits.length" class="dsp-results">
@@ -96,10 +97,10 @@ import { computed, nextTick, onUnmounted, ref, watch } from 'vue';
 
 import { ui } from '@/composables/locale';
 import { useDocAnswer } from '@/composables/useDocAnswer';
-import AnswerCard from './AnswerCard.vue';
+import AnswerSection from './AnswerSection.vue';
 import { mergeIndexes, parseDocIndex, searchDocs } from '@/services/ai-helper/doc-search';
 import type { DocHit, DocIndex } from '@/services/ai-helper/doc-search';
-import { docToBlockLink } from '@/services/ai-helper/linkage';
+import { createDocLinkResolver } from '@/services/ai-helper/linkage';
 
 const props = defineProps<{
   visible: boolean;
@@ -157,6 +158,15 @@ const {
   clear: clearAnswer,
 } = useDocAnswer();
 const status = ref('');
+/**
+ * 产出当前答案的那个查询词（不是输入框里的实时文本）。
+ *
+ * 答案层的模型调用按「答案变了」触发：如果传实时 query，用户每敲一个字都会先用**旧答案**
+ * 触发一次调用，等 120 ms 防抖跑完再按新答案触发第二次——一次提问两次计费
+ * （2026-11-18 真浏览器验收实测 4 次请求打成 3 次预期）。这里只在真正发起答案计算时
+ * 记下词，答案与问题因此成对，调用数跟答案数一致。
+ */
+const answeredQuery = ref('');
 /** PDF 索引缺失是可选降级：用标志位而不是比对提示文案前缀（文案已本地化）。 */
 const pdfUnavailable = ref(false);
 const loading = ref(false);
@@ -193,6 +203,7 @@ async function run(): Promise<void> {
   const text = query.value.trim();
   if (!text) {
     hits.value = [];
+    answeredQuery.value = '';
     clearAnswer();
     return;
   }
@@ -211,6 +222,7 @@ async function run(): Promise<void> {
     }
     hits.value = searchDocs(index, text, { limit: 12 });
     active.value = 0;
+    answeredQuery.value = text;
     void runAnswer(text, index, hits.value);
   } finally {
     loading.value = false;
@@ -228,23 +240,8 @@ watch([query, withPdf], () => {
   }, 120);
 });
 
-/**
- * 跨域联动按钮的查询词：只有与块词表有交集的文档才返回（`linked`），否则返回 undefined。
- *
- * 用 WeakMap 按命中对象缓存：模板里 v-if / title / click 三处都要读它，
- * 不缓存的话每次渲染都会重新跑一遍派生。
- */
-const linkCache = new WeakMap<DocHit, string>();
-function linkFor(hit: DocHit): string | undefined {
-  const vocabulary = props.blockVocabulary;
-  if (!vocabulary) return undefined;
-  const cached = linkCache.get(hit);
-  if (cached !== undefined) return cached;
-  const link = docToBlockLink(hit, vocabulary);
-  if (!link.linked) return undefined;
-  linkCache.set(hit, link.query);
-  return link.query;
-}
+/** 跨域联动按钮的查询词：只有与块词表有交集的文档才返回（`linked`），否则返回 undefined。 */
+const linkFor = createDocLinkResolver(() => props.blockVocabulary);
 
 watch(
   () => props.visible,
@@ -256,6 +253,7 @@ watch(
     hits.value = [];
     status.value = '';
     active.value = 0;
+    answeredQuery.value = '';
     clearAnswer();
     await nextTick();
     query.value = props.seed ?? '';

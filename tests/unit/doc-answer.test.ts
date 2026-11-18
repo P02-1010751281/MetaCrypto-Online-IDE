@@ -11,7 +11,8 @@
  *
  * 基线数字是 2026-11-16 在真实索引与文档树上实测的（RESULTS §25 / §27）：
  *   - 调参集 30 题：16 条敢回答，15 条出处落在评测期望的文档上；7 条负例全部拒答；
- *   - 留出集 12 题（未参与调参）：top1 8/12，作答 6 条、答对 5 条（出处正确率 83%）。
+ *   - 留出集 12 题（未参与调参）：top1 8/12，作答 7 条、答对 5 条（出处正确率 71%；
+ *     2026-11-18 语料增至 439 篇后多答一条，见下方该用例的注释）。
  * 留出集的数字明显低于调参集，这是真实泛化差距，不许为了让调参集变绿去调它的阈值。
  * 语料或索引更新后数字会变，改这里必须同步改 RESULTS。
  */
@@ -170,7 +171,7 @@ describe('答案层（真实索引与文档树）', () => {
     expect(hits[0].path.startsWith('docs/standards/fips203-ML-KEM/')).toBe(true);
   });
 
-  it('留出集2（未参与调参）：top1 7/12，作答 6 条里 5 条出处正确', async () => {
+  it('留出集2（未参与调参）：top1 7/12，作答 7 条里 5 条出处正确', async () => {
     const holdout = JSON.parse(
       readFileSync(resolve(ROOT, 'experiments/ai-helper-2026-11-14/docsearch-holdout2.json'), 'utf8'),
     ) as Array<{ q: string; expect: string[] }>;
@@ -193,7 +194,10 @@ describe('答案层（真实索引与文档树）', () => {
     }
     // 2026-11-16 §27：希腊字母 + 标题命中后 top1 7→8（ECDH 落到 rfc5903），
     // 作答条数与正确条数不变（其余仍被覆盖度/句式闸门拒答）。
-    expect({ top1, answered, correct }).toEqual({ top1: 8, answered: 6, correct: 5 });
+    // 2026-11-18：语料新增《AI 助手》中英两页（437→439 篇），IDF 整体位移让
+    // 「RSA 的 PSS 签名填充怎么算」的覆盖度刚好压到 0.60 阈值、多答一条（出处
+    // docs/build/rsa.md 仍不在期望集），作答 6→7、正确 5 不变；top1 不变。
+    expect({ top1, answered, correct }).toEqual({ top1: 8, answered: 7, correct: 5 });
   });
 
   it('覆盖度阈值挡住「只有实体、没有问题」的答案', async () => {

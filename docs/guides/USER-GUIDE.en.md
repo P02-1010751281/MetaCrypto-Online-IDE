@@ -9,6 +9,7 @@ MetaCrypto Online IDE is a Blockly frontend for cryptographic algorithm structur
 | Platform scope and capability classes | [Capability map](./CAPABILITY-MAP.en.md) |
 | Editor, types, and function blocks | [Blockly guide](./BLOCKLY-GUIDE.en.md) |
 | Importable workspaces | [Demo guide](./DEMO.en.md), [demo file index](../../demos/README.en.md) |
+| Doc/block search with the AI assistant, or generating a workspace from code | [AI assistant](./AI-HELPER.en.md) |
 | Standard formulas, pseudocode, and source locations | [Standards coverage](../standards/COVERAGE.en.md), structured entries, and `00-Standard-Source.md` |
 | Extraction status and gaps | [Documentation status](../standards/DOCUMENT-STATUS.en.md) |
 
@@ -20,7 +21,7 @@ MetaCrypto Online IDE opens directly in the editor instead of stopping at the pr
 
 The project list lives in the editor sidebar rather than on its own page: click the top **Projects** icon in the sidebar activity bar, or the back button (`←`) at the left of the **Files** panel header, and the sidebar opens the projects panel. The panel has a search box and a **+** button for new projects; each row shows the project name and modification time, `✕` deletes it, and clicking a row switches to that project. Click the **Files** icon to return to the current project's file tree. The project name is editable in place in the editor breadcrumb; language switching is in the toolbar; the **Docs** button there opens the documentation center (`/docs`), whose sidebar groups user docs, developer docs and standards, and **Back** returns to the editor.
 
-The sidebar hosts mutually exclusive panels: Projects, Files, Functions, Docs and Blocks — only one is expanded at a time, and switching never stacks an overlay. Both platforms expose the same shape (a projects panel in the editor sidebar) but keep separate data: MetaCrypto Online IDE stores projects in this browser's IndexedDB, while Metacrypto projects are managed by the platform backend, so the two lists are not interchangeable.
+The sidebar hosts mutually exclusive panels: Projects, Files, Functions and the Q&A assistant — only one is expanded at a time, and switching never stacks an overlay. Both platforms expose the same shape (a projects panel in the editor sidebar) but keep separate data: MetaCrypto Online IDE stores projects in this browser's IndexedDB, while Metacrypto projects are managed by the platform backend, so the two lists are not interchangeable.
 
 ### 2.2 Import a workspace
 

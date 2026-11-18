@@ -1,0 +1,195 @@
+# AI assistant: document search, answer evidence, and model-assisted sentence picking with your own key
+
+The AI assistant in MetaCrypto Online IDE is a local-first search tool: repository docs, standard PDF page text and block metadata are indexed at build time, and queries run in the browser to return an answer with evidence; no network and no model are required. Model-assisted sentence picking is an optional enhancement: it is off by default, the provider and key are supplied by the user, and the model may only pick among candidate sentences — it cannot rewrite a sentence, add content or replace the evidence.
+
+This page describes the current behaviour of two entry points: **Q&A assistant** in the sidebar (doc search / block search) and **More → Generate workspace from code**. Evaluation readings (recall@5, eval-set pass rates) are not usage instructions; see the [feasibility research](../research/AI-HELPER-RESEARCH-2026-11-13.md) and the records under `experiments/ai-helper-2026-11-14/`.
+
+## 1. Entry points and boundaries
+
+| Entry | Location | Purpose |
+|---|---|---|
+| Q&A assistant | Assistant icon in the left activity bar; click again to return to the **Files** panel | Doc search and block search share one panel with two tabs |
+| Generate workspace from code | Editor **More** menu, next to **Import workspace** | Reverse-parse pasted or selected code into a block workspace |
+
+Three boundaries come first:
+
+1. **Search and answers stay offline.** The doc index, PDF page index and block index are build-time artifacts shipped with the app; queries run in the browser and send no request.
+2. **The answer layer is extractive.** Every answer sentence quotes the source verbatim and carries a line number; the card is labelled "extracted from source, each sentence links back (no generative model)". It works with the model switched off.
+3. **The model only picks sentences.** With the toggle on, the question and at most five candidate sentences (all from the same best section) go to the provider the user configured; the reply must still pass reference-integrity checks, and anything out of range is discarded while the retrieval answer and evidence stay on screen.
+
+## 2. Doc search
+
+### 2.1 Input and search scope
+
+Type one sentence into **Doc search** (for example "which steps does one block cipher round contain"); search starts about 120 ms after typing stops and returns at most 12 hits. Query terms are expanded through the glossary (synonyms, English abbreviations and Chinese names), and each hit lists the matched terms.
+
+The **Include standard PDFs** checkbox on the query row controls the search scope:
+
+- unchecked: only Markdown body text under `docs/**/*.md`;
+- checked: the standard PDF page index is searched as well, and hits carry a `PDF` marker and a page number;
+- PDF originals are third-party standards and are not bundled, so a PDF hit never opens a file; it only reports "path + page".
+
+When the PDF index is missing (for example `npm run docs:index:pdf` was never run), the panel degrades to Markdown-only search and says so in the status line instead of silently searching less.
+
+### 2.2 Result list and keyboard
+
+Each hit shows a kind marker (`MD` / `PDF`), the document title, the section heading, `path:line` (a page number for PDFs) and an excerpt. One document contributes only its highest-scoring section, so clicking a hit lands on that line.
+
+| Key | Action |
+|---|---|
+| `↑` / `↓` | Move the selection between hits |
+| `Enter` | Open the selected hit |
+| `Esc` | Close the panel |
+
+A Markdown hit opens the documentation centre in a new tab at that line; when the browser blocks the new window, the app navigates the current page instead. A PDF hit copies `path#page=N` to the clipboard and shows a notice in the corner, so the user can open it inside the repository.
+
+**Browse all docs** at the bottom of the panel enters the documentation centre with the current query (`/docs?q=…`) to keep looking across the whole tree.
+
+### 2.3 The answer card: answer and evidence
+
+When there are hits, an answer card appears above the result list, titled **Answer** and labelled "extracted from source, each sentence links back (no generative model)":
+
+- the answer is taken only from the highest-scoring section, in source order, without rewriting or concatenation;
+- every sentence carries a `[n]` index and is verbatim source text with Markdown markers stripped;
+- **Evidence `path:line`** is clickable and opens that exact source line;
+- **Coverage N%** is the share of question terms present in the selected sentences, which shows how much of the question the answer actually covers;
+- a PDF hit has no body text to split into sentences, so it only provides a page excerpt, explicitly tagged "PDF page excerpt".
+
+### 2.4 When there is no answer
+
+When the corpus holds no section that directly supports an answer, the card does not pass off "the nearest section" as an answer:
+
+1. it states "no evidence was found that directly answers this";
+2. it lists the missing question terms (up to six, `missing: …`);
+3. it points at the nearest related sections below for the user to check.
+
+This rule is why the result list below always stays: no direct answer does not mean no relevant material.
+
+## 3. Block search
+
+**Block search** maps a natural-language description to block types that can be dragged onto the canvas:
+
+- type one sentence describing the job, or use structured filters only;
+- **Filters** is collapsed by default; expanding it selects an input type and/or an output type (`Bytes`, `IntList`, `Bits`, `Number`, `String`, `Boolean`, `SBox`);
+- each hit shows the block label, the block type identifier, its output types and why it matched;
+- clicking a hit or pressing `Enter` inserts that block into the visible canvas area (starting 40 px from the top-left of the viewport, offset by 24 px per consecutive insert so blocks do not stack); `↑` / `↓` moves the selection and `Esc` closes the panel.
+
+**Find docs** on each hit asks the opposite question — how the documentation describes this block. Most of these blocks are shared mathematical primitives with no dedicated page, so an empty result is an answer too.
+
+## 4. Cross-tab links
+
+Both tabs feed each other:
+
+| Direction | Appears when | Behaviour |
+|---|---|---|
+| Docs → blocks | The hit's content derives identifiers present in the block vocabulary | A **Find blocks** button switches to the block tab with the derived query |
+| Blocks → docs | Always | A **Find docs** button switches to the doc tab with a block-related query |
+
+A link only applies the next time the opposite tab is shown; clicking a tab yourself clears the query carried over from the previous link and returns to a clean input.
+
+## 5. Generate workspace from code
+
+**More → Generate workspace from code** is the entry point of line B (reference implementation → workspace). It is not the same path as **Import workspace**: importing loads an existing workspace file, while this reverse-parses code into a new workspace.
+
+The order is fixed: parse, review diagnostics, load. Each step can stop:
+
+1. **Input**: paste code, or read a file with **Choose file** (2 MB limit; larger files are rejected);
+2. **Parse**: produces workspace state and diagnostics only, without touching the canvas;
+3. **Review**: every diagnostic is tagged "unrecognised" or "possibly different semantics"; up to 20 are listed and the heading gives the total;
+4. **Load**: **Load workspace** is an explicit action, and the note next to it states how many blocks on the current canvas will be replaced and that this cannot be undone.
+
+Two recognition paths:
+
+| Source shape | Path | Notes |
+|---|---|---|
+| Python generated by this platform | Template matching | Rebuilds statements in the shape the generators emit |
+| Other Python | Standard-library syntax tree (AST) | Structure only; parameter types fall back to `bytes`; nodes that cannot be converted are warned about separately |
+
+JavaScript and C/C++ reference implementations are not supported: code judged to be JavaScript is reported as "no blocks will be loaded" instead of listing per-line noise, and when functions are recognised but neither path can assemble blocks, the dialog refuses to produce a half-built workspace and lists the recognised function names.
+
+The syntax-tree parser is the Pyodide Python runtime inside the browser (about 12 MB), bundled with the app at the same origin (`public/pyodide/`), loaded on the first parse and reused afterwards; it depends on no external CDN, and a load or parse failure reports the reason as-is (missing assets, or the 45-second parse timeout).
+
+## 6. Let the model pick sentences (bring your own key)
+
+### 6.1 Off by default
+
+**Let the model pick sentences** is off by default. While it is unchecked the app sends no external request and needs no key; switching it on without a configuration shows "Model not configured" and opens the settings dialog immediately.
+
+### 6.2 Configuration
+
+The **Model settings (bring your own key)** dialog has three required fields and one risk notice:
+
+| Field | Validation |
+|---|---|
+| Base URL | Must be `https://` on any host, or `http://127.0.0.1` / `localhost` on this machine; plain http on any other host is rejected |
+| Model id | Required |
+| API key | Required; sent only in a request header |
+
+The repository ships no default provider, default model or key: an empty configuration means "no model attached", not "use the default".
+
+### 6.3 Where the key lives
+
+| Tier | Written when | Lifetime |
+|---|---|---|
+| Session tier (default) | **Save** without ticking remember | Lost when the tab closes |
+| Persistent tier | Tick **Remember**, then save | Written to `localStorage`, kept after the browser closes |
+
+The two tiers are mutually exclusive: writing the persistent tier clears the session copy. **Clear** empties both tiers, turns the toggle off and resets the status line.
+
+### 6.4 What one call does
+
+| Item | Value |
+|---|---|
+| Protocol | OpenAI-compatible `chat/completions` (appended to the Base URL) |
+| Payload | The user question plus at most five candidate sentences (each with id and source line); candidates come from the best section only |
+| Sampling | `temperature: 0`, `stream: false`, output capped at 300 tokens by default (configurable) |
+| Timeout | 20 s by default, actually aborted at the deadline |
+| Retries | None; a failure is never re-sent automatically |
+
+The key only travels in the `Authorization` header — never in the request body and never in error messages.
+
+### 6.5 How the reply is checked and used
+
+The model may only reference candidate ids and must return at most five picks. The reply passes reference-integrity checks, and each of the five violation classes gets its own message instead of a generic failure:
+
+| Violation | Message |
+|---|---|
+| An id outside the candidates | the model picked a sentence outside the candidates (unknown id) |
+| The same sentence picked twice | the model picked the same sentence more than once |
+| More picks than allowed | the model picked more sentences than allowed |
+| A note without naming its support | the model added a note without naming the candidate sentences behind it |
+| A note citing sentences outside the candidates | the model cited sentences outside the candidates in its note |
+
+After the checks pass, the answer card shows only the selected sentences, and the evidence remains the `path:line` of that one section — picking sentences cannot make the evidence point at a different file. A model-written note, when present, appears on its own line tagged "model note (not part of the answer evidence)". The status line reports the call: `model picked n sentence(s) · N tokens · M ms`.
+
+### 6.6 How failures are shown
+
+Failures start with "Model call failed: " and name the cause: timeout (20 s), authentication failed (401), forbidden (403), quota or rate limited (429; no retry), the model did not return the required JSON, empty content, network error, incomplete configuration, or an unknown HTTP status.
+
+A failure never swallows the answer: the retrieval result and its evidence stay on screen with one extra line explaining the cause. To try again, ask again — not retrying automatically is deliberate.
+
+### 6.7 Risks and what is not done
+
+- The key lives in browser storage: same-origin scripts and extensions can read it, and it may reach disk backups. By default it is kept for this tab only and lost when the tab closes.
+- With the toggle on, the question and candidate sentence text go to the provider the user configured; how that data is handled depends on that provider.
+- Cost estimation is not implemented: the UI reports tokens and elapsed time only, with no unit-price input.
+- No real provider has been verified inside the repository (it ships no key); the existing acceptance run uses a local fake provider over real HTTP, crossing the CSP.
+
+## 7. Index and corpus maintenance
+
+| Command | Purpose |
+|---|---|
+| `npm run docs:index` | Rebuild the Markdown doc index (`docs/**/*.md`, dot-directories skipped) |
+| `npm run docs:index:pdf` | Rebuild the standard PDF page index |
+| `npm run docs:index:check` | Verify the index matches the current corpus |
+
+Indexes are build-time artifacts tied to the documentation in the tree: after adding or editing docs the index must be rebuilt, otherwise search and answers keep working from the old corpus (`docs:index:check` reports the mismatch). Search itself touches no network or backend, but the two large indexes are not part of the first-load bundle: the Markdown index (about 4 MB) and the PDF page index (about 3.4 MB) are loaded on demand the first time that range is searched, while the block index (about 288 KB) ships with the panel.
+
+## 8. Related documents
+
+| Purpose | Document |
+|---|---|
+| Editor, projects and the overall code-generation path | [User guide](./USER-GUIDE.en.md) |
+| Covered algorithm families and evidence boundaries | [Capability map](./CAPABILITY-MAP.en.md) |
+| Research, design and evaluation readings for the AI assistant | [AI-HELPER-RESEARCH-2026-11-13](../research/AI-HELPER-RESEARCH-2026-11-13.md) |
+| Mirroring relationship and mirrorable scope with the other repository | [Cross-repository alignment](./METACRYPT-SYNC.en.md) |

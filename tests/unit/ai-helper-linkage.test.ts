@@ -22,7 +22,13 @@ import { describe, expect, it } from 'vitest';
 import { parseDocIndex, searchDocs } from '@/services/ai-helper/doc-search';
 import { search } from '@/services/ai-helper/block-search';
 import type { BlockIndex, SearchHit } from '@/services/ai-helper/block-search';
-import { blockToDocQuery, blockVocabulary, docToBlockLink, docToBlockQuery } from '@/services/ai-helper/linkage';
+import {
+  blockToDocQuery,
+  blockVocabulary,
+  createDocLinkResolver,
+  docToBlockLink,
+  docToBlockQuery,
+} from '@/services/ai-helper/linkage';
 
 const ROOT = process.cwd();
 const blockIndex = JSON.parse(
@@ -89,9 +95,10 @@ describe('派生规则', () => {
 });
 
 describe('文档 → 积木（真实索引）', () => {
-  it('词表派生的文档不留空点：383 篇每一篇都查到 ≥1 个块', () => {
+  it('词表派生的文档不留空点：385 篇每一篇都查到 ≥1 个块', () => {
     const linked = docIndex.docs.filter(([path, title]) => docToBlockLink({ path, title }, vocabulary).linked);
-    expect(linked.length).toBe(383);
+    // 383 → 385（2026-11-18）：语料新增《AI 助手》中英两页，两页都能派生出块词。
+    expect(linked.length).toBe(385);
     const empty = linked.filter(([path, title]) => blockHitOf(docToBlockQuery({ path, title }, vocabulary)).length === 0);
     expect(empty.map(([path]) => path)).toEqual([]);
   });
@@ -146,5 +153,42 @@ describe('积木 → 文档（真实索引）', () => {
     expectTop('aes_add_round_key', 'docs/standards/fips197-AES/');
     expectTop('aes_sub_bytes', 'docs/standards/fips197-AES/');
     expectTop('ascon_hash256', 'docs/standards/sp800-232-ascon/');
+  });
+});
+
+/**
+ * 界面用的带缓存判定：DocSearchPanel 的 `v-if` / `title` / `click` 三处读同一个词。
+ *
+ * 钉住两条：词表没到时不造按钮；词表换了必须丢旧缓存（否则按钮指向不存在的块）。
+ */
+describe('createDocLinkResolver', () => {
+  const doc = { path: 'docs/standards/fips197-AES/01-AES.md', title: 'AES 算法' };
+
+  it('词表未就绪时不派生（不造点了必然落空的按钮）', () => {
+    const resolve = createDocLinkResolver(() => null);
+    expect(resolve(doc)).toBeUndefined();
+  });
+
+  it('有交集时给出稳定派生词，且同一命中重复读拿到同一个词', () => {
+    const resolve = createDocLinkResolver(() => new Set(['aes', 'fips197']));
+    const first = resolve(doc);
+    expect(first).toBe('fips197 aes');
+    expect(resolve(doc)).toBe(first);
+  });
+
+  it('无交集的文档返回 undefined（标题回退只用于展示，不出联动按钮）', () => {
+    const resolve = createDocLinkResolver(() => new Set(['cipher']));
+    expect(resolve(doc)).toBeUndefined();
+    expect(docToBlockLink(doc, new Set(['cipher'])).linked).toBe(false);
+  });
+
+  it('换词表后旧缓存失效（残词不能指向当前词表里没有的块）', () => {
+    let vocabulary: ReadonlySet<string> | null = new Set(['aes']);
+    const resolve = createDocLinkResolver(() => vocabulary);
+    expect(resolve(doc)).toBe('aes');
+    vocabulary = new Set(['cipher']);
+    expect(resolve(doc)).toBeUndefined();
+    vocabulary = new Set(['fips197']);
+    expect(resolve(doc)).toBe('fips197');
   });
 });

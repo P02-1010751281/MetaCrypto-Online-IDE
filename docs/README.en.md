@@ -18,6 +18,7 @@
 | [CAPABILITY-MAP.en.md](./guides/CAPABILITY-MAP.en.md) | Users/Researchers | Primitives, algorithm families, demos, standard references, and evidence boundaries |
 | [BLOCKLY-GUIDE.en.md](./guides/BLOCKLY-GUIDE.en.md) | Users | Blockly usage guide: editor operations, type system, function templates, algorithm assembly examples |
 | [DEMO.en.md](./guides/DEMO.en.md) | Users | Demo guide index (per algorithm: SM4/AES/hash/SM2/post-quantum, with official-vector verification) |
+| [AI-HELPER.en.md](./guides/AI-HELPER.en.md) | Users | Q&A assistant: doc search and answer evidence, block search by description, workspace generation from code, and model-assisted sentence picking with your own key (storage tiers and failure reasons included) |
 
 Block documentation follows one overview plus multiple details: start with the [block overview](./blocks/INDEX.en.md), then open [symmetric ciphers](./blocks/symmetric.en.md), [hash/XOF](./blocks/hash.en.md), [classical public-key/elliptic-curve cryptography](./blocks/ecc-sbox.en.md), [stream cipher](./blocks/zuc.en.md), or [post-quantum cryptography](./blocks/post-quantum.en.md). Each category page exposes uniform entry points for normative source, structured entries, source code, demos, and coverage boundaries.
 

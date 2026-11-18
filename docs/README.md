@@ -18,6 +18,7 @@
 | [CAPABILITY-MAP.md](./guides/CAPABILITY-MAP.md) | 用户/研究者 | 按密码学家族查看已覆盖原语、算法、Demo、标准参考和边界 |
 | [BLOCKLY-GUIDE.md](./guides/BLOCKLY-GUIDE.md) | 用户 | Blockly 使用指南：编辑器操作、类型系统、函数模板、算法拼装样例 |
 | [DEMO.md](./guides/DEMO.md) | 用户 | 演示指南索引（按算法拆分：SM4/AES/哈希/SM2/后量子，含已登记回归范围） |
+| [AI-HELPER.md](./guides/AI-HELPER.md) | 用户 | 问答助手：查文档与答案出处、按描述查块、从代码生成工作区，以及自带 key 的模型选句（含存储档位与失败原因） |
 
 积木块文档采用“一个总览 + 多个分类详情”：先看 [积木块总览](./blocks/INDEX.md)，再进入 [分组密码](./blocks/symmetric.md)、[哈希/XOF](./blocks/hash.md)、[经典公钥/椭圆曲线](./blocks/ecc-sbox.md)、[流密码](./blocks/zuc.md) 或 [后量子密码](./blocks/post-quantum.md)；每个分类页都提供标准原文、结构化条目、源码、Demo 和覆盖边界的证据入口。
 
