@@ -204,7 +204,6 @@ function ntt(a, q = 3329, n = 256) {
 - **Desktop executable**: `metacrypto-online-ide` (see `mainBinaryName` in [`src-tauri/tauri.conf.json`](src-tauri/tauri.conf.json))
 - **Related article**: L. Zhang, T. Luo, T. Ding, C. Xiao, J. Wang, "MetaCrypto online: A model-driven visual development platform for cryptographic engineering," *SoftwareX* 35 (2026) 102943, <https://doi.org/10.1016/j.softx.2026.102943>
 - **Software deposit (reproducible capsule)**: to be recorded here once the Zenodo record for v2.0.0 exists
-- **Provenance**: sources, lineage, team and licence — [PROVENANCE.md](PROVENANCE.md)
 
 ## License
 

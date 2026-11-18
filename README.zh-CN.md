@@ -201,7 +201,6 @@ function ntt(a, q = 3329, n = 256) {
 - **桌面可执行文件**：`metacrypto-online-ide`（见 [`src-tauri/tauri.conf.json`](src-tauri/tauri.conf.json) 的 `mainBinaryName`）
 - **对应文章**：L. Zhang, T. Luo, T. Ding, C. Xiao, J. Wang, "MetaCrypto online: A model-driven visual development platform for cryptographic engineering," *SoftwareX* 35 (2026) 102943, <https://doi.org/10.1016/j.softx.2026.102943>
 - **软件归档（可复现胶囊）**：v2.0.0 的 Zenodo 记录建立后在此登记
-- **来源与世系**：源码来源、世系、团队与许可见 [PROVENANCE.md](PROVENANCE.md)
 
 ## 许可证
 
