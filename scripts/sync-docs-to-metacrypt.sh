@@ -3,7 +3,7 @@
 # sync-docs-to-metacrypt.sh — 通用文档单源同步（MetaCrypto Online IDE → metacrypt_server）
 #
 # 两项目共享 Blockly 核心，以下文档在 MetaCrypto Online IDE 维护、同步到 metacrypt：
-#   docs/guides/{CAPABILITY-MAP,TYPE-SYSTEM,BLOCKLY-GUIDE,DEMO}.md(+en)
+#   docs/guides/{CAPABILITY-MAP,TYPE-SYSTEM,BLOCKLY-GUIDE,DEMO,AI-HELPER,METACRYPT-SYNC}.md(+en)
 #   docs/blocks/（8 份块文档 + BLOCK-IO-CONTRACT.json，双语）
 #   docs/standards/（入口页与规范 + 算法标准目录，纯知识库）
 #   docs/audits/（审计报告，standards/ 与 project/ 两类，双语）
@@ -30,7 +30,10 @@ fi
 
 echo "== 同步 guides/ 通用文档 =="
 mkdir -p "$MC_ROOT/docs/guides"
-for f in CAPABILITY-MAP TYPE-SYSTEM BLOCKLY-GUIDE; do
+# AI-HELPER / METACRYPT-SYNC 于 2026-11-18 纳入：owner 要求把问答助手使用页也放进
+# metacrypt 的文档中心。两者都有指向 ../research/、./USER-GUIDE.md 的相对链接，
+# 前者随下面 research 段一并同步，后者在 metacrypt 有同名的平台专属副本（不覆盖）。
+for f in CAPABILITY-MAP TYPE-SYSTEM BLOCKLY-GUIDE AI-HELPER METACRYPT-SYNC; do
   for ext in md en.md; do
     src="$CC_ROOT/docs/guides/$f.$ext"
     if [ -f "$src" ]; then
@@ -180,6 +183,10 @@ cp "$CC_ROOT/docs/research/CRYPTO-RESEARCH-2026-09-12.md" "$MC_ROOT/docs/researc
 echo "  research/CRYPTO-RESEARCH-2026-09-12.md"
 cp "$CC_ROOT/docs/research/CRYPTO-RESEARCH-2026-09-25.md" "$MC_ROOT/docs/research/"
 echo "  research/CRYPTO-RESEARCH-2026-09-25.md"
+# AI-HELPER 使用页的「评测读数」一节直接链到这份调研（./guides/AI-HELPER.md →
+# ../research/AI-HELPER-RESEARCH-2026-11-13.md），不同步就会在 metacrypt 侧成死链。
+cp "$CC_ROOT/docs/research/AI-HELPER-RESEARCH-2026-11-13.md" "$MC_ROOT/docs/research/"
+echo "  research/AI-HELPER-RESEARCH-2026-11-13.md"
 
 echo "== 同步 research/ 文献包 =================="
 mkdir -p "$MC_ROOT/paper/references"
