@@ -4,8 +4,6 @@
 
 🐱 A visual programming platform for post-quantum cryptography — built on Blockly and Vue 3.
 
-> **v2.0.0 update**: the block core, both code generators (Python / JavaScript) and the standalone editor implementation. Published under the title *MetaCrypto online* (*SoftwareX* 35 (2026) 102943). Sources, lineage, team and licence: [PROVENANCE.md](PROVENANCE.md).
-
 > "The cat is both alive and dead until you open the box.  
 > Your cipher is both secure and broken until you audit the code."
 >

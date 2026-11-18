@@ -4,8 +4,6 @@
 
 🐱 后量子密码学可视化编程平台 — 基于 Blockly 和 Vue 3。
 
-> **v2.0.0 更新**：积木核心、两套代码生成器（Python / JavaScript）与独立编辑器实现。发表版题名 *MetaCrypto online*（*SoftwareX* 35 (2026) 102943）；来源、世系、团队与许可见 [PROVENANCE.md](PROVENANCE.md)。
-
 > "The cat is both alive and dead until you open the box.  
 > Your cipher is both secure and broken until you audit the code."
 >
