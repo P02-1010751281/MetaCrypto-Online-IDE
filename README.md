@@ -1,4 +1,4 @@
-# MetaCrypto Online IDE · Schrödinger's Cat Editor
+# MetaCrypto Online IDE
 
 > [中文](./README.zh-CN.md)
 
@@ -8,6 +8,8 @@
 
 > "The cat is both alive and dead until you open the box.  
 > Your cipher is both secure and broken until you audit the code."
+>
+> — *Schrödinger's Cat Editor*
 
 ## Features
 
