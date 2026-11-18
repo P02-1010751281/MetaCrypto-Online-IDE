@@ -20,6 +20,26 @@
 
 按身份去重的口径：224 个活动块与 29 个模板身份有 3 项重合（`crypto_encrypt_func`、`crypto_decrypt_func`、`crypto_hash_func`），合并去重后共 **250 个** 类型；`npm run verify:templates` 会重算该数字并核对本行说明。
 
+## 工具箱类目口径
+
+运行时工具箱有 17 个可见类目，来自 [`src/utils/toolbox-config.ts`](../../src/utils/toolbox-config.ts) 的 17 个 `kind: 'category'` 定义（2026-11-18 以运行时类目结构复核）。类目里的积木只有两个来源，按来源分三类：
+
+- **自带积木**：`blockly/blocks` 提供、且本项目未覆盖的类型（`logic_*`、`math_*`、`lists_*`、`text_*`、`controls_*`）。判据看实现来源，不看类型名前缀：`procedures_defreturn`、`procedures_defnoreturn`、`procedures_callreturn`、`procedures_callnoreturn` 沿用 Blockly 类型名，但实现已被 [`src/blocks/procedure/`](../../src/blocks/procedure/) 覆盖，因此不算自带积木。
+- **项目块**：本项目在 `src/blocks/` 注册的自定义类型（`ctrl_*`、`arr_*`、`lgc_*`、`data_*`、`seed_*` 及各密码算法、模板块族）。
+- **动态类目**：由 `custom` flyout 生成、没有静态 `contents` 清单的类目，按 flyout 提供者归属——`VARIABLE` 是 Blockly 自带变量类目，`SBOX`、`CRYPTO_PROCEDURE`、`CRYPTO_TEMPLATES` 由本项目生成。
+
+| 判定 | 类目数 | 类目 |
+|---|---:|---|
+| 纯自带积木（含动态变量类目） | 2 | 基础变量（Blockly `VARIABLE` 动态类目）、基础数学（10 个 `math_*`） |
+| 自带与项目块混用 | 3 | 控制流编排（11 个 `logic_*`/`controls_*` + `ctrl_iterate`、`ctrl_range`）、数组空间（11 个 `lists_*` + `arr_append`、`arr_partition_to_array`）、数据处理与转换（11 个 `text_*` + 7 个 `data_*` 与 `seed_bytes`、`seed_hex`、`cipher_key_from_seed`） |
+| 全部为项目块 | 12 | 位运算单元、逻辑运算单元、非线性运算单元（S-box，动态）、哈希与填充单元、对称密码、数论与密钥推导单元、椭圆曲线运算单元、祖冲之序列密码、后量子基础块、后量子高级块、函数（Functions，动态，内容为覆盖实现的原生 procedure 块）、加密模板（动态） |
+
+合计 2 + 3 + 12 = 17。静态清单里列出的自带积木共 **43** 个（11 + 10 + 11 + 11）；基础变量类目的 `variables_get`/`variables_set` 由 Blockly 动态生成，不计入 43。
+
+**口径结论**：含自带积木的类目是 **5 个**（计数口径 = 纯自带 2 + 混用 3）。README 以前写「17 个工具箱类目，其中 4 个是 Blockly 原生类目」，这个数字在两种读法下都站不住：只数「静态列出自带积木的类目」得 4 个（控制流编排、基础数学、数组空间、数据处理与转换），但这四个并不包含同一句点名的「变量」；按「含自带积木的类目」数则是 5 个，且原来点名的四项漏掉了数据处理与转换里的 11 个 `text_*` 自带积木。README 因此改为按「纯自带 / 混用 / 项目块」三类分述，不再使用单一数字。
+
+本口径由 [`toolbox-category-taxonomy.test.ts`](../../tests/unit/toolbox-category-taxonomy.test.ts) 机器校验：类目总数、三类计数、各混用类目的自带/项目积木数量与项目块名单、43 个自带积木的类型清单，以及 `procedures_*` 覆盖实现不计入自带积木。
+
 ## 兼容与已废弃注册身份
 
 下表列出**不进入 224 项活动清单**、但代码中仍然注册的 Blockly 身份。它们仅为加载存量工作区而保留，不出现在工具箱，也不作为可认证或可独立测试的算法构件；每项必须同时具备 Blockly 定义与 JS/Python 生成器，否则应从仓库删除。门禁 `npm run verify:templates` 会枚举全部已注册类型：既不在 224 项活动清单、也不在本表的类型将直接导致失败，防止出现未登记的“影子身份”。
@@ -581,3 +601,5 @@ SM2 验签定向回归最近一次为 1 个文件、13 项通过；SM9 四块定
 ## 维护规则
 
 新增/删除块、模板或 Demo 时，同步检查：注册身份、生成语言、适用类别、规范/无直接规范依据的说明、输入输出契约、测试依据和结果。注册总数改变不是单独的覆盖证明；门禁需在 ITEM-7 中将实际注册集合与本清单进行机器校验。
+
+工具箱类目的「自带积木 / 项目块」归属见「工具箱类目口径」一节，由 [`toolbox-category-taxonomy.test.ts`](../../tests/unit/toolbox-category-taxonomy.test.ts) 守住；增删类目，或往含自带积木的类目加分块时，同步该节与两版 README 的类目表述。

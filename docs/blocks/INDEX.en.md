@@ -81,7 +81,7 @@ The GB/T and GM/T entries are distinct standard records. The national standards 
 
 | Capability family / toolbox category | Representative scope | Doc |
 |------|------|------|
-| Control flow and Blockly-native blocks | Iteration, variables, math, arrays and logic | — |
+| Control flow and Blockly built-in blocks | Iteration, variables, math and arrays (Variables and Math built-in only; Control Flow and Arrays mixed) | — |
 | Data handling and conversion | Byte/bit/encoding/seed/length operations | [data-encoding.md](data-encoding.en.md) |
 | Bitwise and S-Box | Logic, shifts, substitutions and algorithm presets | [bitwise-logic.md](bitwise-logic.en.md), [ecc-sbox.md](ecc-sbox.en.md) |
 | Hash, XOF and padding | SHA-2, SHA-3, SHAKE, SM3 and HMAC | [hash.md](hash.en.md) |

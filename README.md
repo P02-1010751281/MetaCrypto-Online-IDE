@@ -123,9 +123,9 @@ demos/                          # Blockly workspace examples (with official-vect
 | Elliptic curves and public-key cryptography | ECDH, X25519, ECDSA, EdDSA, SM2 and SM9 |
 | Stream ciphers | ZUC state transformations, keystream and EEA3 components |
 | Post-quantum cryptography | ML-KEM/ML-DSA lattice components and stages; SLH-DSA and code-based teaching components |
-| Functions and Blockly-native categories | 29 function-template registrations and native variables, math, arrays and control flow |
+| Functions and Blockly built-in categories | 29 function-template registrations; 5 of the 17 toolbox categories carry Blockly built-in blocks |
 
-> Counts: **224** active custom block types (dedup of `ALL_BLOCK_TYPES`) and **250** merged types, the 29 function templates adding 26 `proc_*` types on top of 3 `crypto_*` blocks already inside 224; the legacy-load identity `ctrl_assign` counts in neither. 17 toolbox categories, 4 of them Blockly-native. Rules and the itemized list: [CONFORMANCE-INVENTORY.md](docs/standards/CONFORMANCE-INVENTORY.md), guarded by `npm run verify:templates`; counts track main, the `v2.0.0` tree records 222 / 248. A teaching surface, not a CAVP/ACVTS, CMVP/FIPS 140-3 or formal-verification claim.
+> Counts: **224** active custom block types (dedup of `ALL_BLOCK_TYPES`) and **250** merged types, the 29 function templates adding 26 `proc_*` types on top of 3 `crypto_*` blocks already inside 224; the legacy-load identity `ctrl_assign` counts in neither. 17 toolbox categories: Variables and Math are Blockly built-in only, Control Flow, Arrays and Data Processing mix built-in blocks with project blocks, and the other 12 are project-only. Rules and the itemized list: [CONFORMANCE-INVENTORY.md](docs/standards/CONFORMANCE-INVENTORY.md), guarded by `npm run verify:templates` and `tests/unit/toolbox-category-taxonomy.test.ts`; counts track main, the `v2.0.0` tree records 222 / 248. A teaching surface, not a CAVP/ACVTS, CMVP/FIPS 140-3 or formal-verification claim.
 
 The browser is for Blockly editing, code generation and user trials. Trusted randomness assessment, statistical testing, isolated execution and final reports belong to the `metacrypt_server` backend.
 

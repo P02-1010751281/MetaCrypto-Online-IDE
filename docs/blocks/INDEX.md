@@ -81,7 +81,7 @@ GB/T 与 GM/T 条目是不同标准记录。标准信息公共服务平台将这
 
 | 能力家族 / 工具箱类目 | 代表范围 | 文档 |
 |------|------|------|
-| 控制流与 Blockly 原生块 | 迭代、变量、数学、数组、逻辑 | — |
+| 控制流与 Blockly 内置块 | 迭代、变量、数学、数组（基础变量、基础数学为纯内置；控制流编排、数组空间为混用） | — |
 | 数据处理与转换 | 字节/位/编码/种子/长度处理 | [data-encoding.md](data-encoding.md) |
 | 位运算与 S-Box | 逻辑、移位、替换及算法预设 | [bitwise-logic.md](bitwise-logic.md)、[ecc-sbox.md](ecc-sbox.md) |
 | 散列、XOF 与填充 | SHA-2、SHA-3、SHAKE、SM3、HMAC | [hash.md](hash.md) |
