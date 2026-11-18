@@ -1,4 +1,4 @@
-# MetaCrypto Online IDE · 薛定喵编辑器
+# MetaCrypto Online IDE
 
 > [English](./README.md)
 
@@ -8,6 +8,8 @@
 
 > "The cat is both alive and dead until you open the box.  
 > Your cipher is both secure and broken until you audit the code."
+>
+> — *薛定喵编辑器*
 
 ## 特性
 
