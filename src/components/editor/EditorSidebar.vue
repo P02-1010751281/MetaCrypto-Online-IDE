@@ -71,6 +71,22 @@
           <rect x="14" y="15" width="7" height="6" rx="1" />
         </svg>
       </button>
+      <!-- A 线入口（标准 → 工作区）：只读预览面板（标准切片 → 条款 → 三档判据）。
+           图标是「标准页 + 积木块」，与上面「代码行 → 两块」的 B 线入口区分。 -->
+      <button
+        class="activity-btn"
+        :class="{ active: activePanel === 'standards' }"
+        :title="ui('standardsToWorkspace')"
+        :aria-label="ui('standardsToWorkspace')"
+        :aria-pressed="activePanel === 'standards'"
+        @click="$emit('toggle-panel', 'standards')"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="3" y="4" width="10" height="12" rx="1" />
+          <path d="M5.5 8h5M5.5 11h3.5" />
+          <rect x="15" y="13" width="6" height="6" rx="1" />
+        </svg>
+      </button>
     </nav>
 
     <div class="sidebar-main">

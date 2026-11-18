@@ -4081,3 +4081,501 @@ DOC_INDEX bytes=3.94MB hash=14a943a2909dde4d
 语义等价仍 `unverified`；`javascriptLoop` 这类形状断言仍是**按出码文本匹配**，生成器再改形状还会假阴性——
 下次遇到读数翻转，先按 §56.1 的办法分辨「代码变了」还是「断言旧了」，再决定改哪一边。
 
+
+## 59. D 线接模型（BYOK）第一段：服务层 + 面板，未接真实 provider（2026-11-18 下午）
+
+按 §3.2/§3.3/§3.4 落地「用户自带 key」的服务层与界面。**这一段没有真实 provider 调用，
+也没有浏览器点击验证**——两点都在 §59.5 里写明，不当成已完成。
+
+### 59.1 服务层：配置、存储档位、一次调用
+
+| 文件 | 职责 |
+|---|---|
+| `src/services/ai-helper/model/config.ts` | base URL 规范化（https 任意主机；明文 http 只允许 127.0.0.1/localhost/[::1]）；`sessionStorage` 默认、勾「记住」才 `localStorage`，两份互斥；一键清除；坏 JSON 读成「没配置」 |
+| `src/services/ai-helper/model/provider.ts` | OpenAI 兼容 `POST {base}/chat/completions`；`temperature:0`、`stream:false`、`max_tokens` 可配；**一次操作一次请求**，20 s `AbortController` 真取消，0 重试；key 只进 `Authorization`；错误体回显的 key 抹成 `[redacted]`；回复 `format`/`empty` 结构化失败 |
+| `src/composables/useModelAnswer.ts` | 候选只从**最佳段落**摊（`others` 是别的文档，混进来会让出处指错文件），按行去重、最多 5 句；调用一次并把结果投影回原文句；失败保留检索答案 |
+| `src/components/ai-helper/AnswerSection.vue` + `ModelSettingsDialog.vue` | 开关（默认关）、模型设置、本次 token/耗时/失败原因、模型 note 单独标注「不进答案证据」 |
+
+`AnswerCard.vue` 未改：模型只能缩小/重排同一段的句子，卡片上的 `path:line` 出处因此仍然成立。
+
+### 59.2 CSP：只放行 `connect-src`
+
+`index.html` 与 `src-tauri/tauri.conf.json` 的 CSP 增加
+`connect-src 'self' https: http://127.0.0.1:* http://localhost:* http://[::1]:*`。
+其余指令（`script-src 'self'`、无 `unsafe-eval`）未动。这是 BYOK 的必需项：原策略下
+`connect-src` 回落到 `default-src 'self'`，任何外部请求都会被浏览器直接拦掉。
+
+### 59.3 证据
+
+新增 3 个测试文件、**33 例**全过：`ai-helper-model-config.test.ts`（协议/回环白名单、档位
+互斥、坏数据）、`ai-helper-model-provider.test.ts`（请求形状、key 不落 body、超时真取消、
+401/403/429/5xx 映射、只发一次、本地真 HTTP 服务端到端、解析仍过 `verifyRewrite`）、
+`ai-helper-model-answer.test.ts`（候选只取最佳段、去重、上限 5）。
+
+`vue-tsc --noEmit` rc=0；新增/改动文件 `eslint` **0 错 0 警**；`locale-ui-messages.test.ts`
+7 例通过（中英键集与占位符一致）。
+
+### 59.4 与计划的差异
+
+- §3.4 的「显示本次调用花了多少 token、估算费用」：现在**只显示 token 与耗时**，
+  费用要用户填单价才算，本轮没做单价输入。
+- 只支持 OpenAI 兼容协议；Anthropic/Google 原生 API 不在本轮范围（可用兼容网关）。
+- 未做「本地中转/钥匙串」两档（§3.3 第 4 档），仍等桌面封装或本地转发件。
+
+### 59.5 明确没做（不得读成已完成）
+
+1. **没有真实 provider 调用**：仓库里没有任何 key，也没有内置 provider；所有网络路径只在
+   本地假 provider（`http://127.0.0.1:<port>`）上验证过。
+2. ~~没有浏览器点击验证~~：2026-11-18 下午补上了（见 §60），并且真点击抓出三处缺陷。
+3. 没有额度/费用估算，没有多 provider 配置档，没有本地模型（Ollama）专用适配（走兼容协议即可，但未实测）。
+
+## 60. D 线真浏览器验收：三处缺陷被真点击抓出来（2026-11-18 下午，接 §59）
+
+§59.5 留了两条「没做」：真实 provider 调用、浏览器点击验证。第一条仍然没做（仓库没有 key，
+也不该为了验收往磁盘里塞一个 key）；第二条这一轮补上了，并且**抓到三处单测看不见的缺陷**。
+
+### 60.1 怎么验：本地假 provider + 真 Chrome + 真 CSP
+
+`scripts/verify-ai-helper-model.mjs`（488 行）：
+
+- 起一个 OpenAI 兼容的假 provider（`127.0.0.1:9137`），记录每次请求的 URL / 头 / 原文；
+- headless Chrome 走 CDP，连 `npm run dev -- --port 5242` 的**干净实例**（dev server 会缓存已删模块）；
+- 每一步都读真实 DOM（工具条、弹窗、状态位、答案卡），并截图；
+- 假 provider 不是兜底：验收里不能出现真 key，而「默认关就不发请求」「key 只进 Authorization」
+  这两条只有**真网络**能证。
+
+共 **52 条断言**；7 张截图 + `summary.json`（含三轮调用的请求体）落在
+`experiments/ai-helper-2026-11-14/out/model-browser/`。
+
+### 60.2 抓到的三处缺陷（都修了）
+
+| # | 实测现象 | 根因 | 修法 |
+|---|---|---|---|
+| 1 | 打开开关（未配置）→ 填配置 → 保存后**状态位空白、provider 收到 0 次请求** | `AnswerSection` 的 watch 只盯 `result / question / enabled`，`save()` 不动这三者 | 依赖里补 `config` |
+| 2 | 改一次查询词，**一次提问打 2 次请求**（实测 4 次 vs 预期 3 次） | 查询词随按键立即变、答案是 120 ms 防抖后才变；watch 盯 `question` 就先拿旧答案打了一次 | 新增 `answeredQuery`（只在真正发起答案计算时记词），watch 依赖改成 `result / enabled / config`，`question` 只作调用参数 |
+| 3 | 控制台报 `The source list for the Content Security Policy directive 'connect-src' contains an invalid source: 'http://[::1]:*'. It will be ignored.` | Chromium 的 CSP 源列表不接受 IPv6 主机，`[::1]` 那条**一直是死条目**；而配置白名单却放行它 | CSP 删该源（`index.html` + `src-tauri/tauri.conf.json`），`LOOPBACK_HOSTS` 去掉 `[::1]`/`::1`，单测改成断言拒绝 |
+
+第 3 条最值得记：它不抛错，只是**每开一次页面刷一条 console error**，而配置层说「可以用」、
+浏览器层必然拦掉——两头不一致的假承诺。现在口径写进 `config.ts` 注释：本机 provider 用
+`127.0.0.1` 或 `localhost`。
+
+### 60.3 顺手验证到的既有规则
+
+第一版假 provider 只回 `{"selections":[{"id":"s1"}],"note":"…"}`，被 `verifyRewrite` 判
+`unsupported-note`（「带 note 却没给 support」）。这不是缺陷，是 §3.2 的闸门在真实路径上开火：
+模型自述必须有候选句支撑。补上 `support:["s1"]` 后通过，界面只把它渲染成 `.as-note`
+（「模型说明（不进答案证据）」），句子仍逐字来自候选。
+
+### 60.4 存储档位（明文）
+
+| 操作 | `ciphercat.ai-model.session` | `ciphercat.ai-model.persist` |
+|---|---|---|
+| 不勾「记住」保存 | 有 | 空 |
+| 勾「记住」保存 | **被清掉** | 有 |
+| 一键清除 | 空 | 空 |
+
+重载页面（`Page.reload`；导航到同一个带 hash 的 URL 是 same-document，并不重载）后：
+配置还在，开关**回到默认关**，未开开关时 0 请求。
+
+### 60.5 请求形状（provider 侧实测）
+
+- `POST /v1/chat/completions`，`Authorization: Bearer <key>`；**请求体 0 命中 key**；
+- body：`model=fake-model`、`temperature=0`、`stream=false`、`max_tokens=300`；
+- 提示词含用户问题与候选清单（`s1 | docs/standards/gbt32907-SM4/03-Algorithm.md:25 | …`）。
+
+### 60.6 答案层不变量在界面上成立
+
+模型选了 `s1` 之后，答案卡从 2 句变成 1 句，**出处没变**（仍是 `03-Algorithm.md:25`），
+选中的句子是原答案的子串——「模型只能缩小/重排同一段」在渲染层也成立。
+429 时状态位是「模型调用失败：额度或频率受限（429），本次不重试」，检索答案与出处**照旧显示**。
+
+### 60.7 顺带修掉一个把机器搞停的运维坑
+
+两个浏览器 harness 原来把 Chrome profile 建在 `/tmp`（tmpfs，16G）。连跑几次后 `/tmp` 到 **100%**，
+DSH 的 bash 直接起不来（`ENOSPC: no space left on device`，连 `df` 都执行不了），只能靠 GUI 终端救回来：
+
+- `du -xsh /tmp/*` 显示历史 profile 与解包目录（`np-ff-*`、`sb-ff-*`、`appimage_extracted_*` 等）把 16G 吃满；
+- 清掉本轮与历史 profile 后 `/tmp` 回到 14G 用 / 2.1G 可用（88%）；
+- 两个脚本改为把 profile 建在 `.tmp-build/` 并在退出时删除（`verify-ai-assistant.mjs` 同样漏，已一起改）。
+
+纪律：**harness 的临时目录不要落在 /tmp**。tmpfs 满的时候连 shell 都起不来，恢复只能走 GUI。
+
+### 60.8 仍然没做（不得读成已完成）
+
+1. 真实 provider 调用（仓库无 key；只验了本地假 provider 的真实 HTTP 路径）；
+2. 费用估算（仍只显示 token 与耗时，没有单价输入）；
+3. ~~`verify` 类失败的中文文案不够准：`unsupported-note` 的真实原因是「有说明没给 support」，
+   界面却说「模型选中的句子不在候选里」~~：2026-11-18 傍晚按越界类别拆开，并在补证据时
+   又抓到「只改『记住』也计费」，两处一起修（见 §61）。
+
+### 60.9 门禁（最终树实跑，2026-11-18 15:2x）
+
+| 项 | 结果 |
+|---|---|
+| `npm run test:unit` | rc=0，**120 文件 / 1340 通过 1 跳过**（上一轮 1336；+4 例联动缓存） |
+| `npm run lint:check` | rc=0，**0 错 0 警** |
+| `npm run type-check` | rc=0 |
+| `npm run verify:all` | rc=0（contract errors=0 / blocks=2151、`FIELD_CHECK ok blocks=224`、`CLOSURE_CHECK ok names=226`、模板 29/29、demos 60/60、`DOC_INDEX_CHECK ok`） |
+| 真浏览器 | 新脚本 52/52；旧脚本 `verify-ai-assistant` 26/26（联动重构后回归） |
+
+## 61. 校验失败说得对，且「只改『记住』」不再白烧一次调用（2026-11-18 傍晚，接 §60）
+
+§60.8 留的第 3 条是文案不准：`unsupported-note` 的真实原因是「模型给了说明却没标注依据」，
+界面却说「模型选中的句子不在候选里」。这一轮把文案按**越界类别**拆开；补浏览器证据时又抓到
+一处会真花钱的缺陷——只勾／取消「记住」再保存，也会再发一次模型请求。
+
+### 61.1 五类越界各说各的（原来共用一句）
+
+`verifyRewrite` 早就返回结构化 code（五类），但界面把它拼成一串码再套一句固定的
+「不在候选里」——五类里只有 `unknown-id` 是那件事。现在逐类对准：
+
+| 越界码 | 真实含义 | 界面文案（zh） |
+|---|---|---|
+| `unknown-id` | 选了请求之外的句子 | 模型选了候选之外的句子（id 不在本次候选里） |
+| `duplicate-id` | 同一句选了多次 | 模型把同一句选了多次 |
+| `too-many` | 超过上限 | 模型选的句子超过上限 |
+| `unsupported-note` | 有说明没给 support | 模型给了说明却没标注依据（说明必须由候选句支撑） |
+| `unknown-support` | 说明引用了候选外的 id | 模型说明引用的是候选之外的句子 |
+
+实现分三层，各自可测：
+
+- `useModelAnswer` 把 `applySelection` 的 `errors` 去重成 `ModelFailure.violations`（不再只给拼串）；
+- 新模块 `src/composables/model-failure-text.ts` 收拢「失败码 / 越界码 → locale key」，文案以参数
+  注入（`text` / `status`），单测不用挂组件；分隔符留给组件按当前语言选（`；` / `; `）；
+- `AnswerSection` 只把 key 换成文案，未知码退回 `modelErrorVerify` 或 HTTP 状态。
+
+### 61.2 顺带抓到：改「记住」也计费
+
+新的浏览器场景（假 provider 回 note 不给 support）跑通后，我加了一条计数断言：勾「记住」→
+保存 → 请求数必须不变。**第一次跑就红了**：`save()` 每次都 `adopt` 一个新对象，而界面按 `config`
+的**身份**触发调用（§60.2 的修 #1 正是为了让「保存后要调用」成立），于是「只改存储档位」也白烧
+一次额度。钱不多，但 §3.4 的口径是「一次操作一次调用」，改存储档位不是一次新的提问。
+
+修法：`config.ts` 新增 `sameModelConfig`（比较 `checkConfig` 归一化后的五个字段），`save()` 在内容
+没变时保留**原对象引用**，watch 自然不再触发；内容真的变了仍换引用（否则换了 provider 还在用旧配置）。
+
+### 61.3 证据：单测 + 变异探针 + 真浏览器
+
+- 新增 `tests/unit/ai-helper-model-failure-text.test.ts` **8 例**：五类各出各句、重复去重、无分类
+  兜底、调用层八个码、未知码按状态码说话、两张映射表的 key 在中英语言包真实存在（`ui('字面量')`
+  扫描器看不见动态 key，这层缺键只能靠它守）。
+- `ai-helper-model-config.test.ts` +2 例（`sameModelConfig` 同/异五个字段）、
+  `ai-helper-model-answer.test.ts` +1 例（同一份配置保留引用、内容变了换引用）。
+- **变异探针**：把 `adopt` 改回「总是换引用」，该例立刻红；还原后绿——证明它钉的是机制本身。
+- 真浏览器脚本 `scripts/verify-ai-helper-model.mjs` 52 → **57 条**：新增「note 没给 support 说的是
+  说明那句」「不冒充『不在候选里』」「失败仍显示答案与出处」「失败不重试」，以及「只改记住不重新调用」。
+  新截图 `out/model-browser/model-06b-verify-unsupported.png`：状态位是「模型调用失败：模型给了说明却
+  没标注依据（说明必须由候选句支撑）」，模型自述单独挂在「模型说明（不进答案证据）」下，检索答案与
+  `docs/standards/gbt32907-SM4/03-Algorithm.md:25` 出处照旧显示。
+
+### 61.4 仍然没做
+
+1. 真实 provider 调用（仓库无 key）；
+2. 费用估算（仍只有 token 与耗时，没有单价输入）。
+
+### 61.5 门禁（最终树实跑，2026-11-18 16:2x）
+
+| 项 | 结果 |
+|---|---|
+| `npm run test:unit` | rc=0，**121 文件 / 1351 通过 1 跳过**（上一轮 120 / 1340；+1 文件 / +11 例） |
+| `npm run lint:check` | rc=0，**0 错 0 警** |
+| `npm run type-check` | rc=0 |
+| `npm run verify:all` | rc=0（contract errors=0 / blocks=2151、`FIELD_CHECK ok blocks=224`、`CLOSURE_CHECK ok names=226`、模板 29/29、demos 60/60、`DOC_INDEX_CHECK ok`） |
+| 真浏览器 | `verify-ai-helper-model` **57/57**；控制台 0 error、0 条 CSP 违规 |
+
+## 62. D 线补用户文档：问答助手使用页（中英双份），两处基线随语料增长（2026-11-18 傍晚，接 §61）
+
+### 62.1 为什么补这一页
+
+§59–§61 把 D 线的服务层、面板与验收做完了，但**用户侧没有可读的说明**：`docs/guides/` 下 11 对
+指南里没有 AI 助手，能力只能从 SPEC-CARDS 的一行和实验记录里拼出来。文档中心侧栏也看不到入口
+（本来就没有页面），属于「代码到了、文档没到」的缺口。
+
+### 62.2 写了什么
+
+- 新增 `docs/guides/AI-HELPER.md` 与 `AI-HELPER.en.md`（各 195 行、8 个二级标题、51 行表格，
+  结构与链接逐节对齐）：入口与边界、查文档（检索范围 / 键盘 / 答案卡 / 拒答）、查积木、
+  两个 tab 的联动、从代码生成工作区（模板与 AST 两条路径、拒绝半成品）、自带 key 的模型选句
+  （存储档位、一次调用口径、五类越界文案、失败不吞答案、风险与未做项）、索引维护命令、相关文档。
+- 导航接线：`docs/README.md` / `.en.md` 用户文档表各加一行；`USER-GUIDE.md` / `.en.md`
+  「文档路径」表各加一行，并把「查文档、查块」两个旧图标更正为「问答助手」一个入口
+  （侧栏实际只有 projects / files / functions / assistant 四个面板）。
+- 侧栏分类：`src/utils/docs-catalog.ts` 的 `GUIDE_CATEGORIES` 加 `AI-HELPER`（落 `user-guides`），
+  `TITLE_LABELS` 加「AI 助手」/「AI assistant」——后者是 `doc-titles.json` 缺该项时的回退，
+  侧栏现在显示的是正文 H1（`getDocTitle` 先读构建期标题索引）。
+- 重生成产物：`src/generated/doc-titles.json` **439 条**；`doc-index.json` **439 篇 / 4049 段 /
+  hash `5ecbdb3f4ccb216a`**（上一轮 437 篇）。
+
+### 62.3 语料长了两页，两处基线数字跟着动（不是放宽断言）
+
+| 断言 | 旧 | 新 | 原因 |
+|---|---|---|---|
+| `ai-helper-linkage` 词表派生文档数 | 383 | **385** | 新增中英两页都能派生出块词；「每一篇都查到 ≥1 个块」的第二条断言仍为空清单 |
+| `doc-answer` 留出集作答 / 答对 | 6 / 5 | **7 / 5** | 语料变大使 IDF 整体位移，「RSA 的 PSS 签名填充怎么算」覆盖度刚好压到 0.60 阈值，多答一条，出处 `docs/build/rsa.md` 仍不在期望集 |
+
+两条都保留可回指的理由与轮廓：`top1` 仍 8/12；调参集仍 16 答 / 15 在期望、已知错例清单原样
+（只有 USER-GUIDE 那条类型检查题）。写作时先删掉了正文里点名算法示例的措辞（「AES 密钥扩展」
+「认证加密」），避免把评测题干词抄进语料——仍然挡不住 IDF 位移，这类基线本来就会随语料漂移。
+
+### 62.4 门禁（最终树实跑，2026-11-18 17:3x）
+
+| 项 | 结果 |
+|---|---|
+| `docs:index:check` | `DOC_INDEX_CHECK ok`（439 篇，副索引无更新） |
+| `docs:check-links` | files=445，**broken=0** |
+| `docs:mermaid:check` | 9 文件 / 15 块 / failed=0 |
+| `docs:titles:check` | `DOC_TITLES_OK entries=439` |
+| 四个受影响测试文件 | 48 例全通过（docs-catalog / doc-search / doc-answer / ai-helper-linkage） |
+| `npm run test:unit` | rc=0，**121 文件 / 1351 通过 1 跳过** |
+| `npm run lint:check` / `type-check` | rc=0 / rc=0 |
+| `npm run verify:all` | rc=0（contract errors=0、FIELD 224、CLOSURE 226、模板 29/29、demos 60/60、`DOC_INDEX_CHECK ok`） |
+| 真浏览器（一次性 BiDi 探针） | **7/7**：深链 `#/docs?doc=/docs/guides/AI-HELPER.md` 直达、H1 渲染成中文标题、侧栏「用户文档」下有该入口且高亮、8 个二级标题、10 张表（41 行）、页内 5 个链接、正文 4588 字符；截图 `out/docs-ai-helper.png`（1440×900，中文界面） |
+
+### 62.5 没做的
+
+1. 本页只写界面里已有行为；A/B 线的评测读数与实验记录不搬进用户文档。
+2. 缺块回流（channel 1）只有数据面，没有面板徽标，因此没有写进用户可见步骤。
+3. 真实 provider 与费用估算仍未落地（同 §61.4）。
+4. 镜像到 metacrypt_server 仍未开始（PARALLEL-EXECUTION 第 7 行口径已定）。
+5. 浏览器探针是一次性的（跑完即删，不进版本库）；这类页面的长期回归靠 `docs:titles:check`、
+   `docs:index:check`、`docs:check-links`、`docs:mermaid:check` 四道门禁，而不是脚本驻留。
+   无头 Firefox 默认 `navigator.language=en-US`，界面语言取自它，探针里用 `emulation.setLocaleOverride`
+   钉成 `zh-CN` 才得到中文截图——这不是产品缺陷，是浏览器语言。
+
+## 63. 用户文档回归：两条「听起来合理」的句子是假的（2026-11-18 傍晚，接 §62）
+
+### 63.1 怎么发现的
+
+§62 那页用户文档写的是「界面已有行为」，但两句环境相关的描述没有回代码取证，只按常见部署形态
+写了。本轮把全页的数字与行为断言逐条对回实现，其余 14 条都对得上：
+
+| 断言 | 取证点 | 结论 |
+|---|---|---|
+| 检索防抖 120 ms | `DocSearchPanel.vue:240` `}, 120)` | 对 |
+| 结果最多 12 条 | `DocSearchPanel.vue:223` `{ limit: 12 }` | 对 |
+| 插块偏移 40 px、错开 24 px | `BlockSearchPanel.vue:183` | 对 |
+| 文件上限 2 MB / 诊断最多 20 条 | `CodeToWorkspaceDialog.vue:179`、`:177` | 对 |
+| 缺词最多 6 个 | `AnswerCard.vue:34` `missing.slice(0, 6)` | 对 |
+| 候选 5 句 / 300 tokens / 20 s / 0 重试 | `config.ts:24-25`、`provider.ts` 候选投影 | 对 |
+| 七类输入输出类型 | `BlockSearchPanel.vue:124` | 对 |
+| 五类越界各自一句话、九类调用失败 | `model-failure-text.ts` 两张映射表 | 对 |
+
+两条对不上（中英各一处，共四处文本）：
+
+1. §5 末尾「没有网络时首次解析会失败」——**假**。AST 路径用的是浏览器内的 Pyodide，
+   由 `public/pyodide/` 同源提供（`src/runtime/python-runner.worker.ts:5-6`「同源加载、不访问外部 CDN」，
+   `:162` 缺省 `indexURL` 就是 `/pyodide/`），离线构建里根本不发外部请求；它失败的真实原因
+   是资源缺失或 45 s 解析超时（`src/runtime/python-parse.ts:15`）。
+2. §7「运行时零 IO：索引随应用一起加载」——**假**。Markdown（4083 KB）与 PDF（3499 KB）两份索引
+   是**按需动态加载**（`DocSearchPanel.vue:179`/`:191` 的 `import(...?raw)`，同文件 `:144` 的注释
+   明写「不进主包」）；只有块索引（285 KB）是静态打包（`BlockSearchPanel.vue:90`）。
+   「零 IO」这个说法本身也把「不访问网络与后端」和「不读本地 chunk」混成一句。
+
+### 63.2 改法
+
+两处都改成可回指代码的说法，中英同改（保持逐节对齐）：
+
+- §5：解析器 = 浏览器内 Pyodide（约 12 MB），随应用同源打包，首次解析加载、之后复用，
+  不依赖外部 CDN；失败原样报原因（资源缺失 / 45 s 超时）。
+- §7：检索不访问网络与后端，但两份大索引不在首屏包里：Markdown 与 PDF 页索引首次检索该范围时
+  按需加载，块索引随面板打包。
+
+**没有做**的是给这类散文断言加自动门禁：数字类断言可测（已有单测钉着 120/12/40/24/2 MB/20/6/5/300），
+环境类断言（资源从哪来、什么进主包）只能靠构建期读代码，写进测试会变成对着注释断言注释。
+
+### 63.3 改后读数（与 §62 对照）
+
+| 项 | 结果 |
+|---|---|
+| `docs:index` | 439 篇 / 4049 段 / 956144 tokens / hash **`8e792d9192a96981`**（§62 是 `5ecbdb3f4ccb216a`；只动两句，篇段数不变） |
+| `docs:index:check` | `DOC_INDEX_CHECK ok`（副索引无更新） |
+| `docs:check-links` | files=445，**broken=0** |
+| `docs:titles:check` | `DOC_TITLES_OK entries=439` |
+| 四个语料相关测试文件 | **48 例全通过**：`doc-answer` 留出集仍 top1 8 / 作答 7 / 答对 5，`ai-helper-linkage` 仍 385 篇——两句措辞没有让 §62 的基线再漂 |
+
+### 63.4 教训
+
+写用户文档时，「资源从哪来 / 谁进主包 / 离线能不能用」这三类必须回代码，不能从同类产品的
+常见形态推——本项目恰好是「运行时不联网、但大索引仍是懒加载」这种容易被想当然的组合。
+
+---
+
+## 64. A/B 线入口进左栏：做成「动作图标」而不是第 5 个面板（2026-11-18 傍晚，接 §63）
+
+### 64.1 起因
+
+owner 问「为什么 A/B 线入口不放到左侧栏」，并确认三件事都要：① B1 入口进左栏；② A 线开 UI；③ D 线往生成式走。
+后两件各是一轮独立的活（A 线要把 `p4/` 的锚点→裁决→人签核做成可交互流程；D 线生成式要先定 provider 与费用口径，
+还要回答「生成内容无法逐字回链」这个立命问题），本节只做第 ①。
+
+为什么原先在「更多」菜单：它是**动作**不是浏览——解析→核对诊断→载入会整块替换画布且不可撤销，载入必须走编辑器
+自己的 `loadWorkspace`（深嵌套检查、迁移、失败回滚）。左栏另外四个是互斥面板（点当前图标回缺省 `files`），
+把一个「打开浮层」的图标混进去，`active` 语义就乱了。
+
+### 64.2 改了什么
+
+- `EditorSidebar.vue`：活动条第 5 个按钮，`activity-btn--action`，沉底并在上方留一条 18px 细线；
+  `aria-haspopup="dialog"`，**不设 aria-pressed、也没有选中态**——浮层遮住整屏，选中态根本看不见。
+  图标是「代码行 → 两块」，与函数面板的 `<>` 区分开。
+- `App.vue`：只加一行 `@open-code-to-workspace="openCodeToWorkspace"`；同时删掉一处重复空行，
+  文件仍是 **500 行**（≤500 不变量不破）。
+- `editor-sidebar.css`：`.activity-btn--action { margin-top: auto }` + `::after` 分隔线；
+  窄屏（≤1200px）横条里把自动外边距与分隔线一起撤掉，否则会变成图标间的杂线。
+- 文案复用现有 `codeToWorkspaceAction`，没有新增 locale 键（中英键集不变）。
+- 文档：`AI-HELPER.md` / `.en.md` 的入口表、§5 与首段改成「左栏底部的图标（『更多』菜单里是同一项）」，
+  并写明它是动作不是面板；中英各 195 行，`docs:check-links` 445/0、`docs:titles` 439。
+- 语料改了两段 → 重跑 `docs:index`：439 篇 / 4049 段 / **hash `11381ca29f6bcf46`**（§63 为 `8e792d9192a96981`），
+  `docs:index:check` ok；四个语料测试 48/48，**基线没有漂**（留出集仍 top1 8 / 作答 7 / 答对 5，linkage 385 篇）。
+
+### 64.3 真浏览器验收（一次性 BiDi 探针，跑完即删）
+
+无头 Firefox + WebDriver BiDi，复用 `:5188` 的 dev server，独立 profile：**18/18**
+
+- 活动条 5 个按钮，前 4 个仍是四个互斥面板，第 5 个 title = 「从代码生成工作区」；
+- `aria-haspopup="dialog"` 且没有 `aria-pressed`；按钮有真实尺寸、`y > 80`（确实沉在底部）；
+- 点击后 `.c2w` + `role="dialog"` 出现、`aria-label` 正确，**当前面板仍是「文件」**（动作没有污染面板状态机）；
+- `×` 关闭后浮层消失；
+- 窄屏 1000×800：横条里 5 个按钮都在、第 5 个可见、同样能点开浮层。
+
+截图留在 `.tmp-build/rail/`（工作目录，gitignore，不进版本库）。
+第一次跑是 17/18，唯一失败是**探针自己的断言写窄了**：无头 Firefox 的界面语言是 `en-US`，
+按钮标题是 "Generate workspace from code"，而断言只匹配中文。改成双语正则后 18/18——不是产品缺陷。
+
+### 64.4 没做的
+
+1. A 线开 UI：`p4/` 目前的产物是锚点 + 裁决 JSON + 人签核，做成可交互流程要另立一轮。
+2. D 线生成式：需要 provider/单价口径，并且要先定「生成内容不再逐字可回链」的取舍。
+3. 没有把这条断言并进 `scripts/verify-ai-assistant.mjs`：那个探针要 Chrome，本机没有；
+   加了也跑不了，等于放一条不可验证的门禁。长期回归靠 docs 门禁 + 本节记录。
+
+---
+
+## 65. 按 owner 的要求改成左栏面板：A/B 线不再以浮层出现（同日，接 §64）
+
+### 65.1 §64 的形状是错的
+
+§64 把 A/B 线入口做成了「左栏底部的动作图标 + 点开整屏浮层」，理由是「它是动作不是面板」。
+owner 连问三次「为啥不在左侧栏里」——问的不是图标在哪，而是**界面在哪**：另外四个入口点开都在栏里
+展开一块面板，只有这一条弹到屏幕中间。功能对、位置不对，属于我按自己的类型学判了需求。
+
+所以判定改掉：A/B 线是**左栏第 5 个互斥面板**，和问答助手/函数面板同一套语义。
+
+### 65.2 改了什么
+
+| 文件 | 改动 |
+|---|---|
+| `useEditorPanels.ts` | `EditorPanel` 加 `'code'`；新增 `openPanel(panel)`（菜单/联动要「明确打开」，`togglePanel` 在已经打开时会把面板收掉，从菜单点过去会看起来没反应） |
+| `useCodeToWorkspaceImport.ts` | 不再自己持有 `visible`：面板开关归 `activePanel`；只留 `openCodeToWorkspace`（收菜单 + 切面板）与 `onApplyReversedWorkspace`（载入 + 回执 + 收起）。两份可见性状态迟早会不同步，删掉一份 |
+| `CodeToWorkspaceDialog.vue` | 新增 `docked` prop：根节点 `c2w-dock`（无遮罩、无居中、`aria-modal=false`），卡片宽高 100% 跟栏；浮层形态保留，窄屏与它处仍可用 |
+| `EditorSidebar.vue` | 第 5 个按钮从「动作启动器」改回普通面板按钮（`:active`、`aria-pressed`、`toggle-panel`）；`activity-btn--action` 那套装扮随之下线 |
+| `App.vue` | 把 `<CodeToWorkspaceDialog>` 从「模板尾部独立浮层」移进 `EditorSidebar` 的 slot 链（`v-else-if="activePanel === 'code'"`、`:docked="!isNarrowViewport"`），删掉浮层的 destructure 与独立挂载；**文件仍是 500 行** |
+| `editor-sidebar.css` | 删掉 `.activity-btn--action`（沉底 + 细线）与它的窄屏例外——同一排里不能有两种语义 |
+
+宽度：代码面板比检索面板再宽一点（**460px**，其余 400），粘贴框与诊断清单才不挤。
+
+### 65.3 真浏览器验收（一次性 BiDi 探针，跑完即删）
+
+无头 Firefox + WebDriver BiDi，独立 profile，本机 `vite --port 5199`：**24/24**
+
+- 活动条 5 个按钮，第 5 个 title = 「从代码生成工作区」；
+- 点它 → `.c2w-dock` **落在 `.side-panel` 里**、没有 `.c2w-overlay`、`aria-modal="false"`、图标 `aria-pressed="true"`、
+  栏宽展到 460、面板宽度 = 栏宽 − 活动条，文件面板被换掉（互斥）；
+- **画布中心 `elementFromPoint` 不在面板里**——没有全屏遮罩，画布可见可点（这是 §64 做不到的那一条）；
+- 再点一次图标 → 回到文件面板、栏宽收回缺省；
+- 「更多」菜单里的同一项 → 打开的是同一个左栏面板（不是另一份浮层）；
+- 窄屏 1000×800：横条里 5 个按钮都在，打开时走浮层形态（`docked=false`，`aria-modal="true"`）。
+
+截图：`.tmp-build/rail/wide-dock.png`、`wide-files.png`、`narrow-overlay.png`（工作目录，gitignore）。
+
+### 65.4 门禁
+
+`vue-tsc` rc=0、`eslint` rc=0；`docs:index` → 439 篇 / 4049 段 / hash `8863970a78838ee1`，
+`docs:index:check` ok、`docs:check-links` 445/0、`docs:titles` 439；文档中英各 195 行。
+四个语料测试与全量单测见下一条（同轮实跑）。
+
+---
+
+## 66. A 线开 UI：先做「只读预览」，判据旁边必须写「未签核」（2026-11-18 晚，接 §65）
+
+### 66.1 这轮做了什么
+
+owner 要的三件里的第 ②：A 线（标准原文 → 工作区）不能只有 `p4/` 的脚本产物，要有一个能看的界面。
+第一版（§64 的教训之后）不再问「要不要一键生成」——A 的原文没有可执行语义，生成只能是
+「能搭 / 部分 / 不能 + 人签核」（P4-SCOPE §0）。所以本轮只做**只读预览**：
+
+- 左栏第 6 个面板「标准 → 工作区」：标准切片 → 条款单元 → 三档判据 → 缺口 / 口径边界 / 原文锚点；
+- 锚点点击走文档中心深链（`planDocLine`，与检索命中同一条规则）；
+- 面板顶部写明「构建期机器候选 / 语义等价未验证 / 未签核」，**没有**签核入口与一键生成。
+
+### 66.2 数据链：制品必须能被别人复现
+
+`scripts/build-verdicts-index.mjs` 把 p4 的裁决 JSON 合成为 `src/services/ai-helper/verdicts-index.json`：
+
+- 三档计数、缺口总数、证据层分布都**从 clauses 重算**，与源文件声明的 `counts` 对账，不一致即失败；
+- 每份源文件记 sha256；源文件必须被 git 跟踪，否则拒绝生成——提交出去的制品要能由入库文件复现；
+- `npm run verdicts:index` 重写、`verdicts:index:check` 只比对；`prebuild` 每次构建前重跑。
+
+本轮只收两份**已入库**的切片：FIPS 180-4 SHA-2（1 能搭 / 3 部分 / 1 不能，11 处缺口）与
+SP 800-38B CMAC（0 / 3 / 0，6 处缺口）；合计 2 份标准 / 8 个条款 / 1 能搭 / 6 部分 / 1 不能 / 17 处缺口。
+第三份 SP 800-38C CCM 的裁决 JSON 尚未入库（另一会话的 §57 那笔），因此**没有**进制品：
+索引不能依赖未提交文件，否则干净克隆复现不出来。它落库后只需在 `SOURCES` 加一行并重跑。
+
+### 66.3 界面
+
+- `StandardsToWorkspacePanel.vue` + `standards-to-workspace.css`：停靠形态（460px，无遮罩）与窄屏浮层两态；
+  面板在 `EditorSidePanels` 里用 `defineAsyncComponent` 按需加载（见 66.6 的入口 chunk 预算）；
+- 每档颜色只借语义 token（success / warning / danger），不新增裸色值；
+- 条款行显示档位、标准定位、步数；展开后给判据理由、证据层徽标（`证据 L1`）、步骤（含块名与
+  「画布 / 内部 / 无块」）、缺口、口径边界、锚点行区间；语义等价的限定写在面板顶部（不重复成两处）；
+- 文案全走 `ui()/uiFormat()`，中英键集与占位符集合一致（`locale-ui-messages.test.ts` 守着）。
+
+### 66.4 为了不撑爆 App.vue，顺手抽了一层
+
+`App.vue` 原本正好 500 行（≤500 不变量）。新增面板要加 import + slot 分支，直接超限。
+把四个既有面板的 slot 链抽成 `EditorSidePanels.vue`（只搬装配、不改行为），App 降到 486 行，
+`EditorPanel` 加 `'standards'`，`useEditorPanels` 多导出 `openDocLine` 供锚点复用。
+
+### 66.5 门禁与真浏览器验收
+
+- `vue-tsc` rc=0、`eslint` 0 error 0 warning；
+- `verdicts:index` → 2 份 / 8 条款 / hash `ae14d5bf7680f110`，`:check` ok；
+- `docs:index` → 439 篇 / 4051 段 / hash `2bc0f4ae70e7b635`，`:check` ok；`docs:check-links` 445/0；
+  `docs:titles` 439；`docs:mermaid` 15 块 / 0 失败；文档中英各 216 行；
+- 新增 `tests/unit/verdicts-index.test.ts`（11 条）：结构与新鲜度、计数可重算、两份切片的实测档位、
+  块名落地（含原生核心块清单）、锚点文档存在且行号不越界、深链格式、否定对照；
+- 真浏览器（无头 Firefox + BiDi，独立 profile，本机 `:5199`）：**30/30**
+  - 活动条 6 个按钮、第 6 个是「标准 → 工作区」；点开后 `.stw-dock` 落在 `.side-panel` 里、
+    无 `.stw-overlay`、`aria-modal=false`、`aria-pressed=true`、栏宽 460、文件面板被换掉、
+    **画布中心 `elementFromPoint` 不在面板里**（无全屏遮罩）；
+  - 数据：两份切片、SHA-2 计数 1/3/1/11、5 个条款、三档标签齐全；
+    面板文本含「机器候选 / 语义等价 / 未签核」，且**不含**「已覆盖」；
+  - 展开条款：理由（无执行单元）、缺口 ≥1、锚点 `L886` 等行区间、语义未验证；
+  - 点锚点（拦 `window.open` 走回退）落到 `#/docs?doc=…00-Standard-Source.md&line=886`；
+  - 切 CMAC：0/3/0/6、3 个条款、理由为「部分步骤只在生成器闭包」；
+  - 关闭回文件面板且栏宽收回；窄屏 1000×800 走浮层形态（`aria-modal=true`）、数据照常加载。
+
+### 66.6 没做的（明确不在这轮）
+
+1. A 线生成：不提供「一键生成工作区」——原文没有可执行语义，给按钮就是骗人；
+2. 签核：面板只写未签核，没有签核写回（要签名人、时间、范围与存储位置，另立一轮）；
+3. 第三份切片（CCM）进制品：等它的裁决 JSON 落库；
+4. 没有把 BiDi 探针并入长期门禁：本机没有 Chrome，`scripts/verify-ai-assistant.mjs` 那套跑不了；
+   长期回归靠 `verdicts-index.test.ts` + 文档门禁 + 本节记录。
+
+### 66.7 一个真实约束：入口 chunk 只剩 13 字节
+
+`npm run build:check-bundle`（CI 的 quality.yml 会跑）要求入口 chunk ≤ 64 KB。基线（HEAD 8db8818）是
+**63690 字节**，本轮新面板的界面文案全部落在 `ui-messages.ts`，而它整份进入口 chunk：
+第一版一加就是 67435 字节，**直接红**。
+
+处理顺序（都实跑过）：
+
+1. 面板改成 `defineAsyncComponent` 按需加载——面板与 52 KB 裁决索引都不进入口；入口仍是 67435，
+   说明增量基本全是文案，不是组件代码；
+2. 把 31 个键 / 4342 字节压缩到 20 个键 / 2310 字节：删掉重复的「语义等价」详情行（顶部已写）、
+   证据层四档并成 `证据 {layer}`、复用已有的 `loading` 键、缩短英文串；
+3. 最终 **65523 / 65536**，只剩 13 字节。
+
+结论：**这个面板的文案已经顶到预算**，下次再往 `ui-messages.ts` 加一段中文（UTF-8 三字节/字）就会
+再红。真正的解法是把 locale 消息按面板拆块、按需加载（或让英文包懒加载），那是独立一轮的改动，
+本轮不做；先把这个约束写在这里，避免下一位以为是随机失败。

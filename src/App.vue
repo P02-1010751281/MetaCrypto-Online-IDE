@@ -19,37 +19,19 @@
       @set-entry="onSetEntryFile"
       @toggle-panel="togglePanel"
     >
-      <!-- 互斥面板：同一时刻只渲染一个，与 activity bar 的选中项一一对应。 -->
-      <ProjectPanel
-        v-if="activePanel === 'projects'"
-        :current-id="currentProjectId"
-        :overlay="isNarrowViewport"
-        @close="closePanel"
-        @renamed="onProjectRenamed"
-      />
-      <CryptoFunctionPanel
-        v-else-if="activePanel === 'functions'"
-        :visible="true"
+      <!-- 互斥面板：同一时刻只渲染一个（链在 EditorSidePanels 里），与 activity bar 的选中项一一对应。 -->
+      <EditorSidePanels
+        :active-panel="activePanel"
+        :narrow="isNarrowViewport"
+        :current-project-id="currentProjectId"
         :workspace="currentWorkspace"
-        :docked="!isNarrowViewport"
+        :block-count="blockCount"
         @close="closePanel"
-      />
-      <AssistantPanel
-        v-else-if="activePanel === 'assistant'"
-        :visible="true"
-        :workspace="currentWorkspace"
-        :docked="!isNarrowViewport"
-        @close="closePanel"
-        @open="onOpenDocHit"
-        @browse-all="openDocs"
-      />
-      <CodeToWorkspaceDialog
-        v-else-if="activePanel === 'code'"
-        :visible="true"
-        :current-block-count="blockCount"
-        :docked="!isNarrowViewport"
-        @close="closePanel"
-        @apply="onApplyReversedWorkspace"
+        @project-renamed="onProjectRenamed"
+        @open-doc-hit="onOpenDocHit"
+        @browse-all-docs="openDocs"
+        @apply-workspace="onApplyReversedWorkspace"
+        @open-source="openStandardSource"
       />
     </EditorSidebar>
 
@@ -139,11 +121,8 @@
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import BlocklyEditor from '@/components/BlocklyEditor.vue';
-import CryptoFunctionPanel from '@/components/CryptoFunctionPanel.vue';
-import ProjectPanel from '@/components/editor/ProjectPanel.vue';
-import AssistantPanel from '@/components/ai-helper/AssistantPanel.vue';
-import CodeToWorkspaceDialog from '@/components/ai-helper/CodeToWorkspaceDialog.vue';
 import EditorSidebar from '@/components/editor/EditorSidebar.vue';
+import EditorSidePanels from '@/components/editor/EditorSidePanels.vue';
 import EditorToast from '@/components/editor/EditorToast.vue';
 import EditorBreadcrumb from '@/components/editor/EditorBreadcrumb.vue';
 import EditorHeaderActions from '@/components/editor/EditorHeaderActions.vue';
@@ -221,6 +200,7 @@ const {
   togglePanel,
   closePanel,
   openPanel,
+  openDocLine,
   onOpenDocHit,
 } = useEditorPanels({ notify: showToast });
 
@@ -234,13 +214,19 @@ function openDocs(q?: unknown): void {
   // 两个调用点：工具栏 open-docs 零载荷（`'open-docs': []`），面板 browse-all 传 string。
   void router.push(buildDocsLocation(q));
 }
+
+/** A 线条款锚点：打开标准原文并定位到行（与检索命中共用 openDocLine 的新标签页/回退策略）。 */
+function openStandardSource(payload: { doc: string; line: number }): void {
+  closeMenus();
+  openDocLine(payload.doc, payload.line);
+}
 const currentProjectId = computed(() => Number(route.params.id) || null);
 
 /** 问答助手（文档/积木检索）要读路径与摘录、函数面板是「名字 + 参数 + 两枚动作」的密排行、
  *  代码面板要放粘贴框与诊断清单，248px 都不够用；进这些面板自动展宽，回文件/项目收回缺省宽度。 */
 watch(activePanel, (panel) => {
-  const wide = panel === 'assistant' || panel === 'functions' || panel === 'code';
-  setLeftWidth(wide ? (panel === 'code' ? 460 : 400) : undefined);
+  const wide = panel === 'assistant' || panel === 'functions' || panel === 'code' || panel === 'standards';
+  setLeftWidth(wide ? (panel === 'assistant' || panel === 'functions' ? 400 : 460) : undefined);
 });
 
 // 文件操作要置「有未保存改动」，而脏标记由保存层（useEditorProject）提供；

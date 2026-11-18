@@ -1,0 +1,1360 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "scripts/build-verdicts-index.mjs",
+  "note": "三档判据是构建期机器候选，语义等价未验证；签核在人，界面不得把 tier 说成「已覆盖」。",
+  "generatedFrom": [
+    {
+      "path": "experiments/ai-helper-2026-11-14/p4/verdicts.json",
+      "sha256": "0f7017f0c6824703934a2c0fa258acf1bc692c92ffa644b7e154169ae279fe06",
+      "standardId": "fips180-4-SHA2",
+      "counts": {
+        "clauses": 5,
+        "build": 1,
+        "partial": 3,
+        "missing": 1,
+        "evidenceLayers": {
+          "L1": 5,
+          "L2": 0,
+          "L3": 0,
+          "none": 0
+        },
+        "gaps": 11
+      }
+    },
+    {
+      "path": "experiments/ai-helper-2026-11-14/p4/verdicts-sp800-38b-cmac.json",
+      "sha256": "e1fa31457e212865c837b2e557f59a7bcca1da22fd8f4abf95cd7dd810a2b103",
+      "standardId": "sp800-38b-cmac",
+      "counts": {
+        "clauses": 3,
+        "build": 0,
+        "partial": 3,
+        "missing": 0,
+        "evidenceLayers": {
+          "L1": 3,
+          "L2": 0,
+          "L3": 0,
+          "none": 0
+        },
+        "gaps": 6
+      }
+    }
+  ],
+  "totals": {
+    "standards": 2,
+    "clauses": 8,
+    "build": 1,
+    "partial": 6,
+    "missing": 1,
+    "gaps": 17
+  },
+  "standards": [
+    {
+      "schemaVersion": 1,
+      "generatedBy": "scripts/p4-verdicts.ts",
+      "standard": {
+        "id": "fips180-4-SHA2",
+        "name": "NIST FIPS 180-4",
+        "version": "180-4",
+        "source_checked_at": "2026-09-12"
+      },
+      "inputs": {
+        "anchors": "experiments/ai-helper-2026-11-14/p4/anchors.json",
+        "anchorsSource": {
+          "path": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+          "lines": 1325,
+          "sha256": "58d09d35fbc77df80e1bff78351b48d8729ae801824524e606eb0c7b0cfdb6cd"
+        },
+        "blockIndex": "src/services/ai-helper/block-index.json",
+        "blockTypes": 224,
+        "tooltipStandardPool": {
+          "size": 3,
+          "blocks": [
+            "hash_sha224_hash",
+            "hash_sha512_hash",
+            "hash_sha512_pad"
+          ]
+        }
+      },
+      "rules": {
+        "noProjectStatusField": true,
+        "tiers": "build = 全部步骤 canvas 且有 L1/L2；partial = 混合或仅内部；missing = 无可执行单元 / 全无块",
+        "evidence": "L1 映射块名 > L2 tooltip 标准号 ∩ BM25 候选 > L3 BM25 候选（只作候选）",
+        "semanticEquivalence": "unverified"
+      },
+      "counts": {
+        "clauses": 5,
+        "build": 1,
+        "partial": 3,
+        "missing": 1,
+        "evidenceLayers": {
+          "L1": 5,
+          "L2": 0,
+          "L3": 0,
+          "none": 0
+        },
+        "clausesWithSameVariantL2": 0,
+        "gaps": 11
+      },
+      "clauses": [
+        {
+          "clauseId": "01-SHA2",
+          "entryPath": "docs/standards/fips180-4-SHA2/01-SHA2.md",
+          "title": "NIST FIPS 180-4 — SHA-2 参考",
+          "standardPosition": "§6.1–§6.7",
+          "tier": "missing",
+          "tierReason": "non-executable",
+          "evidenceLayer": "L1",
+          "anchors": [
+            {
+              "section": "6.1",
+              "click": {
+                "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+                "line_start": 886,
+                "line_end": 1028
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": true,
+              "slice_sha256": "82fe60e32dadfde548345a97c63d66f05be16e7e11b874f74b367b0c7c02c712",
+              "heading": "SHA-1"
+            },
+            {
+              "section": "6.2",
+              "click": {
+                "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+                "line_start": 1029,
+                "line_end": 1115
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": false,
+              "slice_sha256": "8f6fd95b07405462b79d77d17770fc038173c364431bd8d482d3033e227644be",
+              "heading": "SHA-256"
+            },
+            {
+              "section": "6.3",
+              "click": {
+                "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+                "line_start": 1116,
+                "line_end": 1129
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": false,
+              "slice_sha256": "edfd26bf8c850982f15b0422913177988e7ae20ac6a5b3af7d1baf683521a843",
+              "heading": "SHA-224"
+            },
+            {
+              "section": "6.4",
+              "click": {
+                "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+                "line_start": 1130,
+                "line_end": 1215
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": false,
+              "slice_sha256": "89f1335d023136e46b56e043cae6c64333f2f23bdee4005af7472b6342cae5c0",
+              "heading": "SHA-512"
+            },
+            {
+              "section": "6.5",
+              "click": {
+                "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+                "line_start": 1216,
+                "line_end": 1226
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": false,
+              "slice_sha256": "fb78460d0f750eeee5f49b8713a065c5b70dceaed7ebcc0a834ceeb26067b1c7",
+              "heading": "SHA-384"
+            },
+            {
+              "section": "6.6",
+              "click": {
+                "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+                "line_start": 1227,
+                "line_end": 1236
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": false,
+              "slice_sha256": "cf6d919f121fbd2e625039b29dfd00788c7f51005c3964b36ce96d69c4c81ed5",
+              "heading": "SHA-512/224"
+            },
+            {
+              "section": "6.7",
+              "click": {
+                "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+                "line_start": 1237,
+                "line_end": 1250
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": false,
+              "slice_sha256": "171349d2057ab314bdb9556929e1aeb418873b7fbddf5197a035572d70f8238b",
+              "heading": "SHA-512/256"
+            }
+          ],
+          "evidence": {
+            "l1": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "hash_sha256_pad",
+                  "quote": "`hash_sha256_pad` / `hash_sha256_compress` 展示 32-bit 路径；`"
+                },
+                {
+                  "blockType": "hash_sha256_compress",
+                  "quote": "`hash_sha256_pad` / `hash_sha256_compress` 展示 32-bit 路径；`hash_sha224_hash` 和 `hash"
+                },
+                {
+                  "blockType": "hash_sha224_hash",
+                  "quote": "` / `hash_sha256_compress` 展示 32-bit 路径；`hash_sha224_hash` 和 `hash_sha512_hash` 提供对应一键路径。Demo：`dem"
+                },
+                {
+                  "blockType": "hash_sha512_hash",
+                  "quote": "ress` 展示 32-bit 路径；`hash_sha224_hash` 和 `hash_sha512_hash` 提供对应一键路径。Demo：`demos/SHA256-Atomic-Hash"
+                }
+              ],
+              "source": {
+                "path": "docs/standards/fips180-4-SHA2/01-SHA2.md",
+                "line": 40,
+                "heading": "项目映射"
+              }
+            },
+            "l2": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "hash_sha224_hash",
+                  "tooltip": "SHA-224 one-shot hash (FIPS 180-4): sha256 core with SHA-224 IV, 28-byte output SHA-224 one-shot hash (FIPS 180-4): sha256 core with SHA-224 IV, 28-byte output",
+                  "sameVariant": false
+                },
+                {
+                  "blockType": "hash_sha512_hash",
+                  "tooltip": "SHA-384/512 one-shot hash (FIPS 180-4): 64-bit core, size/8 bytes output SHA-384/512 one-shot hash (FIPS 180-4): 64-bit core, size/8 bytes output",
+                  "sameVariant": false
+                }
+              ],
+              "note": "标准号取自块 tooltip，且该块须出现在同一查询的前 5 个 BM25 候选里；sameVariant 标出是否就是本条路径的变体"
+            },
+            "l3": {
+              "hit": true,
+              "query": "NIST FIPS 180-4 NIST FIPS 180-4 — SHA-2 参考 本页是 SHA-2 算法族导航；独立公式和伪代码按消息扩展、压缩函数、摘要输出拆分保存",
+              "top5": [
+                {
+                  "blockType": "hash_sha256_compress",
+                  "score": 59.78
+                },
+                {
+                  "blockType": "hash_sha224_hash",
+                  "score": 57.36
+                },
+                {
+                  "blockType": "hash_sha512_compress",
+                  "score": 52.12
+                },
+                {
+                  "blockType": "sha3_hash",
+                  "score": 50.2
+                },
+                {
+                  "blockType": "hash_sha512_hash",
+                  "score": 46.68
+                }
+              ],
+              "note": "L3 只作候选，不单独升级档位"
+            }
+          },
+          "steps": [
+            {
+              "id": "s1",
+              "section": "§6.1–§6.7",
+              "text": "算法族导航与参数表（字长/分组/输出长度）",
+              "blocks": [],
+              "visibility": "none"
+            }
+          ],
+          "stepCounts": {
+            "total": 1,
+            "canvas": 0,
+            "internal": 0,
+            "none": 1
+          },
+          "gaps": [
+            "本页是 SHA-2 算法族导航（参数表 + 算法清单），条目页自己写明「没有独立归属的公式或伪代码规范单元」；没有可执行单元，不能判「能搭」"
+          ],
+          "claimBoundaries": [
+            "参数表不是算法步骤；哈希函数的语义由 03/04/05 三页承载"
+          ],
+          "semantic_equivalence": "unverified"
+        },
+        {
+          "clauseId": "02-Padding",
+          "entryPath": "docs/standards/fips180-4-SHA2/02-Padding.md",
+          "title": "SHA-2 — 消息填充原语",
+          "standardPosition": "FIPS 180-4 §5.1，§5.2",
+          "tier": "build",
+          "tierReason": "all-steps-canvas",
+          "evidenceLayer": "L1",
+          "anchors": [
+            {
+              "section": "5.1",
+              "click": {
+                "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+                "line_start": 652,
+                "line_end": 692
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": true,
+              "slice_sha256": "77d65407b9ef99d70cb9f77277f761e07400d460526f6dd1178c35219144934f",
+              "heading": "Padding the Message"
+            },
+            {
+              "section": "5.2",
+              "click": {
+                "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+                "line_start": 693,
+                "line_end": 707
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": false,
+              "slice_sha256": "32e1e6da012cddf3e3c2f1da3878ddf127f9dbe9142045db6e5d9ceaafae4718",
+              "heading": "Parsing the Message"
+            }
+          ],
+          "evidence": {
+            "l1": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "hash_sha256_pad",
+                  "quote": "原始字节、UTF-8 文本和十六进制输入分别进入 `hash_sha256_pad`、`hash_sha256_pad_text`、 `hash_sha256_pa"
+                },
+                {
+                  "blockType": "hash_sha256_pad_text",
+                  "quote": "节、UTF-8 文本和十六进制输入分别进入 `hash_sha256_pad`、`hash_sha256_pad_text`、 `hash_sha256_pad_hex`；SHA-512 路径使用 `ha"
+                },
+                {
+                  "blockType": "hash_sha256_pad_hex",
+                  "quote": "ash_sha256_pad`、`hash_sha256_pad_text`、 `hash_sha256_pad_hex`；SHA-512 路径使用 `hash_sha512_pad`。本原语不负责消息"
+                },
+                {
+                  "blockType": "hash_sha512_pad",
+                  "quote": "xt`、 `hash_sha256_pad_hex`；SHA-512 路径使用 `hash_sha512_pad`。本原语不负责消息扩展、压缩或摘要截断。 项目输入契约：字节输入仅接受字节串或"
+                }
+              ],
+              "source": {
+                "path": "docs/standards/fips180-4-SHA2/02-Padding.md",
+                "line": 52,
+                "heading": "项目映射"
+              }
+            },
+            "l2": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "hash_sha512_pad",
+                  "tooltip": "SHA-512 padding (FIPS 180-4): 0x80 + zeros to 1024-bit blocks, 128-bit big-endian length SHA-512 padding (FIPS 180-4): 0x80 + zeros to 1024-bit blocks, 128-bit ",
+                  "sameVariant": false
+                }
+              ],
+              "note": "标准号取自块 tooltip，且该块须出现在同一查询的前 5 个 BM25 候选里；sameVariant 标出是否就是本条路径的变体"
+            },
+            "l3": {
+              "hit": true,
+              "query": "NIST FIPS 180-4 SHA-2 — 消息填充原语 对消息追加一个 `1` 位、`k` 个 `0` 位和原始消息 bit 长度的大端编码，使结果成为完整分组",
+              "top5": [
+                {
+                  "blockType": "hash_sha256_pad_text",
+                  "score": 52.76
+                },
+                {
+                  "blockType": "hash_sha256_pad",
+                  "score": 49.24
+                },
+                {
+                  "blockType": "hash_sha256_pad_hex",
+                  "score": 49.24
+                },
+                {
+                  "blockType": "hash_sha512_pad",
+                  "score": 44.64
+                },
+                {
+                  "blockType": "hash_sha3_pad_hex",
+                  "score": 41.26
+                }
+              ],
+              "note": "L3 只作候选，不单独升级档位"
+            }
+          },
+          "steps": [
+            {
+              "id": "s1",
+              "section": "§5.1",
+              "text": "追加 1 位（字节 0x80）",
+              "blocks": [
+                "hash_sha256_pad"
+              ],
+              "visibility": "canvas"
+            },
+            {
+              "id": "s2",
+              "section": "§5.1",
+              "text": "追加 k 个 0 位，使长度 ≡ 448 (mod 512)",
+              "blocks": [
+                "hash_sha256_pad"
+              ],
+              "visibility": "canvas"
+            },
+            {
+              "id": "s3",
+              "section": "§5.1",
+              "text": "追加原消息 bit 长度的 64-bit 大端编码",
+              "blocks": [
+                "hash_sha256_pad"
+              ],
+              "visibility": "canvas"
+            },
+            {
+              "id": "s4",
+              "section": "§5.2",
+              "text": "按 512-bit 切分填充后消息（N = bitlen/512 个分组）",
+              "blocks": [
+                "data_bit_length",
+                "math_arithmetic",
+                "math_round",
+                "ctrl_iterate",
+                "pq_bytes_slice"
+              ],
+              "visibility": "canvas",
+              "note": "试点工程里这一段是 ctrl_iterate + pq_bytes_slice + 两个原生数学块"
+            }
+          ],
+          "stepCounts": {
+            "total": 4,
+            "canvas": 4,
+            "internal": 0,
+            "none": 0
+          },
+          "gaps": [],
+          "claimBoundaries": [
+            "标准要求 0 ≤ λ < 2^64；填充块不强制该上限（块模型没有长度域约束）"
+          ],
+          "semantic_equivalence": "unverified"
+        },
+        {
+          "clauseId": "03-MessageExpansion",
+          "entryPath": "docs/standards/fips180-4-SHA2/03-MessageExpansion.md",
+          "title": "SHA-2 — 消息扩展原语",
+          "standardPosition": "FIPS 180-4 §6.2.2、§6.4.2",
+          "tier": "partial",
+          "tierReason": "internal-only",
+          "evidenceLayer": "L1",
+          "anchors": [
+            {
+              "section": "6.2.2",
+              "click": {
+                "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+                "line_start": 1052,
+                "line_end": 1115
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": true,
+              "slice_sha256": "2517ea9090ee5cf606a6ccfa6958f5907164866a2056cb8c0bcfee06a0c84b81",
+              "heading": "SHA-256 Hash Computation"
+            },
+            {
+              "section": "6.4.2",
+              "click": {
+                "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+                "line_start": 1148,
+                "line_end": 1215
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": false,
+              "slice_sha256": "04cb533da9484c74c446dfb5bfec86e43f01ce479360403ca60aa37156cd22af",
+              "heading": "SHA-512 Hash Computation"
+            }
+          ],
+          "evidence": {
+            "l1": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "hash_sha256_compress",
+                  "quote": "`hash_sha256_compress` 和 `hash_sha512_compress` 的输入已经是压缩阶段所需的链"
+                },
+                {
+                  "blockType": "hash_sha512_compress",
+                  "quote": "`hash_sha256_compress` 和 `hash_sha512_compress` 的输入已经是压缩阶段所需的链状态/消息字；扩展过程封装在生成器中。若需要逐字验"
+                }
+              ],
+              "source": {
+                "path": "docs/standards/fips180-4-SHA2/03-MessageExpansion.md",
+                "line": 57,
+                "heading": "项目映射"
+              }
+            },
+            "l2": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "hash_sha224_hash",
+                  "tooltip": "SHA-224 one-shot hash (FIPS 180-4): sha256 core with SHA-224 IV, 28-byte output SHA-224 one-shot hash (FIPS 180-4): sha256 core with SHA-224 IV, 28-byte output",
+                  "sameVariant": false
+                }
+              ],
+              "note": "标准号取自块 tooltip，且该块须出现在同一查询的前 5 个 BM25 候选里；sameVariant 标出是否就是本条路径的变体"
+            },
+            "l3": {
+              "hit": true,
+              "query": "NIST FIPS 180-4 SHA-2 — 消息扩展原语 SHA-224/SHA-256 和 SHA-384/SHA-512 分别使用 32-bit 与 64-bit 消息调度；每个分组的消息字先初始化，再按标准递推到完整调度长度",
+              "top5": [
+                {
+                  "blockType": "hash_hmac",
+                  "score": 58.64
+                },
+                {
+                  "blockType": "pbkdf2",
+                  "score": 51.5
+                },
+                {
+                  "blockType": "pbkdf2_f",
+                  "score": 49.7
+                },
+                {
+                  "blockType": "hash_sha224_hash",
+                  "score": 45.49
+                },
+                {
+                  "blockType": "hash_sha256_pad_text",
+                  "score": 42.94
+                }
+              ],
+              "note": "L3 只作候选，不单独升级档位"
+            }
+          },
+          "steps": [
+            {
+              "id": "s1",
+              "section": "§6.2.2",
+              "text": "W[0..15] ← 分组的 16 个大端 32-bit 字",
+              "blocks": [
+                "hash_sha256_compress"
+              ],
+              "visibility": "internal",
+              "note": "在 compress 生成器闭包内展开"
+            },
+            {
+              "id": "s2",
+              "section": "§6.2.2",
+              "text": "W[16..63] 递推（σ0/σ1）",
+              "blocks": [
+                "hash_sha256_compress"
+              ],
+              "visibility": "internal"
+            }
+          ],
+          "stepCounts": {
+            "total": 2,
+            "canvas": 0,
+            "internal": 2,
+            "none": 0
+          },
+          "gaps": [
+            "消息扩展没有独立块：语义在 hash_sha256_compress 的生成器闭包里，画布上无法逐步核",
+            "§6.2.2 步骤「W[0..15] ← 分组的 16 个大端 32-bit 字」只在生成器闭包里，画布无法逐步核",
+            "§6.2.2 步骤「W[16..63] 递推（σ0/σ1）」只在生成器闭包里，画布无法逐步核"
+          ],
+          "claimBoundaries": [],
+          "semantic_equivalence": "unverified"
+        },
+        {
+          "clauseId": "04-Compression",
+          "entryPath": "docs/standards/fips180-4-SHA2/04-Compression.md",
+          "title": "SHA-2 — 压缩函数原语",
+          "standardPosition": "FIPS 180-4 §6.2.2、§6.4.2",
+          "tier": "partial",
+          "tierReason": "mixed-steps",
+          "evidenceLayer": "L1",
+          "anchors": [
+            {
+              "section": "6.2.2",
+              "click": {
+                "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+                "line_start": 1052,
+                "line_end": 1115
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": true,
+              "slice_sha256": "2517ea9090ee5cf606a6ccfa6958f5907164866a2056cb8c0bcfee06a0c84b81",
+              "heading": "SHA-256 Hash Computation"
+            },
+            {
+              "section": "6.4.2",
+              "click": {
+                "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+                "line_start": 1148,
+                "line_end": 1215
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": false,
+              "slice_sha256": "04cb533da9484c74c446dfb5bfec86e43f01ce479360403ca60aa37156cd22af",
+              "heading": "SHA-512 Hash Computation"
+            }
+          ],
+          "evidence": {
+            "l1": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "hash_sha256_compress",
+                  "quote": "SHA-224 复用同一压缩函数，但使用不同初始值并输出前 224 bit。 `hash_sha256_compress(V, W)` 的 `V` 必须是 8 个无符号 32-bit 链状态字；`W` 插槽名为兼容"
+                },
+                {
+                  "blockType": "hash_sha224_hash",
+                  "quote": "缩后的八字状态。返回数组将每个状态字表示为无符号整数，两种语言的可观察结果一致。`hash_sha224_hash` 是带 SHA-224 初始值与截断的高层封装。SHA-512 使用对应的 64"
+                }
+              ],
+              "source": {
+                "path": "docs/standards/fips180-4-SHA2/04-Compression.md",
+                "line": 48,
+                "heading": "项目映射"
+              }
+            },
+            "l2": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "hash_sha224_hash",
+                  "tooltip": "SHA-224 one-shot hash (FIPS 180-4): sha256 core with SHA-224 IV, 28-byte output SHA-224 one-shot hash (FIPS 180-4): sha256 core with SHA-224 IV, 28-byte output",
+                  "sameVariant": false
+                },
+                {
+                  "blockType": "hash_sha512_hash",
+                  "tooltip": "SHA-384/512 one-shot hash (FIPS 180-4): 64-bit core, size/8 bytes output SHA-384/512 one-shot hash (FIPS 180-4): 64-bit core, size/8 bytes output",
+                  "sameVariant": false
+                }
+              ],
+              "note": "标准号取自块 tooltip，且该块须出现在同一查询的前 5 个 BM25 候选里；sameVariant 标出是否就是本条路径的变体"
+            },
+            "l3": {
+              "hit": true,
+              "query": "NIST FIPS 180-4 SHA-2 — 压缩函数原语 SHA-224/SHA-256 与 SHA-384/SHA-512 对每个消息分组执行完整工作变量更新，并将工作变量按标准加回中间哈希值",
+              "top5": [
+                {
+                  "blockType": "hash_sha256_compress",
+                  "score": 76.46
+                },
+                {
+                  "blockType": "hash_sha224_hash",
+                  "score": 75.07
+                },
+                {
+                  "blockType": "hash_hmac",
+                  "score": 65.64
+                },
+                {
+                  "blockType": "sha3_hash",
+                  "score": 59.38
+                },
+                {
+                  "blockType": "hash_sha512_hash",
+                  "score": 58.49
+                }
+              ],
+              "note": "L3 只作候选，不单独升级档位"
+            }
+          },
+          "steps": [
+            {
+              "id": "s1",
+              "section": "§6.2.2",
+              "text": "每分组初始化 a..h ← H(i−1)",
+              "blocks": [
+                "hash_sha256_compress"
+              ],
+              "visibility": "internal"
+            },
+            {
+              "id": "s2",
+              "section": "§6.2.2",
+              "text": "64 轮 T1/T2 与工作字轮转",
+              "blocks": [
+                "hash_sha256_compress"
+              ],
+              "visibility": "internal"
+            },
+            {
+              "id": "s3",
+              "section": "§6.2.2",
+              "text": "工作字加回链状态 H(i)",
+              "blocks": [
+                "hash_sha256_compress"
+              ],
+              "visibility": "internal"
+            },
+            {
+              "id": "s4",
+              "section": "§6.2.2",
+              "text": "For i=1 to N 依次处理全部分组",
+              "blocks": [
+                "ctrl_iterate",
+                "pq_bytes_slice",
+                "hash_sha256_compress"
+              ],
+              "visibility": "canvas",
+              "note": "P4-SCOPE 判 partial 的理由是这段迭代缺块；本切片用 ctrl_iterate 组合出来了（B.2 两分组向量通过）"
+            }
+          ],
+          "stepCounts": {
+            "total": 4,
+            "canvas": 1,
+            "internal": 3,
+            "none": 0
+          },
+          "gaps": [
+            "64 轮压缩在生成器闭包里，画布无法逐步核；块边界上的输入/输出契约有单测覆盖",
+            "§6.2.2 步骤「每分组初始化 a..h ← H(i−1)」只在生成器闭包里，画布无法逐步核",
+            "§6.2.2 步骤「64 轮 T1/T2 与工作字轮转」只在生成器闭包里，画布无法逐步核",
+            "§6.2.2 步骤「工作字加回链状态 H(i)」只在生成器闭包里，画布无法逐步核"
+          ],
+          "claimBoundaries": [],
+          "semantic_equivalence": "unverified"
+        },
+        {
+          "clauseId": "05-Digest",
+          "entryPath": "docs/standards/fips180-4-SHA2/05-Digest.md",
+          "title": "SHA-2 — 摘要输出与变体原语",
+          "standardPosition": "FIPS 180-4 §6",
+          "tier": "partial",
+          "tierReason": "mixed-steps",
+          "evidenceLayer": "L1",
+          "anchors": [
+            {
+              "section": "6",
+              "click": {
+                "doc": "docs/standards/fips180-4-SHA2/00-Standard-Source.md",
+                "line_start": 874,
+                "line_end": 1250
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": false,
+              "slice_sha256": "33c1ef2c2ca387e075b3639d5571f40c11a41ff446421d22184dcb1107351fd5",
+              "heading": "SECURE HASH ALGORITHMS"
+            }
+          ],
+          "evidence": {
+            "l1": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "hash_sha224_hash",
+                  "quote": "`hash_sha224_hash` 提供 SHA-224 IV 和 28-byte 输出；`hash_sha512"
+                },
+                {
+                  "blockType": "hash_sha512_hash",
+                  "quote": "sha224_hash` 提供 SHA-224 IV 和 28-byte 输出；`hash_sha512_hash` 的 HASH 下拉提供 SHA-384/512。消息扩展和压缩分别见 [03-"
+                }
+              ],
+              "source": {
+                "path": "docs/standards/fips180-4-SHA2/05-Digest.md",
+                "line": 61,
+                "heading": "项目映射"
+              }
+            },
+            "l2": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "hash_sha224_hash",
+                  "tooltip": "SHA-224 one-shot hash (FIPS 180-4): sha256 core with SHA-224 IV, 28-byte output SHA-224 one-shot hash (FIPS 180-4): sha256 core with SHA-224 IV, 28-byte output",
+                  "sameVariant": false
+                }
+              ],
+              "note": "标准号取自块 tooltip，且该块须出现在同一查询的前 5 个 BM25 候选里；sameVariant 标出是否就是本条路径的变体"
+            },
+            "l3": {
+              "hit": true,
+              "query": "NIST FIPS 180-4 SHA-2 — 摘要输出与变体原语 每个分组压缩后，将工作变量按字宽加回当前链状态；全部分组处理完后按大端顺序串联链状态，",
+              "top5": [
+                {
+                  "blockType": "hash_sha256_compress",
+                  "score": 59.78
+                },
+                {
+                  "blockType": "hash_sha224_hash",
+                  "score": 55.32
+                },
+                {
+                  "blockType": "hash_sha512_compress",
+                  "score": 52.12
+                },
+                {
+                  "blockType": "sha3_hash",
+                  "score": 41.26
+                },
+                {
+                  "blockType": "hash_sm3_compress",
+                  "score": 37.88
+                }
+              ],
+              "note": "L3 只作候选，不单独升级档位"
+            }
+          },
+          "steps": [
+            {
+              "id": "s1",
+              "section": "§6",
+              "text": "选变体初值 H(0)（SHA-256 的 8 个 32-bit IV）",
+              "blocks": [
+                "data_value"
+              ],
+              "visibility": "canvas",
+              "note": "用 data_value 字面量表达，可编辑但不是专门块"
+            },
+            {
+              "id": "s2",
+              "section": "§6",
+              "text": "8 个工作字按大端串成 32 字节摘要",
+              "blocks": [],
+              "visibility": "none"
+            },
+            {
+              "id": "s3",
+              "section": "§6",
+              "text": "按变体截断输出长度（SHA-512/224、SHA-512/256）",
+              "blocks": [],
+              "visibility": "none"
+            }
+          ],
+          "stepCounts": {
+            "total": 3,
+            "canvas": 1,
+            "internal": 0,
+            "none": 2
+          },
+          "gaps": [
+            "缺 words→bytes 的大端打包块：8 个 32-bit 字无法在画布上拼成 32 字节（试点由 driver 格式化）",
+            "§6 步骤「8 个工作字按大端串成 32 字节摘要」没有对应块",
+            "§6 步骤「按变体截断输出长度（SHA-512/224、SHA-512/256）」没有对应块"
+          ],
+          "claimBoundaries": [],
+          "semantic_equivalence": "unverified"
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "generatedBy": "scripts/p4-verdicts.ts",
+      "standard": {
+        "id": "sp800-38b-cmac",
+        "name": "NIST SP 800-38B",
+        "version": "38B",
+        "source_checked_at": "2026-09-12"
+      },
+      "inputs": {
+        "anchors": "experiments/ai-helper-2026-11-14/p4/anchors-sp800-38b-cmac.json",
+        "anchorsSource": {
+          "path": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+          "lines": 1000,
+          "sha256": "a1e96171e2c31baaf3338a19f68135c12d67b124ceb9b0aae59430b8130cc0d6"
+        },
+        "blockIndex": "src/services/ai-helper/block-index.json",
+        "blockTypes": 224,
+        "tooltipStandardPool": {
+          "size": 3,
+          "blocks": [
+            "cmac_double",
+            "cmac_mac",
+            "cmac_subkeys"
+          ]
+        }
+      },
+      "rules": {
+        "noProjectStatusField": true,
+        "tiers": "build = 全部步骤 canvas 且有 L1/L2；partial = 混合或仅内部；missing = 无可执行单元 / 全无块",
+        "evidence": "L1 映射块名 > L2 tooltip 标准号 ∩ BM25 候选 > L3 BM25 候选（只作候选）",
+        "semanticEquivalence": "unverified"
+      },
+      "counts": {
+        "clauses": 3,
+        "build": 0,
+        "partial": 3,
+        "missing": 0,
+        "evidenceLayers": {
+          "L1": 3,
+          "L2": 0,
+          "L3": 0,
+          "none": 0
+        },
+        "clausesWithSameVariantL2": 3,
+        "gaps": 6
+      },
+      "clauses": [
+        {
+          "clauseId": "01-CMAC",
+          "entryPath": "docs/standards/sp800-38b-cmac/01-CMAC.md",
+          "title": "NIST SP 800-38B — CMAC 参考",
+          "standardPosition": "NIST SP 800-38B — CMAC 参考",
+          "tier": "partial",
+          "tierReason": "mixed-steps",
+          "evidenceLayer": "L1",
+          "anchors": [
+            {
+              "section": "6",
+              "click": {
+                "doc": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+                "line_start": 552,
+                "line_end": 759
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": false,
+              "slice_sha256": "43430801b9f315abd0d4aa592f67dbe440d9308d8374d7f2248816001f8c2d5d",
+              "heading": "CMAC Specification"
+            }
+          ],
+          "evidence": {
+            "l1": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "cmac_mac",
+                  "quote": "`cmac_mac` 支持 AES-128 和 SM4，当前输出完整 16 字节标签；没有独立验证/"
+                }
+              ],
+              "source": {
+                "path": "docs/standards/sp800-38b-cmac/01-CMAC.md",
+                "line": 45,
+                "heading": "项目映射"
+              }
+            },
+            "l2": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "cmac_mac",
+                  "tooltip": "CMAC 认证标签 (NIST SP 800-38B)：子密钥生成（GF(2^128) 加倍）+ CBC-MAC。已核对 SP 800-38B / RFC 4493 的 AES-128 向量（0/16/40/64 字节）与 SM4 同类结构路径；不是完整 CMAC 测试集或认证。 CMAC 认证标签 (NIST SP ",
+                  "sameVariant": true
+                },
+                {
+                  "blockType": "cmac_subkeys",
+                  "tooltip": "CMAC 子密钥 K1‖K2（SP 800-38B §6.1，AES-128）：L = AES_K(0¹²⁸)，K1 = 2·L，K2 = 2·K1。输出 32 字节；RFC 4493 §4 给出示例密钥的 L/K1/K2。 CMAC 子密钥 K1‖K2（SP 800-38B §6.1，AES-128）：L = AES",
+                  "sameVariant": true
+                }
+              ],
+              "note": "标准号取自块 tooltip，且该块须出现在同一查询的前 5 个 BM25 候选里；sameVariant 标出是否就是本条路径的变体"
+            },
+            "l3": {
+              "hit": true,
+              "query": "NIST SP 800-38B NIST SP 800-38B — CMAC 参考 ",
+              "top5": [
+                {
+                  "blockType": "cmac_mac",
+                  "score": 81.17
+                },
+                {
+                  "blockType": "cmac_subkeys",
+                  "score": 31.76
+                },
+                {
+                  "blockType": "hash_hmac",
+                  "score": 25.97
+                },
+                {
+                  "blockType": "drbg_update",
+                  "score": 16.1
+                },
+                {
+                  "blockType": "ccm_cbc_mac",
+                  "score": 13.51
+                }
+              ],
+              "note": "L3 只作候选，不单独升级档位"
+            }
+          },
+          "steps": [
+            {
+              "id": "s1",
+              "section": "§6",
+              "text": "子密钥生成（L=E_K(0^b)，K1/K2 加倍）",
+              "blocks": [
+                "cmac_subkeys",
+                "cmac_double"
+              ],
+              "visibility": "canvas"
+            },
+            {
+              "id": "s2",
+              "section": "§6",
+              "text": "最后块掩码（整块 xor K1；空消息/不完整块 pad 后 xor K2）",
+              "blocks": [
+                "cmac_mac"
+              ],
+              "visibility": "internal",
+              "note": "只在 cmac_mac 闭包里；画布没有「与 K1/K2 异或 + 10^j 填充」的独立块"
+            },
+            {
+              "id": "s3",
+              "section": "§6",
+              "text": "以 X0=0 做 CBC-MAC：Xi=E_K(X(i−1) xor Mi)",
+              "blocks": [
+                "mode_cbc_encrypt",
+                "ctrl_iterate"
+              ],
+              "visibility": "canvas",
+              "note": "用零 IV 的 mode_cbc_encrypt 组合；不是专门的 CMAC 链块"
+            },
+            {
+              "id": "s4",
+              "section": "§6",
+              "text": "输出 Xn，必要时按协议指定长度截断",
+              "blocks": [
+                "arr_slice"
+              ],
+              "visibility": "canvas",
+              "note": "按字节切片；标准允许任意 bit 长度 Tlen"
+            }
+          ],
+          "stepCounts": {
+            "total": 4,
+            "canvas": 3,
+            "internal": 1,
+            "none": 0
+          },
+          "gaps": [
+            "§6 步骤「最后块掩码（整块 xor K1；空消息/不完整块 pad 后 xor K2）」只在生成器闭包里，画布无法逐步核"
+          ],
+          "claimBoundaries": [
+            "标准允许 1 ≤ Tlen ≤ b 的任意 bit 长度；块模型按字节切片，bit 级截断不表达"
+          ],
+          "semantic_equivalence": "unverified"
+        },
+        {
+          "clauseId": "02-Subkeys",
+          "entryPath": "docs/standards/sp800-38b-cmac/02-Subkeys.md",
+          "title": "CMAC — 子密钥生成原语",
+          "standardPosition": "CMAC — 子密钥生成原语",
+          "tier": "partial",
+          "tierReason": "mixed-steps",
+          "evidenceLayer": "L1",
+          "anchors": [
+            {
+              "section": "6.1",
+              "click": {
+                "doc": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+                "line_start": 568,
+                "line_end": 599
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": true,
+              "slice_sha256": "05f5166ec6443dd59cc3349770f58b307ef7b65f7774b26278a1c35fd1d39bb8",
+              "heading": "Subkey Generation"
+            }
+          ],
+          "evidence": {
+            "l1": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "cmac_subkeys",
+                  "quote": "§6.1 的整段过程有独立块 `cmac_subkeys`（输出 `K1‖K2`），单次 GF(2¹²⁸) 加倍另有 `cmac_doub"
+                },
+                {
+                  "blockType": "cmac_double",
+                  "quote": "c_subkeys`（输出 `K1‖K2`），单次 GF(2¹²⁸) 加倍另有 `cmac_double` （输出 `dbl(X)`）；`cmac_mac` 也内部完成同一步子密钥生成。"
+                },
+                {
+                  "blockType": "cmac_mac",
+                  "quote": "(2¹²⁸) 加倍另有 `cmac_double` （输出 `dbl(X)`）；`cmac_mac` 也内部完成同一步子密钥生成。CIPHER 下拉支持 AES-128 和 SM4"
+                }
+              ],
+              "source": {
+                "path": "docs/standards/sp800-38b-cmac/02-Subkeys.md",
+                "line": 55,
+                "heading": "项目映射"
+              }
+            },
+            "l2": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "cmac_mac",
+                  "tooltip": "CMAC 认证标签 (NIST SP 800-38B)：子密钥生成（GF(2^128) 加倍）+ CBC-MAC。已核对 SP 800-38B / RFC 4493 的 AES-128 向量（0/16/40/64 字节）与 SM4 同类结构路径；不是完整 CMAC 测试集或认证。 CMAC 认证标签 (NIST SP ",
+                  "sameVariant": true
+                },
+                {
+                  "blockType": "cmac_subkeys",
+                  "tooltip": "CMAC 子密钥 K1‖K2（SP 800-38B §6.1，AES-128）：L = AES_K(0¹²⁸)，K1 = 2·L，K2 = 2·K1。输出 32 字节；RFC 4493 §4 给出示例密钥的 L/K1/K2。 CMAC 子密钥 K1‖K2（SP 800-38B §6.1，AES-128）：L = AES",
+                  "sameVariant": true
+                }
+              ],
+              "note": "标准号取自块 tooltip，且该块须出现在同一查询的前 5 个 BM25 候选里；sameVariant 标出是否就是本条路径的变体"
+            },
+            "l3": {
+              "hit": true,
+              "query": "NIST SP 800-38B CMAC — 子密钥生成原语 ",
+              "top5": [
+                {
+                  "blockType": "cmac_mac",
+                  "score": 83.67
+                },
+                {
+                  "blockType": "cmac_subkeys",
+                  "score": 50.96
+                },
+                {
+                  "blockType": "hash_hmac",
+                  "score": 27.67
+                },
+                {
+                  "blockType": "ccm_cbc_mac",
+                  "score": 20.96
+                },
+                {
+                  "blockType": "drbg_update",
+                  "score": 16.1
+                }
+              ],
+              "note": "L3 只作候选，不单独升级档位"
+            }
+          },
+          "steps": [
+            {
+              "id": "s1",
+              "section": "§6.1",
+              "text": "L = CIPH_K(0^b)",
+              "blocks": [
+                "mode_ecb_encrypt",
+                "cmac_subkeys"
+              ],
+              "visibility": "internal",
+              "note": "唯一能在画布上产出 L 的块 mode_ecb_encrypt 输出 Bytes，而 cmac_double 只收 IntList，224 块里没有 Bytes→IntList 转换块（探针 connect-probe subkey-l 被拒）；能用的是 cmac_subkeys 内部那一步"
+            },
+            {
+              "id": "s2",
+              "section": "§6.1",
+              "text": "MSB1(L)=0 → K1=L<<1，否则 K1=(L<<1) xor Rb",
+              "blocks": [
+                "cmac_double"
+              ],
+              "visibility": "internal",
+              "note": "cmac_double 只吃 IntList，接不上 s1 的 Bytes 产物（探针 subkey-l）；该步随 cmac_subkeys 闭包一起被吸收"
+            },
+            {
+              "id": "s3",
+              "section": "§6.1",
+              "text": "MSB1(K1)=0 → K2=K1<<1，否则 K2=(K1<<1) xor Rb",
+              "blocks": [
+                "cmac_double"
+              ],
+              "visibility": "internal",
+              "note": "同上：加倍链在 cmac_double/cmac_subkeys 闭包内完成"
+            },
+            {
+              "id": "s4",
+              "section": "§6.1",
+              "text": "Return K1, K2",
+              "blocks": [
+                "cmac_subkeys"
+              ],
+              "visibility": "canvas",
+              "note": "cmac_subkeys 返回 K1‖K2；过程只能返回一个值，拆包在调用方"
+            }
+          ],
+          "stepCounts": {
+            "total": 4,
+            "canvas": 1,
+            "internal": 3,
+            "none": 0
+          },
+          "gaps": [
+            "§6.1 的四步在画布上拼不出来：L 的产物是 Bytes、cmac_double 入口是 IntList，画布拒绝这次连接且没有转换块（p4/connect-probe-sp800-38b.json 三条用例：两条被拒 + Bytes→cmac_mac 正对照通过）",
+            "§6.1 步骤「L = CIPH_K(0^b)」只在生成器闭包里，画布无法逐步核",
+            "§6.1 步骤「MSB1(L)=0 → K1=L<<1，否则 K1=(L<<1) xor Rb」只在生成器闭包里，画布无法逐步核",
+            "§6.1 步骤「MSB1(K1)=0 → K2=K1<<1，否则 K2=(K1<<1) xor Rb」只在生成器闭包里，画布无法逐步核"
+          ],
+          "claimBoundaries": [
+            "Rb 的取值依赖分组长度（128 位为 0x87）；块固定 128 位路径，SM4 同构但 b=128 相同"
+          ],
+          "semantic_equivalence": "unverified"
+        },
+        {
+          "clauseId": "03-MAC",
+          "entryPath": "docs/standards/sp800-38b-cmac/03-MAC.md",
+          "title": "CMAC — CBC-MAC 与标签输出原语",
+          "standardPosition": "CMAC — CBC-MAC 与标签输出原语",
+          "tier": "partial",
+          "tierReason": "mixed-steps",
+          "evidenceLayer": "L1",
+          "anchors": [
+            {
+              "section": "6.2",
+              "click": {
+                "doc": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+                "line_start": 600,
+                "line_end": 712
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": true,
+              "slice_sha256": "bb819847428c2c89ca20d2e7e8b98d0b0611301517df6ea09e93ff29584975fe",
+              "heading": "MAC Generation"
+            }
+          ],
+          "evidence": {
+            "l1": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "cmac_mac",
+                  "quote": "`cmac_mac` 当前输出完整 16-byte 标签，已有 AES-CMAC 向量和 SM4 同"
+                }
+              ],
+              "source": {
+                "path": "docs/standards/sp800-38b-cmac/03-MAC.md",
+                "line": 59,
+                "heading": "项目映射"
+              }
+            },
+            "l2": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "cmac_mac",
+                  "tooltip": "CMAC 认证标签 (NIST SP 800-38B)：子密钥生成（GF(2^128) 加倍）+ CBC-MAC。已核对 SP 800-38B / RFC 4493 的 AES-128 向量（0/16/40/64 字节）与 SM4 同类结构路径；不是完整 CMAC 测试集或认证。 CMAC 认证标签 (NIST SP ",
+                  "sameVariant": true
+                },
+                {
+                  "blockType": "cmac_subkeys",
+                  "tooltip": "CMAC 子密钥 K1‖K2（SP 800-38B §6.1，AES-128）：L = AES_K(0¹²⁸)，K1 = 2·L，K2 = 2·K1。输出 32 字节；RFC 4493 §4 给出示例密钥的 L/K1/K2。 CMAC 子密钥 K1‖K2（SP 800-38B §6.1，AES-128）：L = AES",
+                  "sameVariant": true
+                }
+              ],
+              "note": "标准号取自块 tooltip，且该块须出现在同一查询的前 5 个 BM25 候选里；sameVariant 标出是否就是本条路径的变体"
+            },
+            "l3": {
+              "hit": true,
+              "query": "NIST SP 800-38B CMAC — CBC-MAC 与标签输出原语 ",
+              "top5": [
+                {
+                  "blockType": "cmac_mac",
+                  "score": 85.34
+                },
+                {
+                  "blockType": "ccm_cbc_mac",
+                  "score": 42.38
+                },
+                {
+                  "blockType": "cmac_subkeys",
+                  "score": 33.54
+                },
+                {
+                  "blockType": "hash_hmac",
+                  "score": 27.75
+                },
+                {
+                  "blockType": "drbg_update",
+                  "score": 17.25
+                }
+              ],
+              "note": "L3 只作候选，不单独升级档位"
+            }
+          },
+          "steps": [
+            {
+              "id": "s1",
+              "section": "§6.2",
+              "text": "Apply SUBK(K) from §6.1 to produce K1 and K2",
+              "blocks": [
+                "cmac_subkeys"
+              ],
+              "visibility": "canvas"
+            },
+            {
+              "id": "s2",
+              "section": "§6.2",
+              "text": "Mlen=0 → n=1，否则 n=ceil(Mlen/b)",
+              "blocks": [
+                "data_bit_length",
+                "math_arithmetic",
+                "math_round"
+              ],
+              "visibility": "canvas"
+            },
+            {
+              "id": "s3",
+              "section": "§6.2",
+              "text": "把 M 切成 M1..M(n-1), Mn*",
+              "blocks": [
+                "arr_partition_to_array",
+                "ctrl_iterate"
+              ],
+              "visibility": "canvas"
+            },
+            {
+              "id": "s4",
+              "section": "§6.2",
+              "text": "Mn* 整块 → Mn=K1 xor Mn*；否则 Mn=K2 xor (Mn*‖1‖0^j)",
+              "blocks": [
+                "cmac_mac"
+              ],
+              "visibility": "internal",
+              "note": "只在 cmac_mac 闭包里；画布没有「最后块条件掩码」块"
+            },
+            {
+              "id": "s5",
+              "section": "§6.2",
+              "text": "C0 = 0^b",
+              "blocks": [
+                "data_value"
+              ],
+              "visibility": "canvas"
+            },
+            {
+              "id": "s6",
+              "section": "§6.2",
+              "text": "for i=1..n: Ci = CIPH_K(C(i−1) xor Mi)",
+              "blocks": [
+                "mode_cbc_encrypt",
+                "ctrl_iterate"
+              ],
+              "visibility": "canvas",
+              "note": "零 IV 的 CBC 链；单分组加密走同块的 ECB/AES 路径"
+            },
+            {
+              "id": "s7",
+              "section": "§6.2",
+              "text": "T = MSB_Tlen(Cn)",
+              "blocks": [
+                "arr_slice"
+              ],
+              "visibility": "canvas",
+              "note": "按字节切片；bit 级 Tlen 不表达"
+            },
+            {
+              "id": "s8",
+              "section": "§6.2",
+              "text": "Return T",
+              "blocks": [
+                "procedures_defreturn"
+              ],
+              "visibility": "canvas"
+            }
+          ],
+          "stepCounts": {
+            "total": 8,
+            "canvas": 7,
+            "internal": 1,
+            "none": 0
+          },
+          "gaps": [
+            "§6.2 步骤「Mn* 整块 → Mn=K1 xor Mn*；否则 Mn=K2 xor (Mn*‖1‖0^j)」只在生成器闭包里，画布无法逐步核"
+          ],
+          "claimBoundaries": [
+            "块模型不表达 bit 级截断（Tlen 非 8 的倍数）",
+            "没有独立验证块（VER 路径不在块集合里）"
+          ],
+          "semantic_equivalence": "unverified"
+        }
+      ]
+    }
+  ]
+}

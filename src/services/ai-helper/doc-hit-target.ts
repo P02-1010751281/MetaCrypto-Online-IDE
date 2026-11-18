@@ -13,6 +13,20 @@ export type DocHitPlan =
   | { kind: 'pdf-reference'; reference: string };
 
 /**
+ * Markdown 深链：`#/docs?doc=…&line=…`（DocsView 会打开文档并按行定位）。
+ *
+ * 检索命中与 A 线条款锚点都从同一个地方拼 query：两处各写一遍迟早漂移，
+ * 而「点回原文」正是这条链唯一可核的部分。
+ */
+export function planDocLine(path: string, line: number, basePath: string): DocHitPlan {
+  const normalized = path.startsWith('/') ? path : `/${path}`;
+  return {
+    kind: 'navigate',
+    href: `${basePath}#/docs?doc=${encodeURIComponent(normalized)}&line=${line}`,
+  };
+}
+
+/**
  * @param hit 检索命中
  * @param basePath 当前页面路径（深链要拼在 pathname 后面，避免带进旧 hash）
  */
@@ -23,8 +37,5 @@ export function planDocHit(hit: DocHit, basePath: string): DocHitPlan {
     // `#page=N` 是 PDF 阅读器通用的页码锚点；用 `:N` 会和 Markdown 的行号混淆。
     return { kind: 'pdf-reference', reference: `${path}#page=${hit.line}` };
   }
-  return {
-    kind: 'navigate',
-    href: `${basePath}#/docs?doc=${encodeURIComponent(path)}&line=${hit.line}`,
-  };
+  return planDocLine(path, hit.line, basePath);
 }

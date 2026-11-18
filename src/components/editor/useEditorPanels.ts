@@ -8,7 +8,7 @@
 import { onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { ui } from '@/composables/locale';
-import { planDocHit } from '@/services/ai-helper/doc-hit-target';
+import { planDocHit, planDocLine } from '@/services/ai-helper/doc-hit-target';
 import type { DocHit } from '@/services/ai-helper/doc-search';
 
 const NARROW_VIEWPORT_QUERY = '(max-width: 1200px)';
@@ -22,8 +22,11 @@ const NARROW_VIEWPORT_QUERY = '(max-width: 1200px)';
  * `code` 是 A/B 线的「从代码生成工作区」。它曾经是中心浮层 + 菜单项，现在也是左栏面板：
  * 同一份 `CodeToWorkspaceDialog` 加 `docked` 后停靠在栏里，不再盖住画布。面板可见性
  * 统一由这里拥有，`useCodeToWorkspaceImport` 只负责打开、载入与回执。
+ *
+ * `standards` 是 A 线「标准 → 工作区」的只读预览：标准切片 → 条款单元 → 三档判据。
+ * 本轮只读（不生成工作区、不写签核）；数据来自构建期制品 `verdicts-index.json`。
  */
-export type EditorPanel = 'projects' | 'files' | 'functions' | 'assistant' | 'code';
+export type EditorPanel = 'projects' | 'files' | 'functions' | 'assistant' | 'code' | 'standards';
 
 const DEFAULT_PANEL: EditorPanel = 'files';
 
@@ -62,11 +65,34 @@ export function useEditorPanels(options: Options) {
   };
 
   /**
+   * 打开某个 Markdown 的某一行：优先新标签页（保留编辑器状态），被拦截时退回本页路由。
+   * 检索命中与 A 线条款锚点共用这一条，路径规则只在 `planDocLine` 里写一次。
+   */
+  function openDocLine(path: string, line: number): void {
+    activePanel.value = DEFAULT_PANEL;
+    const plan = planDocLine(path, line, window.location.pathname);
+    if (plan.kind !== 'navigate') return;
+    const opened = window.open(plan.href, '_blank', 'noopener');
+    if (!opened) {
+      void router.push({
+        name: 'Docs',
+        query: {
+          doc: path.startsWith('/') ? path : `/${path}`,
+          line: String(line),
+        },
+      });
+    }
+  }
+
+  /**
    * 打开检索结果：决策在 `planDocHit`（纯函数、有单测），这里只产生副作用。
-   * Markdown 命中优先新标签页（保留编辑器状态），被拦截时退回本页路由；
    * PDF 命中不跳转，只提示/复制「路径 + 页码」（原文不随应用分发）。
    */
   function onOpenDocHit(hit: DocHit): void {
+    if (hit.kind !== 'pdf') {
+      openDocLine(hit.path, hit.line);
+      return;
+    }
     activePanel.value = DEFAULT_PANEL;
     const plan = planDocHit(hit, window.location.pathname);
     if (plan.kind === 'pdf-reference') {
@@ -78,17 +104,6 @@ export function useEditorPanels(options: Options) {
         .catch(() =>
           notify(`${ui('docSearchPdfManual')}${plan.reference}`, 5000),
         );
-      return;
-    }
-    const opened = window.open(plan.href, '_blank', 'noopener');
-    if (!opened) {
-      void router.push({
-        name: 'Docs',
-        query: {
-          doc: hit.path.startsWith('/') ? hit.path : `/${hit.path}`,
-          line: String(hit.line),
-        },
-      });
     }
   }
 
@@ -98,6 +113,7 @@ export function useEditorPanels(options: Options) {
     togglePanel,
     closePanel,
     openPanel,
+    openDocLine,
     onOpenDocHit,
   };
 }

@@ -1,0 +1,378 @@
+/* A 线「标准 → 工作区」只读面板。
+   三档判据的底色只借用语义 token（success / warning / danger），不新增裸色值：
+   颜色只用来区分档位，文字的强度由文案本身承担（「机器候选 / 未验证」写在面板顶部）。 */
+
+.stw-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 8vh;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.stw {
+  display: flex;
+  flex-direction: column;
+  width: min(760px, 94vw);
+  max-height: 82vh;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg-elevated);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  font-size: 13px;
+}
+
+/* 停靠形态：边线 / 圆角 / 阴影交给左栏本身，宽度与高度跟随栏。 */
+.stw-dock {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.stw-dock > .stw {
+  width: 100%;
+  max-height: none;
+  height: 100%;
+  flex: 1;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.stw-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+  padding: 10px var(--panel-pad-x, 12px) 14px;
+  overflow: auto;
+}
+
+.stw-lede,
+.stw-signoff,
+.stw-loading,
+.stw-error,
+.stw-provenance {
+  margin: 0;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+}
+
+/* 未签核不是脚注：它决定这张表能当作什么，所以放在判据上方。 */
+.stw-signoff {
+  padding: 4px 8px;
+  border-left: 3px solid var(--color-warning);
+  background: color-mix(in srgb, var(--color-warning) 8%, transparent);
+  color: var(--color-text);
+}
+
+.stw-error {
+  padding: 6px 8px;
+  border-left: 3px solid var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 8%, transparent);
+  color: var(--color-text);
+}
+
+/* ── 标准切片切换 ── */
+.stw-standards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.stw-standard {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.stw-standard:hover {
+  border-color: var(--color-border-hover);
+  background: var(--color-bg-hover);
+}
+
+.stw-standard.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.stw-standard-name {
+  font-size: 12px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stw-standard-meta {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+/* ── 计数 ── */
+.stw-counts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+}
+
+.stw-count {
+  padding: 6px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-subtle);
+}
+
+.stw-count dt {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.stw-count dd {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.stw-count--build dd {
+  color: var(--color-success);
+}
+
+.stw-count--partial dd {
+  color: var(--color-warning);
+}
+
+.stw-count--missing dd {
+  color: var(--color-danger);
+}
+
+/* ── 条款列表 ── */
+.stw-clauses {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stw-clause {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-card);
+  overflow: hidden;
+}
+
+.stw-clause-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 8px;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.stw-clause-head:hover {
+  background: var(--color-bg-hover);
+}
+
+.stw-tier {
+  flex: none;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 16px;
+  border: 1px solid currentColor;
+}
+
+.stw-tier--build {
+  color: var(--color-success);
+}
+
+.stw-tier--partial {
+  color: var(--color-warning);
+}
+
+.stw-tier--missing {
+  color: var(--color-danger);
+}
+
+.stw-clause-title {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stw-clause-meta {
+  flex: none;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.stw-sep {
+  margin: 0 4px;
+}
+
+/* ── 条款详情 ── */
+.stw-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 8px 10px;
+  border-top: 1px solid var(--color-border);
+}
+
+.stw-reason,
+.stw-evidence {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.stw-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stw-step {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px 0 5px 8px;
+  border-left: 2px solid var(--color-border);
+}
+
+.stw-step-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stw-step-sec {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.stw-step-vis {
+  padding: 0 5px;
+  border-radius: 999px;
+  font-size: 10px;
+  line-height: 15px;
+  border: 1px solid currentColor;
+}
+
+.stw-vis--canvas {
+  color: var(--color-success);
+}
+
+.stw-vis--internal {
+  color: var(--color-warning);
+}
+
+.stw-vis--none {
+  color: var(--color-danger);
+}
+
+.stw-step-text {
+  line-height: 1.5;
+}
+
+.stw-step-note {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.stw-blocks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.stw-block {
+  padding: 0 4px;
+  border-radius: 3px;
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.stw-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stw-h4 {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+}
+
+.stw-list {
+  margin: 0;
+  padding-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  line-height: 1.5;
+}
+
+.stw-anchors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.stw-anchor {
+  padding: 2px 6px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-bg-card);
+  color: var(--color-primary);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.stw-anchor:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.stw-provenance {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  word-break: break-all;
+}

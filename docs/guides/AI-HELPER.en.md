@@ -2,7 +2,7 @@
 
 The AI assistant in MetaCrypto Online IDE is a local-first search tool: repository docs, standard PDF page text and block metadata are indexed at build time, and queries run in the browser to return an answer with evidence; no network and no model are required. Model-assisted sentence picking is an optional enhancement: it is off by default, the provider and key are supplied by the user, and the model may only pick among candidate sentences — it cannot rewrite a sentence, add content or replace the evidence.
 
-This page describes the current behaviour of two entry points: **Q&A assistant** in the sidebar (doc search / block search) and **Generate workspace from code**, the fifth panel in the left activity bar (the same item is also in the **More** menu). Evaluation readings (recall@5, eval-set pass rates) are not usage instructions; see the [feasibility research](../research/AI-HELPER-RESEARCH-2026-11-13.md) and the records under `experiments/ai-helper-2026-11-14/`.
+This page describes the current behaviour of three entry points: **Q&A assistant** in the sidebar (doc search / block search), **Generate workspace from code**, the fifth panel in the left activity bar (the same item is also in the **More** menu), and **Standards → workspace**, the sixth panel, a read-only preview. Evaluation readings (recall@5, eval-set pass rates) are not usage instructions; see the [feasibility research](../research/AI-HELPER-RESEARCH-2026-11-13.md) and the records under `experiments/ai-helper-2026-11-14/`.
 
 ## 1. Entry points and boundaries
 
@@ -10,6 +10,7 @@ This page describes the current behaviour of two entry points: **Q&A assistant**
 |---|---|---|
 | Q&A assistant | Assistant icon in the left activity bar; click again to return to the **Files** panel | Doc search and block search share one panel with two tabs |
 | Generate workspace from code | Fifth icon in the left activity bar, a panel (the same item is in the **More** menu) | Reverse-parse pasted or selected code into a block workspace |
+| Standards → workspace | Sixth icon in the left activity bar (read-only preview) | Shows three-tier verdicts, gaps and source anchors per standard slice; generates no workspace |
 
 Three boundaries come first:
 
@@ -109,13 +110,33 @@ JavaScript and C/C++ reference implementations are not supported: code judged to
 
 The syntax-tree parser is the Pyodide Python runtime inside the browser (about 12 MB), bundled with the app at the same origin (`public/pyodide/`), loaded on the first parse and reused afterwards; it depends on no external CDN, and a load or parse failure reports the reason as-is (missing assets, or the 45-second parse timeout).
 
-## 6. Let the model pick sentences (bring your own key)
+## 6. Standards → workspace (read-only preview)
 
-### 6.1 Off by default
+The sixth icon in the left activity bar is the entry point of line A (standard text → workspace). This round is a **read-only preview**: it lays out "standard slices → clause units → three tiers" for a person to read. It generates no workspace and writes no sign-off.
+
+| View | What it answers |
+|---|---|
+| Standard slices | Verdicts for two slices today: NIST FIPS 180-4 (SHA-2) and NIST SP 800-38B (CMAC) |
+| Clause units | Clauses split out of entry pages, with their standard position and step count |
+| Three tiers | Buildable / partial / not buildable — whether a clause's steps can be assembled from canvas blocks |
+| Gaps and claim boundaries | Which steps live only inside generator closures, and which parameter ranges the block model does not express |
+| Source anchors | Every anchor carries a line range; clicking it opens the doc centre at that line |
+
+Three qualifiers must be read together with the tiers:
+
+1. The tiers are **build-time machine candidates**: `scripts/p4-*` produce the verdict JSON and `scripts/build-verdicts-index.mjs` merges it into `src/services/ai-helper/verdicts-index.json` (regenerated before every build);
+2. **Semantic equivalence is always unverified** (`semantic_equivalence = unverified`): a tier says whether steps can be assembled, never that an implementation matches the standard;
+3. **Sign-off stays with a person**: the panel says "no sign-off yet", and this round has neither a sign-off action nor one-click generation.
+
+After changing a verdict JSON, rerun `npm run verdicts:index` (`verdicts:index:check` only compares). The source JSON must be committed, otherwise the script refuses to generate — the artifact has to be reproducible.
+
+## 7. Let the model pick sentences (bring your own key)
+
+### 7.1 Off by default
 
 **Let the model pick sentences** is off by default. While it is unchecked the app sends no external request and needs no key; switching it on without a configuration shows "Model not configured" and opens the settings dialog immediately.
 
-### 6.2 Configuration
+### 7.2 Configuration
 
 The **Model settings (bring your own key)** dialog has three required fields and one risk notice:
 
@@ -127,7 +148,7 @@ The **Model settings (bring your own key)** dialog has three required fields and
 
 The repository ships no default provider, default model or key: an empty configuration means "no model attached", not "use the default".
 
-### 6.3 Where the key lives
+### 7.3 Where the key lives
 
 | Tier | Written when | Lifetime |
 |---|---|---|
@@ -136,7 +157,7 @@ The repository ships no default provider, default model or key: an empty configu
 
 The two tiers are mutually exclusive: writing the persistent tier clears the session copy. **Clear** empties both tiers, turns the toggle off and resets the status line.
 
-### 6.4 What one call does
+### 7.4 What one call does
 
 | Item | Value |
 |---|---|
@@ -148,7 +169,7 @@ The two tiers are mutually exclusive: writing the persistent tier clears the ses
 
 The key only travels in the `Authorization` header — never in the request body and never in error messages.
 
-### 6.5 How the reply is checked and used
+### 7.5 How the reply is checked and used
 
 The model may only reference candidate ids and must return at most five picks. The reply passes reference-integrity checks, and each of the five violation classes gets its own message instead of a generic failure:
 
@@ -162,20 +183,20 @@ The model may only reference candidate ids and must return at most five picks. T
 
 After the checks pass, the answer card shows only the selected sentences, and the evidence remains the `path:line` of that one section — picking sentences cannot make the evidence point at a different file. A model-written note, when present, appears on its own line tagged "model note (not part of the answer evidence)". The status line reports the call: `model picked n sentence(s) · N tokens · M ms`.
 
-### 6.6 How failures are shown
+### 7.6 How failures are shown
 
 Failures start with "Model call failed: " and name the cause: timeout (20 s), authentication failed (401), forbidden (403), quota or rate limited (429; no retry), the model did not return the required JSON, empty content, network error, incomplete configuration, or an unknown HTTP status.
 
 A failure never swallows the answer: the retrieval result and its evidence stay on screen with one extra line explaining the cause. To try again, ask again — not retrying automatically is deliberate.
 
-### 6.7 Risks and what is not done
+### 7.7 Risks and what is not done
 
 - The key lives in browser storage: same-origin scripts and extensions can read it, and it may reach disk backups. By default it is kept for this tab only and lost when the tab closes.
 - With the toggle on, the question and candidate sentence text go to the provider the user configured; how that data is handled depends on that provider.
 - Cost estimation is not implemented: the UI reports tokens and elapsed time only, with no unit-price input.
 - No real provider has been verified inside the repository (it ships no key); the existing acceptance run uses a local fake provider over real HTTP, crossing the CSP.
 
-## 7. Index and corpus maintenance
+## 8. Index and corpus maintenance
 
 | Command | Purpose |
 |---|---|
@@ -185,7 +206,7 @@ A failure never swallows the answer: the retrieval result and its evidence stay 
 
 Indexes are build-time artifacts tied to the documentation in the tree: after adding or editing docs the index must be rebuilt, otherwise search and answers keep working from the old corpus (`docs:index:check` reports the mismatch). Search itself touches no network or backend, but the two large indexes are not part of the first-load bundle: the Markdown index (about 4 MB) and the PDF page index (about 3.4 MB) are loaded on demand the first time that range is searched, while the block index (about 288 KB) ships with the panel.
 
-## 8. Related documents
+## 9. Related documents
 
 | Purpose | Document |
 |---|---|
