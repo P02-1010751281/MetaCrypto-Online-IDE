@@ -1,0 +1,1648 @@
+{
+ "blocks": {
+  "languageVersion": 0,
+  "blocks": [
+   {
+    "type": "procedures_defreturn",
+    "id": "ir-00001",
+    "fields": {
+     "NAME": "ML_KEM_KeyGen"
+    },
+    "extraState": {
+     "params": [
+      {
+       "name": "d",
+       "id": "d",
+       "type": "bytes"
+      },
+      {
+       "name": "z",
+       "id": "z",
+       "type": "bytes"
+      }
+     ],
+     "hasStatements": true
+    },
+    "inputs": {
+     "STACK": {
+      "block": {
+       "type": "variables_set",
+       "id": "ir-00002",
+       "fields": {
+        "VAR": {
+         "id": "v_G",
+         "name": "G"
+        }
+       },
+       "inputs": {
+        "VALUE": {
+         "block": {
+          "type": "sponge_squeeze",
+          "id": "ir-00003",
+          "fields": {
+           "RATE": "576"
+          },
+          "inputs": {
+           "STATE": {
+            "block": {
+             "type": "sponge_absorb",
+             "id": "ir-00004",
+             "fields": {
+              "RATE": "576"
+             },
+             "inputs": {
+              "STATE": {
+               "block": {
+                "type": "keccak_state_init",
+                "id": "ir-00005"
+               }
+              },
+              "BLOCK": {
+               "block": {
+                "type": "sponge_pad",
+                "id": "ir-00006",
+                "fields": {
+                 "RATE": "576",
+                 "SUFFIX": "0x06"
+                },
+                "inputs": {
+                 "INPUT": {
+                  "block": {
+                   "type": "pq_seed_with_nonce",
+                   "id": "ir-00007",
+                   "inputs": {
+                    "SEED": {
+                     "block": {
+                      "type": "variables_get",
+                      "id": "ir-00008",
+                      "fields": {
+                       "VAR": {
+                        "id": "v_d",
+                        "name": "d"
+                       }
+                      }
+                     }
+                    },
+                    "NONCE": {
+                     "block": {
+                      "type": "data_value",
+                      "id": "ir-00009",
+                      "fields": {
+                       "NUM": "2"
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           },
+           "OUTLEN": {
+            "block": {
+             "type": "data_value",
+             "id": "ir-00010",
+             "fields": {
+              "NUM": "64"
+             }
+            }
+           }
+          }
+         }
+        }
+       },
+       "next": {
+        "block": {
+         "type": "variables_set",
+         "id": "ir-00011",
+         "fields": {
+          "VAR": {
+           "id": "v_rho",
+           "name": "rho"
+          }
+         },
+         "inputs": {
+          "VALUE": {
+           "block": {
+            "type": "pq_bytes_slice",
+            "id": "ir-00012",
+            "inputs": {
+             "INPUT": {
+              "block": {
+               "type": "variables_get",
+               "id": "ir-00013",
+               "fields": {
+                "VAR": {
+                 "id": "v_G",
+                 "name": "G"
+                }
+               }
+              }
+             },
+             "START": {
+              "block": {
+               "type": "data_value",
+               "id": "ir-00014",
+               "fields": {
+                "NUM": "0"
+               }
+              }
+             },
+             "END": {
+              "block": {
+               "type": "data_value",
+               "id": "ir-00015",
+               "fields": {
+                "NUM": "32"
+               }
+              }
+             }
+            }
+           }
+          }
+         },
+         "next": {
+          "block": {
+           "type": "variables_set",
+           "id": "ir-00016",
+           "fields": {
+            "VAR": {
+             "id": "v_sigma",
+             "name": "sigma"
+            }
+           },
+           "inputs": {
+            "VALUE": {
+             "block": {
+              "type": "pq_bytes_slice",
+              "id": "ir-00017",
+              "inputs": {
+               "INPUT": {
+                "block": {
+                 "type": "variables_get",
+                 "id": "ir-00018",
+                 "fields": {
+                  "VAR": {
+                   "id": "v_G",
+                   "name": "G"
+                  }
+                 }
+                }
+               },
+               "START": {
+                "block": {
+                 "type": "data_value",
+                 "id": "ir-00019",
+                 "fields": {
+                  "NUM": "32"
+                 }
+                }
+               },
+               "END": {
+                "block": {
+                 "type": "data_value",
+                 "id": "ir-00020",
+                 "fields": {
+                  "NUM": "64"
+                 }
+                }
+               }
+              }
+             }
+            }
+           },
+           "next": {
+            "block": {
+             "type": "variables_set",
+             "id": "ir-00021",
+             "fields": {
+              "VAR": {
+               "id": "v_A00",
+               "name": "A00"
+              }
+             },
+             "inputs": {
+              "VALUE": {
+               "block": {
+                "type": "pq_sample_ntt",
+                "id": "ir-00022",
+                "fields": {
+                 "MODULUS": "3329"
+                },
+                "inputs": {
+                 "SEED": {
+                  "block": {
+                   "type": "pq_seed_with_nonce",
+                   "id": "ir-00023",
+                   "inputs": {
+                    "SEED": {
+                     "block": {
+                      "type": "pq_seed_with_nonce",
+                      "id": "ir-00024",
+                      "inputs": {
+                       "SEED": {
+                        "block": {
+                         "type": "variables_get",
+                         "id": "ir-00025",
+                         "fields": {
+                          "VAR": {
+                           "id": "v_rho",
+                           "name": "rho"
+                          }
+                         }
+                        }
+                       },
+                       "NONCE": {
+                        "block": {
+                         "type": "data_value",
+                         "id": "ir-00026",
+                         "fields": {
+                          "NUM": "0"
+                         }
+                        }
+                       }
+                      }
+                     }
+                    },
+                    "NONCE": {
+                     "block": {
+                      "type": "data_value",
+                      "id": "ir-00027",
+                      "fields": {
+                       "NUM": "0"
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             },
+             "next": {
+              "block": {
+               "type": "variables_set",
+               "id": "ir-00028",
+               "fields": {
+                "VAR": {
+                 "id": "v_A01",
+                 "name": "A01"
+                }
+               },
+               "inputs": {
+                "VALUE": {
+                 "block": {
+                  "type": "pq_sample_ntt",
+                  "id": "ir-00029",
+                  "fields": {
+                   "MODULUS": "3329"
+                  },
+                  "inputs": {
+                   "SEED": {
+                    "block": {
+                     "type": "pq_seed_with_nonce",
+                     "id": "ir-00030",
+                     "inputs": {
+                      "SEED": {
+                       "block": {
+                        "type": "pq_seed_with_nonce",
+                        "id": "ir-00031",
+                        "inputs": {
+                         "SEED": {
+                          "block": {
+                           "type": "variables_get",
+                           "id": "ir-00032",
+                           "fields": {
+                            "VAR": {
+                             "id": "v_rho",
+                             "name": "rho"
+                            }
+                           }
+                          }
+                         },
+                         "NONCE": {
+                          "block": {
+                           "type": "data_value",
+                           "id": "ir-00033",
+                           "fields": {
+                            "NUM": "1"
+                           }
+                          }
+                         }
+                        }
+                       }
+                      },
+                      "NONCE": {
+                       "block": {
+                        "type": "data_value",
+                        "id": "ir-00034",
+                        "fields": {
+                         "NUM": "0"
+                        }
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               },
+               "next": {
+                "block": {
+                 "type": "variables_set",
+                 "id": "ir-00035",
+                 "fields": {
+                  "VAR": {
+                   "id": "v_A10",
+                   "name": "A10"
+                  }
+                 },
+                 "inputs": {
+                  "VALUE": {
+                   "block": {
+                    "type": "pq_sample_ntt",
+                    "id": "ir-00036",
+                    "fields": {
+                     "MODULUS": "3329"
+                    },
+                    "inputs": {
+                     "SEED": {
+                      "block": {
+                       "type": "pq_seed_with_nonce",
+                       "id": "ir-00037",
+                       "inputs": {
+                        "SEED": {
+                         "block": {
+                          "type": "pq_seed_with_nonce",
+                          "id": "ir-00038",
+                          "inputs": {
+                           "SEED": {
+                            "block": {
+                             "type": "variables_get",
+                             "id": "ir-00039",
+                             "fields": {
+                              "VAR": {
+                               "id": "v_rho",
+                               "name": "rho"
+                              }
+                             }
+                            }
+                           },
+                           "NONCE": {
+                            "block": {
+                             "type": "data_value",
+                             "id": "ir-00040",
+                             "fields": {
+                              "NUM": "0"
+                             }
+                            }
+                           }
+                          }
+                         }
+                        },
+                        "NONCE": {
+                         "block": {
+                          "type": "data_value",
+                          "id": "ir-00041",
+                          "fields": {
+                           "NUM": "1"
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 },
+                 "next": {
+                  "block": {
+                   "type": "variables_set",
+                   "id": "ir-00042",
+                   "fields": {
+                    "VAR": {
+                     "id": "v_A11",
+                     "name": "A11"
+                    }
+                   },
+                   "inputs": {
+                    "VALUE": {
+                     "block": {
+                      "type": "pq_sample_ntt",
+                      "id": "ir-00043",
+                      "fields": {
+                       "MODULUS": "3329"
+                      },
+                      "inputs": {
+                       "SEED": {
+                        "block": {
+                         "type": "pq_seed_with_nonce",
+                         "id": "ir-00044",
+                         "inputs": {
+                          "SEED": {
+                           "block": {
+                            "type": "pq_seed_with_nonce",
+                            "id": "ir-00045",
+                            "inputs": {
+                             "SEED": {
+                              "block": {
+                               "type": "variables_get",
+                               "id": "ir-00046",
+                               "fields": {
+                                "VAR": {
+                                 "id": "v_rho",
+                                 "name": "rho"
+                                }
+                               }
+                              }
+                             },
+                             "NONCE": {
+                              "block": {
+                               "type": "data_value",
+                               "id": "ir-00047",
+                               "fields": {
+                                "NUM": "1"
+                               }
+                              }
+                             }
+                            }
+                           }
+                          },
+                          "NONCE": {
+                           "block": {
+                            "type": "data_value",
+                            "id": "ir-00048",
+                            "fields": {
+                             "NUM": "1"
+                            }
+                           }
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   },
+                   "next": {
+                    "block": {
+                     "type": "variables_set",
+                     "id": "ir-00049",
+                     "fields": {
+                      "VAR": {
+                       "id": "v_s0",
+                       "name": "s0"
+                      }
+                     },
+                     "inputs": {
+                      "VALUE": {
+                       "block": {
+                        "type": "pq_sample_poly_cbd",
+                        "id": "ir-00050",
+                        "fields": {
+                         "ETA": "3",
+                         "MODULUS": "3329"
+                        },
+                        "inputs": {
+                         "SEED": {
+                          "block": {
+                           "type": "pq_prf",
+                           "id": "ir-00051",
+                           "fields": {
+                            "ALGO": "SHAKE256"
+                           },
+                           "inputs": {
+                            "SEED": {
+                             "block": {
+                              "type": "variables_get",
+                              "id": "ir-00052",
+                              "fields": {
+                               "VAR": {
+                                "id": "v_sigma",
+                                "name": "sigma"
+                               }
+                              }
+                             }
+                            },
+                            "NONCE": {
+                             "block": {
+                              "type": "data_value",
+                              "id": "ir-00053",
+                              "fields": {
+                               "NUM": "0"
+                              }
+                             }
+                            },
+                            "OUTLEN": {
+                             "block": {
+                              "type": "data_value",
+                              "id": "ir-00054",
+                              "fields": {
+                               "NUM": "192"
+                              }
+                             }
+                            }
+                           }
+                          }
+                         }
+                        }
+                       }
+                      }
+                     },
+                     "next": {
+                      "block": {
+                       "type": "variables_set",
+                       "id": "ir-00055",
+                       "fields": {
+                        "VAR": {
+                         "id": "v_s1",
+                         "name": "s1"
+                        }
+                       },
+                       "inputs": {
+                        "VALUE": {
+                         "block": {
+                          "type": "pq_sample_poly_cbd",
+                          "id": "ir-00056",
+                          "fields": {
+                           "ETA": "3",
+                           "MODULUS": "3329"
+                          },
+                          "inputs": {
+                           "SEED": {
+                            "block": {
+                             "type": "pq_prf",
+                             "id": "ir-00057",
+                             "fields": {
+                              "ALGO": "SHAKE256"
+                             },
+                             "inputs": {
+                              "SEED": {
+                               "block": {
+                                "type": "variables_get",
+                                "id": "ir-00058",
+                                "fields": {
+                                 "VAR": {
+                                  "id": "v_sigma",
+                                  "name": "sigma"
+                                 }
+                                }
+                               }
+                              },
+                              "NONCE": {
+                               "block": {
+                                "type": "data_value",
+                                "id": "ir-00059",
+                                "fields": {
+                                 "NUM": "1"
+                                }
+                               }
+                              },
+                              "OUTLEN": {
+                               "block": {
+                                "type": "data_value",
+                                "id": "ir-00060",
+                                "fields": {
+                                 "NUM": "192"
+                                }
+                               }
+                              }
+                             }
+                            }
+                           }
+                          }
+                         }
+                        }
+                       },
+                       "next": {
+                        "block": {
+                         "type": "variables_set",
+                         "id": "ir-00061",
+                         "fields": {
+                          "VAR": {
+                           "id": "v_e0",
+                           "name": "e0"
+                          }
+                         },
+                         "inputs": {
+                          "VALUE": {
+                           "block": {
+                            "type": "pq_sample_poly_cbd",
+                            "id": "ir-00062",
+                            "fields": {
+                             "ETA": "3",
+                             "MODULUS": "3329"
+                            },
+                            "inputs": {
+                             "SEED": {
+                              "block": {
+                               "type": "pq_prf",
+                               "id": "ir-00063",
+                               "fields": {
+                                "ALGO": "SHAKE256"
+                               },
+                               "inputs": {
+                                "SEED": {
+                                 "block": {
+                                  "type": "variables_get",
+                                  "id": "ir-00064",
+                                  "fields": {
+                                   "VAR": {
+                                    "id": "v_sigma",
+                                    "name": "sigma"
+                                   }
+                                  }
+                                 }
+                                },
+                                "NONCE": {
+                                 "block": {
+                                  "type": "data_value",
+                                  "id": "ir-00065",
+                                  "fields": {
+                                   "NUM": "2"
+                                  }
+                                 }
+                                },
+                                "OUTLEN": {
+                                 "block": {
+                                  "type": "data_value",
+                                  "id": "ir-00066",
+                                  "fields": {
+                                   "NUM": "192"
+                                  }
+                                 }
+                                }
+                               }
+                              }
+                             }
+                            }
+                           }
+                          }
+                         },
+                         "next": {
+                          "block": {
+                           "type": "variables_set",
+                           "id": "ir-00067",
+                           "fields": {
+                            "VAR": {
+                             "id": "v_e1",
+                             "name": "e1"
+                            }
+                           },
+                           "inputs": {
+                            "VALUE": {
+                             "block": {
+                              "type": "pq_sample_poly_cbd",
+                              "id": "ir-00068",
+                              "fields": {
+                               "ETA": "3",
+                               "MODULUS": "3329"
+                              },
+                              "inputs": {
+                               "SEED": {
+                                "block": {
+                                 "type": "pq_prf",
+                                 "id": "ir-00069",
+                                 "fields": {
+                                  "ALGO": "SHAKE256"
+                                 },
+                                 "inputs": {
+                                  "SEED": {
+                                   "block": {
+                                    "type": "variables_get",
+                                    "id": "ir-00070",
+                                    "fields": {
+                                     "VAR": {
+                                      "id": "v_sigma",
+                                      "name": "sigma"
+                                     }
+                                    }
+                                   }
+                                  },
+                                  "NONCE": {
+                                   "block": {
+                                    "type": "data_value",
+                                    "id": "ir-00071",
+                                    "fields": {
+                                     "NUM": "3"
+                                    }
+                                   }
+                                  },
+                                  "OUTLEN": {
+                                   "block": {
+                                    "type": "data_value",
+                                    "id": "ir-00072",
+                                    "fields": {
+                                     "NUM": "192"
+                                    }
+                                   }
+                                  }
+                                 }
+                                }
+                               }
+                              }
+                             }
+                            }
+                           },
+                           "next": {
+                            "block": {
+                             "type": "variables_set",
+                             "id": "ir-00073",
+                             "fields": {
+                              "VAR": {
+                               "id": "v_sh0",
+                               "name": "sh0"
+                              }
+                             },
+                             "inputs": {
+                              "VALUE": {
+                               "block": {
+                                "type": "pq_ntt",
+                                "id": "ir-00074",
+                                "fields": {
+                                 "MODULUS": "3329",
+                                 "DEGREE": "256"
+                                },
+                                "inputs": {
+                                 "INPUT": {
+                                  "block": {
+                                   "type": "variables_get",
+                                   "id": "ir-00075",
+                                   "fields": {
+                                    "VAR": {
+                                     "id": "v_s0",
+                                     "name": "s0"
+                                    }
+                                   }
+                                  }
+                                 }
+                                }
+                               }
+                              }
+                             },
+                             "next": {
+                              "block": {
+                               "type": "variables_set",
+                               "id": "ir-00076",
+                               "fields": {
+                                "VAR": {
+                                 "id": "v_sh1",
+                                 "name": "sh1"
+                                }
+                               },
+                               "inputs": {
+                                "VALUE": {
+                                 "block": {
+                                  "type": "pq_ntt",
+                                  "id": "ir-00077",
+                                  "fields": {
+                                   "MODULUS": "3329",
+                                   "DEGREE": "256"
+                                  },
+                                  "inputs": {
+                                   "INPUT": {
+                                    "block": {
+                                     "type": "variables_get",
+                                     "id": "ir-00078",
+                                     "fields": {
+                                      "VAR": {
+                                       "id": "v_s1",
+                                       "name": "s1"
+                                      }
+                                     }
+                                    }
+                                   }
+                                  }
+                                 }
+                                }
+                               },
+                               "next": {
+                                "block": {
+                                 "type": "variables_set",
+                                 "id": "ir-00079",
+                                 "fields": {
+                                  "VAR": {
+                                   "id": "v_eh0",
+                                   "name": "eh0"
+                                  }
+                                 },
+                                 "inputs": {
+                                  "VALUE": {
+                                   "block": {
+                                    "type": "pq_ntt",
+                                    "id": "ir-00080",
+                                    "fields": {
+                                     "MODULUS": "3329",
+                                     "DEGREE": "256"
+                                    },
+                                    "inputs": {
+                                     "INPUT": {
+                                      "block": {
+                                       "type": "variables_get",
+                                       "id": "ir-00081",
+                                       "fields": {
+                                        "VAR": {
+                                         "id": "v_e0",
+                                         "name": "e0"
+                                        }
+                                       }
+                                      }
+                                     }
+                                    }
+                                   }
+                                  }
+                                 },
+                                 "next": {
+                                  "block": {
+                                   "type": "variables_set",
+                                   "id": "ir-00082",
+                                   "fields": {
+                                    "VAR": {
+                                     "id": "v_eh1",
+                                     "name": "eh1"
+                                    }
+                                   },
+                                   "inputs": {
+                                    "VALUE": {
+                                     "block": {
+                                      "type": "pq_ntt",
+                                      "id": "ir-00083",
+                                      "fields": {
+                                       "MODULUS": "3329",
+                                       "DEGREE": "256"
+                                      },
+                                      "inputs": {
+                                       "INPUT": {
+                                        "block": {
+                                         "type": "variables_get",
+                                         "id": "ir-00084",
+                                         "fields": {
+                                          "VAR": {
+                                           "id": "v_e1",
+                                           "name": "e1"
+                                          }
+                                         }
+                                        }
+                                       }
+                                      }
+                                     }
+                                    }
+                                   },
+                                   "next": {
+                                    "block": {
+                                     "type": "variables_set",
+                                     "id": "ir-00085",
+                                     "fields": {
+                                      "VAR": {
+                                       "id": "v_t0",
+                                       "name": "t0"
+                                      }
+                                     },
+                                     "inputs": {
+                                      "VALUE": {
+                                       "block": {
+                                        "type": "pq_poly_add",
+                                        "id": "ir-00086",
+                                        "fields": {
+                                         "MODULUS": "3329"
+                                        },
+                                        "inputs": {
+                                         "A": {
+                                          "block": {
+                                           "type": "pq_poly_add",
+                                           "id": "ir-00087",
+                                           "fields": {
+                                            "MODULUS": "3329"
+                                           },
+                                           "inputs": {
+                                            "A": {
+                                             "block": {
+                                              "type": "pq_ntt_mul",
+                                              "id": "ir-00088",
+                                              "fields": {
+                                               "MODULUS": "3329"
+                                              },
+                                              "inputs": {
+                                               "A": {
+                                                "block": {
+                                                 "type": "variables_get",
+                                                 "id": "ir-00089",
+                                                 "fields": {
+                                                  "VAR": {
+                                                   "id": "v_A00",
+                                                   "name": "A00"
+                                                  }
+                                                 }
+                                                }
+                                               },
+                                               "B": {
+                                                "block": {
+                                                 "type": "variables_get",
+                                                 "id": "ir-00090",
+                                                 "fields": {
+                                                  "VAR": {
+                                                   "id": "v_sh0",
+                                                   "name": "sh0"
+                                                  }
+                                                 }
+                                                }
+                                               }
+                                              }
+                                             }
+                                            },
+                                            "B": {
+                                             "block": {
+                                              "type": "pq_ntt_mul",
+                                              "id": "ir-00091",
+                                              "fields": {
+                                               "MODULUS": "3329"
+                                              },
+                                              "inputs": {
+                                               "A": {
+                                                "block": {
+                                                 "type": "variables_get",
+                                                 "id": "ir-00092",
+                                                 "fields": {
+                                                  "VAR": {
+                                                   "id": "v_A01",
+                                                   "name": "A01"
+                                                  }
+                                                 }
+                                                }
+                                               },
+                                               "B": {
+                                                "block": {
+                                                 "type": "variables_get",
+                                                 "id": "ir-00093",
+                                                 "fields": {
+                                                  "VAR": {
+                                                   "id": "v_sh1",
+                                                   "name": "sh1"
+                                                  }
+                                                 }
+                                                }
+                                               }
+                                              }
+                                             }
+                                            }
+                                           }
+                                          }
+                                         },
+                                         "B": {
+                                          "block": {
+                                           "type": "variables_get",
+                                           "id": "ir-00094",
+                                           "fields": {
+                                            "VAR": {
+                                             "id": "v_eh0",
+                                             "name": "eh0"
+                                            }
+                                           }
+                                          }
+                                         }
+                                        }
+                                       }
+                                      }
+                                     },
+                                     "next": {
+                                      "block": {
+                                       "type": "variables_set",
+                                       "id": "ir-00095",
+                                       "fields": {
+                                        "VAR": {
+                                         "id": "v_t1",
+                                         "name": "t1"
+                                        }
+                                       },
+                                       "inputs": {
+                                        "VALUE": {
+                                         "block": {
+                                          "type": "pq_poly_add",
+                                          "id": "ir-00096",
+                                          "fields": {
+                                           "MODULUS": "3329"
+                                          },
+                                          "inputs": {
+                                           "A": {
+                                            "block": {
+                                             "type": "pq_poly_add",
+                                             "id": "ir-00097",
+                                             "fields": {
+                                              "MODULUS": "3329"
+                                             },
+                                             "inputs": {
+                                              "A": {
+                                               "block": {
+                                                "type": "pq_ntt_mul",
+                                                "id": "ir-00098",
+                                                "fields": {
+                                                 "MODULUS": "3329"
+                                                },
+                                                "inputs": {
+                                                 "A": {
+                                                  "block": {
+                                                   "type": "variables_get",
+                                                   "id": "ir-00099",
+                                                   "fields": {
+                                                    "VAR": {
+                                                     "id": "v_A10",
+                                                     "name": "A10"
+                                                    }
+                                                   }
+                                                  }
+                                                 },
+                                                 "B": {
+                                                  "block": {
+                                                   "type": "variables_get",
+                                                   "id": "ir-00100",
+                                                   "fields": {
+                                                    "VAR": {
+                                                     "id": "v_sh0",
+                                                     "name": "sh0"
+                                                    }
+                                                   }
+                                                  }
+                                                 }
+                                                }
+                                               }
+                                              },
+                                              "B": {
+                                               "block": {
+                                                "type": "pq_ntt_mul",
+                                                "id": "ir-00101",
+                                                "fields": {
+                                                 "MODULUS": "3329"
+                                                },
+                                                "inputs": {
+                                                 "A": {
+                                                  "block": {
+                                                   "type": "variables_get",
+                                                   "id": "ir-00102",
+                                                   "fields": {
+                                                    "VAR": {
+                                                     "id": "v_A11",
+                                                     "name": "A11"
+                                                    }
+                                                   }
+                                                  }
+                                                 },
+                                                 "B": {
+                                                  "block": {
+                                                   "type": "variables_get",
+                                                   "id": "ir-00103",
+                                                   "fields": {
+                                                    "VAR": {
+                                                     "id": "v_sh1",
+                                                     "name": "sh1"
+                                                    }
+                                                   }
+                                                  }
+                                                 }
+                                                }
+                                               }
+                                              }
+                                             }
+                                            }
+                                           },
+                                           "B": {
+                                            "block": {
+                                             "type": "variables_get",
+                                             "id": "ir-00104",
+                                             "fields": {
+                                              "VAR": {
+                                               "id": "v_eh1",
+                                               "name": "eh1"
+                                              }
+                                             }
+                                            }
+                                           }
+                                          }
+                                         }
+                                        }
+                                       },
+                                       "next": {
+                                        "block": {
+                                         "type": "variables_set",
+                                         "id": "ir-00105",
+                                         "fields": {
+                                          "VAR": {
+                                           "id": "v_b_t0",
+                                           "name": "b_t0"
+                                          }
+                                         },
+                                         "inputs": {
+                                          "VALUE": {
+                                           "block": {
+                                            "type": "pq_byte_encode",
+                                            "id": "ir-00106",
+                                            "fields": {
+                                             "BITS": "12"
+                                            },
+                                            "inputs": {
+                                             "INPUT": {
+                                              "block": {
+                                               "type": "variables_get",
+                                               "id": "ir-00107",
+                                               "fields": {
+                                                "VAR": {
+                                                 "id": "v_t0",
+                                                 "name": "t0"
+                                                }
+                                               }
+                                              }
+                                             }
+                                            }
+                                           }
+                                          }
+                                         },
+                                         "next": {
+                                          "block": {
+                                           "type": "variables_set",
+                                           "id": "ir-00108",
+                                           "fields": {
+                                            "VAR": {
+                                             "id": "v_b_t1",
+                                             "name": "b_t1"
+                                            }
+                                           },
+                                           "inputs": {
+                                            "VALUE": {
+                                             "block": {
+                                              "type": "pq_byte_encode",
+                                              "id": "ir-00109",
+                                              "fields": {
+                                               "BITS": "12"
+                                              },
+                                              "inputs": {
+                                               "INPUT": {
+                                                "block": {
+                                                 "type": "variables_get",
+                                                 "id": "ir-00110",
+                                                 "fields": {
+                                                  "VAR": {
+                                                   "id": "v_t1",
+                                                   "name": "t1"
+                                                  }
+                                                 }
+                                                }
+                                               }
+                                              }
+                                             }
+                                            }
+                                           },
+                                           "next": {
+                                            "block": {
+                                             "type": "variables_set",
+                                             "id": "ir-00111",
+                                             "fields": {
+                                              "VAR": {
+                                               "id": "v_ek",
+                                               "name": "ek"
+                                              }
+                                             },
+                                             "inputs": {
+                                              "VALUE": {
+                                               "block": {
+                                                "type": "pq_byte_concat",
+                                                "id": "ir-00112",
+                                                "inputs": {
+                                                 "A": {
+                                                  "block": {
+                                                   "type": "pq_byte_concat",
+                                                   "id": "ir-00113",
+                                                   "inputs": {
+                                                    "A": {
+                                                     "block": {
+                                                      "type": "variables_get",
+                                                      "id": "ir-00114",
+                                                      "fields": {
+                                                       "VAR": {
+                                                        "id": "v_b_t0",
+                                                        "name": "b_t0"
+                                                       }
+                                                      }
+                                                     }
+                                                    },
+                                                    "B": {
+                                                     "block": {
+                                                      "type": "variables_get",
+                                                      "id": "ir-00115",
+                                                      "fields": {
+                                                       "VAR": {
+                                                        "id": "v_b_t1",
+                                                        "name": "b_t1"
+                                                       }
+                                                      }
+                                                     }
+                                                    }
+                                                   }
+                                                  }
+                                                 },
+                                                 "B": {
+                                                  "block": {
+                                                   "type": "variables_get",
+                                                   "id": "ir-00116",
+                                                   "fields": {
+                                                    "VAR": {
+                                                     "id": "v_rho",
+                                                     "name": "rho"
+                                                    }
+                                                   }
+                                                  }
+                                                 }
+                                                }
+                                               }
+                                              }
+                                             },
+                                             "next": {
+                                              "block": {
+                                               "type": "variables_set",
+                                               "id": "ir-00117",
+                                               "fields": {
+                                                "VAR": {
+                                                 "id": "v_b_sh0",
+                                                 "name": "b_sh0"
+                                                }
+                                               },
+                                               "inputs": {
+                                                "VALUE": {
+                                                 "block": {
+                                                  "type": "pq_byte_encode",
+                                                  "id": "ir-00118",
+                                                  "fields": {
+                                                   "BITS": "12"
+                                                  },
+                                                  "inputs": {
+                                                   "INPUT": {
+                                                    "block": {
+                                                     "type": "variables_get",
+                                                     "id": "ir-00119",
+                                                     "fields": {
+                                                      "VAR": {
+                                                       "id": "v_sh0",
+                                                       "name": "sh0"
+                                                      }
+                                                     }
+                                                    }
+                                                   }
+                                                  }
+                                                 }
+                                                }
+                                               },
+                                               "next": {
+                                                "block": {
+                                                 "type": "variables_set",
+                                                 "id": "ir-00120",
+                                                 "fields": {
+                                                  "VAR": {
+                                                   "id": "v_b_sh1",
+                                                   "name": "b_sh1"
+                                                  }
+                                                 },
+                                                 "inputs": {
+                                                  "VALUE": {
+                                                   "block": {
+                                                    "type": "pq_byte_encode",
+                                                    "id": "ir-00121",
+                                                    "fields": {
+                                                     "BITS": "12"
+                                                    },
+                                                    "inputs": {
+                                                     "INPUT": {
+                                                      "block": {
+                                                       "type": "variables_get",
+                                                       "id": "ir-00122",
+                                                       "fields": {
+                                                        "VAR": {
+                                                         "id": "v_sh1",
+                                                         "name": "sh1"
+                                                        }
+                                                       }
+                                                      }
+                                                     }
+                                                    }
+                                                   }
+                                                  }
+                                                 },
+                                                 "next": {
+                                                  "block": {
+                                                   "type": "variables_set",
+                                                   "id": "ir-00123",
+                                                   "fields": {
+                                                    "VAR": {
+                                                     "id": "v_dk",
+                                                     "name": "dk"
+                                                    }
+                                                   },
+                                                   "inputs": {
+                                                    "VALUE": {
+                                                     "block": {
+                                                      "type": "pq_byte_concat",
+                                                      "id": "ir-00124",
+                                                      "inputs": {
+                                                       "A": {
+                                                        "block": {
+                                                         "type": "variables_get",
+                                                         "id": "ir-00125",
+                                                         "fields": {
+                                                          "VAR": {
+                                                           "id": "v_b_sh0",
+                                                           "name": "b_sh0"
+                                                          }
+                                                         }
+                                                        }
+                                                       },
+                                                       "B": {
+                                                        "block": {
+                                                         "type": "variables_get",
+                                                         "id": "ir-00126",
+                                                         "fields": {
+                                                          "VAR": {
+                                                           "id": "v_b_sh1",
+                                                           "name": "b_sh1"
+                                                          }
+                                                         }
+                                                        }
+                                                       }
+                                                      }
+                                                     }
+                                                    }
+                                                   },
+                                                   "next": {
+                                                    "block": {
+                                                     "type": "variables_set",
+                                                     "id": "ir-00127",
+                                                     "fields": {
+                                                      "VAR": {
+                                                       "id": "v_h_ek",
+                                                       "name": "h_ek"
+                                                      }
+                                                     },
+                                                     "inputs": {
+                                                      "VALUE": {
+                                                       "block": {
+                                                        "type": "sponge_squeeze",
+                                                        "id": "ir-00128",
+                                                        "fields": {
+                                                         "RATE": "1088"
+                                                        },
+                                                        "inputs": {
+                                                         "STATE": {
+                                                          "block": {
+                                                           "type": "sponge_absorb",
+                                                           "id": "ir-00129",
+                                                           "fields": {
+                                                            "RATE": "1088"
+                                                           },
+                                                           "inputs": {
+                                                            "STATE": {
+                                                             "block": {
+                                                              "type": "keccak_state_init",
+                                                              "id": "ir-00130"
+                                                             }
+                                                            },
+                                                            "BLOCK": {
+                                                             "block": {
+                                                              "type": "sponge_pad",
+                                                              "id": "ir-00131",
+                                                              "fields": {
+                                                               "RATE": "1088",
+                                                               "SUFFIX": "0x06"
+                                                              },
+                                                              "inputs": {
+                                                               "INPUT": {
+                                                                "block": {
+                                                                 "type": "variables_get",
+                                                                 "id": "ir-00132",
+                                                                 "fields": {
+                                                                  "VAR": {
+                                                                   "id": "v_ek",
+                                                                   "name": "ek"
+                                                                  }
+                                                                 }
+                                                                }
+                                                               }
+                                                              }
+                                                             }
+                                                            }
+                                                           }
+                                                          }
+                                                         },
+                                                         "OUTLEN": {
+                                                          "block": {
+                                                           "type": "data_value",
+                                                           "id": "ir-00133",
+                                                           "fields": {
+                                                            "NUM": "32"
+                                                           }
+                                                          }
+                                                         }
+                                                        }
+                                                       }
+                                                      }
+                                                     },
+                                                     "next": {
+                                                      "block": {
+                                                       "type": "variables_set",
+                                                       "id": "ir-00134",
+                                                       "fields": {
+                                                        "VAR": {
+                                                         "id": "v_sk",
+                                                         "name": "sk"
+                                                        }
+                                                       },
+                                                       "inputs": {
+                                                        "VALUE": {
+                                                         "block": {
+                                                          "type": "pq_byte_concat",
+                                                          "id": "ir-00135",
+                                                          "inputs": {
+                                                           "A": {
+                                                            "block": {
+                                                             "type": "pq_byte_concat",
+                                                             "id": "ir-00136",
+                                                             "inputs": {
+                                                              "A": {
+                                                               "block": {
+                                                                "type": "pq_byte_concat",
+                                                                "id": "ir-00137",
+                                                                "inputs": {
+                                                                 "A": {
+                                                                  "block": {
+                                                                   "type": "variables_get",
+                                                                   "id": "ir-00138",
+                                                                   "fields": {
+                                                                    "VAR": {
+                                                                     "id": "v_dk",
+                                                                     "name": "dk"
+                                                                    }
+                                                                   }
+                                                                  }
+                                                                 },
+                                                                 "B": {
+                                                                  "block": {
+                                                                   "type": "variables_get",
+                                                                   "id": "ir-00139",
+                                                                   "fields": {
+                                                                    "VAR": {
+                                                                     "id": "v_ek",
+                                                                     "name": "ek"
+                                                                    }
+                                                                   }
+                                                                  }
+                                                                 }
+                                                                }
+                                                               }
+                                                              },
+                                                              "B": {
+                                                               "block": {
+                                                                "type": "variables_get",
+                                                                "id": "ir-00140",
+                                                                "fields": {
+                                                                 "VAR": {
+                                                                  "id": "v_h_ek",
+                                                                  "name": "h_ek"
+                                                                 }
+                                                                }
+                                                               }
+                                                              }
+                                                             }
+                                                            }
+                                                           },
+                                                           "B": {
+                                                            "block": {
+                                                             "type": "variables_get",
+                                                             "id": "ir-00141",
+                                                             "fields": {
+                                                              "VAR": {
+                                                               "id": "v_z",
+                                                               "name": "z"
+                                                              }
+                                                             }
+                                                            }
+                                                           }
+                                                          }
+                                                         }
+                                                        }
+                                                       },
+                                                       "next": {
+                                                        "block": {
+                                                         "type": "variables_set",
+                                                         "id": "ir-00142",
+                                                         "fields": {
+                                                          "VAR": {
+                                                           "id": "v_ret",
+                                                           "name": "ret"
+                                                          }
+                                                         },
+                                                         "inputs": {
+                                                          "VALUE": {
+                                                           "block": {
+                                                            "type": "pq_byte_concat",
+                                                            "id": "ir-00143",
+                                                            "inputs": {
+                                                             "A": {
+                                                              "block": {
+                                                               "type": "variables_get",
+                                                               "id": "ir-00144",
+                                                               "fields": {
+                                                                "VAR": {
+                                                                 "id": "v_ek",
+                                                                 "name": "ek"
+                                                                }
+                                                               }
+                                                              }
+                                                             },
+                                                             "B": {
+                                                              "block": {
+                                                               "type": "variables_get",
+                                                               "id": "ir-00145",
+                                                               "fields": {
+                                                                "VAR": {
+                                                                 "id": "v_sk",
+                                                                 "name": "sk"
+                                                                }
+                                                               }
+                                                              }
+                                                             }
+                                                            }
+                                                           }
+                                                          }
+                                                         }
+                                                        }
+                                                       }
+                                                      }
+                                                     }
+                                                    }
+                                                   }
+                                                  }
+                                                 }
+                                                }
+                                               }
+                                              }
+                                             }
+                                            }
+                                           }
+                                          }
+                                         }
+                                        }
+                                       }
+                                      }
+                                     }
+                                    }
+                                   }
+                                  }
+                                 }
+                                }
+                               }
+                              }
+                             }
+                            }
+                           }
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     },
+     "RETURN": {
+      "block": {
+       "type": "variables_get",
+       "id": "ir-00146",
+       "fields": {
+        "VAR": {
+         "id": "v_ret",
+         "name": "ret"
+        }
+       }
+      }
+     }
+    },
+    "x": 60,
+    "y": 60
+   }
+  ]
+ }
+}

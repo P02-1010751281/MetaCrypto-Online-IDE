@@ -3,75 +3,247 @@
   "note": "C 函数名 → 现有块类型。人工真值：不与生成器存在机械联系；V0 只机械校验（a）block 是 BLOCK-IO-CONTRACT.json 的键（b）证据行仍含对应注册语句，语义等价必须靠 V3 差分。",
   "entries": [
     {
-      "c": { "name": "sub_bytes", "form": "function", "signature": "void sub_bytes(uint8_t s[16])" },
+      "c": {
+        "name": "sub_bytes",
+        "form": "function",
+        "signature": "void sub_bytes(uint8_t s[16])"
+      },
       "block": "aes_sub_bytes",
-      "io": { "cArgs": ["uint8_t[16]"], "blockInputs": ["STATE"] },
+      "io": {
+        "cArgs": [
+          "uint8_t[16]"
+        ],
+        "blockInputs": [
+          "STATE"
+        ]
+      },
       "evidence": {
         "contract": "docs/blocks/BLOCK-IO-CONTRACT.json#aes_sub_bytes",
-        "blockDef": { "file": "src/blocks/symmetric/aes/blocks.ts", "line": 15 },
-        "generator": { "file": "src/generators/python/symmetric/aes/blocks.ts", "line": 35 }
+        "blockDef": {
+          "file": "src/blocks/symmetric/aes/blocks.ts",
+          "line": 15
+        },
+        "generator": {
+          "file": "src/generators/python/symmetric/aes/blocks.ts",
+          "line": 35
+        }
       },
       "why": "块把 AES SubBytes 整体封装（S 盒在生成器闭包里），C 侧同名函数是同一变换"
     },
     {
-      "c": { "name": "shift_rows", "form": "function", "signature": "void shift_rows(uint8_t s[16])" },
+      "c": {
+        "name": "shift_rows",
+        "form": "function",
+        "signature": "void shift_rows(uint8_t s[16])"
+      },
       "block": "aes_shift_rows",
-      "io": { "cArgs": ["uint8_t[16]"], "blockInputs": ["STATE"] },
+      "io": {
+        "cArgs": [
+          "uint8_t[16]"
+        ],
+        "blockInputs": [
+          "STATE"
+        ]
+      },
       "evidence": {
         "contract": "docs/blocks/BLOCK-IO-CONTRACT.json#aes_shift_rows",
-        "blockDef": { "file": "src/blocks/symmetric/aes/blocks.ts", "line": 27 },
-        "generator": { "file": "src/generators/python/symmetric/aes/blocks.ts", "line": 48 }
+        "blockDef": {
+          "file": "src/blocks/symmetric/aes/blocks.ts",
+          "line": 27
+        },
+        "generator": {
+          "file": "src/generators/python/symmetric/aes/blocks.ts",
+          "line": 48
+        }
       },
       "why": "行移位是 FIPS 197 §5.1.2 的整表变换，块不接受行/列参数，与 C 的整状态操作同形"
     },
     {
-      "c": { "name": "mix_columns", "form": "function", "signature": "void mix_columns(uint8_t s[16])" },
+      "c": {
+        "name": "mix_columns",
+        "form": "function",
+        "signature": "void mix_columns(uint8_t s[16])"
+      },
       "block": "aes_mix_columns",
-      "io": { "cArgs": ["uint8_t[16]"], "blockInputs": ["STATE"] },
+      "io": {
+        "cArgs": [
+          "uint8_t[16]"
+        ],
+        "blockInputs": [
+          "STATE"
+        ]
+      },
       "evidence": {
         "contract": "docs/blocks/BLOCK-IO-CONTRACT.json#aes_mix_columns",
-        "blockDef": { "file": "src/blocks/symmetric/aes/blocks.ts", "line": 39 },
-        "generator": { "file": "src/generators/python/symmetric/aes/blocks.ts", "line": 65 }
+        "blockDef": {
+          "file": "src/blocks/symmetric/aes/blocks.ts",
+          "line": 39
+        },
+        "generator": {
+          "file": "src/generators/python/symmetric/aes/blocks.ts",
+          "line": 65
+        }
       },
       "why": "MixColumns 的 GF(2^8) 乘法在闭包里；C 侧 xtime 是同一运算的手写形态，别名只认整函数不认 xtime"
     },
     {
-      "c": { "name": "add_round_key", "form": "function", "signature": "void add_round_key(uint8_t s[16], const uint8_t rk[16])" },
+      "c": {
+        "name": "add_round_key",
+        "form": "function",
+        "signature": "void add_round_key(uint8_t s[16], const uint8_t rk[16])"
+      },
       "block": "aes_add_round_key",
-      "io": { "cArgs": ["uint8_t[16]", "uint8_t[16]"], "blockInputs": ["STATE", "ROUND_KEY"] },
+      "io": {
+        "cArgs": [
+          "uint8_t[16]",
+          "uint8_t[16]"
+        ],
+        "blockInputs": [
+          "STATE",
+          "ROUND_KEY"
+        ]
+      },
       "evidence": {
         "contract": "docs/blocks/BLOCK-IO-CONTRACT.json#aes_add_round_key",
-        "blockDef": { "file": "src/blocks/symmetric/aes/blocks.ts", "line": 51 },
-        "generator": { "file": "src/generators/python/symmetric/aes/blocks.ts", "line": 87 }
+        "blockDef": {
+          "file": "src/blocks/symmetric/aes/blocks.ts",
+          "line": 51
+        },
+        "generator": {
+          "file": "src/generators/python/symmetric/aes/blocks.ts",
+          "line": 87
+        }
       },
       "why": "两参数按位置对应 STATE / ROUND_KEY；无第三个输入，因此 C 的原地改写要落成返回链"
     },
     {
-      "c": { "name": "sm4_sbox", "form": "function", "signature": "uint8_t sm4_sbox(uint8_t x)" },
+      "c": {
+        "name": "sm4_sbox",
+        "form": "function",
+        "signature": "uint8_t sm4_sbox(uint8_t x)"
+      },
       "block": "sm4_sbox",
-      "io": { "cArgs": ["uint8_t"], "blockInputs": ["INPUT"] },
+      "io": {
+        "cArgs": [
+          "uint8_t"
+        ],
+        "blockInputs": [
+          "INPUT"
+        ]
+      },
       "evidence": {
         "contract": "docs/blocks/BLOCK-IO-CONTRACT.json#sm4_sbox",
-        "blockDef": { "file": "src/blocks/symmetric/sm4/blocks.ts", "line": 17 },
-        "generator": { "file": "src/generators/python/symmetric/sm4/blocks.ts", "line": 45 }
+        "blockDef": {
+          "file": "src/blocks/symmetric/sm4/blocks.ts",
+          "line": 17
+        },
+        "generator": {
+          "file": "src/generators/python/symmetric/sm4/blocks.ts",
+          "line": 45
+        }
       },
       "why": "255 项 S 盒表在生成器闭包里；C 侧的 static const 表与查表整体命中一个块"
     },
     {
-      "c": { "name": "aes_ecb_block", "form": "function", "signature": "void aes_ecb_block(const uint8_t in[16], const uint8_t key[16], uint8_t out[16])" },
+      "c": {
+        "name": "aes_ecb_block",
+        "form": "function",
+        "signature": "void aes_ecb_block(const uint8_t in[16], const uint8_t key[16], uint8_t out[16])"
+      },
       "block": "mode_ecb_encrypt",
-      "io": { "cArgs": ["uint8_t[16]", "uint8_t[16]", "uint8_t[16]"], "blockInputs": ["DATA", "KEY"] },
+      "io": {
+        "cArgs": [
+          "uint8_t[16]",
+          "uint8_t[16]",
+          "uint8_t[16]"
+        ],
+        "blockInputs": [
+          "DATA",
+          "KEY"
+        ]
+      },
       "evidence": {
         "contract": "docs/blocks/BLOCK-IO-CONTRACT.json#mode_ecb_encrypt",
-        "blockDef": { "file": "src/blocks/symmetric/modes/blocks.ts", "line": 19 },
-        "generator": { "file": "src/generators/python/symmetric/modes/blocks.ts", "line": 5 }
+        "blockDef": {
+          "file": "src/blocks/symmetric/modes/blocks.ts",
+          "line": 19
+        },
+        "generator": {
+          "file": "src/generators/python/symmetric/modes/blocks.ts",
+          "line": 5
+        }
       },
       "why": "块以返回字节串代替 C 的输出参数；这是显式结构改写（out-param → 输出），不是逐句翻译"
+    },
+    {
+      "c": {
+        "name": "ShiftRows",
+        "form": "function",
+        "signature": "static void ShiftRows(state_t* state)"
+      },
+      "block": "aes_shift_rows",
+      "io": {
+        "cArgs": [
+          "state_t*"
+        ],
+        "blockInputs": [
+          "STATE"
+        ]
+      },
+      "evidence": {
+        "contract": "docs/blocks/BLOCK-IO-CONTRACT.json#aes_shift_rows",
+        "blockDef": {
+          "file": "src/blocks/symmetric/aes/blocks.ts",
+          "line": 27
+        },
+        "generator": {
+          "file": "src/generators/python/symmetric/aes/blocks.ts",
+          "line": 48
+        }
+      },
+      "why": "tiny-AES-c 的 state_t 就是 uint8_t[4][4]，其扁平内存序（state[col][row] = 4*col+row）与本项目 FIPS 197 列优先的 16 字节状态同构；块同样只接受整状态、不接受行/列参数"
+    },
+    {
+      "c": {
+        "name": "MixColumns",
+        "form": "function",
+        "signature": "static void MixColumns(state_t* state)"
+      },
+      "block": "aes_mix_columns",
+      "io": {
+        "cArgs": [
+          "state_t*"
+        ],
+        "blockInputs": [
+          "STATE"
+        ]
+      },
+      "evidence": {
+        "contract": "docs/blocks/BLOCK-IO-CONTRACT.json#aes_mix_columns",
+        "blockDef": {
+          "file": "src/blocks/symmetric/aes/blocks.ts",
+          "line": 39
+        },
+        "generator": {
+          "file": "src/generators/python/symmetric/aes/blocks.ts",
+          "line": 65
+        }
+      },
+      "why": "GF(2^8) 乘 2 的内联 xtime 与 GM 形式的列混合在闭包里；C 侧同样把 xtime 当私有辅助函数，别名只认整函数 MixColumns"
     }
   ],
   "rejected": [
-    { "name": "aes_round", "reason": "轮函数整体没有契约键（只有 proc_aes_round 模板块，不在 222 键内），只能由四个原子块串成" },
-    { "name": "expand_key", "reason": "密钥扩展无契约键；proc_aes_key_schedule 是模板块，不在 222 键内" },
-    { "name": "xtime", "reason": "GF(2^8) 乘 2 无契约键；bit_operation 是 32 位语义，接上去会产生位宽漂移而不只是近似" }
+    {
+      "name": "aes_round",
+      "reason": "轮函数整体没有契约键（只有 proc_aes_round 模板块，不在 222 键内），只能由四个原子块串成"
+    },
+    {
+      "name": "expand_key",
+      "reason": "密钥扩展无契约键；proc_aes_key_schedule 是模板块，不在 222 键内"
+    },
+    {
+      "name": "xtime",
+      "reason": "GF(2^8) 乘 2 无契约键；bit_operation 是 32 位语义，接上去会产生位宽漂移而不只是近似"
+    }
   ]
 }

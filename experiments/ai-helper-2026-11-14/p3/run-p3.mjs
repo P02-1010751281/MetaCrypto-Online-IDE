@@ -103,6 +103,7 @@ const defNameFor = (fnName) => `P3_${camel(fnName)
 // ---------------------------------------------------------------------------
 function stageV0(manifest, aliasMap, contract) {
   const samples = [];
+  const aliasNames = new Set(aliasMap.entries.map((e) => e.c.name));
   let ok = true;
   for (const s of manifest.samples) {
     const file = path.join(SAMPLES_DIR, s.file);
@@ -112,7 +113,12 @@ function stageV0(manifest, aliasMap, contract) {
     const lines = exists ? buf.toString('utf8').split('\n').length - 1 : 0;
     const hashOk = actual === s.sha256;
     const linesOk = lines <= 40;
-    if (!hashOk || !linesOk) ok = false;
+    // opaqueFunctions 是「函数体不解析」的豁免，必须只落在真被块吸收的函数上，
+    // 否则它会变成「跳过分析」的万能开关。
+    const opaque = s.opaqueFunctions || [];
+    const opaqueUnknown = opaque.filter((name) => !aliasNames.has(name));
+    const opaqueOk = opaqueUnknown.length === 0;
+    if (!hashOk || !linesOk || !opaqueOk) ok = false;
     const deps = (s.dependsOn || []).map((dep) => {
       const depFile = path.join(SAMPLES_DIR, dep);
       const depActual = fs.existsSync(depFile) ? sha256(fs.readFileSync(depFile)) : null;
@@ -129,12 +135,16 @@ function stageV0(manifest, aliasMap, contract) {
       linesOk,
       source: s.source,
       provenance: s.provenance,
+      upstream: s.upstream ?? null,
+      opaqueFunctions: opaque,
+      opaqueOk,
+      opaqueUnknown,
       standard: s.standard,
       license: s.license,
       retrieved: s.retrieved,
       verifyCommand: s.verifyCommand,
       dependsOn: deps,
-      ok: exists && hashOk && linesOk,
+      ok: exists && hashOk && linesOk && opaqueOk,
     });
   }
 
@@ -199,7 +209,7 @@ function stageV1(manifest) {
     let parsed = null;
     let error = null;
     try {
-      parsed = parseC(sourceText);
+      parsed = parseC(sourceText, { opaqueFunctions: new Set(s.opaqueFunctions || []) });
     } catch (err) {
       error = String(err.message || err);
     }
@@ -226,8 +236,11 @@ function stageV1(manifest) {
           type: p.type,
           arraySize: p.arraySize,
           isConst: p.isConst,
+          isPointer: p.isPointer ?? false,
         })),
         statements: f.body.length,
+        bodySkipped: f.bodySkipped ?? false,
+        bodyLines: f.bodyLines ?? null,
       })),
       globals: parsed.globals.map((g) => ({
         name: g.name,
@@ -285,11 +298,18 @@ function buildWholeAliasWorkspace({ fn, aliasEntry, contract, nextId }) {
     };
   }
   const valueParams = returnedByOutParam ? params.slice(0, blockInputs.length) : params;
+  // 类型标签来源：定长数组与指针（如 tiny-AES-c 的 state_t*，typedef 展平后只剩 baseType）
+  // 都表示「整块缓冲区」，必须问块的 IO 契约；只有标量才按 C 基础类型推断。
+  // 指针形参一律标成 bytes 会与块的 IntList 输入自相矛盾（2026-11-18 接第三方样本时暴露）。
+  const typeOfParam = (p, i) => {
+    if (p.arraySize != null || p.isPointer) return paramBlockType(contract, block, i);
+    return p.type.includes('uint8') ? 'int' : 'bytes';
+  };
   const defParams = valueParams.map((p, i) => ({
     name: sanitizeParam(p.name),
     id: `p_${p.name}`,
     cName: p.name,
-    type: p.arraySize != null ? paramBlockType(contract, block, i) : (p.type.includes('uint8') ? 'int' : 'bytes'),
+    type: typeOfParam(p, i),
   }));
   const renames = defParams.filter((p) => p.name !== p.cName).map((p) => ({ from: p.cName, to: p.name, why: '保留字/非法标识符' }));
   const inputs = {};
@@ -305,7 +325,11 @@ function buildWholeAliasWorkspace({ fn, aliasEntry, contract, nextId }) {
     paramRenames: renames,
     returnBlock,
     outParam: returnedByOutParam ? params[params.length - 1].name : null,
-    note: returnedByOutParam ? 'C 的输出参数落成块的返回值' : 'C 的返回值与块输出同义',
+    note: returnedByOutParam
+      ? 'C 的输出参数落成块的返回值'
+      : (fn.returnType === 'void'
+        ? 'C 以 void 就地改写形参；块以返回值给出同一缓冲区'
+        : 'C 的返回值与块输出同义'),
   };
 }
 
@@ -445,7 +469,7 @@ function stageV2(manifest, aliasMap, contract, parseResults, vectors) {
     }
     const s = manifest.samples.find((x) => x.id === v1.id);
     const sourceText = fs.readFileSync(path.join(SAMPLES_DIR, s.file), 'utf8');
-    const parsed = parseC(sourceText);
+    const parsed = parseC(sourceText, { opaqueFunctions: new Set(s.opaqueFunctions || []) });
     const entryName = vectors.samples[v1.id]?.fn ? vectors.samples[v1.id].fn : null;
     const aliasHits = [];
     const skeleton = [];
@@ -461,8 +485,16 @@ function stageV2(manifest, aliasMap, contract, parseResults, vectors) {
           block: whole.block,
           signature: whole.c.signature,
           absorbedStatements: fn.body.length,
+          bodySkipped: fn.bodySkipped ?? false,
         });
-        absorbed.push({ fn: fn.name, statements: fn.body.length, note: `函数体整体被 ${whole.block} 吸收，内部构造不做结构映射` });
+        absorbed.push({
+          fn: fn.name,
+          statements: fn.body.length,
+          bodySkipped: fn.bodySkipped ?? false,
+          note: fn.bodySkipped
+            ? `函数体整体被 ${whole.block} 吸收，且按 manifest.opaqueFunctions 只解析了签名（体行数 ${fn.bodyLines ?? '?'}，未做结构分析）`
+            : `函数体整体被 ${whole.block} 吸收，内部构造不做结构映射`,
+        });
         continue;
       }
       const nodes = fn.body.flatMap((stmt) => mapSkeletonStatement(stmt, aliasIndex));
@@ -558,7 +590,7 @@ function writeWorkspace(sampleId, buildable) {
 // ---------------------------------------------------------------------------
 // V3：差分
 // ---------------------------------------------------------------------------
-function buildCDriver(sampleId, fnName, kind, vectors) {
+function buildCDriver(sampleId, fnName, kind, vectors, sampleFile) {
   const head = [
     '/* 由 run-p3.mjs 生成：同一组向量喂给 C 样本；不要手改，改 vectors.json 后重跑。 */',
     '#include <stdint.h>',
@@ -607,6 +639,30 @@ function buildCDriver(sampleId, fnName, kind, vectors) {
     lines.push('    return 0;', '}', '');
     return lines.join('\n');
   }
+  if (kind === 'inplace16-ptr') {
+    // 第三方样本里的这些函数是 static：与驱动分开编译就链接不上。
+    // 这条分支把样本 #include 进同一编译单元，从而不必为了可链接去改上游源码（不去 static）。
+    const lines = [
+      '/* 由 run-p3.mjs 生成：样本以 #include 进入同一编译单元（static 函数才能被调用）；不要手改。 */',
+      '#include <stdint.h>',
+      '#include <stdio.h>',
+      `#include "${sampleFile}"`,
+      '',
+      ...printer,
+      'int main(void) {',
+      '    uint8_t s[16];',
+    ];
+    vectors.forEach((v, i) => {
+      lines.push(`    static const uint8_t a${i}[16] = ${toByteArrayLiteral(v.inputs[0])};`);
+      lines.push(`    for (int j = 0; j < 16; j++) s[j] = a${i}[j];`);
+      // 形参是 `state_t*`，而 state_t = uint8_t[4][4]，所以它的类型是 uint8_t (*)[4][4]
+      // （不是 (*)[4]）。扁平 16 字节缓冲区按列优先就是这个 4x4 状态，直接转型传址。
+      lines.push(`    ${fnName}((uint8_t (*)[4][4])s);`);
+      lines.push('    p3_print(s, 16);');
+    });
+    lines.push('    return 0;', '}', '');
+    return lines.join('\n');
+  }
   if (kind === 'byte') {
     const lines = [...head, `uint8_t ${fnName}(uint8_t x);`, '', 'int main(void) {'];
     for (const v of vectors) lines.push(`    printf("%02x\\n", ${fnName}(0x${HEX(v.inputs[0])}));`);
@@ -625,6 +681,11 @@ function buildPyDriver(defName, kind, vectors) {
   } else if (kind === 'ecb-block') {
     for (const v of vectors) {
       lines.push(`print(${defName}(bytes(${toPyByteArray(v.inputs[0])}), bytes(${toPyByteArray(v.inputs[1])})).hex())`);
+    }
+  } else if (kind === 'inplace16-ptr') {
+    // 单个 16 字节缓冲区，无密钥参数：C 就地改写 ↔ 块返回值
+    for (const v of vectors) {
+      lines.push(`print(''.join(f'{b:02x}' for b in ${defName}(${toPyByteArray(v.inputs[0])})))`);
     }
   } else if (kind === 'byte') {
     for (const v of vectors) {
@@ -711,12 +772,15 @@ function stageV3(manifest, v2Results, vectors, env, aliasMapRef, contractRef) {
 
     // 2) C 样本 + 驱动 → gcc 编译执行
     const driverFile = path.join(OUT_DIR, `driver-${s.id}.c`);
-    fs.writeFileSync(driverFile, buildCDriver(s.id, spec.fn, spec.kind, spec.vectors));
+    fs.writeFileSync(driverFile, buildCDriver(s.id, spec.fn, spec.kind, spec.vectors, s.file));
     out.cDriver = rel(driverFile);
-    const sampleFiles = [path.join(SAMPLES_DIR, s.file)];
+    const driverText = fs.readFileSync(driverFile, 'utf8');
     const sampleText = fs.readFileSync(path.join(SAMPLES_DIR, s.file), 'utf8');
+    const sampleFiles = [];
+    // 驱动已经 #include 的翻译单元不能再单独编译（会重复定义）
+    if (!driverText.includes(`#include "${s.file}"`)) sampleFiles.push(path.join(SAMPLES_DIR, s.file));
     for (const dep of s.dependsOn || []) {
-      // 样本已经 #include 的依赖不能再单独编译（会重复定义）
+      if (driverText.includes(`#include "${dep}"`)) continue;
       if (sampleText.includes(`#include "${dep}"`)) continue;
       sampleFiles.push(path.join(SAMPLES_DIR, dep));
     }

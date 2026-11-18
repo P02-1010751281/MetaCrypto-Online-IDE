@@ -101,6 +101,56 @@
         }
       ],
       "fn": "sm4_sbox"
+    },
+    "kokke-shiftrows": {
+      "kind": "inplace16-ptr",
+      "pyFn": "P3_ShiftRows",
+      "fn": "ShiftRows",
+      "vectors": [
+        {
+          "id": "fips197-c1-shiftrows",
+          "inputs": [
+            "63cab7040953d051cd60e0e7ba70e18c"
+          ],
+          "expectHex": "6353e08c0960e104cd70b751bacad0e7",
+          "source": "FIPS 197 附录 C.1 第 1 轮：SubBytes 后的状态（63 ca b7 04 | 09 53 d0 51 | cd 60 e0 e7 | ba 70 e1 8c，列优先扁平）经 ShiftRows 得到标准给出的 63 53 e0 8c | 09 60 e1 04 | cd 70 b7 51 | ba ca d0 e7",
+          "note": "两个字节串都按 FIPS 列优先序写；不是按 4x4 矩阵外观逐行读"
+        },
+        {
+          "id": "layout-probe-ascending",
+          "inputs": [
+            "000102030405060708090a0b0c0d0e0f"
+          ],
+          "expectHex": "00050a0f04090e03080d02070c01060b",
+          "source": "独立实现（按 §5.1.2 s'[r][c]=s[r][(c+r) mod 4] 现写）与 tiny-AES-c 的 C 函数同时算得；专为抓「行/列布局transpose」错误而设，全矩阵 16 个字节互不相同",
+          "note": "若状态被误按行优先解释，此例必红"
+        }
+      ]
+    },
+    "kokke-mixcolumns": {
+      "kind": "inplace16-ptr",
+      "pyFn": "P3_MixColumns",
+      "fn": "MixColumns",
+      "vectors": [
+        {
+          "id": "fips197-c1-mixcolumns",
+          "inputs": [
+            "6353e08c0960e104cd70b751bacad0e7"
+          ],
+          "expectHex": "5f72641557f5bc92f7be3b291db9f91a",
+          "source": "FIPS 197 附录 C.1 第 1 轮：ShiftRows 后的状态经 MixColumns 得到标准给出的 5f 72 64 15 | 57 f5 bc 92 | f7 be 3b 29 | 1d b9 f9 1a",
+          "note": "同一轮的下一步是 AddRoundKey(d6aa74fd…)，结果即 p3 样本甲的 89d810e8… 向量；两条互为上下游交叉校验"
+        },
+        {
+          "id": "gf-single-byte",
+          "inputs": [
+            "01000000000000000000000000000000"
+          ],
+          "expectHex": "02010103000000000000000000000000",
+          "source": "独立实现（按 §5.1.3 的 2/3/1/1 矩阵乘现写）与 tiny-AES-c 的 C 函数同时算得：列 0 为 (01,00,00,00) 时输出列 0 = (02,01,01,03)",
+          "note": "只激活一个字节，专测 GF(2^8) 的 xtime 分支（不含 0x1b 折减）"
+        }
+      ]
     }
   }
 }

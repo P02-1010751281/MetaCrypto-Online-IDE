@@ -149,11 +149,15 @@ export function lex(sourceText) {
 }
 
 class Parser {
-  constructor(tokens, diagnostics) {
+  constructor(tokens, diagnostics, options = {}) {
     this.tokens = tokens;
     this.pos = 0;
     this.diag = diagnostics;
     this.scopes = [new Map()]; // 变量名 -> {type, isArray, arraySize}
+    // typedef 别名：别名 -> { baseType, dims }。只解析「给已有类型起别名」这一种形态。
+    this.typeAliases = new Map();
+    // 整函数被块吸收的样本：函数体不做结构解析，只留签名与体行数（见 parseFunctionRest）。
+    this.opaqueFunctions = options.opaqueFunctions || new Set();
   }
 
   peek(offset = 0) { return this.tokens[this.pos + offset]; }
@@ -197,12 +201,51 @@ class Parser {
         continue;
       }
       if (t.type === 'punct' && t.value === ';') { this.next(); continue; }
+      if (t.type === 'ident' && t.value === 'typedef') {
+        this.parseTypedef();
+        continue;
+      }
       const parsed = this.parseTopLevel();
       if (!parsed) continue;
       if (parsed.kind === 'function') functions.push(parsed.fn);
       else globals.push(...parsed.decls);
     }
     return { functions, globals, preprocs };
+  }
+
+  /**
+   * `typedef <base> <name>[d1][d2];` —— 只支持「给已有标量/数组类型起别名」。
+   *
+   * 为什么必须支持它：真实第三方代码里 `state_t`（= uint8_t[4][4]）这类别名是常态，
+   * 不支持就会在函数签名处直接抛「无法识别声明类型」，整个样本连签名都拿不到。
+   * 结构体/联合体/枚举/函数指针别名仍然判 unsupported —— 块模型里没有对应形态。
+   */
+  parseTypedef() {
+    this.next(); // typedef
+    const spec = this.parseDeclSpec();
+    if (spec.unsupportedDecl) { this.skipToStatementEnd(); return; }
+    const nameTok = this.expect('ident');
+    const dims = [];
+    while (this.atPunct('[')) {
+      this.next();
+      if (this.atPunct(']')) {
+        this.diag.unsupported(nameTok.line, 'unsized-array', '别名数组没有长度');
+        dims.push(null);
+        this.next();
+        continue;
+      }
+      const expr = this.parseExpression();
+      dims.push(expr.kind === 'num' ? expr.value : null);
+      if (expr.kind !== 'num') this.diag.unsupported(nameTok.line, 'nonliteral-array-size', '别名数组长度不是字面量');
+      this.expectPunct(']');
+    }
+    this.expectPunct(';');
+    this.typeAliases.set(nameTok.value, {
+      baseType: spec.baseType,
+      dims,
+      line: nameTok.line,
+      source: `typedef ${spec.typeText} ${nameTok.value}`,
+    });
   }
 
   parseTopLevel() {
@@ -246,6 +289,30 @@ class Parser {
       return { kind: 'decls', decls: [] };
     }
     this.expectPunct('{');
+    if (this.opaqueFunctions.has(nameTok.value)) {
+      // 整函数被块吸收的样本（manifest.opaqueFunctions）：函数体不参与结构映射。
+      // 这不是「分析通过」——V2 会把 bodySkipped 明确写进 absorbed 条目，避免把跳过读成已核。
+      const startLine = this.peek().line;
+      let depth = 1;
+      while (depth > 0 && !this.at('eof')) {
+        const tk = this.next();
+        if (tk.type === 'punct' && tk.value === '{') depth += 1;
+        else if (tk.type === 'punct' && tk.value === '}') depth -= 1;
+      }
+      return {
+        kind: 'function',
+        fn: {
+          name: nameTok.value,
+          line: nameTok.line,
+          returnType: spec.typeText,
+          isStatic: spec.isStatic,
+          params,
+          body: [],
+          bodySkipped: true,
+          bodyLines: Math.max(0, this.peek().line - startLine),
+        },
+      };
+    }
     this.scopes.push(new Map());
     for (const p of params) {
       this.declare(p.name, { type: p.type, isArray: p.arraySize != null, arraySize: p.arraySize });
@@ -269,8 +336,10 @@ class Parser {
   parseParam() {
     const spec = this.parseDeclSpec();
     if (spec.unsupportedDecl) { this.skipToStatementEnd(); return null; }
+    let isPointer = false;
     if (this.atPunct('*')) {
       this.diag.unsupported(this.peek().line, 'pointer', '不支持指针参数');
+      isPointer = true;
       this.next();
     }
     if (this.atPunct(')')) return null;
@@ -286,10 +355,23 @@ class Parser {
         if (arraySize == null) this.diag.unsupported(nameTok.line, 'nonliteral-array-size', '数组长度不是字面量');
       }
       this.expectPunct(']');
-      if (this.atPunct('[')) this.diag.unsupported(nameTok.line, 'multi-dim-array', '不支持多维数组');
+      // 多维数组：块模型只有定长一维。必须消费掉多余维度，否则 expectPunct(')') 抛错、
+      // 整份样本连签名都拿不到（tiny-AES-c 的 uint8_t[4][4] 实测就卡在这里）。
+      while (this.atPunct('[')) {
+        this.diag.unsupported(nameTok.line, 'multi-dim-array', '不支持多维数组');
+        this.next();
+        if (!this.atPunct(']')) this.parseExpression();
+        this.expectPunct(']');
+      }
+    } else if (!isPointer && spec.aliasDims && spec.aliasDims.length > 0) {
+      // 形参直接写成别名且不是指针（如 `state_t s`）：维度来自 typedef 本身。
+      // 指针形参（`state_t* s`）不吃这条分支：它指向整个数组，不是「长度 4 的数组形参」。
+      arraySize = spec.aliasDims[0];
+      if (spec.aliasDims.length > 1) this.diag.unsupported(nameTok.line, 'multi-dim-array', '不支持多维数组');
     }
     return {
       name: nameTok.value,
+      isPointer,
       type: spec.typeText,
       isConst: spec.isConst,
       arraySize,
@@ -303,6 +385,7 @@ class Parser {
     let isConst = false;
     let unsupportedDecl = false;
     let consumed = false;
+    let aliasDims = null;
     while (true) {
       const t = this.peek();
       if (t.type !== 'ident') break;
@@ -325,13 +408,19 @@ class Parser {
         typeText += `${t.value} `;
         this.next(); consumed = true; continue;
       }
+      if (this.typeAliases.has(t.value)) {
+        const alias = this.typeAliases.get(t.value);
+        typeText += `${alias.baseType} `;
+        aliasDims = alias.dims;
+        this.next(); consumed = true; continue;
+      }
       break;
     }
     if (!consumed) {
       const t = this.peek();
       throw new Error(`语法错误：第 ${t.line} 行无法识别声明类型（实际 ${t.value || t.type}）`);
     }
-    return { typeText: typeText.trim(), baseType: typeText.replace(/const|static|volatile|register|inline|extern/g, '').trim(), isStatic, isConst, unsupportedDecl };
+    return { typeText: typeText.trim(), baseType: typeText.replace(/const|static|volatile|register|inline|extern/g, '').trim(), isStatic, isConst, unsupportedDecl, aliasDims };
   }
 
   skipToStatementEnd() {
@@ -362,7 +451,16 @@ class Parser {
           if (arraySize == null) this.diag.unsupported(nameTok.line, 'nonliteral-array-size', '数组长度不是字面量');
         }
         this.expectPunct(']');
-        if (this.atPunct('[')) this.diag.unsupported(nameTok.line, 'multi-dim-array', '不支持多维数组');
+        // 多维数组：同上，块模型只到定长一维；多余维度必须消费掉，否则整份样本解析中断。
+        while (this.atPunct('[')) {
+          this.diag.unsupported(nameTok.line, 'multi-dim-array', '不支持多维数组');
+          this.next();
+          if (!this.atPunct(']')) this.parseExpression();
+          this.expectPunct(']');
+        }
+      } else if (spec.aliasDims && spec.aliasDims.length > 0) {
+        arraySize = spec.aliasDims[0];
+        if (spec.aliasDims.length > 1) this.diag.unsupported(nameTok.line, 'multi-dim-array', '不支持多维数组');
       }
       let init = null;
       let initKind = null;
@@ -746,10 +844,17 @@ class Parser {
   }
 }
 
-export function parseC(sourceText) {
+/**
+ * @param {string} sourceText
+ * @param {{ opaqueFunctions?: Set<string> }} [options]
+ *   opaqueFunctions：整函数被单个块吸收的样本。只解析签名，函数体按配对括号跳过
+ *   （记录 bodySkipped / bodyLines）；因为这些函数的体本来就不做结构映射，
+ *   强行按 C 子集解析只会把「不支持指针解引用」这类噪声当成样本缺陷。
+ */
+export function parseC(sourceText, options = {}) {
   const diagnostics = new DiagnosticBag(sourceText);
   const tokens = lex(sourceText);
-  const parser = new Parser(tokens, diagnostics);
+  const parser = new Parser(tokens, diagnostics, options);
   const program = parser.parseTranslationUnit();
   return {
     ...program,

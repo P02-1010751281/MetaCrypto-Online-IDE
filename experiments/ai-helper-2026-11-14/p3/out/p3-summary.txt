@@ -1,21 +1,25 @@
 P3 第一步切片读数（B 线：外部 C 参考实现 → Blockly 工作区）
-生成时间 2026-11-17T13:17:51.953Z  git 4cfc12f  node v26.13.1
+生成时间 2026-11-18T00:57:09.836Z  git 002e594  node v26.13.1
 gcc: gcc (GCC) 16.2.1 20260810
 python: Python 3.14.10
-harness: dist-verify/verify-demo.js sha256=262f8fe5eccef739…
+harness: dist-verify/verify-demo.js sha256=722636849cf51024…
 
 V0 样本哈希/来源/行数 + 别名可审
 id                      lines  sha256(ok)  source
 jia-aes-round             39  OK        自撰，非第三方参考实现
 yi-aes-ecb                28  OK        自撰，非第三方参考实现
 bing-sm4-sbox             23  OK        自撰，非第三方参考实现
-别名 6 条，全部在契约键内且证据行可定位：是；契约键本轮实测 224 个；V0 总判定 PASS
+kokke-shiftrows           37  OK        第三方参考实现（kokke/tiny-AES-c），非自撰、非改写
+kokke-mixcolumns          27  OK        第三方参考实现（kokke/tiny-AES-c），非自撰、非改写
+别名 8 条，全部在契约键内且证据行可定位：是；契约键本轮实测 224 个；V0 总判定 PASS
 
 V1 结构解析（N=样本数 / 通过 / 诊断）
 id                      fns  for if assigns calls indexR indexW  unsupported  drift
 jia-aes-round             6    5  0      13     8     17      8            1      4
 yi-aes-ecb                2    7  1      17     9     24      9            1      3
 bing-sm4-sbox             1    0  0       0     0      1      0            1      0
+kokke-shiftrows           1    0  0       0     0      0      0            2      0
+kokke-mixcolumns          2    0  0       0     0      0      0            2      0
 
 V2 映射（别名命中 / 结构骨架 / 工作区可生成）
 - jia-aes-round: 别名命中 8（定义 4 / 调用点 4）（定义 sub_bytes→aes_sub_bytes, 定义 shift_rows→aes_shift_rows, 定义 mix_columns→aes_mix_columns, 定义 add_round_key→aes_add_round_key, 调用 aes_round:39→aes_sub_bytes, 调用 aes_round:39→aes_shift_rows, 调用 aes_round:39→aes_mix_columns, 调用 aes_round:39→aes_add_round_key）
@@ -25,8 +29,12 @@ V2 映射（别名命中 / 结构骨架 / 工作区可生成）
   参数改名：in→in_（保留字/非法标识符）
 - bing-sm4-sbox: 别名命中 1（定义 1 / 调用点 0）（定义 sm4_sbox→sm4_sbox）
   骨架节点 0 个（有块候选 0）；工作区可生成：是 → P3_SM4_Sbox（whole-function-alias）
+- kokke-shiftrows: 别名命中 1（定义 1 / 调用点 0）（定义 ShiftRows→aes_shift_rows）
+  骨架节点 0 个（有块候选 0）；工作区可生成：是 → P3_ShiftRows（whole-function-alias）
+- kokke-mixcolumns: 别名命中 1（定义 1 / 调用点 0）（定义 MixColumns→aes_mix_columns）
+  骨架节点 1 个（有块候选 1）；工作区可生成：是 → P3_MixColumns（whole-function-alias）
 
-V3 差分：可达样本 3/3，向量 9/9 通过
+V3 差分：可达样本 5/5，向量 13/13 通过
 - jia-aes-round: 1/1 通过（inplace16）
     PASS fips197-c1-round1  expect=89d810e8855ace682d1843d8cb128fe4 c=89d810e8855ace682d1843d8cb128fe4 py=89d810e8855ace682d1843d8cb128fe4
 - yi-aes-ecb: 5/5 通过（ecb-block）
@@ -39,6 +47,12 @@ V3 差分：可达样本 3/3，向量 9/9 通过
     PASS gb32907-a-s00      expect=d6 c=d6 py=d6
     PASS gb32907-a-s01      expect=90 c=90 py=90
     PASS gb32907-a-sff      expect=48 c=48 py=48
+- kokke-shiftrows: 2/2 通过（inplace16-ptr）
+    PASS fips197-c1-shiftrows expect=6353e08c0960e104cd70b751bacad0e7 c=6353e08c0960e104cd70b751bacad0e7 py=6353e08c0960e104cd70b751bacad0e7
+    PASS layout-probe-ascending expect=00050a0f04090e03080d02070c01060b c=00050a0f04090e03080d02070c01060b py=00050a0f04090e03080d02070c01060b
+- kokke-mixcolumns: 2/2 通过（inplace16-ptr）
+    PASS fips197-c1-mixcolumns expect=5f72641557f5bc92f7be3b291db9f91a c=5f72641557f5bc92f7be3b291db9f91a py=5f72641557f5bc92f7be3b291db9f91a
+    PASS gf-single-byte     expect=02010103000000000000000000000000 c=02010103000000000000000000000000 py=02010103000000000000000000000000
 
 阴性对照：已捕获 — sub_bytes → aes_shift_rows（同一 C 函数，语义错误；类型仍可生成）；向量 fips197-c1-round1 expect=89d810e8855ace682d1843d8cb128fe4 got=ed416f36a904297161cde3ba2d80adf5
 

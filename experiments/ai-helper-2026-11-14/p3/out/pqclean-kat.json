@@ -1,0 +1,111 @@
+{
+  "generatedAt": "2026-11-18T01:35:28.686Z",
+  "pqclean": {
+    "commit": "0586a824fc0d49df0b6b6e9179d8d15d06d0974f",
+    "scheme": "ml-kem-512",
+    "implementation": "clean"
+  },
+  "kat": {
+    "file": "/tmp/cc-pqclean-kat/kat-ml-kem-512.rsp",
+    "sha256": "c70041a761e01cd6426fa60e9fd6a4412c2be817386c8d0f3334898082512782",
+    "metaExpected": "c70041a761e01cd6426fa60e9fd6a4412c2be817386c8d0f3334898082512782",
+    "digestOk": true,
+    "lines": [
+      "count",
+      "seed",
+      "pk",
+      "sk",
+      "ct",
+      "ss"
+    ]
+  },
+  "randomness": {
+    "probeMatchesKat": true,
+    "calls": [
+      {
+        "len": 48,
+        "hex": "061550234D158C5E…"
+      },
+      {
+        "len": 64,
+        "hex": "7C9935A0B07694AA…"
+      },
+      {
+        "len": 32,
+        "hex": "EB4A7C66EF4EBA2D…"
+      }
+    ],
+    "note": "seed(48) → keypair 吃 d||z(64) → enc 吃 m(32)；探针重算的 pk/sk/ct/ss 与 KAT 逐字节相同，才说明这批随机字节就是 KAT 用的那批"
+  },
+  "generatedCode": {
+    "demo": "demos/procedures/ML-KEM-Encaps.json",
+    "pythonChars": 40543,
+    "compared": "ct || ss",
+    "ctOk": true,
+    "ssOk": true,
+    "ctBytes": 768,
+    "ssBytes": 32,
+    "js": {
+      "ok": true,
+      "ctOk": true,
+      "ssOk": true,
+      "error": null
+    }
+  },
+  "keygen": {
+    "workspace": "experiments/ai-helper-2026-11-14/p3/out/ws-mlkem-keygen.json",
+    "builder": "experiments/ai-helper-2026-11-14/p3/lib/gen-mlkem-keygen-ws.mjs",
+    "blocks": 146,
+    "procedure": "ML_KEM_KeyGen(d, z) → ek || sk（800 + 1632 字节；defreturn 只能返回一个值）",
+    "python": {
+      "ok": true,
+      "ekOk": true,
+      "skOk": true,
+      "error": null
+    },
+    "js": {
+      "ok": true,
+      "ekOk": true,
+      "skOk": true,
+      "error": null
+    },
+    "negativeControl": {
+      "dFlip": {
+        "ran": true,
+        "ekChanged": true,
+        "skChanged": true
+      },
+      "zFlip": {
+        "ran": true,
+        "ekUnchanged": true,
+        "skPrefixUnchanged": true,
+        "skTailChanged": true
+      }
+    },
+    "mutants": {
+      "e-eta2": {
+        "ran": true,
+        "pkChanged": true,
+        "skChanged": true
+      },
+      "a-transpose": {
+        "ran": true,
+        "pkChanged": true,
+        "skChanged": true
+      }
+    }
+  },
+  "negativeControl": {
+    "ran": true,
+    "mutation": "m 的最低位翻转 1 bit",
+    "changed": true,
+    "ctChanged": true
+  },
+  "digestAlignment": {
+    "verdict": "六个字段全部来自生成代码，六行组装摘要与 META 相同",
+    "assembledFromGenerated": "c70041a761e01cd6426fa60e9fd6a4412c2be817386c8d0f3334898082512782",
+    "matchesMeta": true,
+    "pending": [],
+    "why": "count/seed 是 DRBG 输入，不是算法输出；pk/sk 由 K-PKE.KeyGen 工作区算出，ct/ss 由 Encaps 工作区算出，四项全部逐字节相同后按 KAT 六行格式重算 sha256"
+  }
+}

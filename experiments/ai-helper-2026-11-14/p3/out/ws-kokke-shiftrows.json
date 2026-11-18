@@ -1,0 +1,47 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "procedures_defreturn",
+        "id": "kokke-shiftrows_def",
+        "x": 100,
+        "y": 100,
+        "extraState": {
+          "params": [
+            {
+              "name": "state",
+              "id": "p_state",
+              "type": "int_list"
+            }
+          ],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "P3_ShiftRows"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "aes_shift_rows",
+              "id": "kokke_shiftrows_n2",
+              "inputs": {
+                "STATE": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "kokke_shiftrows_n1",
+                    "fields": {
+                      "VAR": {
+                        "id": "p_state"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}
