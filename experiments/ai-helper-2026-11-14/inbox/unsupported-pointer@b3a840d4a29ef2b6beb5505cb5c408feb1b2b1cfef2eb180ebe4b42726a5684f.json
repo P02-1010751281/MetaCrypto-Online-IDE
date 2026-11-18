@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "unsupported-pointer@b3a840d4a29ef2b6beb5505cb5c408feb1b2b1cfef2eb180ebe4b42726a5684f",
+  "status": "open",
+  "createdAt": "2026-11-18T01:46:37.299Z",
+  "semanticTag": "unsupported-pointer",
+  "summary": "kokke-shiftrows:11 不支持指针参数",
+  "source": {
+    "kind": "code-ref",
+    "file": "experiments/ai-helper-2026-11-14/p3/samples/kokke-shiftrows.c",
+    "line": 11,
+    "excerpt": "static void ShiftRows(state_t* state)",
+    "hash": "b3a840d4a29ef2b6beb5505cb5c408feb1b2b1cfef2eb180ebe4b42726a5684f"
+  },
+  "expectedBlock": {
+    "name": "pointer_param_ref",
+    "inputs": [
+      {
+        "name": "TARGET",
+        "types": [
+          "Bytes"
+        ]
+      }
+    ],
+    "outputs": [],
+    "codeShape": "只覆盖「形参是指向定长数组的指针、函数体整段被吸收」这一形态：生成代码按原地改写传参。解引用运算不作表达。"
+  },
+  "reproduction": {
+    "kind": "code",
+    "locator": "experiments/ai-helper-2026-11-14/p3/samples/kokke-shiftrows.c",
+    "content": "static void ShiftRows(state_t* state)",
+    "note": "V1 在签名/声明解析阶段报出；V3 当前把该函数作为 absorbed 绑定跑通，缺的是块级表达而非可执行真值。"
+  }
+}

@@ -46,9 +46,10 @@ export default defineConfig({
             'ai-helper-validate': resolve(import.meta.dirname, 'scripts/ai-helper-validate.ts'),
             'ai-helper-blocksearch': resolve(import.meta.dirname, 'scripts/ai-helper-blocksearch.ts'),
             'ai-helper-docindex': resolve(import.meta.dirname, 'scripts/ai-helper-docindex.ts'),
+            'ai-helper-inbox': resolve(import.meta.dirname, 'scripts/ai-helper-inbox.ts'),
           },
       formats: ['es'],
     },
-    rollupOptions: { external: ['node:fs', 'node:child_process', 'node:os', 'node:path', 'jsdom'] },
+    rollupOptions: { external: ['node:fs', 'node:child_process', 'node:crypto', 'node:os', 'node:path', 'jsdom'] },
   },
 });

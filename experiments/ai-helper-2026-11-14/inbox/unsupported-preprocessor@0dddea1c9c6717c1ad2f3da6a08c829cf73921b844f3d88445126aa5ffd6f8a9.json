@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "unsupported-preprocessor@0dddea1c9c6717c1ad2f3da6a08c829cf73921b844f3d88445126aa5ffd6f8a9",
+  "status": "open",
+  "createdAt": "2026-11-18T01:46:37.299Z",
+  "semanticTag": "unsupported-preprocessor",
+  "summary": "jia-aes-round:4 预处理行未展开：#include <stdint.h>",
+  "source": {
+    "kind": "code-ref",
+    "file": "experiments/ai-helper-2026-11-14/p3/samples/jia-aes-round.c",
+    "line": 4,
+    "excerpt": "#include <stdint.h>",
+    "hash": "0dddea1c9c6717c1ad2f3da6a08c829cf73921b844f3d88445126aa5ffd6f8a9"
+  },
+  "expectedBlock": {
+    "name": "cpp_directive",
+    "inputs": [],
+    "outputs": [],
+    "codeShape": "按目标语言产出该行：C 侧原样保留 #include/#define；Python/JS 侧降级为注释。不参与块间数据流。"
+  },
+  "reproduction": {
+    "kind": "code",
+    "locator": "experiments/ai-helper-2026-11-14/p3/samples/jia-aes-round.c",
+    "content": "#include <stdint.h>",
+    "note": "V1 在签名/声明解析阶段报出；V3 当前把该函数作为 absorbed 绑定跑通，缺的是块级表达而非可执行真值。"
+  }
+}

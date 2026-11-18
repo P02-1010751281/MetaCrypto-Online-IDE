@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "unsupported-preprocessor@db3cef0f4b470fc2bf2f376330753deb6c1aad6a7901867a4fd19a689a286a27",
+  "status": "open",
+  "createdAt": "2026-11-18T01:46:37.299Z",
+  "semanticTag": "unsupported-preprocessor",
+  "summary": "yi-aes-ecb:4 预处理行未展开：#include \"jia-aes-round.c\"",
+  "source": {
+    "kind": "code-ref",
+    "file": "experiments/ai-helper-2026-11-14/p3/samples/yi-aes-ecb.c",
+    "line": 4,
+    "excerpt": "#include \"jia-aes-round.c\"",
+    "hash": "db3cef0f4b470fc2bf2f376330753deb6c1aad6a7901867a4fd19a689a286a27"
+  },
+  "expectedBlock": {
+    "name": "cpp_directive",
+    "inputs": [],
+    "outputs": [],
+    "codeShape": "按目标语言产出该行：C 侧原样保留 #include/#define；Python/JS 侧降级为注释。不参与块间数据流。"
+  },
+  "reproduction": {
+    "kind": "code",
+    "locator": "experiments/ai-helper-2026-11-14/p3/samples/yi-aes-ecb.c",
+    "content": "#include \"jia-aes-round.c\"",
+    "note": "V1 在签名/声明解析阶段报出；V3 当前把该函数作为 absorbed 绑定跑通，缺的是块级表达而非可执行真值。"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "unsupported-pointer@11e254c561629f2d20f8dbe10bc47424d04da4e8bfcfc12df404286b18cb1da0",
+  "status": "open",
+  "createdAt": "2026-11-18T01:46:37.299Z",
+  "semanticTag": "unsupported-pointer",
+  "summary": "kokke-mixcolumns:14 不支持指针参数",
+  "source": {
+    "kind": "code-ref",
+    "file": "experiments/ai-helper-2026-11-14/p3/samples/kokke-mixcolumns.c",
+    "line": 14,
+    "excerpt": "static void MixColumns(state_t* state)",
+    "hash": "11e254c561629f2d20f8dbe10bc47424d04da4e8bfcfc12df404286b18cb1da0"
+  },
+  "expectedBlock": {
+    "name": "pointer_param_ref",
+    "inputs": [
+      {
+        "name": "TARGET",
+        "types": [
+          "Bytes"
+        ]
+      }
+    ],
+    "outputs": [],
+    "codeShape": "只覆盖「形参是指向定长数组的指针、函数体整段被吸收」这一形态：生成代码按原地改写传参。解引用运算不作表达。"
+  },
+  "reproduction": {
+    "kind": "code",
+    "locator": "experiments/ai-helper-2026-11-14/p3/samples/kokke-mixcolumns.c",
+    "content": "static void MixColumns(state_t* state)",
+    "note": "V1 在签名/声明解析阶段报出；V3 当前把该函数作为 absorbed 绑定跑通，缺的是块级表达而非可执行真值。"
+  }
+}
