@@ -66,6 +66,7 @@ npm run docs:check-links
 | Frontend framework | Vue 3 (Composition API + TypeScript) |
 | Visual programming | Blockly 13.2.x |
 | Code highlighting | highlight.js |
+| Docs rendering | marked + mermaid |
 | Desktop wrapper | Tauri 2.x |
 | Build tooling | Vite + vue-tsc |
 | Code standards | ESLint 10.x |
@@ -103,6 +104,8 @@ src/
 ├── utils/                      # Utility functions (toolbox-config / migration / markdown)
 ├── styles/                     # Global styles / CSS variables
 └── assets/                     # Static assets
+docs/                           # Documentation (guides/ core + blocks/ index + demos/ + 40 standards directories + papers/ index)
+demos/                          # Blockly workspace examples (with official-vector expectations)
 ```
 
 ## Supported Crypto Modules (222 custom blocks, 17 toolbox categories)
