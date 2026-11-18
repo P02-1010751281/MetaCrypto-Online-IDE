@@ -584,11 +584,21 @@ async function main(): Promise<void> {
 
   const archivePath = path.resolve(process.cwd(), 'experiments/ai-helper-2026-11-14/out/field-templates.json');
   const runtimePath = path.resolve(process.cwd(), 'src/services/ai-helper/reverse/field-templates.json');
+  const debugPath = path.resolve(process.cwd(), 'experiments/ai-helper-2026-11-14/out/field-templates.debug.json');
   const payload = { generatedAt: new Date().toISOString(), stats, collisions, blocks: results };
   const text = `${JSON.stringify(payload, null, 2)}\n`;
 
   if (checkMode) {
     process.exitCode = compareWithRuntime(runtimePath, payload, fs);
+  } else if (targets.length) {
+    // 单块排查只写调试副本。这里原来无条件覆盖两个发布产物：`ai-helper-variants.js sbox_variables_get`
+    // 一次就把上表 224 块的 field-templates.json 换成只含 1 块的文件（2026-11-18 实测），
+    // 运行时反解析会随之少掉几乎全部匹配器，且只有下一次 FIELD_CHECK 才报得出来。
+    fs.mkdirSync(path.dirname(debugPath), { recursive: true });
+    fs.writeFileSync(debugPath, text, 'utf-8');
+    console.log(
+      `FIELD_WRITE_DEBUG ${path.relative(process.cwd(), debugPath)}（只含点名的 ${results.length} 块，未覆盖发布产物）`,
+    );
   } else {
     fs.mkdirSync(path.dirname(archivePath), { recursive: true });
     fs.mkdirSync(path.dirname(runtimePath), { recursive: true });
