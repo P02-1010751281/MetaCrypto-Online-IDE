@@ -124,7 +124,7 @@ demos/                          # Blockly workspace examples (with official-vect
 | Post-quantum cryptography | ML-KEM/ML-DSA lattice components and stages; SLH-DSA and code-based teaching components |
 | Functions and Blockly-native categories | 29 function-template registrations and native variables, math, arrays and control flow |
 
-> Counts: **222** active custom block types (dedup of `ALL_BLOCK_TYPES`) and **248** merged types, the 29 function templates adding 26 `proc_*` types on top of 3 `crypto_*` blocks already inside 222; the legacy-load identity `ctrl_assign` counts in neither. 17 toolbox categories, 4 of them Blockly-native. Rules and the itemized list: [CONFORMANCE-INVENTORY.md](docs/standards/CONFORMANCE-INVENTORY.md), guarded by `npm run verify:templates`; these are the counts of the tree this tag points at, while main moves on (224 / 250). A teaching surface, not a CAVP/ACVTS, CMVP/FIPS 140-3 or formal-verification claim.
+> Counts: **222** active custom block types (dedup of `ALL_BLOCK_TYPES`) and **248** merged types, the 29 function templates adding 26 `proc_*` types on top of 3 `crypto_*` blocks already inside 222; the legacy-load identity `ctrl_assign` counts in neither. 17 toolbox categories, 4 of them Blockly-native. Rules and the itemized list: [CONFORMANCE-INVENTORY.md](docs/standards/CONFORMANCE-INVENTORY.md), guarded by `npm run verify:templates`; these are the counts of the tree this tag points at, while main moves on. A teaching surface, not a CAVP/ACVTS, CMVP/FIPS 140-3 or formal-verification claim.
 
 The browser is for Blockly editing, code generation and user trials. Trusted randomness assessment, statistical testing, isolated execution and final reports belong to the `metacrypt_server` backend.
 
