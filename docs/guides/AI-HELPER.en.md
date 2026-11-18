@@ -171,17 +171,19 @@ The key only travels in the `Authorization` header — never in the request body
 
 ### 7.5 How the reply is checked and used
 
-The model may only reference candidate ids and must return at most five picks. The reply passes reference-integrity checks, and each of the five violation classes gets its own message instead of a generic failure:
+The model may pick sentences and may also write a short explanation; the two go through different gates because they do not carry the same evidentiary weight.
+
+**Answer sentences** may only reference candidate ids and must return at most five picks. The reply passes reference-integrity checks, and each of the three violation classes gets its own message instead of a generic failure:
 
 | Violation | Message |
 |---|---|
 | An id outside the candidates | the model picked a sentence outside the candidates (unknown id) |
 | The same sentence picked twice | the model picked the same sentence more than once |
 | More picks than allowed | the model picked more sentences than allowed |
-| A note without naming its support | the model added a note without naming the candidate sentences behind it |
-| A note citing sentences outside the candidates | the model cited sentences outside the candidates in its note |
 
-After the checks pass, the answer card shows only the selected sentences, and the evidence remains the `path:line` of that one section — picking sentences cannot make the evidence point at a different file. A model-written note, when present, appears on its own line tagged "model note (not part of the answer evidence)". The status line reports the call: `model picked n sentence(s) · N tokens · M ms`.
+**The explanation** (`notes`) is not evidence: the answer card shows it in its own block (left rule plus the "model note (not part of the answer evidence)" tag), and **every sentence must name its basis** — the candidate ids it rests on. A sentence that cannot be tied to a candidate id is **dropped whole** without failing the call: empty text, no support, a support id outside the candidates, a duplicate, or more than four sentences each cost only that one sentence, and the card shows a `−n` counter for how many were dropped (hovering gives the reasons). A well-written explanation never becomes evidence, and an unsupported one never discards the usable picks.
+
+After the checks pass, the answer card shows only the selected sentences, and the evidence remains the `path:line` of that one section — picking sentences cannot make the evidence point at a different file. The status line reports the call: `model picked n sentence(s) · N tokens · M ms`.
 
 ### 7.6 How failures are shown
 

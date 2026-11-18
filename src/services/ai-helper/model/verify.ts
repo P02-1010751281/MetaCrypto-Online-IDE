@@ -1,34 +1,27 @@
 /**
- * 模型输出 → 可采用的证据：引用完整性校验。
+ * 模型输出 → 可采用的证据：**答案句**的引用完整性校验。
  *
  * 校验器只回答一个问题：这个结果能不能被当成「对候选句的选择」。它**不抛异常**——
  * 拒答与被拒绝都是正常路径（界面要显示原因），所以失败以结构化 `errors` 返回。
  *
- * 五类拒绝，全部是「模型越界」，与证据强弱无关：
+ * 三类拒绝，全部是「模型越界」，与证据强弱无关：
  *   - `unknown-id`：选了请求之外的东西（模型编了 id，或把别处的句子当候选）；
  *   - `duplicate-id`：同一句被选多次（重复计入会让「说两遍」冒充两条证据）；
- *   - `too-many`：超过上限（答案只该给几句，多出来的会稀释出处）；
- *   - `unsupported-note`：带 note 却没给 support——**解释文本不进答案证据**，
- *     但模型自述必须有候选句撑着，否则就是无出处的说法；
- *   - `unknown-support`：support 引用了请求之外的 id（同上，等于没交代依据）。
+ *   - `too-many`：超过上限（答案只该给几句，多出来的会稀释出处）。
  *
  * 空选择是**合法**结果：候选为空或模型认为没有依据时，拒答就是正确答案，
  * 不能因为「没选出句子」就判失败。
+ *
+ * 模型自述（`notes`）不在本文件校验：它不进证据，越界的后果也不同（逐句丢弃而不是
+ * 整体作废），规则见 `./notes` 的 `planNotes`。曾经这两件事混在一起，导致「模型写了
+ * 一句没标依据的解释」会把整次选择判死——解释是附注，不该有这个权力。
  */
 
-import {
-  DEFAULT_MAX_SELECTIONS,
-  selectionLimit,
-} from './limits';
+import { DEFAULT_MAX_SELECTIONS, selectionLimit } from './limits';
 import type { CandidateSentence, RewriteRequest, RewriteResult } from './types';
 
-/** 可把结果打回的五类越界。码值稳定，界面与测试按它分支，不要改成自由文本。 */
-export type RewriteViolationCode =
-  | 'unknown-id'
-  | 'duplicate-id'
-  | 'too-many'
-  | 'unsupported-note'
-  | 'unknown-support';
+/** 可把**答案句**打回的三类越界。码值稳定，界面与测试按它分支，不要改成自由文本。 */
+export type RewriteViolationCode = 'unknown-id' | 'duplicate-id' | 'too-many';
 
 /** 一条结构化拒绝原因：`code` 供分支，`message` 供人读，`id` 指出涉及的候选句。 */
 export interface RewriteViolation {
@@ -56,7 +49,7 @@ function indexCandidates(candidates: readonly CandidateSentence[]): Map<string, 
 }
 
 /**
- * 校验模型结果是否只引用了本次请求的候选句。
+ * 校验模型选中的句是否只引用了本次请求的候选句。
  *
  * @param request 原始的请求（候选 id 是唯一的事实来源）
  * @param result 模型返回的选择
@@ -96,25 +89,6 @@ export function verifyRewrite(
     errors.push({
       code: 'too-many',
       message: `选了 ${result.selections.length} 句，超过上限 ${maxSelections} 句。`,
-    });
-  }
-
-  const note = result.note?.trim() ?? '';
-  const support = result.support ?? [];
-  if (!note) return { ok: errors.length === 0, errors };
-
-  if (support.length === 0) {
-    errors.push({
-      code: 'unsupported-note',
-      message: 'note 没有 support：模型自述必须交代依据的候选句（解释文本不进答案证据，但要有出处）。',
-    });
-  }
-  for (const id of support) {
-    if (known.has(id)) continue;
-    errors.push({
-      code: 'unknown-support',
-      id,
-      message: `note 的支撑句「${id}」不在候选里：解释不能依赖请求之外的文本。`,
     });
   }
 

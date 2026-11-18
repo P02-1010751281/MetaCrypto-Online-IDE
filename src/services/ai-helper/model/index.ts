@@ -1,16 +1,17 @@
 /**
- * D 线模型适配层的公共入口（M0 骨架）。
+ * D 线模型适配层的公共入口。
  *
- * 只导出契约、确定性 mock、引用完整性校验与「选择 → 原句」投影；
- * 不含任何 provider、网络、密钥或环境变量读取。真实 provider 接入前，
- * 上层只依赖这里的类型，因此替换适配器不需要改调用方。
+ * 导出契约、确定性 mock、答案句的引用完整性校验（`verifyRewrite`）、
+ * 「选择 → 原句」投影（`applySelection`）与自述的逐句核对（`planNotes`）。
+ * 网络与密钥只在 `./provider`，本入口不重新导出它，避免上层顺手拿到调用实现。
  *
- * 证据规则见 `./types` 文件头：模型只能选择/重排候选句，解释文本不进答案证据。
+ * 证据规则见 `./types` 文件头：答案句只能是候选句；自述每句必须有依据，否则整句丢弃。
  */
 
 export type {
   CandidateSentence,
   ModelAdapter,
+  NoteSentence,
   RewriteRequest,
   RewriteResult,
   RewriteSelection,
@@ -31,5 +32,15 @@ export {
 } from './verify';
 
 export { applySelection, type ApplyResult } from './apply';
+
+export {
+  MAX_NOTE_SENTENCES,
+  planNotes,
+  type AuditedNote,
+  type NoteDrop,
+  type NoteDropCode,
+  type NotePlan,
+  type NotePlanOptions,
+} from './notes';
 
 export { mockAdapter, type MockAdapterOptions } from './mock';

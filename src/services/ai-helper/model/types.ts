@@ -1,10 +1,10 @@
 /**
- * D 线（用户问题 → 答案 + 出处）的**模型适配层契约**：M0 骨架。
+ * D 线（用户问题 → 答案 + 出处）的**模型适配层契约**。
  *
- * 本层只定义「模型能对候选句做什么」，不接任何 provider、不读环境变量与 key、
- * 不发网络请求；实现只有确定性的 `mockAdapter`，用于单测与离线演示。
+ * 本层只定义「模型能对候选句做什么」与「模型自述的形状」；不读环境变量与 key，
+ * 网络只发生在 `./provider`，实现里还有一个确定性的 `mockAdapter` 用于单测与离线演示。
  *
- * ## 为什么模型只能做选择 / 重排（extractive）
+ * ## 为什么答案句只能是候选句（extractive）
  *
  * D 线的答案必须能被复核，而答案的唯一可验证形式是「原文句子 + 出处」：
  * 句子逐字取自语料（`doc-answer.ts` 的 `AnswerSentence`），出处是 `path:line`，
@@ -12,15 +12,18 @@
  * （见 `tests/unit/doc-answer.test.ts`「每条答案句都能在它自报的行上逐字找到」）。
  *
  * 模型生成的句子两样都没有：既没有原文可逐字核对，也没有能点开的行号。
- * 一旦允许它写句子，「答案」就退化成不可验证的自述，出处只能事后附会。
- * 所以本层把模型输出收窄成**候选句 id 的有序子集**：句子文本、path、line 全部来自
+ * 一旦允许它写**答案句**，「答案」就退化成不可验证的自述，出处只能事后附会。
+ * 所以 `selections` 被收窄成**候选句 id 的有序子集**：句子文本、path、line 全部来自
  * `RewriteRequest.candidates`，模型碰不到文本，也就没有「编一句原文里没有的话」的入口。
  *
- * ## 解释/改写模式（note + support）
+ * ## 解释段（notes）：模型可以写字，但每句都要自报依据
  *
- * `note` 是模型的自述，**解释文本不进答案证据**：它不参与出处、不参与逐字校验，
- * 只能当界面提示。为了不出现「无支撑的模型说法」，校验器要求带 note 的结果必须给出
- * `support`（依据的候选句 id）；没有候选句支撑的 note 一律判不合法。
+ * `notes` 是模型自己的解释，**不进答案证据**：不参与出处，也不参与逐字校验，
+ * 界面上与「逐句引用原文」的答案分区显示、并标注「不进答案证据」。
+ *
+ * 为了不出现「没有任何依据的模型说法」，每一句自述都必须带 `support`（它依据的候选 id）：
+ * 挂不上候选 id 的句子由 `./notes` 的 `planNotes` **整句丢弃**（丢弃也要计数并说明），
+ * 而不是判整次调用失败——解释是附加信息，不能因为一句解释没标依据就把可用的选择也扔掉。
  *
  * ## 约定
  *
@@ -54,24 +57,32 @@ export interface RewriteSelection {
 }
 
 /**
- * 模型的输出：候选句 id 的有序子集。
+ * 一句模型自述：`text` 是模型写的字，`support` 是它自报依据的候选 id。
  *
- * 注意这里**没有句子文本字段**——不是约定，而是类型上就没有地方放模型生成的句子。
- * `selections` 的顺序就是答案顺序；空数组表示拒答（没有依据时这是正确答案）。
+ * `support` 只放 id，没有句子文本——依据句永远从候选里取，界面显示 `path:line`。
+ */
+export interface NoteSentence {
+  readonly text: string;
+  readonly support: readonly string[];
+}
+
+/**
+ * 模型的输出：候选句 id 的有序子集 +（可选的）逐句自述。
+ *
+ * 注意 `selections` 与 `notes` 的形状不对称：**选择没有句子文本字段**（类型上就没有
+ * 放模型生成句子的地方），而自述有——因为自述永远不进证据，只作界面提示。
  */
 export interface RewriteResult {
   readonly selections: readonly RewriteSelection[];
-  /** 模型自述（解释/说明），**不进答案证据**；非空时必须配 `support`。 */
-  readonly note?: string;
-  /** `note` 所依据的候选句 id；只有 id，没有文本。 */
-  readonly support?: readonly string[];
+  /** 模型自述，逐句带依据；非证据。没有自述时省略。 */
+  readonly notes?: readonly NoteSentence[];
 }
 
 /**
  * 模型适配器：任何真实 provider 都实现这个接口，上层只认它。
  *
- * 只暴露一个 `rewrite`，因为 D 线的模型只被允许做「选择/重排」这一件事；
- * 以后要加别的能力，必须先证明它的输出也能逐字回链到原文。
+ * 只暴露一个 `rewrite`，因为 D 线的模型只被允许做「选句 + 写带依据的说明」；
+ * 以后要加别的能力，必须先证明它的输出也能回链到候选句。
  */
 export interface ModelAdapter {
   rewrite(request: RewriteRequest): Promise<RewriteResult>;

@@ -63,7 +63,7 @@ function replyPayload(content: string, usage = { prompt_tokens: 120, completion_
 }
 
 function okBody(): string {
-  return JSON.stringify({ selections: [{ id: 's1' }], note: '选第一句', support: ['s1'] });
+  return JSON.stringify({ selections: [{ id: 's1' }], notes: [{ text: '选第一句', support: ['s1'] }] });
 }
 
 describe('请求形状', () => {
@@ -264,8 +264,7 @@ describe('真实 HTTP 路径（本地假 provider）', () => {
     });
     await expect(adapter.rewrite(request)).resolves.toEqual({
       selections: [{ id: 's1' }],
-      note: '选第一句',
-      support: ['s1'],
+      notes: [{ text: '选第一句', support: ['s1'] }],
     });
   });
 });

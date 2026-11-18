@@ -1,11 +1,14 @@
 /**
  * 模型失败原因 → 界面人话（纯函数：不碰 DOM、不读全局语言、不 import 文案表）。
  *
- * 「失败」不是一个原因，而是十来种：调用层的超时/鉴权/额度/网络，加上校验层的
- * 五类越界（`unknown-id` / `duplicate-id` / `too-many` / `unsupported-note` /
- * `unknown-support`）。2026-11-18 的真浏览器验收抓到一个真错：假 provider 回
- * 「带 note 却没给 support」时，界面说「模型选中的句子不在候选里」——那是另一类越界，
- * 用户照这句话去检查候选句只会越查越远。文案必须逐类对准，不能共用一个笼统句。
+ * 「失败」不是一个原因，而是十来种：调用层的超时/鉴权/额度/网络，加上校验层可把
+ * **答案句**打回的三类越界（`unknown-id` / `duplicate-id` / `too-many`）。
+ * 2026-11-18 的真浏览器验收抓到一个真错：假 provider 回「带说明却没给 support」时，
+ * 界面说「模型选中的句子不在候选里」——那是另一类越界，用户照这句话去检查候选句只会越查越远。
+ * 文案必须逐类对准，不能共用一个笼统句。
+ *
+ * 「说明没依据」不再走这里：自述不是证据，挂不上候选 id 的句子由 `planNotes` 逐句丢弃并计数，
+ * 界面上是本地的「N 句被丢弃」，而不是一次调用失败。
  *
  * 依赖以参数注入（`text` / `status` 由调用方从 locale 取），因此这里可以直接被单测断言：
  * 「哪一类越界出哪一句」不需要挂组件、也不需要切全局语言。
@@ -31,13 +34,11 @@ const CALL_ERROR_KEYS: Partial<Record<Exclude<ModelFailure['code'], 'verify'>, s
   'not-configured': 'modelErrorNotConfigured',
 };
 
-/** 五类越界 → 各自的 locale key（一条越界一句话，不合并成「校验失败」）。 */
+/** 三类越界 → 各自的 locale key（一条越界一句话，不合并成「校验失败」）。 */
 export const VERIFY_VIOLATION_KEYS: Record<RewriteViolationCode, string> = {
   'unknown-id': 'modelVerifyUnknownId',
   'duplicate-id': 'modelVerifyDuplicateId',
   'too-many': 'modelVerifyTooMany',
-  'unsupported-note': 'modelVerifyUnsupportedNote',
-  'unknown-support': 'modelVerifyUnknownSupport',
 };
 
 /** 文案来源：`ui` 与 `uiFormat('modelErrorStatus', …)` 由调用方注入。 */

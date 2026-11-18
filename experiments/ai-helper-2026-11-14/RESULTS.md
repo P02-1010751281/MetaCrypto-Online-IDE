@@ -4579,3 +4579,89 @@ SP 800-38B CMAC（0 / 3 / 0，6 处缺口）；合计 2 份标准 / 8 个条款 
 结论：**这个面板的文案已经顶到预算**，下次再往 `ui-messages.ts` 加一段中文（UTF-8 三字节/字）就会
 再红。真正的解法是把 locale 消息按面板拆块、按需加载（或让英文包懒加载），那是独立一轮的改动，
 本轮不做；先把这个约束写在这里，避免下一位以为是随机失败。
+
+## 67. D 线生成式：模型可以写字，但每句都要自报依据（2026-11-18 夜，接 §66）
+
+### 67.1 这一轮改的是「自述」的证据地位
+
+§59–§61 的 M0 契约里，模型可以给一句 `note`，并给一个**整段级**的 `support` 数组。两处毛病：
+
+1. **粒度错**：一段自述里有三句话时，一个 support 数组说不清哪句靠哪句——实际效果是「有一句有依据，
+   整段都被当成有依据」。
+2. **后果错**：`unsupported-note` / `unknown-support` 当时是 `verifyRewrite` 的**致命**越界，
+   模型写一句没标依据的解释，会把这次**可用的选句**一起判死。解释是附注，不该有这个权力。
+
+所以本轮把「答案句」与「自述」彻底分成两条关：
+
+| | 答案句（selections） | 自述（notes） |
+|---|---|---|
+| 形状 | 候选 id 的有序子集，**没有**句子文本字段 | 句子数组，每句自带 `support: string[]` |
+| 校验 | `verifyRewrite`：三类越界 → **整次结果作废** | `planNotes`：逐句核对 → **整句丢弃 + 计数** |
+| 证据地位 | 就是答案，出处 `path:line` 可逐字回链 | 不进证据，界面分区显示并标注「不进答案证据」 |
+
+### 67.2 丢弃规则（码值稳定）
+
+`src/services/ai-helper/model/notes.ts` 的 `planNotes`：
+
+| 码 | 触发 | 为什么这么判 |
+|---|---|---|
+| `empty-text` | 句子只有空白 | 空行不是解释 |
+| `unsupported-note` | `support` 为空 | 说了话但没交代依据 |
+| `unknown-support` | `support` 里有候选之外的 id | **整句丢，不替模型划掉那个 id 继续用**——依据本身错了，挑一半等于替模型改口 |
+| `duplicate-text` | 归一化后重复 | 重复会看起来像两条独立说明 |
+| `too-many` | 超过 `MAX_NOTE_SENTENCES = 4` | 解释不该盖过答案 |
+
+保留下来的句子带 `cited`（候选句**原对象**，不是复制），界面据此给出 `path:line` 悬浮。
+选择被拒（`verifyRewrite` 不过）时自述一并作废：它解释的是那份被拒的选择，留着会被读成「模型给了答案」。
+
+### 67.3 改了哪些文件
+
+- `model/types.ts`：`NoteSentence { text, support }`；`RewriteResult.notes?: NoteSentence[]`（旧的 `note`/`support` 下线）。
+- `model/notes.ts`（新）：`planNotes` + `NoteDrop` / `AuditedNote` / `NotePlan`。
+- `model/verify.ts`：只校验 selections，3 类越界；注释写明自述为什么搬走。
+- `model/mock.ts`：自述折成 `notes: [...]`，`support` 就是它选的 id（mock 自己的输出必须过自己的核对）。
+- `model/provider.ts`：提示词改成「`notes` 逐句给 support，写不出依据的句子会被整句丢弃」；
+  `parseModelReply` 解析 `notes` 数组，元素形状不对判 `format`，**缺 support 不算形状错误**（那正是要被丢弃并计数的情况，不能在这里洗掉）；
+  顶层 `note` + `support` 的旧写法仍接受（折成一句），避免换字段名让老提示词整份作废。
+- `composables/useModelAnswer.ts`：`note: string` → `notes: AuditedNote[]` + `droppedNotes: NoteDrop[]`。
+- `composables/model-failure-text.ts`：越界文案表从 5 类收成 3 类（自述两类不再是「失败」）。
+- `components/ai-helper/AnswerSection.vue`：自述块分区显示（左侧竖线 + `模型说明（不进答案证据）` 标签）、
+  保留句后面挂依据 id（悬浮 `path:line`）、被丢弃只给 `−n` 计数（悬浮原因）。
+- 测试：`ai-helper-model.test.ts` / `-failure-text.test.ts` / `-provider.test.ts` 改契约；
+  新增 `ai-helper-model-notes.test.ts`（8 组：依据存在、没依据不连累别人、依据越界整句丢、
+  空白/重复、上限与覆盖、无自述/空候选、mock 自洽）。
+- 文档：`AI-HELPER.md` / `.en.md` §7.5 重写（三类越界 + 自述逐句要依据 + `−n` 计数），中英各 218 行。
+
+### 67.4 约束：这一轮**没有**新增任何 locale 键
+
+入口 chunk 只剩 13 字节余量（§66.6：65523 / 65536），而 `ui-messages.ts` 整份进入口 chunk。
+所以自述块的文案全部复用既有键（`modelNote` 作标签，`modelVerifyUnsupportedNote` /
+`modelVerifyUnknownSupport` 作丢弃原因的 title），计数只用 `−n` 与数字。build 后入口仍是 **65523 字节**，
+证明「本轮零文案增量」不是估计而是量出来的。按面板拆 locale 块仍挂在 §66.7。
+
+### 67.5 门禁
+
+`vue-tsc` rc=0、`eslint` rc=0（0 error 0 warning）；`docs:index` → 439 篇 / 4051 段 / hash `01709194689d5c17`，
+`docs:index:check` ok、`docs:check-links` 445/0、`docs:titles` 439；`test:unit` **123 文件 / 1369 通过 1 跳过**
+（基线 122/1362，+1 文件 7 条）；`build:check-bundle` **65523 ≤ 65536**。
+
+### 67.6 真浏览器验收（一次性 BiDi 探针 + 本地假 provider，跑完即删）
+
+无头 Firefox + WebDriver BiDi，独立 profile，`vite --port 5199`；假 provider 在 `127.0.0.1:58088`
+（CSP 的 `connect-src` 已允许 `http://127.0.0.1:*`，所以走的是**真 HTTP + 真 CORS 预检**，不是 stub fetch）。
+假回复里给两句自述：一句 `support:["s1"]`、一句 `support:[]`。**20/20**：
+
+- 勾选前没有自述块（默认不发请求）；勾上后自述块出现，只显示有依据那句，没依据那句的**正文在 DOM 里 0 处**；
+- 依据 id `s1` 挂在句后，悬浮是 `path:line`；丢弃计数 `−1`，悬浮给出原因（无头 Firefox 是 en-US，断言双语）；
+- 自述块与答案卡分区（左竖线 3px）；答案句仍是模型选的那 1 句；状态位 `Model picked 1 sentence(s) · 120 tokens · 44 ms`；
+- 页面 innerHTML 里 0 处 apiKey；
+- provider 请求日志：**1 次 POST**（一次勾选 = 一次调用），key 只在 `Authorization`。
+
+截图：`.tmp-build/answer-note/answer-note.png`。
+
+### 67.7 没做的
+
+1. 真实 provider 仍未在仓库内验证（仓库不带 key）——与 §7.7 的口径一致，本轮不改变这条。
+2. 费用估算：owner 已裁决**不做**（只显示 token 与耗时），所以 §3.4 的那条待办关闭，不再列为缺口。
+3. 自述的「重复/超上限」两类只有单测，没有在浏览器里造四句去验——不值得为一条计数再起一次假 provider。
+4. locale 拆分（§66.7）没动：本轮靠零新增键绕开，下一轮真要写新文案时仍会红。

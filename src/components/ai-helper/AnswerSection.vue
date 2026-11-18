@@ -11,9 +11,19 @@
       <span class="as-status" :class="{ 'as-status-error': failure }">{{ statusText }}</span>
     </div>
 
-    <p v-if="enabled && note" class="as-note">
-      <span class="as-note-tag">{{ ui('modelNote') }}</span>{{ note }}
-    </p>
+    <!-- 模型自述：与上面的「逐句引用原文」分区（左侧竖线 + 「不进答案证据」标签）。
+         每句后面挂它自报依据的候选 id，悬浮给出 path:line；依据句本身的原文在上面的列表里。
+         被丢弃的句子不显示正文，只给一个计数（-N），原因在悬浮说明里——没依据的说法不该占版面。 -->
+    <div v-if="enabled && notes.length" class="as-note">
+      <p class="as-note-head">
+        <span class="as-note-tag">{{ ui('modelNote') }}</span>
+        <span v-if="droppedNotes.length" class="as-note-drop" :title="droppedTitle || undefined">−{{ droppedNotes.length }}</span>
+      </p>
+      <p v-for="(item, index) in notes" :key="index" class="as-note-line">
+        {{ item.text }}
+        <span v-for="cited in item.cited" :key="cited.id" class="as-note-cite" :title="`${cited.path}:${cited.line}`">{{ cited.id }}</span>
+      </p>
+    </div>
     <p v-else-if="enabled && !configured" class="as-hint">{{ ui('modelConfigureHint') }}</p>
 
     <ModelSettingsDialog
@@ -68,7 +78,8 @@ const {
   running,
   usage,
   elapsedMs,
-  note,
+  notes,
+  droppedNotes,
   failure,
   selected,
   save,
@@ -76,6 +87,23 @@ const {
   select,
   resetOutcome,
 } = useModelAnswer();
+
+/**
+ * 丢弃计数的悬浮说明：复用既有两条越界文案，不新增 locale 键。
+ *
+ * 为什么苛刻到不写新键：入口 chunk 只剩 13 字节余量（`build:check-bundle` 65523/65536），
+ * 而 `ui-messages.ts` 整份进入口 chunk，加一句中文就会把它顶红。真正的解法是按面板拆 locale
+ * 块（RESULTS §66.7），属独立一轮；在那之前，界面文案只能用已有键拼。
+ */
+const DROP_TEXT_KEYS: Record<string, string> = {
+  'unsupported-note': 'modelVerifyUnsupportedNote',
+  'unknown-support': 'modelVerifyUnknownSupport',
+};
+
+const droppedTitle = computed(() => {
+  const keys = [...new Set(droppedNotes.value.map((drop) => DROP_TEXT_KEYS[drop.code]).filter((key): key is string => Boolean(key)))];
+  return keys.map((key) => ui(key)).join(uiLocaleRef.value === 'en' ? '; ' : '；');
+});
 
 const settingsOpen = ref(false);
 /** 并发守卫：用户连点两次搜索时，只让最后一次的结果上屏。 */
@@ -203,7 +231,16 @@ watch(
 .as-status-error {
   color: var(--color-danger, #d14343);
 }
-.as-note,
+/* 自述块：左侧竖线把它与「逐句引用原文」的答案卡分开——同一张卡里两种东西不能长得一样。 */
+.as-note {
+  margin: 0;
+  padding: 4px var(--panel-pad-x) 6px;
+  border-bottom: 1px solid var(--color-border, #d0d3d9);
+  border-left: 3px solid var(--color-border, #d0d3d9);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
 .as-hint {
   margin: 0;
   padding: 4px var(--panel-pad-x) 6px;
@@ -212,10 +249,36 @@ watch(
   line-height: 1.5;
   color: var(--color-text-secondary);
 }
+.as-note-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 2px;
+}
 .as-note-tag {
-  margin-right: 6px;
   padding: 0 4px;
   border-radius: 3px;
   background: var(--color-bg-hover);
+}
+/* 被丢弃的自述只留计数：正文不显示，原因放 title（细节在代码注释里解释为什么不新加文案键）。 */
+.as-note-drop {
+  margin-left: auto;
+  font-family: var(--font-family-mono);
+  cursor: help;
+}
+.as-note-line {
+  margin: 0;
+}
+/* 依据 id：只是「这句自述靠哪几句撑着」，不是出处链接——原句在上面的答案列表里。 */
+.as-note-cite {
+  margin-left: 4px;
+  padding: 0 3px;
+  border-radius: 3px;
+  background: var(--color-bg-hover);
+  font-family: var(--font-family-mono);
+  font-size: 10px;
+}
+.as-note-cite + .as-note-cite {
+  margin-left: 2px;
 }
 </style>

@@ -74,19 +74,19 @@ describe('引用完整性（verifyRewrite）', () => {
     expect(applySelection(request, { selections: [] })).toEqual({ ok: true, sentences: [], errors: [] });
   });
 
-  it('note 必须有 support 且 support 只能引用候选：解释文本不进答案证据', () => {
-    // 有 note 没 support：模型自述没有出处。
-    const bare: RewriteResult = { selections: [{ id: 's1' }], note: '这一步是查表替换。' };
-    expect(codes(bare)).toEqual(['unsupported-note']);
+  it('自述不参与答案句校验：notes 有没有依据都不改变 selections 的结论', () => {
+    // 没标依据的自述：答案句照样合法——自述的核对在 planNotes，逐句丢弃（见 notes 测试）。
+    const bare: RewriteResult = { selections: [{ id: 's1' }], notes: [{ text: '这一步是查表替换。', support: [] }] };
+    expect(codes(bare)).toEqual([]);
 
-    // support 指向候选之外的 id：等于没交代依据。
-    const ghost: RewriteResult = { selections: [{ id: 's1' }], note: '这一步是查表替换。', support: ['s1', 'ghost'] };
-    expect(codes(ghost)).toEqual(['unknown-support']);
+    // 依据指向候选之外：同样不影响答案句。曾经两类混在 verify 里，一句没依据的说明会把整次选择判死。
+    const ghost: RewriteResult = { selections: [{ id: 's1' }], notes: [{ text: '这一步是查表替换。', support: ['s1', 'ghost'] }] };
+    expect(codes(ghost)).toEqual([]);
 
-    // 空候选时连 note 都无处支撑：拒答只能是「空选择 + 无 note」。
+    // 空候选 + 有一句自述：选择仍是空（拒答），自述不制造答案。
     const emptyRequest: RewriteRequest = { question: '量子退火怎么破 SM4', candidates: [] };
-    const talkative: RewriteResult = { selections: [], note: '语料里没有相关依据。' };
-    expect(verifyRewrite(emptyRequest, talkative).errors.map((error) => error.code)).toEqual(['unsupported-note']);
+    const talkative: RewriteResult = { selections: [], notes: [{ text: '语料里没有相关依据。', support: [] }] };
+    expect(verifyRewrite(emptyRequest, talkative)).toEqual({ ok: true, errors: [] });
     expect(verifyRewrite(emptyRequest, { selections: [] })).toEqual({ ok: true, errors: [] });
   });
 });
@@ -113,11 +113,11 @@ describe('mockAdapter（确定性）', () => {
     expect(zero).toEqual({ selections: [] });
   });
 
-  it('空候选返回空选择（拒答），且不给自己编 note', async () => {
+  it('空候选返回空选择（拒答），且不给自己编自述', async () => {
     const emptyRequest: RewriteRequest = { question: 'MetaCrypto Online IDE 支持哪些区块链共识算法', candidates: [] };
     const result = await mockAdapter().rewrite(emptyRequest);
     expect(result.selections).toEqual([]);
-    expect(result.note).toBeUndefined();
+    expect(result.notes).toBeUndefined();
     expect(verifyRewrite(emptyRequest, result)).toEqual({ ok: true, errors: [] });
   });
 });
@@ -141,10 +141,10 @@ describe('applySelection（只排版不造句）', () => {
     expect(applied.sentences[0].path).toBe(PATH);
   });
 
-  it('note 不参与证据：只出现在模型结果里，不进入返回的句子', async () => {
+  it('自述不参与证据：只出现在模型结果里，不进入返回的句子', async () => {
     const withNote = await mockAdapter().rewrite(request);
-    expect(withNote.note).toContain('mock');
-    expect(withNote.support).toEqual(['s1', 's2', 's3']);
+    expect(withNote.notes?.[0].text).toContain('mock');
+    expect(withNote.notes?.[0].support).toEqual(['s1', 's2', 's3']);
 
     const applied = applySelection(request, withNote);
     expect(applied.ok).toBe(true);

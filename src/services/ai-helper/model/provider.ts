@@ -18,7 +18,7 @@
  */
 
 import { DEFAULT_MAX_SELECTIONS, selectionLimit } from './limits';
-import type { ModelAdapter, RewriteRequest, RewriteResult, RewriteSelection } from './types';
+import type { ModelAdapter, NoteSentence, RewriteRequest, RewriteResult, RewriteSelection } from './types';
 import { chatEndpoint, type ModelConfig } from './config';
 
 /** 结构化失败原因：界面按 code 分支，不解析自由文本。 */
@@ -70,14 +70,15 @@ export interface ProviderDeps {
 const MAX_CANDIDATE_CHARS = 400;
 
 const SYSTEM_PROMPT = [
-  '你是检索问答里的「选句器」，只做一件事：从给定的候选句里挑出能回答问题的句子。',
+  '你是检索问答里的「选句器」：从给定候选句里挑出能回答问题的句子，并按需写一两句解释。',
   '硬性规则：',
-  '1. 只能引用候选句的 id，不能改写、拼接、概括或新增任何句子；',
-  '2. 没有能回答的候选时就返回空数组（拒答是合法答案，不要硬凑）；',
-  '3. `note` 是可选的简短说明，提到依据时必须用 `support` 列出所依据的候选 id；',
-  `4. 最多选 ${DEFAULT_MAX_SELECTIONS} 句；`,
+  '1. `selections` 只能引用候选句的 id，不能改写、拼接、概括或新增任何句子；',
+  '2. 没有能回答的候选时就返回空的 `selections`（拒答是合法答案，不要硬凑）；',
+  '3. `notes` 是可选的解释，**写成一个句子数组**；每一句都必须用 `support` 列出它依据的候选 id，',
+  '   写不出依据的句子不要写——核对时挂不上候选 id 的句子会被整句丢弃；',
+  `4. \`selections\` 最多 ${DEFAULT_MAX_SELECTIONS} 句；`,
   '5. 只输出一个 JSON 对象，不要 Markdown 围栏、不要解释。',
-  '输出格式：{"selections":[{"id":"s1"}],"note":"可选","support":["s1"]}',
+  '输出格式：{"selections":[{"id":"s1"}],"notes":[{"text":"一句话解释","support":["s1"]}]}',
 ].join('\n');
 
 function clip(text: string): string {
@@ -133,9 +134,49 @@ export function extractJsonObject(text: string): unknown {
 }
 
 /**
+ * 取模型自述：**一句一条，各自带 support**。
+ *
+ * 形状不对的 `notes`（不是数组、元素缺字符串 text）按 `format` 处理——那是没按格式回答，
+ * 猜它的意思只会把「模型没听懂」伪装成「模型说了话」。缺 `support` 或 support 不是数组
+ * 的**不算**形状错误：那正是要被 `planNotes` 整句丢弃的情形，丢弃必须可见（计数并说明），
+ * 不能在这里悄悄洗掉。
+ *
+ * 顶层 `note` 字符串是早期提示词的写法，折成一句自述继续接受：老提示词装在用户的
+ * 浏览器缓存里不奇怪，没必要让一次调用因为换了字段名而整份作废。
+ */
+function parseNotes(record: Record<string, unknown>): NoteSentence[] {
+  const raw = record.notes;
+  if (raw === undefined) {
+    const legacy = record.note;
+    if (typeof legacy !== 'string' || !legacy.trim()) return [];
+    const support = Array.isArray(record.support)
+      ? record.support.filter((id): id is string => typeof id === 'string')
+      : [];
+    return [{ text: legacy.trim(), support }];
+  }
+  if (!Array.isArray(raw)) throw new ModelCallError('format', '模型回复的 notes 不是数组');
+
+  const notes: NoteSentence[] = [];
+  for (const item of raw) {
+    if (typeof item !== 'object' || item === null) {
+      throw new ModelCallError('format', 'notes 的元素不是对象');
+    }
+    const entry = item as Record<string, unknown>;
+    if (typeof entry.text !== 'string' || !entry.text.trim()) {
+      throw new ModelCallError('format', 'notes 的元素缺少字符串 text');
+    }
+    const support = Array.isArray(entry.support)
+      ? entry.support.filter((id): id is string => typeof id === 'string')
+      : [];
+    notes.push({ text: entry.text.trim(), support });
+  }
+  return notes;
+}
+
+/**
  * 校验模型回复的形状并转成 `RewriteResult`（只验形，不验引用完整性）。
  *
- * 「id 必须在候选里」由 `verifyRewrite` 负责；这里只保证形状可读，两层各管一段。
+ * 「id 必须在候选里」由 `verifyRewrite`（答案句）与 `planNotes`（自述）分别负责，两层各管一段。
  */
 export function parseModelReply(text: string): RewriteResult {
   if (!text.trim()) throw new ModelCallError('empty', '模型回复为空');
@@ -159,14 +200,8 @@ export function parseModelReply(text: string): RewriteResult {
     selections.push(selection);
   }
 
-  const result: RewriteResult = {
-    selections,
-    ...(typeof record.note === 'string' && record.note.trim() ? { note: record.note.trim() } : {}),
-    ...(Array.isArray(record.support)
-      ? { support: record.support.filter((id): id is string => typeof id === 'string') }
-      : {}),
-  };
-  return result;
+  const notes = parseNotes(record);
+  return notes.length ? { selections, notes } : { selections };
 }
 
 function readNumber(source: Record<string, unknown>, keys: readonly string[]): number {

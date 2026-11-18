@@ -3,9 +3,12 @@
  * 失败原因文案（`src/composables/model-failure-text.ts`）的回归。
  *
  * 这条规则是 2026-11-18 真浏览器验收抓出来的（RESULTS §60.8 第 3 条）：假 provider 回
- * 「带 note 却没给 support」时，界面说「模型选中的句子不在候选里」——把「说明没依据」
- * 说成了「编造 id」，用户照这句话去查候选句永远查不到问题。所以这里钉住四件事：
- *   1. 五类越界各出各自那句，谁也冒充不了谁；
+ * 「带说明却没给 support」时，界面说「模型选中的句子不在候选里」——把「说明没依据」
+ * 说成了「编造 id」，用户照这句话去查候选句永远查不到问题。
+ *
+ * 现在「说明没依据」不再是失败：自述由 `planNotes` 逐句丢弃（见 ai-helper-model-notes 测试），
+ * 所以这里只剩**答案句**的三类越界。钉住四件事：
+ *   1. 三类越界各出各自那句，谁也冒充不了谁；
  *   2. 同一类越界重复出现只算一条，多条按出现顺序排；
  *   3. 没有分类（旧数据/新码）退回兜底句，不显示空串；
  *   4. 两张映射表里的 key 在中英语言包都真实存在——`ui('字面量')` 的扫描器看不见
@@ -38,37 +41,29 @@ const request: RewriteRequest = {
 };
 
 describe('越界类别 → 文案', () => {
-  it('「说明没给 support」出的是说明那句，不是「不在候选里」那句', () => {
-    const result: RewriteResult = { selections: [{ id: 's1' }], note: '我的解释' };
+  it('没标依据的自述不再是一次调用失败：applySelection 只看 selections', () => {
+    // 以前这句会把整次选择判死（unsupported-note），现在只由 planNotes 丢弃、并计数显示。
+    const result: RewriteResult = { selections: [{ id: 's1' }], notes: [{ text: '我的解释', support: [] }] };
     const applied = applySelection(request, result);
-    expect(applied.ok).toBe(false);
-    expect(applied.errors.map((error) => error.code)).toEqual(['unsupported-note']);
-
-    const rendered = modelFailureTexts(
-      { code: 'verify', violations: ['unsupported-note'], message: 'unsupported-note' },
-      context,
-    );
-    expect(rendered).toEqual(['[modelVerifyUnsupportedNote]']);
-    expect(rendered.join('')).not.toContain('modelVerifyUnknownId');
+    expect(applied.ok).toBe(true);
+    expect(applied.sentences.map((sentence) => sentence.id)).toEqual(['s1']);
+    // 文案表里也不该再有这两类：它们不是「失败」。
+    expect(Object.values(VERIFY_VIOLATION_KEYS)).toEqual([
+      'modelVerifyUnknownId',
+      'modelVerifyDuplicateId',
+      'modelVerifyTooMany',
+    ]);
   });
 
-  it('五类越界各出各自那句（互不替换）', () => {
-    const codes: RewriteViolationCode[] = [
-      'unknown-id',
-      'duplicate-id',
-      'too-many',
-      'unsupported-note',
-      'unknown-support',
-    ];
+  it('三类越界各出各自那句（互不替换）', () => {
+    const codes: RewriteViolationCode[] = ['unknown-id', 'duplicate-id', 'too-many'];
     const rendered = codes.map((code) => texts({ code: 'verify', violations: [code], message: code }));
     expect(rendered.map((lines) => lines[0])).toEqual([
       '[modelVerifyUnknownId]',
       '[modelVerifyDuplicateId]',
       '[modelVerifyTooMany]',
-      '[modelVerifyUnsupportedNote]',
-      '[modelVerifyUnknownSupport]',
     ]);
-    expect(new Set(rendered.map((lines) => lines[0])).size).toBe(5);
+    expect(new Set(rendered.map((lines) => lines[0])).size).toBe(3);
   });
 
   it('重复类别只算一条，多条按出现顺序用分号连接由调用方决定', () => {

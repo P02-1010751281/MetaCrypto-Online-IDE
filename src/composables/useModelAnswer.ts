@@ -27,6 +27,7 @@ import {
 import { DEFAULT_MAX_SELECTIONS } from '@/services/ai-helper/model/limits';
 import { callModel, ModelCallError, type TokenUsage } from '@/services/ai-helper/model/provider';
 import type { CandidateSentence, RewriteRequest } from '@/services/ai-helper/model/types';
+import { planNotes, type AuditedNote, type NoteDrop } from '@/services/ai-helper/model/notes';
 import type { RewriteViolationCode } from '@/services/ai-helper/model/verify';
 
 export interface ModelFailure {
@@ -48,8 +49,14 @@ export interface ModelOutcome {
   readonly sentences: CandidateSentence[] | null;
   readonly usage: TokenUsage | null;
   readonly elapsedMs: number | null;
-  /** 模型自述：只作界面提示，明确标注「不进答案证据」。 */
-  readonly note: string | null;
+  /**
+   * 模型自述（逐句已核对依据）：只作界面提示，明确标注「不进答案证据」。
+   *
+   * 与答案句**分区显示**：自述没有出处、不能逐字回链，混在答案里会让人以为
+   * 「原文就是这么写的」。`droppedNotes` 里是被丢弃的句子（没标依据 / 依据越界 / 重复）。
+   */
+  readonly notes: readonly AuditedNote[];
+  readonly droppedNotes: readonly NoteDrop[];
   readonly failure: ModelFailure | null;
 }
 
@@ -114,7 +121,8 @@ export function useModelAnswer() {
   const running = ref(false);
   const usage = ref<TokenUsage | null>(null);
   const elapsedMs = ref<number | null>(null);
-  const note = ref<string | null>(null);
+  const notes = ref<AuditedNote[]>([]);
+  const droppedNotes = ref<NoteDrop[]>([]);
   const failure = ref<ModelFailure | null>(null);
   const selected = ref<CandidateSentence[] | null>(null);
 
@@ -145,7 +153,8 @@ export function useModelAnswer() {
   function resetOutcome(): void {
     usage.value = null;
     elapsedMs.value = null;
-    note.value = null;
+    notes.value = [];
+    droppedNotes.value = [];
     failure.value = null;
     selected.value = null;
   }
@@ -159,7 +168,14 @@ export function useModelAnswer() {
   async function select(result: AnswerResult, question: string): Promise<ModelOutcome> {
     resetOutcome();
     const candidates = candidatesFromAnswer(result);
-    const empty: ModelOutcome = { sentences: null, usage: null, elapsedMs: null, note: null, failure: null };
+    const empty: ModelOutcome = {
+      sentences: null,
+      usage: null,
+      elapsedMs: null,
+      notes: [],
+      droppedNotes: [],
+      failure: null,
+    };
     if (!enabled.value || !config.value || candidates.length === 0) return empty;
 
     running.value = true;
@@ -168,7 +184,10 @@ export function useModelAnswer() {
       const outcome = await callModel(config.value, request);
       usage.value = outcome.usage;
       elapsedMs.value = outcome.elapsedMs;
-      note.value = outcome.result.note ?? null;
+      // 自述先核：它只影响自己的显示，与选择能不能用无关（丢弃逐句进行，见 planNotes）。
+      const plan = planNotes(request, outcome.result);
+      notes.value = [...plan.kept];
+      droppedNotes.value = [...plan.dropped];
 
       const applied = applySelection(request, outcome.result);
       if (!applied.ok) {
@@ -177,14 +196,18 @@ export function useModelAnswer() {
           violations: [...new Set(applied.errors.map((error) => error.code))],
           message: applied.errors.map((error) => `${error.code}${error.id ? `(${error.id})` : ''}`).join(', '),
         };
-        return { sentences: null, usage: outcome.usage, elapsedMs: outcome.elapsedMs, note: note.value, failure: failure.value };
+        // 选择被拒则自述一并作废：它解释的是那份被拒的选择，留着会读成「模型给了答案」。
+        notes.value = [];
+        droppedNotes.value = [];
+        return { sentences: null, usage: outcome.usage, elapsedMs: outcome.elapsedMs, notes: [], droppedNotes: [], failure: failure.value };
       }
       selected.value = [...applied.sentences];
       return {
         sentences: [...applied.sentences],
         usage: outcome.usage,
         elapsedMs: outcome.elapsedMs,
-        note: note.value,
+        notes: notes.value,
+        droppedNotes: droppedNotes.value,
         failure: null,
       };
     } catch (error) {
@@ -193,7 +216,9 @@ export function useModelAnswer() {
           ? { code: error.code, ...(error.status === undefined ? {} : { status: error.status }), message: error.message }
           : { code: 'network', message: error instanceof Error ? error.message : String(error) };
       failure.value = failureValue;
-      return { sentences: null, usage: null, elapsedMs: null, note: null, failure: failureValue };
+      notes.value = [];
+      droppedNotes.value = [];
+      return { sentences: null, usage: null, elapsedMs: null, notes: [], droppedNotes: [], failure: failureValue };
     } finally {
       running.value = false;
     }
@@ -207,7 +232,8 @@ export function useModelAnswer() {
     running,
     usage,
     elapsedMs,
-    note,
+    notes,
+    droppedNotes,
     failure,
     selected,
     save,
