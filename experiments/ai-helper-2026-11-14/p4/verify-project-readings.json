@@ -40,14 +40,16 @@
   ],
   "generation": {
     "pythonLines": 90,
-    "javascriptLines": 110,
+    "javascriptLines": 111,
     "pythonFnv1a64": "cfb33505b629c970",
-    "javascriptFnv1a64": "1db9ee7fabd4f5cd",
+    "javascriptFnv1a64": "132090aff70de4cd",
     "iterationProof": {
       "pythonLoop": true,
       "javascriptLoop": true,
       "pythonChunk": true,
-      "javascriptChunk": true
+      "javascriptChunk": true,
+      "pythonHasFor": true,
+      "javascriptHasFor": true
     }
   },
   "typecheck": {

@@ -92,7 +92,8 @@ async function main(): Promise<void> {
 
   const Blockly = (await import('blockly/core')).default ?? (await import('blockly/core'));
   const { setLocale } = await import('blockly/core');
-  setLocale(await import('blockly/msg/en'));
+  // 模块命名空间带 default，setLocale 只收 string 字典，显式窄化（运行时不变）
+  setLocale((await import('blockly/msg/en')) as unknown as { [key: string]: string });
   await import('blockly/blocks');
   await import('@/blocks');
   await import('@/generators/python');
@@ -139,7 +140,8 @@ async function main(): Promise<void> {
       if (!raw) throw new Error('工作区负载为空');
       const created = new Blockly.Workspace() as unknown as LiveWorkspace;
       workspace = created;
-      Blockly.serialization.workspaces.load(JSON.parse(raw) as Record<string, unknown>, created as unknown as Blockly.Workspace);
+      type LoadTarget = Parameters<typeof Blockly.serialization.workspaces.load>[1];
+      Blockly.serialization.workspaces.load(JSON.parse(raw) as Record<string, unknown>, created as unknown as LoadTarget);
       loaded = created.getAllBlocks(false).length;
       if (loaded !== expected) problems.push(`${item.name}: 加载后块数 ${loaded} ≠ 序列化树 ${expected}`);
       for (const node of created.getAllBlocks(false)) {
@@ -162,11 +164,20 @@ async function main(): Promise<void> {
   const jsLines = bundle.javascript ? bundle.javascript.split('\n').length : 0;
   if (!bundle.python.trim()) problems.push('Python 代码为空');
   if (!bundle.javascript.trim()) problems.push('JavaScript 代码为空');
+  // 前四个键是 SHA-256 试点专用的形状断言（第一条纵向切片的读数用它）；
+  // `pythonHasFor` / `javascriptHasFor` 是换标准时可用的弱形状读数：只说明生成代码里有 for 循环，
+  // 不区分循环来自画布组合（ctrl_iterate）还是块内嵌闭包。
+  // `javascriptLoop` 断言的是「按 blocks 迭代的 for 循环」。控次数块在 467ac72 改成「进循环前绑次数」后，
+  // 出码形状从 `for (let i = 0; i < blocks; i++)` 变成
+  // `for (let i = 0, __ctrl_iterate_times__ = blocks; i < __ctrl_iterate_times__; i++)`；
+  // 只认旧形状会得到假阴性（§55.7 记的那次），所以两种 init 形状都接受，仍要求上界来自 blocks。
   const iterationProof = {
     pythonLoop: /for i in range\(blocks\):/.test(bundle.python),
-    javascriptLoop: /for \(let i = 0; i < blocks; i\+\+\)/.test(bundle.javascript),
+    javascriptLoop: /for \(let i = 0(?:, __ctrl_iterate_times__ = blocks)?; i < (?:blocks|__ctrl_iterate_times__); i\+\+\)/.test(bundle.javascript),
     pythonChunk: /bytes_slice\(padded, offset, \(?offset \+ 64\)?\)/.test(bundle.python),
     javascriptChunk: /bytesSlice\(padded, offset, \(?offset \+ 64\)?\)/.test(bundle.javascript),
+    pythonHasFor: /^\s*for\s+\w+\s+in\s+/m.test(bundle.python),
+    javascriptHasFor: /for\s*\(/.test(bundle.javascript),
   };
 
   // 3. 类型（契约真值；逐个值输入配对判定，不用 checkTree——后者只走值输入树，
@@ -258,7 +269,7 @@ async function main(): Promise<void> {
   run('py', bundle.python);
   run('js', bundle.javascript);
 
-  // 阴性对照：单分组压缩必须给出**不同**结果，否则「通过」可能只是碰巧。
+  // 阴性对照：对照路径必须给出**不同**结果，否则「通过」可能只是碰巧（各试点的对照内容写在 metadata.aiHelper.tests.control）。
   const control = spec.control;
   const controlResults: Array<{ lang: string; got: string; differ: boolean; error: string }> = [];
   if (control) {
@@ -282,7 +293,7 @@ async function main(): Promise<void> {
   };
 
   const controlPass = !control || controlResults.every((item) => item.differ);
-  if (!controlPass) problems.push('阴性对照未开火：单分组压缩给出了与官方向量相同的结果');
+  if (!controlPass) problems.push('阴性对照未开火：对照路径给出了与官方向量相同的结果');
   const allPass = results.every((item) => item.pass) && controlPass && problems.length === 0;
   readings.pass = allPass;
   readings.problems = problems;
@@ -291,7 +302,7 @@ async function main(): Promise<void> {
   console.log(`== structure: files=${structure.files} entry=${structure.entryFileId} entryMatches=${structure.entryMatches} ` +
     `blocks=${structure.perFile.map((item) => item.loadedBlocks).join('+')}`);
   console.log(`== symbols: ${symbols.symbols.map((symbol) => symbol.name).join(',') || '(none)'} errors=${symbols.errors.length}`);
-  console.log(`== generation: python=${pyLines} 行 / js=${jsLines} 行 loop=${iterationProof.pythonLoop}/${iterationProof.javascriptLoop} chunk=${iterationProof.pythonChunk}/${iterationProof.javascriptChunk}`);
+  console.log(`== generation: python=${pyLines} 行 / js=${jsLines} 行 sha256loop=${iterationProof.pythonLoop}/${iterationProof.javascriptLoop} hasFor=${iterationProof.pythonHasFor}/${iterationProof.javascriptHasFor} chunk=${iterationProof.pythonChunk}/${iterationProof.javascriptChunk}`);
   console.log(`== typecheck: pairs=${typecheck.pairs} ok=${typecheck.ok} mismatch=${typecheck.mismatch} unknown=${typecheck.unknown} causes=${JSON.stringify(typecheck.unknownCauses)}`);
   for (const item of results) {
     console.log(`\n[${item.lang}] ${item.pass ? 'PASS' : 'FAIL'}`);
@@ -302,7 +313,7 @@ async function main(): Promise<void> {
   }
   if (control) {
     for (const item of controlResults) {
-      console.log(`[${item.lang}] 单分组对照 ${item.differ ? 'PASS' : 'FAIL'} got=${item.got || item.error} (必须 ≠ ${control.mustDifferFrom.slice(0, 16)}…)`);
+      console.log(`[${item.lang}] 阴性对照 ${item.differ ? 'PASS' : 'FAIL'} got=${item.got || item.error} (必须 ≠ ${control.mustDifferFrom.slice(0, 16)}…)`);
     }
   }
   for (const message of problems) console.error(`PROBLEM: ${message}`);

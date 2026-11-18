@@ -33,7 +33,7 @@ npm run verify:build && node dist-verify/ai-helper-signatures.js
 | 闭包定义名去重后 | 181 |
 | 闭包最多的块 | `eddsa_sign` 11、`zuc_eia3` 8、`gcm_encrypt` 6、`drbg_generate` 5、`mldsa_sign` 5 |
 | 模板碰撞（两个块产出同形代码） | **0** |
-| 采集失败 | 2（`sbox_variables_get` / `sbox_variables_set`，需要一个真实的 S 盒变量才能指定） |
+| 采集失败 | 2（`sbox_variables_get` / `sbox_variables_set`；扫描工作区只有无类型变量，`variableTypes:['SBox']` 的字段被 Blockly 直接拒绝，字段值为 null） |
 
 ## 3. 三个直接结论
 
@@ -59,8 +59,16 @@ npm run verify:build && node dist-verify/ai-helper-signatures.js
 
 - 采集用的是**默认字段值**，因此模板里嵌着默认值（如 `pq_ntt` 的 `q=3329, n=256`）。
   反解析时这些位置必须作为「可变槽」处理，不能当字面量精确匹配。
-- `sbox_variables_get` / `sbox_variables_set` 未采到：它们的字段要求一个已注册的 S 盒变量，
-  当前扫描环境没有。补法是在扫描工作区里注册一个 `sbox_variables` 变量，属 P1 的事。
+- `sbox_variables_get` / `sbox_variables_set` 未采到，直接原因是扫描工作区只注册了一个**无类型**变量
+  （`createVariable('scan_var', '', …)`），而这两块的 `field_variable` 声明了 `variableTypes: ['SBox']`，
+  Blockly 拒绝该字段并报 `Variable type doesn't match this field!`，字段值因此是 null。
+  但**补注册一个 SBox 变量也修不了反解析**：这两块生成出来的代码就是变量名本身
+  （`src/generators/python/sbox/sbox.ts`：get 出 `name`、set 出 `name = value`），与
+  `variables_get` / `variables_set` 逐字相同；反解析对裸标识符的兜底正是 `variables_get`
+  （`src/services/ai-helper/reverse/parser.ts`），且反解析产物里的变量表只有 `{name, id}`、
+  不携带类型（`src/services/ai-helper/reverse/serialize.ts`）。所以这对块只能记为**已知歧义**
+  （与 `bit_expr_infix` / `bit_operation` 那 3 处同类），由
+  `tests/unit/ai-helper-reverse-payload.test.ts` 的 `KNOWN_UNTEMPLATED` 钉住。
 - 模板 0 碰撞只说明「在默认值下不碰撞」；换字段值后是否仍单射，P1 的 round-trip 会验证。
 
 ## 6. 下一步（P1）
@@ -205,7 +213,7 @@ node dist-verify/ai-helper-roundtrip.js negate   # 阴性对照 3/3
   `ecc_*` 这类把字段转存到内部状态的块可能因此被低估可见性；4 个 atomic demo 不涉及它们。
 - 3 处碰撞是 `bit_expr_infix` 与 `bit_operation` 在 `^`/`&`/`|` 三种算子下同形：代码完全相同，
   块类型本质上不可区分，只能记作已知歧义。
-- `sbox_variables_get/set` 仍采不到（需要真实 S 盒变量）。
+- `sbox_variables_get/set` 仍采不到（字段要 SBox 变量；且生成代码与 `variables_get/set` 同形，属已知歧义）。
 - 只覆盖 atomic demo，未碰 procedure 体、多行表达式、同名变量遮蔽（P1.2）。
 
 ## 7. P1.2：procedure 体、生成器前导与嵌套调用
@@ -3217,9 +3225,13 @@ P3 第一步读数 → P4 纵向切片；外加 metacrypt 的 `verify:build` 空
 | 锚点抽取器（`scripts/p4-anchors.mjs`） | FIPS 180-4 的 5 个条目 → **14 个条款单元，14/14 可点**（`#L` 行区间 + 切片 sha256），节级 0；另抓到 **2 处**声明锚点落在错的小节 |
 | 三档判定器（`scripts/p4-verdicts.ts`） | **能搭 1 / 部分 3 / 不能 1**；证据层 L1 5、L2 0、L3 0；缺口 11 条；全程不读「项目状态」 |
 | 试点工程（`p4/build-project.py`） | **2 个 block 文件 + 1 个 ProjectRecord**，`entryFileId=file-main`，**33 块**（algo 28 + main 5），12 种块类型，0 未知类型 |
-| verify-project（`scripts/verify-project.ts`） | Python **PASS** / JS **PASS**，都是 `248d6a61…19db06c1`；单分组阴性对照双语言 PASS（`85e655d6…` ≠ 期望）；Python 90 行 / JS 110 行 |
+| verify-project（`scripts/verify-project.ts`） | Python **PASS** / JS **PASS**，都是 `248d6a61…19db06c1`；单分组阴性对照双语言 PASS（`85e655d6…` ≠ 期望）；Python 90 行 / JS 111 行 |
 
 - 独立复跑：`anchors.json` 与 `verdicts.json` 重跑后**逐字节相同**，向量重跑仍 PASS（主线程复验过，不是抄子 agent）。
+- 第 4 段读数于 2026-11-18 重生成（`verify-project-readings.json`，sha256 `1df52835…`）：JS 110→**111 行**、
+  fnv `1db9ee7f…`→**`132090af…`**，多出 `pythonHasFor` / `javascriptHasFor` 两键；原因是 §48 让
+  `ctrl_iterate` 进循环前绑次数，JS 多了一行 `__ctrl_iterate_times__`。向量、阴性对照、typecheck 与
+  `iterationProof.javascriptLoop: true` 都没变——最后这条成立的前提是先修掉检测器对旧出码形状的假阴性（§56.1）。
 - 两处判据修正：① P4-SCOPE 的「typecheck 0 unknown」不可达——24 对配对里 0 mismatch，但 24 全 unknown
   （15 对是 `variables_get`/`math_*` 本身无契约，9 对是父块输入 `setCheck(null)`），建议改判「0 mismatch +
   unknown 逐条归因」；② L2（tooltip 反引标准号）对 FIPS 180-4 是死的：222 个块只有 3 个 tooltip 提到
@@ -3346,3 +3358,726 @@ demos 60/60、`CONTRACT_GATE_SUMMARY errors=0`）。文档同步：`docs/blocks/
 
 仍未做：`metacrypt_server` 的镜像同步（`sync-to-metacrypt.sh`）——它是第二仓，工作区里还有别的
 未提交改动，等 owner 决定何时同步。
+
+## 50. B2 接入第一份真实第三方样本：kokke/tiny-AES-c（2026-11-18 上午）
+
+§47.4 的 V3 只跑过 3 份**自撰**样本。本轮把外部参考实现接进同一条管线，目标是证明
+「第三方代码 → 别名命中 → 工作区 → 生成代码 → 与 C 逐例差分」这条路真的能走通，而不是只在自己写的样本上成立。
+
+### 50.1 判决
+
+| 项 | 读数 |
+|---|---|
+| 样本 | 5（3 自撰 + 2 第三方），V0 全部 PASS |
+| 别名表 | **8 条 / 上限 8**（已顶格） |
+| V1 结构解析 | 5/5 通过；3 份旧样本读数**逐字段不变**（见 §50.5 的证明方法） |
+| V2 映射 | 5/5 可生成工作区（4 whole-function-alias + 1 chain-fold） |
+| V3 差分 | **可达 5/5，向量 13/13 通过**（改前是 3/5、9/9） |
+| 阴性对照 | 开火（`sub_bytes → aes_shift_rows`，`89d810e8…` 变 `ed416f36…`） |
+
+### 50.2 选哪两个函数，为什么不是 SubBytes
+
+从 `kokke/tiny-AES-c`（clone 后 `git log -1`）锁定：
+
+```
+repo    https://github.com/kokke/tiny-AES-c
+commit  23856752fbd139da0b8ca6e471a13d5bcc99a08d  (2024-10-04)
+aes.c   sha256 f7f78b44654efd3542b6886923dd05194286807ebcfeb078ea05d21fe901ee9e  (572 行)
+license Unlicense（公有领域，上游 unlicense.txt）
+```
+
+取 `ShiftRows` 与 `MixColumns`，不取 `SubBytes`，理由是**信息量**：
+
+- `SubBytes` 是逐字节查表，对「扁平序 ↔ 4x4 状态」的布局不敏感，跑通它说明不了布局对；
+- `ShiftRows` 是纯置换，**布局错就一定红**，是这条链上最锋利的探针；
+- `MixColumns` 带 GF(2^8) 的 `xtime`，能测「闭包内私有辅助函数」与「整函数被别名吸收」两件事。
+
+样本文件是上游第 71–72 行（`typedef uint8_t state_t[4][4];`）与函数段的**原样摘录**，
+只加了 2 行来源注释；**没有改名、没有去掉 `static`、没有改签名**。逐字节一致性用机械方式复核：
+把上游片段按行区间取出，检查它是否作为连续子串出现在样本里（4 段全部命中，见 §50.5）。
+
+### 50.3 为了接得进去，解析器改了三处（每处都有实测报错）
+
+原样把上游函数喂进 `p3/lib/c-parse.mjs` 会**连签名都拿不到**，三次报错逐条修：
+
+| 现象 | 根因 | 落法 |
+|---|---|---|
+| `语法错误：第 11 行无法识别声明类型（实际 state_t）` | `typedef` 被列进 `UNSUPPORTED_DECL_KEYWORDS`，只报不支持并跳过，别名从未登记 | 新增 `parseTypedef()`：只解析「给已有标量/数组类型起别名」，登记到 `typeAliases`；声明类型处接受别名并展开成 baseType。结构体/联合体/枚举/函数指针别名仍判 unsupported |
+| `语法错误：第 11 行期望 punct )，实际 punct "["` | 多维数组只报不支持、**不消费**第二个 `[4]`，`expectPunct(')')` 直接抛 | 改成 while 循环把多余维度全部消费掉（报一次 `multi-dim-array`） |
+| 函数体里 `(*state)[i][j]` 全是不支持的指针解引用 | 体要按 C 子集解析 | 新增 `manifest.opaqueFunctions` + `parseC(src,{opaqueFunctions})`：这些函数只解析签名，体按配对括号跳过并记 `bodySkipped/bodyLines` |
+
+第三条是**有意的豁免**，所以配了反向约束：V0 会检查 `opaqueFunctions` 里每个名字都真的在别名表里
+（即「确实被某个块整体吸收」），否则 V0 直接判 FAIL——不让它变成「跳过分析」的万能开关。
+V2 的 `absorbed` 条目会写明「只解析了签名（体行数 N，未做结构分析）」，不把跳过读成已核。
+
+### 50.4 新增向量形态 `inplace16-ptr`
+
+tiny-AES-c 的这些函数是 `static void ShiftRows(state_t* state)`：单参数、就地改写、函数还是 `static`。
+原有三种形态（`inplace16` 两参、`ecb-block` 三参、`byte` 单字节）都不匹配，于是加第四种：
+
+- **C 驱动把样本 `#include` 进同一编译单元**——`static` 函数跨 TU 链接不上，而为了能链接去改上游源码
+  就等于伪造样本；V3 的编译清单因此改为「驱动已 include 的文件不再作为独立 TU」；
+- 传参用 `(uint8_t (*)[4][4])s`：`state_t = uint8_t[4][4]`，所以 `state_t*` 是**指向 4x4 数组的指针**，
+  不是 `(*)[4]`（第一次写错成 `(*)[4]`，gcc 直接 `-Wincompatible-pointer-types` 报错，见 §50.6）；
+- Python 侧对应的形态是「吃一个 list[int]、返回同一缓冲区」。
+
+顺带修了一处类型标注：`buildWholeAliasWorkspace` 原来对**指针形参**一律标 `bytes`，
+与 `aes_mix_columns`/`aes_shift_rows` 的 `IntList` 输入自相矛盾；改为「定长数组与指针都问块的 IO 契约，
+只有标量才按 C 基础类型推断」。另把 `void` 就地改写的 note 从「C 的返回值与块输出同义」
+改成「C 以 void 就地改写形参；块以返回值给出同一缓冲区」——原文案对这类函数是假陈述。
+
+### 50.5 读数与「没有回归」的证明
+
+V0/V1/V2/V3 全绿后，单独核对旧样本没被改动波及：
+
+- **V1 无回归**：把新加的三个字段（`isPointer`、`bodySkipped`、`bodyLines`）从新读数里剔除后，
+  3 份旧样本的 V1 记录与改前 **JSON 逐字段相同**（脚本化比对，非目测）；
+- **样本逐字节**：4 段上游片段（71–72 / 263–292 / 294–297 / 299–313）均作为连续子串出现在对应样本中，
+  且顺序正确；
+- **向量确能分辨错实现**（否则「13/13 通过」没有意义）：
+  - 布局探针 `000102…0f`：正确 `00050a0f04090e03080d02070c01060b`，若按行优先误解释得
+    `00010203050607040a0b08090f0c0d0e` —— 不同；
+  - GF 探针：正确 `5f72641557f5bc92f7be3b291db9f91a`，若 `xtime` 漏掉 `0x1b` 折减得
+    `5f69640e57eea792eca520321db9f91a` —— 不同。
+
+期望值的独立来源有三条且互不派生：FIPS 197 附录 C.1 给出的轮内中间态、按 §5.1.2/§5.1.3 定义现写的
+Python 实现、上游 C 函数本机 gcc 编译执行。三者对本轮 4 条向量给出同一结果。
+
+### 50.6 边界（本轮没证明的事）
+
+1. **别名表已顶格 8/8**。下一份第三方样本要么复用已有别名（同名函数），要么先决定放宽上限——
+   不擅自改门禁去迁就数据。
+2. **只覆盖「整函数被别名吸收」这一种形态**。带分支/循环的第三方函数体仍未进 V3（§47.8 第 7 条不变）；
+   tiny-AES-c 的 `Cipher`/`KeyExpansion` 就需要这种能力，本轮没做。
+3. **`inplace16-ptr` 假定被指对象是 `uint8_t[4][4]`**。若上游是扁平的 `uint8_t*`，需要另立形态；
+   现在这个 cast 只对「指向 4x4 状态的指针」成立。
+4. **函数体被跳过的样本，结构诊断是空的**（V1 只报 2 条：`#include` 与指针形参）。这不是「体里没有问题」，
+   而是「体没分析」——V2 的 `bodySkipped` 与本节都把它写明了。
+5. **PQClean 这条还没接**。本机已实测 `make -C crypto_kem/ml-kem-512/clean` 出
+   `libml-kem-512_clean.a`（`-Werror` 干净），但它的官方 KAT 是**摘要**而不是向量文件
+   （`META.yml: nistkat-sha256: c70041a7…`），判据要改成「C 侧摘要 vs 生成代码摘要」，
+   与现在的逐例 hex 比对不是一回事，属下一步。
+6. 本机缺 `cmake`/`ninja`/`arm-none-eabi-gcc`，所以 `liboqs`、`pqm4` 仍不可构建。
+
+### 50.7 门禁（本轮实跑）
+
+| 项 | 结果 |
+|---|---|
+| `node …/p3/run-p3.mjs` | rc=0：V0 PASS / V1 5-5 / V2 5-5 可生成 / **V3 5-5 可达、13-13 通过** / 阴性对照开火 |
+| `npx eslint` 两个改动脚本 | rc=0 |
+| `npm run lint:check`（整树） | **rc=0**，0 错误 0 警告 |
+| `npm run type-check` | **rc=0** |
+
+## 51. B2 第二步：块生成代码对上 PQClean 的官方 ML-KEM-512 KAT（encaps 半段）（2026-11-18 上午）
+
+§50 比的是「同一台机器上的 C 与生成代码」——参考真值是我们自己挑的样本。这回换成**外部官方真值**：
+PQClean 的 `META.yml` 里钉着 `nistkat-sha256`，本轮把这条摘要复现出来，并把 KAT 里那条用例的
+`ek` 与 `m` 喂进本仓库的块级 ML-KEM-Encaps，看生成代码能不能给出同一份 `ct`/`ss`。
+
+复现脚本：`node experiments/ai-helper-2026-11-14/p3/run-pqclean-kat.mjs`（需要一份 PQClean clone，
+默认 `/tmp/b2probe/PQClean`，可用 `PQCLEAN_DIR=` 覆盖）。
+
+### 51.1 四步读数
+
+| 步 | 做什么 | 读数 |
+|---|---|---|
+| ① | 编译并运行 PQClean `nistkat`（`ml-kem-512/clean`），摘要对 `META.yml` | **PASS**：实测 `c70041a761e01cd6426fa60e9fd6a4412c2be817386c8d0f3334898082512782` = META 期望值 |
+| ② | 导出 KAT 实际吃到的随机字节 | **PASS**：探针重算的 `pk/sk/ct/ss` 与 KAT 文件逐字节相同 |
+| ③ | 块生成代码（Python 与 JS）算 `ct‖ss` | **PASS**：`ct` 768 字节、`ss` 32 字节，两语言都与 KAT 逐字节相同 |
+| ④ | 阴性对照：`m` 翻 1 bit | **PASS**：`ct`/`ss` 都变，说明比对有分辨力 |
+
+上游身份：`PQClean@0586a824fc0d49df0b6b6e9179d8d15d06d0974f`，构建从零开始（删掉 `bin/` 与 `.a` 后跑通）。
+
+### 51.2 随机字节是「导出的」，不是「猜的」
+
+KAT 的随机性来自 NIST 的 AES-256-CTR DRBG，且 harness 的顺序是：
+`entropy=0..47 → randombytes(seed,48) → 用 seed 重新初始化 DRBG → keypair 吃 64 字节(d‖z) → enc 吃 32 字节(m)`。
+
+要拿到这批字节又不改上游，做法是**复制** `test/common/nistkatrng.c`，只把 `randombytes` 改名 `rb_raw`，
+再在自己的探针里提供一个带日志的 `randombytes` 包一层。探针随后用同样的顺序重算 `pk/sk/ct/ss`：
+**四个字段与 KAT 逐字节相同**才说明「记下来的随机字节就是 KAT 用的那批」。若只在日志里抄一份数字，
+是无法排除「顺序或长度抄错」的。
+
+### 51.3 为什么「摘要」这一步还没算完
+
+KAT 文件是 6 行：`count / seed / pk / sk / ct / ss`，摘要按 `head -n 8 | tail -n 6` 取整 6 行后 sha256。
+本轮只对齐了 `ct`、`ss`（encaps 的输出面）；`pk`、`sk` 需要**整段 KEM 密钥生成**（indcpa keypair + 编码 +
+`H(ek)` + `z` 拼 sk），而本仓库目前只有 `proc_mlkem_keygen` 模板覆盖 `CBD→NTT` 这一段。
+
+所以脚本的判决字段写的是 **「ct/ss 对齐，KAT 摘要未组装（缺 pk/sk 侧）」**，`pending: ["pk","sk"]`。
+不把「ct/ss 相同」说成「KAT 摘要相同」——那需要 6 行全齐，现在差 2 行。
+
+顺带一个对照：`demos/tests.json` 里 ML-KEM-Encaps 的既有回归向量（ek 以 `3b7899…` 开头）与本轮 KAT 用例
+不是同一组数据；本轮的意义是第一次用**上游官方 KAT** 当判据，而不是仓库自留向量。
+
+### 51.4 边界
+
+1. **只覆盖 encaps**，且只覆盖 KAT 的第一条用例（PQClean 的 `nistkat` 也只生成一条）。
+2. **摘要本身未组装**（缺 pk/sk），见 §51.3。
+3. **依赖外部 clone**：脚本不自带 PQClean 源码；换机器要先 clone，缺目录会明确报错退出（rc=2）。
+4. **构建依赖本机工具链**：`gcc` + `make` 够用；`liboqs`（cmake/ninja 缺）与 `pqm4`（arm-none-eabi 缺）仍不可构建。
+5. 阴性对照只做了一条（`m` 翻 bit），没有做「换 ek」「换实现（avx2）」这类交叉对照。
+
+**一处踩坑记录**：脚本原先把手工作目录放在仓库内 `.tmp-build/pqclean-kat/`，其中生成的
+`gen-mlkem-encaps.mjs` 被 `eslint .` 当源码扫，与 `TMPDIR=.tmp-build` 一起跑时整树 lint 直接 **rc=1**
+（实测 83 条 warning 全来自这份出码文件）。已改为落在系统临时目录（`os.tmpdir()`），仓库内不留生成文件；
+改后 `npm run lint:check` 恢复 rc=0。教训：**仓库内的 scratch 目录只要含 `.mjs`/`.ts`，就会被 lint 扫到**。
+
+### 51.5 门禁
+
+| 项 | 结果 |
+|---|---|
+| `node …/p3/run-pqclean-kat.mjs` | **rc=0**（①–④ 全 PASS） |
+| `npx eslint …/run-pqclean-kat.mjs` | 0 错误 0 警告 |
+| 产物 | `p3/out/pqclean-kat.json`（含 commit、摘要、随机调用序列、负数对照与 pending 原因） |
+
+## 52. #2 收口：KAT 六行全部由生成代码产出，摘要与 META 相同（2026-11-18 上午）
+
+§51 留下的缺口是 `pk`/`sk` 两行：`ct`/`ss` 已对齐，但 KAT 的摘要按 6 行算，缺两行就不算数。
+本轮把缺口补上了，判据变成「四项数据字段全部来自生成代码，重算摘要 = `META.yml`」。
+
+### 52.1 没有在画布里手拼，而是用 IR 组装
+
+新增 `p3/lib/gen-mlkem-keygen-ws.mjs`：把 FIPS 203 §5.1 的 K-PKE.KeyGen 写成块树（**146 块**），
+交给 `experiments/lib/block-ir.mjs` 的 `validateIr`（对着 `BLOCK-IO-CONTRACT.json` 校验端口/字段/
+连接类型）再 `assembleIr` 组装成工作区。产物 `p3/out/ws-mlkem-keygen.json` 是**生成物**，改逻辑要改脚本。
+
+计算链（`ML_KEM_KeyGen(d, z)`，返回 `ek ‖ sk`；Blockly 的 defreturn 只能返回一个值，拆包由调用方按 800 字节切）：
+
+```
+(rho, sigma) = SHA3-512(d ‖ 0x02)            k = 2 作为单字节
+A[i][j]      = SampleNTT(rho ‖ j ‖ i)        i,j ∈ {0,1}，外层 nonce 是 i
+s[i]         = CBD_eta1(PRF_eta1(sigma, i))  nonce 0,1
+e[i]         = CBD_eta1(PRF_eta1(sigma, 2+i)) nonce 2,3 ← KeyGen 的 e 也用 eta1
+s_hat, e_hat = NTT(s), NTT(e)
+t_hat[i]     = Σ_j MultiplyNTTs(A[i][j], s_hat[j]) + e_hat[i]
+ek           = ByteEncode12(t_hat[0]) ‖ ByteEncode12(t_hat[1]) ‖ rho          800
+sk           = ByteEncode12(s_hat[0]) ‖ ByteEncode12(s_hat[1]) ‖ ek ‖ H(ek) ‖ z  1632
+```
+
+### 52.2 实跑读数（`node …/p3/run-pqclean-kat.mjs`，rc=0）
+
+| 步 | 判据 | 读数 |
+|---|---|---|
+| ① | C 侧 `nistkat` 摘要 = `META.yml` | PASS（`c70041a7…`） |
+| ② | 探针重算 `pk/sk/ct/ss` 与 KAT 逐字节相同（证明导出的随机字节就是 KAT 那批） | PASS |
+| ③ | Encaps 工作区的 `ct`/`ss`（Python **与** JS） | PASS：768 / 32 字节 |
+| ④ | KeyGen 工作区的 `ek`/`sk`（Python **与** JS，146 块） | PASS：800 / 1632 字节 |
+| ⑤ | 六行组装摘要（`pk/sk/ct/ss` 全取生成值）= META | PASS |
+| ⑥ | 变异对照：`e` 改用 eta2 / `A` 转置 | 两者都让 `pk` 变（判据有牙齿） |
+| ⑦ | 方向性阴性对照：`d` 翻 bit / `z` 翻 bit / `m` 翻 bit | 三条都按预期方向变 |
+| ⑧ | 判定 | 六行摘要与 META 相同 |
+
+### 52.3 对照为什么选这三条
+
+- **`e` 用 eta2**：Encrypt 才用 eta2（`r`/`e1` 是 eta1、`e2` 是 eta2），KeyGen 的 `s` 与 `e` **都是 eta1**。
+  这是「照 Encrypt 抄就会错」的一处，实测把 `e` 改成 eta2 后 `pk` 全变——说明判据不是只比长度或前缀。
+- **`A` 转置**：`A[i][j] = SampleNTT(rho ‖ j ‖ i)`，后缀顺序是 `j` 在前。换成 `i ‖ j` 后 `pk` 全变。
+- **`z` 翻 1 bit**：`z` 只落在 `sk` 末尾 32 字节。实测 `ek` 不变、`sk` 前 1600 字节不变、只有末 32 字节变——
+  这把「`z` 放对了位置」这一点定位到了具体字节，而不只是「跑通了」。
+
+复跑变异：`node …/p3/lib/gen-mlkem-keygen-ws.mjs --mutate e-eta2`（或 `a-transpose`）；
+跑 `run-pqclean-kat.mjs` 时这两条会自动做一遍，`pk` 没变就 rc≠0。
+
+### 52.4 一句必须说清的话
+
+六行里的 `count` 与 `seed` 是 DRBG 的**输入**，不是算法输出。所以「摘要相同」有意义的前提是：
+`pk`、`sk`、`ct`、`ss` 四个数据字段**逐字节来自生成代码**（④ 与 ③），而不是把 KAT 的行抄回去。
+脚本把这条落在 `digestAlignment.why` 里，并且任何一项不对就 rc≠0。
+
+### 52.5 边界（本轮没证明的）
+
+1. 只覆盖 KAT 的第一条用例（PQClean 的 `nistkat` 也只生成一条）。
+2. `crypto_kem_dec`（含隐式拒绝）没接；本轮的 KEM 面只有 keypair 与 encaps。
+3. 参数集只有 ML-KEM-512（k=2、eta1=3）。768/1024 需要 k=3/4 的 Â 与向量长度，块是通用的但**未实测**。
+4. 依赖外部 clone 与本机 `gcc`/`make`；缺目录时 rc=2 明确退出。
+5. KeyGen 工作区是**实验产物**，放在 `p3/out/` 而不是 `demos/`：`demos` 的计数被稿件钉在 60，
+   加一份会牵动结构数字，这是刻意的取舍，不是遗漏。
+
+### 52.6 门禁
+
+| 项 | 结果 |
+|---|---|
+| `node …/p3/run-pqclean-kat.mjs` | **rc=0**（①–⑧ 全 PASS） |
+| `npx eslint …/run-pqclean-kat.mjs …/lib/gen-mlkem-keygen-ws.mjs` | 0 错误 0 警告 |
+| `npm run lint:check` / `npm run type-check` | **rc=0** / **rc=0** |
+| 产物 | `p3/out/pqclean-kat.json`、`p3/out/ws-mlkem-keygen.json` |
+
+**一处自伤的记录**：给生成器加 `--mutate` 时，参数解析把 flag 的**值**当成了输出路径，于是把变异工作区
+写成了仓库根目录下的文件 `e-eta2`（发现后立即删除并改成显式 `valueFlags` 解析）。教训：带值的 flag
+必须先把它的值从位置参数里剔掉，再取第一个位置参数当路径。
+
+## 53. #3 缺块回流 channel 1：ticket 结构与本地收件箱（2026-11-18 上午）
+
+§4（proposals/PARALLEL-EXECUTION.md）把「缺块回流」拆成两条通道。本轮做的是 **channel 1
+（后台提醒，轻）** 的数据面：把「现有块类型表达不了」变成维护者能直接动手的 ticket，落到仓库内
+可 diff 的收件箱；远端自动工单（channel 2）需要服务与凭据，仍然只留接口。
+
+### 53.1 三层
+
+| 层 | 文件 | 职责 |
+|---|---|---|
+| 数据面 | `src/services/ai-helper/missing-block-ticket.ts` | ticket 结构、校验、去重、合并、稳定序列化、面板计数。不读文件系统、不依赖 DOM，浏览器与 Node 共用 |
+| 生产端 | `scripts/ai-helper-inbox.ts`（构建为 `dist-verify/ai-helper-inbox.js`） | 从 B2/P3 的 V1 `unsupported` 诊断产 ticket；`ingest` / `--dry-run` / `--check` 三条子命令 |
+| 落点 | `experiments/ai-helper-2026-11-14/inbox/<语义标签>@<来源哈希>.json` | 一条 ticket 一个文件，进 git 可 diff |
+
+### 53.2 §4.2 的五件证据逐一落到字段
+
+| §4.2 要求 | 字段 |
+|---|---|
+| 缺失语义的一句话 | `summary`（≤200 字，超长拒收） |
+| 来源（条款锚点 / 代码 file:line / 用户片段） | `source.kind` + `anchor` / `file`+`line` / `excerpt` |
+| 期望的块签名 | `expectedBlock.{name,inputs,outputs,codeShape}`，`codeShape` 缺失拒收 |
+| 最小复现 | `reproduction.{kind,locator,content,note}` |
+| 来源哈希 | `source.hash`（64 位小写十六进制，格式不符拒收） |
+
+`buildTicket` 校验不过直接抛错并**一次列全**问题，不产出半成品——收件箱里不允许出现
+「我觉得缺个块」这种没法动手的条目。
+
+### 53.3 去重键为什么不是整文件哈希
+
+§4.3 写「语义标签 + 来源哈希」。`source.hash` 的输入是 `kind|文件（或锚点）|规范化证据原文`：
+
+- **不取整文件哈希**：同一文件里无关的编辑会换一个哈希，同一处缺失被反复报成新票；
+- **不取行号**：行号会随上游改动漂移，票会随行号分裂；
+- 结果：同一文件里**同类**缺失合成一条，换文件或换证据原文才是另一条。
+
+实测：5 份样本的 7 条 `unsupported` 诊断 → 7 条 ticket（`unsupported-pointer` ×2 来自两个文件、
+`unsupported-preprocessor` ×5 各来自一个文件，其中 `#include <stdint.h>` 与 `#include "jia-aes-round.c"`
+因证据原文不同而分成两条）。
+
+合并语义：重复项**保留已有 status 与 createdAt**——已经 shipped 的票不会因为用户又触发一次退回 open。
+
+### 53.4 实跑读数
+
+| 步骤 | 命令 | 读数 |
+|---|---|---|
+| 试跑 | `node dist-verify/ai-helper-inbox.js --dry-run` | 扫描 7 条诊断 → 7 条新票，未写盘 |
+| 首次落盘 | `node dist-verify/ai-helper-inbox.js` | 写入 7 个文件，`open=7` |
+| 幂等 | 同命令再来一次 | **新增 0**、重复 7，文件数仍为 7 |
+| 自校验 | `--check` | `CHECK PASS`，`unsupported-pointer×2`、`unsupported-preprocessor×5` |
+| 阴性对照 ① | 把一条 ticket 的 `id` 改成 `tampered` 后 `--check` | **rc=1**，报 `id-mismatch@id`，并点名坏文件 |
+| 阴性对照 ② | 把一条标成 `shipped` 后重跑 ingest | 新增 0、`shipped=1`，该条**未退回 open** |
+
+单测 `tests/unit/ai-helper-missing-block-ticket.test.ts`：**29 条通过**，覆盖五件证据逐项缺失的
+拒绝理由、标签规范化去重、重复项保留状态、序列化逐字节稳定、parse 的 `id-mismatch` /
+`schema-version-unsupported` / `status-invalid`，以及计数与证据规范化。
+
+### 53.5 边界（本轮没做的）
+
+1. **面板徽标未接**：`summarizeInbox()` 已经把计数（total / open / byStatus / byTag）算出来，
+   但 Vue 面板与 i18n 文案没动。理由：可见行为改动要走浏览器验证与 `ui()`/`uiFormat()` 键集同步，
+   属独立一轮；本轮的「面板计数」只到 API。
+2. 只 ingest `unsupported`。`semantic-drift`（块能表达但语义可能不同）不算「缺块」，未进票。
+3. channel 2（自动工单 / 远端 issue）未做：没有服务与凭据。
+4. `createdAt` 非确定性（只在新增文件时写入），重复 ingest 不重写已有文件。
+5. `expectedBlock` 里的 `cpp_directive` / `pointer_param_ref` 是**提案签名**，不是已批准设计；
+   维护者要改就在 ticket 上改，别当成块类型名去实现。
+
+### 53.6 门禁
+
+| 项 | 结果 |
+|---|---|
+| `npx vitest run tests/unit/ai-helper-missing-block-ticket.test.ts` | 29/29 通过 |
+| `npx eslint` 新模块 / 新脚本 / 新测试 / `vite.verify.config.ts` | 0 错误 0 警告 |
+| `npm run type-check` | **rc=0** |
+| `AIVERIFY_ENTRY=scripts/ai-helper-inbox.ts` 单入口构建 | rc=0（`node:crypto` 已加入 rollup external） |
+| 整树 `npm run test:unit` / `verify:all` | 见下方门禁段（与 §52 同一次收口） |
+
+**一处踩坑**：`node:crypto` 不在 `vite.verify.config.ts` 的 `rollupOptions.external` 里时，
+构建产物里是 `(0, c.createHash)(...)`，运行时报 `TypeError: createHash is not a function`——
+报错落在产物而不是源码，容易误判成模块写错。已把 `node:crypto` 加进 external。
+
+## 54. #4 A 线第二份标准切片：SP 800-38B CMAC，三档判据的可复用边界（2026-11-18 上午）
+
+#1 的第一条切片只覆盖 FIPS 180-4（哈希族）。本轮换一个**非哈希**标准做同一条纵向切片，目的不是
+再交一份读数，而是回答「这套判据是标准的判据，还是 FIPS 180-4 版式的判据」。结论先给：
+**档位算法可复用，但要先把三处版式耦合参数化；不参数化时第二份标准拿到的不是错档位，而是 0 个可点锚点。**
+
+> **修订（2026-11-18 上午，见 §55）**：本节 02-Subkeys 判「能搭」是错的。工程构建段实测：`L` 的产物是
+> `Bytes`、`cmac_double` 入口是 `IntList`，画布拒绝这次连接且 224 块里没有 `Bytes→IntList` 转换块，
+> §6.1 的四步在画布上拼不出来。修正后：**02-Subkeys = 部分（1/4 canvas；s1–s3 记 internal）**，
+> CMAC 三档 `1/2/0` → **`0/3/0`**，缺口 2 → 6，`verdicts-sp800-38b-cmac.json` 的 sha256 由
+> `0a1d4bc4…` 变为 `e1fa3145…`（`anchors-sp800-38b-cmac.json` 不变，仍 `11d4f1b7…`）；本节 §54.7.1
+> 记的「typecheck 判据没有被触达」也已在 §55 补上。下文保留当时的原读数，不在此处改写。
+
+### 54.1 选型：为什么是 SP 800-38B CMAC
+
+| 条件 | 实测 |
+|---|---|
+| 非哈希标准 | CMAC = 分组密码的工作模式（AES-128 / SM4 路径），不属于哈希族 |
+| 块集合里有对应原语 | `cmac_subkeys` / `cmac_double` / `cmac_mac` 三块都在 224 块索引里；外圈可用 `mode_ecb_encrypt`、`mode_cbc_encrypt`、`arr_slice`、`data_value` 组合 |
+| 条目结构化 | `docs/standards/sp800-38b-cmac/` 下 01/02/03 三页都有「条目元数据」与「公式或伪代码」 |
+| 有第二种证据 | 同目录 `SPEC-CARD.json` 带 2 条 grade-A 锚点（行区间 + 空白归一化后的 quote + quote_sha256），可以对锚点做独立复算 |
+
+没有选 CMAC 以外的标准，是因为只有它同时满足「三页结构化 + 块齐 + 有专卡锚点」；
+`sp800-38c-ccm` / `sp800-38e-xts` 也有块，但本轮不铺语料，先把一条走通。
+
+### 54.2 泛化方式：判定口径不动，版式适配进配置
+
+两段脚本各加一张 `STANDARDS` 配置表，`--standard <id>` 选择；**档位规则、证据层优先级、
+「语义等价永远 unverified」都留在共享代码里**，只有三处随语料变化：
+
+| 配置项 | FIPS 180-4 | SP 800-38B |
+|---|---|---|
+| `layout`（标题识别） | 标题顶格（`strict-column0`） | 标题被 `pdftotext -layout` 缩进（`indented`：编号 + 两个以上空格 + 纯字母标题） |
+| `sectionRef`（§ 出处） | 「标准定位」里就有 §6.1–§6.7 | 「标准定位」只有名称，§ 在「原文位置」里（`position-fallback`） |
+| `mappingHeading`（L1 证据节） | 五个条目页都叫「…映射」 | 01 叫「项目边界」、03 叫「MetaCrypto Online IDE 边界」（`映射|边界`） |
+
+外加两项可选：`appendices`（提取稿末尾的 `Appendix A:` 算一级标题，否则 §6 的跨度会一路吃到文件尾）
+与 `specCard`（目录里有 `SPEC-CARD.json` 就复算它的 quote 哈希，没有就跳过）。
+
+**改造必须无损**：FIPS 产物重跑后与提交版**逐字节相同**（`git diff --quiet` 通过），所以下面 FIPS 的
+数字仍是 §47.5 那一组，不是重算出的新数。
+
+### 54.3 读数
+
+| 段 | FIPS 180-4（回归） | SP 800-38B CMAC（新） |
+|---|---|---|
+| 条目 / 条款单元 | 5 / 14 | 3 / 3 |
+| 可点（行区间） | 14（节级 0） | 3（节级 0） |
+| 声明起点不是标题行 | 0 | **1**（01-CMAC 的 550 行，标题在 552） |
+| 声明落在声明小节之外 | 2（既有：03/04 点进 §6.4.1） | 1（同上，550 早于 §6 标题 552） |
+| 三档 | 能搭 1 / 部分 3 / 不能 1 | **能搭 1 / 部分 2 / 不能 0** |
+| 证据层 | L1×5 | L1×3 |
+| 缺口条数 | 11 | 2 |
+| 产物 sha256 | （未变，与提交版相同） | anchors `11d4f1b7…`、verdicts `0a1d4bc4…` |
+| 幂等 | — | 重跑两份产物 `cmp` 逐字节相同 |
+
+CMAC 逐条：
+
+| 条款 | 档 | 理由（按步骤表现算，不读「项目状态」） |
+|---|---|---|
+| 01-CMAC（概览/组合页） | 部分 | 4 步里 3 步 canvas；「最后块掩码（整块 xor K1 / pad 后 xor K2）」只在 `cmac_mac` 闭包里，画布无独立块 |
+| 02-Subkeys | **能搭** | 4 步全 canvas：`mode_ecb_encrypt`+`data_value` 算 L，两次 `cmac_double` 得 K1/K2，`cmac_subkeys` 返回 K1‖K2 |
+| 03-MAC | 部分 | 8 步里 7 步 canvas；同样是「最后块掩码」这一步落在 `cmac_mac` 闭包里 |
+
+两处与 FIPS 切片一致的口径：整段过程被一个块吸收时，被吸收的步骤记 `internal` 而不是 `canvas`
+（FIPS 是 `hash_sha256_compress`，这里是 `cmac_mac`）；标准允许但块模型不表达的约束写进
+`claimBoundaries`，不参与档位（CMAC 这里是「任意 bit 长度 Tlen」与「没有独立 VER 验证块」）。
+
+### 54.4 三处版式耦合：用被改坏的副本量出代价
+
+不是推断，是把配置改回「只管 FIPS」的写法后实跑同一份语料：
+
+| 去掉哪项适配 | 读数变化 | 结论 |
+|---|---|---|
+| 标题只认顶格 | 可点 3 → **0**，未解析 0 → **3**，专卡落在跨度内 2 → **0** | 版式适配是结构性的：不是档位偏一格，是锚点全废 |
+| § 只从「标准定位」取 | 条款单元 3 → **0**，可点 3 → **0**，声明落在小节外 1 → **3**，专卡在跨度内 2 → **0** | § 出处是第二个结构前提 |
+| L1 只认「…映射」标题 | 01/03 的 L1 → **0**，证据层 L1×3 → **L1×1 + L2×2**（档位不变，仍是 partial） | 这处影响「判决强度」而不是判决：L2 能兜住，但证据从「页内点名」退化成「检索候选」 |
+
+第三条值得记下：**档位稳不代表证据稳**。同一份语料、同一套规则，只因为标题词表少一个「边界」，
+03-MAC 的「能搭/部分」就从 L1 证据掉到 L2 证据——报「部分」时若不说证据层，读者会以为是同一种证据。
+
+### 54.5 SPEC-CARD 交叉核对（第二种证据）
+
+`SPEC-CARD.json` 的锚点把原文片段按「空白归一化后的整段文本」钉 `quote_sha256`。抽取器现在顺带复算：
+
+| 项 | 读数 |
+|---|---|
+| 锚点数 | 2（A1 §6.1 steps、A2 §6.2 steps） |
+| quote 文本与归一化切片逐字相同 | **2/2** |
+| `quote_sha256` 复算相同 | **2/2** |
+| 锚点区间落在解析出的条款跨度内 | **2/2**（A1 586–592 ⊂ 568–599；A2 636–644 ⊂ 600–712） |
+
+阴性对照（跑在 `.tmp-build/p4-ctl/` 的**卡片副本**上，不改仓库语料）：
+
+| 对照 | 改动 | 读数 |
+|---|---|---|
+| A 哈希被改 | A2 的 `quote_sha256` 换成 64 个 0 | quoteHash **2 → 1**；quoteText 仍 2（说明两项不是同一个比较） |
+| B 行区间外扩 | A1 从 586–592 改成 580–592 | quoteText **2 → 1**、quoteHash **2 → 1**（同一段切片，两项必然同向）；insideSpan 仍 2（外扩后仍在 §6.1 内） |
+
+B 的同向变化是设计使然（文本与哈希量的是同一段切片），所以真正独立的阴性对照只有 A；B 的作用是
+证明「外扩会被抓到」，不是证明两项互相独立。这一条写清楚，免得被读成「两项独立验证」。
+
+### 54.6 抓到的语料不一致（只记录，不改语料）
+
+| 条款 | 声明「原文位置」 | 解析出的小节跨度 | 差异 |
+|---|---|---|---|
+| 01-CMAC | 550–752 | 552–759 | 起点早 2 行（第 550 行是上一段正文的尾行），终点少 7 行 |
+| 02-Subkeys | 568–598 | 568–599 | 终点少 1 行 |
+| 03-MAC | 600–666 | 600–712 | 终点少 46 行：声明的只是 Steps 段，不含其后的说明正文 |
+
+这不构成「锚点不可验证」——三个行区间都点在真实内容上，可点性 3/3。它说明的是：
+**「原文位置」是内容位置，不是小节跨度**；条款单元该按标题解析，不能拿「原文位置」当跨度用。
+要改这三处声明会连带 `standards:inventory:write` 与中英双语页，属独立一轮，本轮不动。
+
+### 54.7 边界（本轮没做的）
+
+1. **没有为 CMAC 建第二个试点工程**：§47.5 的第一条切片含 `p4/build-project.py` 的 33 块工程与
+   `verify-project` 双侧出码。CMAC 这一轮只做到「锚点 + 三档」，所以 P4-SCOPE 记的那处
+   **typecheck 判据**（「0 unknown」不可达 → 应改「0 mismatch + unknown 逐条归因」）**没有被触达**，
+   仍是待办；不要把这轮读成「两处判据修正已完成」。
+2. **L2 在这条线上没有死**：CMAC 的 tooltip 标准号池是 3 个块（`cmac_double`/`cmac_mac`/`cmac_subkeys`），
+   且都进得了 BM25 前 5；但三条 L1 全命中，所以 L2 一次也没被用来定档。FIPS 那边的「L2 死区」
+   （池 3 个块里没有任何 SHA-256 pad/compress）是那条语料的事实，不是判据缺陷。
+3. **语义等价仍 `unverified`**：块与标准逐行等价本切片不判，仍交人签核。
+4. **只做了一条标准**：`sp800-38c-ccm`、`sp800-38e-xts` 有块但没有第二份切片读数。
+5. **`scripts/` 不在 `npm run type-check` 的 include 里**：`vue-tsc` 覆盖不到这两段脚本。
+   本轮另用临时 tsconfig（`types: ["node"]`）单独 `tsc --noEmit` 过了一遍，rc=0；
+   这是补充取证，不是仓库门禁。
+
+### 54.8 复跑
+
+```bash
+# 第 1 段：锚点（不带参数 = FIPS 180-4，产物与提交版逐字节相同）
+node scripts/p4-anchors.mjs
+node scripts/p4-anchors.mjs --standard sp800-38b-cmac
+
+# 第 2 段：三档判定（先按单入口构建，避免与 verify:build / verify:all 抢 dist-verify）
+AIVERIFY_ENTRY=scripts/p4-verdicts.ts AIVERIFY_OUTDIR=dist-verify/p4 \
+  npx vite build --config vite.verify.config.ts
+node dist-verify/p4/p4-verdicts.js
+node dist-verify/p4/p4-verdicts.js --standard sp800-38b-cmac
+```
+
+产物：`p4/anchors.json`、`p4/verdicts.json`（FIPS，未变）；
+`p4/anchors-sp800-38b-cmac.json`、`p4/verdicts-sp800-38b-cmac.json`（新增）。
+
+### 54.9 门禁
+
+| 项 | 结果 |
+|---|---|
+| `npx eslint scripts/p4-anchors.mjs scripts/p4-verdicts.ts` | **rc=0**，0 错误 0 警告 |
+| 临时 tsconfig `tsc --noEmit`（`types: ["node"]`） | **rc=0** |
+| FIPS 两段产物逐字节回归 | `git diff --quiet` 通过 |
+| CMAC 两段产物幂等 | 重跑后 `cmp` 逐字节相同 |
+| `npm run lint:check` | **rc=0** |
+| `npm run type-check` | **rc=0** |
+| 整树 `npm run verify:all` | **在 `docs:index:check` 停下，非本轮引起**：语料 437 篇 `d49c2b14…` ≠ 索引 437 篇 `6caa0b16…`。`docs/blocks/INDEX.md`、`INDEX.en.md`、`docs/standards/CONFORMANCE-INVENTORY.md` 三个文件在 10:11 被**另一个会话**改动（同批还有新增 `tests/unit/toolbox-category-taxonomy.test.ts`），`doc-index.json` 未随之重生成；本轮只动 `scripts/` 与 `experiments/`，不碰 docs，不代跑别人的索引 |
+| 被上述中断挡住的后续步骤（逐个单跑） | `verify:build` rc=0；`ai-helper-variants.js check` → `FIELD_CHECK ok blocks=224`（`errors=2` 与 §53 基线逐字相同）；`ai-helper-closures.js check` → `CLOSURE_CHECK ok names=226`；模板 **29/29**；demos **60/60** |
+| `npm run test:unit` | 本轮未重跑：改动只在 `scripts/`（不在 vitest 的 `tests/**` include、也不在 tsconfig include 内），上一轮整树读数是 116 文件 / 1299 通过 1 跳过 |
+
+## 55. #4 补完工程构建：CMAC 试点工程，以及一条「能搭」被画布类型门推翻（2026-11-18 上午，接 §54）
+
+§54 停在「锚点 + 三档」，留了一个洞：CMAC 没有第二个试点工程，所以 P4-SCOPE 记的 **typecheck 判据**
+（「0 unknown」不可达 → 改「0 mismatch + unknown 逐条归因」）没被触达。本轮补这一段，顺带把 §54 的
+一条档位判错。
+
+### 55.1 先做探针再做工程
+
+建工程要写生成器、跑 jsdom、调两个语言，代价大；而「§6.1 的四步能不能拼出来」这件事更便宜的问法是
+**让 Blockly 真的连一次**。所以顺序是：先写 `scripts/p4-connect-probe.ts`（三条用例，几十行），
+拿到运行时结论，再决定工程按哪条路径建。
+
+### 55.2 探针读数：两条被拒，正对照通过
+
+| 用例 | 连线 | 运行时 | 契约层 | 预期 |
+|---|---|---|---|---|
+| `subkey-l` | `mode_ecb_encrypt`（Bytes）→ `cmac_double.X`（IntList） | **被拒** | `mismatch` | 被拒 ✓ |
+| `subkey-K` | `cmac_double`（IntList）→ `cmac_subkeys.KEY`（Bytes） | **被拒** | `mismatch` | 被拒 ✓ |
+| `mac-key`（正对照） | `mode_ecb_encrypt`（Bytes）→ `cmac_mac.KEY`（Bytes） | **连上** | `ok` | 连通 ✓ |
+
+两条被拒的失败形态值得记：`Connection.connect()` **不抛错**，只是连接没建立（探针报
+`connect() 未抛错但连接未建立`）。所以「浏览器里没报错」不能当「连上了」。
+
+正对照（`Bytes→Bytes` 连通）排除了「headless 工作区根本连不上」这种探针环境问题；契约层
+`compatibility()` 给出的 `mismatch` 与运行时结论**同向且独立**（一个读 `setCheck`，一个读 `BLOCK-IO-CONTRACT.json`）。
+
+产物：[connect-probe-sp800-38b.json](p4/connect-probe-sp800-38b.json)（`189a9105…`），
+`cases=3 blocked=2 allowed=1 pass=3`。
+
+### 55.3 档位修正：02-Subkeys「能搭」→「部分」
+
+§54 的步骤表把 §6.1 的四步都记成 canvas：`mode_ecb_encrypt` 算 L → 两次 `cmac_double` → `cmac_subkeys` 返回。
+探针推翻了这个组合。修正后：
+
+| 步 | 原判 | 现判 | 理由 |
+|---|---|---|---|
+| s1 `L = CIPH_K(0^b)` | canvas | **internal** | 唯一产出 L 的块输出 Bytes，接不到 `cmac_double` 的 IntList；能用的是 `cmac_subkeys` 内部那一步 |
+| s2 `K1 = dbl(L)` | canvas | **internal** | 同上，加倍链在闭包里 |
+| s3 `K2 = dbl(K1)` | canvas | **internal** | 同上 |
+| s4 `Return K1, K2` | canvas | canvas | `cmac_subkeys` 一步返回 K1‖K2 |
+
+这把 02-Subkeys 从 `build` 降到 `partial`（1/4 canvas），与 01/03 的纪律一致：**整段被一个块吸收时，
+被吸收的步骤记 internal**——区别只是这里的吸收发生在「一个块 vs 四步」的粒度上，而 §54 当时把
+`cmac_double` 当成了可用的中间件。
+
+三处连带读数：CMAC 三档 `1/2/0` → **`0/3/0`**；缺口 `2` → **`6`**（02 多了 1 条 extraGap + 3 条 internal 步的缺口）；
+`verdicts-sp800-38b-cmac.json` sha256 `0a1d4bc4…` → **`e1fa3145…`**。锚点段不受影响（`11d4f1b7…` 未变）。
+
+### 55.4 试点工程（第 3 段）：41 块，两个 procedure
+
+`p4/build-project-cmac.py` 按 §54 的锚点/判决生成 `p4/project-cmac/`：
+
+| 文件 | 内容 | 块数 |
+|---|---|---:|
+| `algo.cmac.block.json` | `CMAC_AES(key, msg)` = `cmac_mac`；`CMAC_SUBKEYS(subkey)` = `cmac_subkeys` | 7 |
+| `main.block.json` | `hex_to_bytes` 造 key/msg → 0/16/40/64 四个长度各调一次 → 一次子密钥 | 34 |
+| `cmac-rfc4493.project.json` | `ProjectRecord`（`files[]` + `entryFileId=file-main` + `metadata.aiHelper`） | — |
+
+41 块、9 种块类型、0 个仓库外块、0 个重复 id；构建确定性（块 id 按序编号、时间戳固定）。
+四个长度不是凑数：0 字节走「空消息 → K2」、16 字节走「整块 → K1」、40 字节走「不完整末块 → pad 后 K2」、
+64 字节走多整块——§6.2 的三条分支都踩到了。
+
+### 55.5 第 4 段读数：结构、生成、类型、向量
+
+| 项 | 读数 |
+|---|---|
+| 结构 | `files=2`、`entryMatches=true`、序列化块数 = 加载后块数（`7+34`） |
+| 符号表 | `CMAC_AES(key,msg)`、`CMAC_SUBKEYS(subkey)`，`errors=0` |
+| 生成 | python **171 行** / js **159 行**（`fnv1a64` `051a660d…` / `e11ea981…`） |
+| **typecheck** | **`pairs=32`、`ok=0`、`mismatch=0`、`unknown=32`**；归因 `coreBlockNoContract 17 / parentInputNoCheck 13 / childOutputNoCheck 2` |
+| 向量 | RFC 4493 §4 四条标签 + 一组子密钥，Python / JS 各 5 行全 PASS |
+| 阴性对照 | 16 字节消息截成 15 字节（末块改走 K2 分支）→ `f212d4c2…`，两侧 ≠ `070a16b4…`，PASS |
+
+这就是 §54.7.1 说的那处判据第一次被真正触达：**0 mismatch 成立、32 个 unknown 全部逐条归因**
+（`data_value` 无 `outputCheck` → `childOutputNoCheck`；过程形参走 `variables_get` → `coreBlockNoContract`；
+`pq_bytes_slice` 的 START/END 不设 check → `parentInputNoCheck`）。它仍然不是「类型全对」，
+只是「没有一对是错的」——这条区别在 §47.5 已经写死，这里只是换了一份非哈希语料。
+
+产物：[verify-project-readings-cmac.json](p4/verify-project-readings-cmac.json)（`5fdaaae9…`）。
+
+### 55.6 官方向量的独立复算（不靠自家生成器）
+
+工程里的 `expect` 若只跟自家生成器对账，就成「自己验自己」。所以另跑了一次独立复算：
+`python3` + `cryptography`（本机已装）用 `cmac.CMAC(AES(key))` 复算 0/16/40/64 四个标签，
+并用 `AES-ECB(K)` 算 L 后手写 `dbl`（×x + `0x87` 约减）算 K1/K2：
+
+| 项 | 独立复算 | 与工程里的常量 |
+|---|---|---|
+| 四条标签 | `bb1d6929…` / `070a16b4…` / `dfa66747…` / `51f0bebf…` | 全部相同 |
+| K1‖K2 | `fbeed618…` ‖ `f7ddac30…` | 相同（64 hex） |
+
+这条与 `tests/unit/cmac-block-contract.test.ts`、`demos/tests.json` 的
+`procedures/CMAC-AES.json` 条目三方同源；那两个入口走仓库门禁，独立复算是本轮的一次性取证。
+
+### 55.7 顺带抓到：FIPS 的 readings 记录已过时（不改，只记）
+
+重跑第 4 段时发现 `p4/verify-project-readings.json`（§47.5 的读数）与当前树对不上：
+
+| 项 | 记录（2026-11-17 19:27） | 现场 |
+|---|---|---|
+| js 行数 / fnv | 110 / `1db9ee7f…` | **111 / `132090af…`** |
+| `iterationProof.javascriptLoop` | `true` | **`false`** |
+
+原因是 `ctrl_iterate` 的 JS 生成在 commit `467ac72`（2026-11-17 23:03:28，「次数改为值输入」那一批）
+改了形状：现在的循环是
+`for (let i = 0, __ctrl_iterate_times__ = blocks; i < __ctrl_iterate_times__; i++)`，不再匹配
+`/for \(let i = 0; i < blocks; i\+\+\)/`。读数是在 19:27 生成的，23:04 随 `6dd490e` 提交，**中间隔着那次改生成器**。
+
+向量本身仍然 PASS（Python 与 JS 都出 `248d6a61…`），所以这是「记录过时」不是「回归」。本轮**没有**覆盖
+那份 readings：那份读数属于 §47 的切片，重生成会把 §47.5 写的 `javascriptLoop: true` 变成 `false`，
+需要连 §47.5 的表述一起改，属独立一轮。
+
+> 已由 §56 关闭。当时的预判是「重生成会把 `javascriptLoop` 变成 false」；实测是**不会**，
+> 但前提是先修掉检测器对旧出码形状的假阴性——否则那句 false 会被读成「JS 侧没有按 blocks 循环」。
+
+同批给 `verify-project.ts` 做了两处不改变判据的小改：① `iterationProof` 追加
+`pythonHasFor` / `javascriptHasFor`（弱形状：只说明生成代码里有 `for`，不区分画布组合与块内闭包——
+CMAC 的 `true/true` 就来自 `cmac_mac` 闭包，不是画布迭代）；② 阴性对照的日志标签从「单分组对照」
+改成「阴性对照」，因为 CMAC 的对照是「15 字节截断」，不是「单分组」。原有的四个 SHA-256 专用键**保留不动**。
+
+### 55.8 门禁
+
+| 项 | 结果 |
+|---|---|
+| `npx eslint scripts/p4-anchors.mjs scripts/p4-verdicts.ts scripts/p4-connect-probe.ts scripts/verify-project.ts` | **rc=0**，0 错误 0 警告 |
+| 临时 tsconfig `tsc --noEmit`（`types:["node"]`；含 `p4-verdicts.ts` / `p4-connect-probe.ts` / `verify-project.ts` / `ai-helper-contract.ts`） | **rc=0**。仓库没有 `@types/jsdom`，另加 `.tmp-build/jsdom.d.ts` 临时声明；顺带把 `verify-project.ts` 两处**只改类型**的写法收干净（`setLocale(...)` 显式窄化、`Blockly.Workspace` 命名空间改用 `Parameters<...>[1]`），运行时不变——下面「readings 重跑同哈希」即为其证据 |
+| FIPS `verdicts.json` 逐字节回归（`cmp`） | **IDENTICAL** |
+| CMAC 锚点产物 | 未变（`11d4f1b7…`） |
+| `build-project-cmac.py` 重跑 | 三个产物同哈希：`5e590621…` / `3b0a0dce…` / `71210105…` |
+| 探针重跑 | `189a9105…`，`cases=3 blocked=2 allowed=1 pass=3` |
+| `verify-project` 重跑 | `5fdaaae9…`，`PROJECT VECTOR PASS` |
+| `npm run lint:check`（整树） | **rc=0**（临时 `.tmp-build/jsdom.d.ts` 里先写了 `any`，被 `no-explicit-any` 抓到，改成 `Window & typeof globalThis` 后过；这条也算「门禁真的会开火」的一次实证） |
+| `npm run type-check`（`vue-tsc --noEmit`） | **rc=0** |
+| `npx vitest run tests/unit/cmac-block-contract.test.ts` | **7/7 通过**（工程里的向量与这条门禁同源，确认不是本试点自己编的期望值） |
+| 整树 `npm run verify:all` | 仍会先停在 `docs:index:check`（另一个会话的 docs 三文件，索引未重生成）；本轮只动 `scripts/` 与 `experiments/`，不代跑 |
+
+> 这一行是 §55 当时的树状态。10:39 那个会话把 docs 三文件与分类单测提交为 `b54f5f0` 之后，
+> §56.4 重生成索引，整树 `verify:all` 现在 **rc=0**（见 §56.5）。
+
+### 55.9 边界（本轮没做的）
+
+1. **SM4 路径没进试点**：`cmac_mac` 的 `CIPHER` 下拉有 SM4，本工程只用了 AES-128（向量来源只有 RFC 4493）。
+2. **§6.1 的分解仍未在画布上表达**：本轮只是把它从「能搭」改判成「不能搭并给出原因」，没有加
+   `Bytes→IntList` 转换块——那要动 `src/blocks`、双生成器与 224 块契约，是独立一轮。
+3. **`Tlen` 截断、VER 路径仍未表达**（沿用 §54 的 `claimBoundaries`）。
+4. ~~**FIPS readings 未重生成**（见 §55.7）~~ —— 已由 §56 关闭（读数重生成、§47.5 同步校正）。
+5. 语义等价仍 `unverified`；本工程不构成认证或标准符合性证据。
+
+## 56. 收尾：FIPS readings 重生成，先分清「读数变化」与「检测器假阴性」（2026-11-18 上午，接 §55）
+
+§55.7 把「§47.5 的 `javascriptLoop: true` 会变成 false」记成了待办。动手前先把两种可能分开：
+是生成代码不再按 blocks 循环（真变化），还是断言测不到今天的出码形状（假阴性）。结论是后者。
+
+### 56.1 先修检测器：旧形状断言已经是假阴性
+
+生成的 JS 现场第 97 行就是
+`for (let i = 0, __ctrl_iterate_times__ = blocks; i < __ctrl_iterate_times__; i++) {`——
+循环还在。断言 `/for \(let i = 0; i < blocks; i\+\+\)/` 只认 467ac72 之前的形状（那次把次数改成
+进循环前绑定，§48），所以它给出的 `false` 测的是断言自己，不是代码。
+
+改成两种 init 形状都接受、仍要求上界来自 `blocks`：
+
+```
+/for \(let i = 0(?:, __ctrl_iterate_times__ = blocks)?; i < (?:blocks|__ctrl_iterate_times__); i\+\+\)/
+```
+
+放宽成 `/for \(/` 也能让读数变 true，但那就测不到「按 blocks 迭代」了；所以同时给正负控制
+（node 一行脚本直接跑断言，`cases=5 fail=0`）：
+
+| 用例 | 文本 | 期望 | 实测 |
+|---|---|---|---|
+| 旧形状（467ac72 前） | `for (let i = 0; i < blocks; i++)` | true | PASS |
+| 现形状（467ac72 后） | `for (let i = 0, __ctrl_iterate_times__ = blocks; i < __ctrl_iterate_times__; i++)` | true | PASS |
+| 常量上界 | `for (let i = 0; i < 5; i++)` | false | PASS |
+| 别的变量 | `for (let i = 0; i < chunks; i++)` | false | PASS |
+| `var` 声明 | `for (var i = 0; i < blocks; i++)` | false | PASS |
+
+### 56.2 重生成：只差三处，判据与向量都不动
+
+`verify-project.ts` 对 FIPS 工程跑 `--exec --out` 重生成 `verify-project-readings.json`：
+
+| 键 | 提交版（11-17 19:27） | 重生成（11-18 10:37） |
+|---|---|---|
+| `generation.javascriptLines` | 110 | **111** |
+| `generation.javascriptFnv1a64` | `1db9ee7f…` | **`132090af…`** |
+| `generation.iterationProof` | 无 `*HasFor` 两键 | 追加 `pythonHasFor: true` / `javascriptHasFor: true` |
+| `pythonLines` / `pythonFnv1a64` | 90 / `cfb33505…` | 未变 |
+| `iterationProof.pythonLoop` / `javascriptLoop` | true / true | **true / true** |
+| `structure` / `symbols` / `typecheck` / `vector` / `pass` | — | 逐键未变（Python、JS 都 `248d6a61…`，阴性对照都 `85e655d6…`） |
+
+新产物 sha256 `1df52835…`。行数变化来自 §48 多出的那一行 `__ctrl_iterate_times__` 绑定，不是本轮改脚本引入的：
+同一工程在修检测器前后各跑一次，两份 JSON 除 `iterationProof.javascriptLoop`（false→true）外逐字节相同。
+
+同源控制：CMAC 工程在改动后重跑，读数 sha256 `5fdaaae9…` 与提交版**逐字节相同**——放宽正则没有
+改变另一份语料的读数（它的 `javascriptLoop` 仍是 false，因为它的循环在 `cmac_mac` 闭包里，不走 `ctrl_iterate`）。
+
+### 56.3 §47.5 校正
+
+第 4 段的「Python 90 行 / JS 110 行」改为 **JS 111 行**，并在表下补一条：重生成日期、fnv 变化、
+hasFor 两键，以及「`javascriptLoop` 仍是 true 的前提是先修掉假阴性」。
+`javascriptLoop: true` 那句本身不需要改——它当时对，现在也对，但**为什么仍然对**变了。
+
+§47.5 的两条判据修正（typecheck「0 unknown」不可达、L2 对 SHA-256 是死的）不受这次重生成影响。
+
+### 56.4 顺手把 Markdown 索引追平（另一会话的提交留下的）
+
+另一个会话 10:39 的 `b54f5f0`（docs 三文件 + 分类单测）落库后，`doc-index.json` 停在 08:04，
+`DOC_INDEX_CHECK` 报「语料 437 篇 `14a943a2…` ≠ 索引 `6caa0b16…`」。跑 `npm run docs:index` 重生成：
+
+```
+DOC_INDEX files=437 sections=4010 tokens=948178 terms=57867 postings=376331
+DOC_INDEX bytes=3.94MB hash=14a943a2909dde4d
+```
+
+这是机械重生成（没手改索引），追平后整树 `verify:all` 才可能往下走到其余门禁。
+
+### 56.5 门禁（整树实跑）
+
+| 项 | 结果 |
+|---|---|
+| FIPS `verify-project --exec` | **rc=0**，Python / JS 都 `248d6a61…`，阴性对照 `85e655d6…` 双语言 PASS |
+| CMAC `verify-project --exec` | **rc=0**，读数 `5fdaaae9…` 与提交版逐字节相同 |
+| 检测器正负控制 | `cases=5 fail=0`（§56.1 表） |
+| `npx eslint scripts/verify-project.ts .tmp-build/jsdom.d.ts` | **rc=0** |
+| 临时 tsconfig `tsc --noEmit` | **rc=0**（运行时不变，见 §56.2 的「逐字节相同」） |
+| **整树 `npm run verify:all`** | **rc=0**：`CONTRACT_GATE_SUMMARY errors=0 blocks=2151 checked=1641 native=510 types=137`、`DOC_INDEX_CHECK ok`、`FIELD_CHECK ok blocks=224`、`CLOSURE_CHECK ok names=226`、模板 29/29、`DEMO_SUMMARY total=60 pass=60 fail=0` |
+| `npm run lint:check` / `npm run type-check` | **rc=0**（0 错误 0 警告） / **rc=0** |
+
+### 56.6 边界
+
+语义等价仍 `unverified`；`javascriptLoop` 这类形状断言仍是**按出码文本匹配**，生成器再改形状还会假阴性——
+下次遇到读数翻转，先按 §56.1 的办法分辨「代码变了」还是「断言旧了」，再决定改哪一边。
+
