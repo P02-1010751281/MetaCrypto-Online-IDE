@@ -14,11 +14,11 @@ blockly 镜像线）产出，作者不在本会话；本会话只做审查，不
 
 | 组 | 提交 | 主路径 | 行数（新增） | 状态 |
 |---|---|---|---|---|
-| A1 MCLProver 写路径（12 笔） | 6883f4c 753761f 6a3a0e5 ee77619 1199395 4d364ba 9778b27 e6417bb 2574493 ef214c7（另含设计语料 5012546、评审记录 3ab5106 作对照） | `backend/owl_common/mclprover/`、`backend/sql/`、`tests/backend/`、`docs/design/`、`docs/reviews/` | +125,700 / −112 | A 已交（`A1-report.md` md5 `733537b9…`，230 行）→ 已过 A |
-| A2 blockly 镜像保真（6 笔） | 43b4e7c c83188f 3931f73 d7f7efd cfd2d13 31dad11 | `frontend/src/**` | +27,503 / −22,672 | A 已交（`A2-report.md` md5 `4113d72f…`，573 行）→ 已过 A |
-| A3 模块化插件契约（10 笔） | 8fa8202 10c07f3 c788045 0de15a6 f7e6130 68d09d9 1b7ef44 a316ffc 72b11eb f8010c0 | `frontend/src/features/**`、`backend/owl_admin/` | +17,566 / −2,572 | A 已交（`A3-report.md` md5 `be1d3ec8…`，369 行）→ 已过 A |
-| A4 保存契约与证据链（17 笔） | 214f7cc 94de158 5433eb1 c6d7506 82c5b33 ab4d88e 6f9e3fd 07c4fa6 4fac3d4 b8a4cb3 fbd3242 13b157a ccb1d82 25a1a93 3156575 13f413f 3b37da4 | `frontend/src`、`tests/`、`docs/MODULAR-PLUGIN-ARCHITECTURE.md`、`frontend/public` | +2,404 / −448 | A 已交（`A4-report.md` md5 `b0d30fc0…`，342 行）→ 已过 A |
-| A5 运维／安全／文档同步（5 笔） | ced4568 08c936b 502ed90 af99af8 17b36ac | `docker/`、`randomness/`、`docs/` | +3,525 / −1,290 | A 已交（`A5-report.md` md5 `e39acdc3…`，466 行）→ 已过 A |
+| A1 MCLProver 写路径（12 笔） | 6883f4c 753761f 6a3a0e5 ee77619 1199395 4d364ba 9778b27 e6417bb 2574493 ef214c7（另含设计语料 5012546、评审记录 3ab5106 作对照） | `backend/owl_common/mclprover/`、`backend/sql/`、`tests/backend/`、`docs/design/`、`docs/reviews/` | +125,700 / −112 | A 已交（`A1-report.md` md5 `733537b9…`，230 行）→ 裁决完成 |
+| A2 blockly 镜像保真（6 笔） | 43b4e7c c83188f 3931f73 d7f7efd cfd2d13 31dad11 | `frontend/src/**` | +27,503 / −22,672 | A 已交（`A2-report.md` md5 `4113d72f…`，573 行）→ 裁决完成 |
+| A3 模块化插件契约（10 笔） | 8fa8202 10c07f3 c788045 0de15a6 f7e6130 68d09d9 1b7ef44 a316ffc 72b11eb f8010c0 | `frontend/src/features/**`、`backend/owl_admin/` | +17,566 / −2,572 | A 已交（`A3-report.md` md5 `be1d3ec8…`，369 行）→ 裁决完成 |
+| A4 保存契约与证据链（17 笔） | 214f7cc 94de158 5433eb1 c6d7506 82c5b33 ab4d88e 6f9e3fd 07c4fa6 4fac3d4 b8a4cb3 fbd3242 13b157a ccb1d82 25a1a93 3156575 13f413f 3b37da4 | `frontend/src`、`tests/`、`docs/MODULAR-PLUGIN-ARCHITECTURE.md`、`frontend/public` | +2,404 / −448 | A 已交（`A4-report.md` md5 `b0d30fc0…`，342 行）→ 裁决完成 |
+| A5 运维／安全／文档同步（5 笔） | ced4568 08c936b 502ed90 af99af8 17b36ac | `docker/`、`randomness/`、`docs/` | +3,525 / −1,290 | A 已交（`A5-report.md` md5 `e39acdc3…`，466 行）→ 裁决完成 |
 
 派单时更正过两处计数：A1 原写 13 笔实为 12；`f8010c0` 首轮漏派，已补进 A3（原 9 笔变 10 笔）。
 口径说明（两种量法，别混用）：
@@ -47,6 +47,12 @@ blockly 镜像线）产出，作者不在本会话；本会话只做审查，不
   metacrypt 由 178→179（同上）。**无 A 席写入**。
 - 10:05 起派 B1（A1+A5 只读复核）、B2（A2+A3+A4 只读复核）。
 
-## 结算
+## 结算（2026-11-19 10:20）
 
-（待 B 与主线程复现后填）
+- **对象指纹**：50 笔 patch md5 逐笔重算，**0 漂移**（`OBJECTS.md5.txt` 自身 md5 `ab450721…` 未变）。
+- **席位**：A1–A5 五席、B1–B2 两席，均只读；两仓 status 除主线程自己的两处修复外 0 新增。
+- **B 复核口径**：B1 17 条 / B2 28 条，合计 **45 条判定**：holds 31、partially 11、does_not_hold 3（另主线程独立判掉 A4 的「实际口令」1 条）→ **算错合计 10 条**。
+- **四分流**：真缺陷 **21**（阻塞 3 + 缺陷 18）、算错 **10**、编造 **0**、无法判定 **3**。
+- **编造率 0/45 = 0%**；reviewer 过强率 10/45 ≈ 22%。
+- 门禁（改完实跑，CipherCat）：`standards:check` 0 错误、`standards:inventory` OK、`docs:check-links` 445 链接 / 0 断。
+- 落库：CipherCat `db571e5`（口径修正 + 两轮审计归档）、metacrypt `93f3ddc`（同一句镜像修正，master 已快进）。
