@@ -1,0 +1,54 @@
+# 对抗层第二轮冻结对象 2026-11-19
+# 范围：metacrypt_server ae1e499..17b36ac 中除已审 3 笔（bd0b09f/917f16e/d7a02ea）以外的 50 笔
+# 指纹：git diff <c>^ <c> | md5sum（整笔 patch，不受工作区影响）
+
+4e4cc52ca10f38a146f52c984d32ef10  8fa8202  chore(wip): freeze modular plugin workspace baseline
+10f2f3a003296b036280eb85f136c767  10c07f3  feat(blockly): add UI contribution registry contract
+508c2a2d425ce8301d11fcf103c7e0aa  c788045  feat(blockly): add workspace session state machine
+0ec8f4df9c23c0f62ca09c0d806210f0  0de15a6  feat(assessment): define analysis task state contract
+6f1ac5b4d96893227833d3460d7d96f1  f7e6130  feat(blockly): define algorithm descriptor registry
+cd4b3e3cd4f05e20dab630ee05e574d3  68d09d9  feat(provider): define staged analysis provider contracts
+6a1b0e138f4e133f0c8ffd5e6fcbcd93  1b7ef44  feat(blockly): register built-in algorithm packages
+5617a07a6cbb7ab68d27cb5920c192d9  a316ffc  refactor(assessment): unify task display status handling
+3a8af74686d357b317be79de73ca5aa4  72b11eb  refactor(blockly): extract built-in UI contributions
+3ec331a1497136e6fbe0425664862e88  f8010c0  feat(randomness): route staged analysis providers
+1efd1ca51c0cb2ca673da10bdcfb5d01  214f7cc  refactor(blockly): drive workspace saves through session state
+a5f628a7d7569779a2af6a3bc4c374d3  94de158  docs(architecture): document modular plugin contracts
+f627cdf12e12903f999bb11a66eab9ff  5433eb1  fix(blockly): preserve workspace state on failed switches
+bb5d85d41274ba252f5466ca11894ef5  c6d7506  fix(backend): satisfy full type-check gate
+b6ede6b1a432fa2578ce68a4d3bcfc2e  82c5b33  test(e2e): capture modular workspace smoke evidence
+875fec70720979fa02c25a26c3517f32  ab4d88e  docs(architecture): record final workspace verification
+0ae5e759779913f9b04227addf4bdc96  6f9e3fd  fix(blockly): track dirty state when autosave is disabled
+57200d495cd0955f1d71a98186057207  07c4fa6  test(workspace): persist modular verification evidence
+97d629d005e072da7f9756ae8eec4e08  4fac3d4  fix(blockly): preserve edits made during an in-flight save
+b2ddbc2191179fcbfce6e5a76b1436cc  b8a4cb3  test(workspace): record verification provenance
+973032d2d330642a0256d04be31a3249  fbd3242  fix(blockly): flush dirty files before bundle save
+5e788ffd3989da55adba0c98f3518df8  13b157a  docs(workspace): document multi-file save guarantees
+ad40a7853184f931938fe42a699873a2  ccb1d82  fix(workspace): enforce clean multi-file save contract
+7ceb16fda10d70f3bfc39a8375f1227b  25a1a93  docs(workspace): record save contract verification
+d9da6f71f642a470791502e1b3aa636f  3156575  test(workspace): strengthen retry and permission regressions
+351aa616a90e1848e08bfea21ac1c793  13f413f  test(workspace): refresh final save evidence
+8b6b9f938f11eb2abd52c1639ac8cdaf  ced4568  build(docker): parameterize GPU build inputs
+eb8f2d04a472b7816720fc504d03cdf8  08c936b  fix(randomness): refresh detector and add NIST fixture
+cf80480e51463e5f6495e7ccfe90b4d5  3b37da4  test(e2e): wait for toolbox readiness
+b386f30c4f1b699b6ef35715ef59aa53  31dad11  style(frontend): apply lint autofixes
+4ace0df4ce6728c2e598bf3f10ebfa4b  502ed90  docs: 同步 CipherCat 文档目录重组，删除 backend/docs 冗余副本
+8ef2814e905a794416d4a7afa6728a3f  3931f73  chore(sync): 镜像区对齐 CipherCat（locale/migration 改目录结构）
+0de137a418a6a2e184ac7fda0015c105  d7f7efd  chore(sync): 纳入运行链与 ProjectStore 端口（此前整目录未跟踪）
+f6cd49b4393e4d068b93043b5d44d9ae  c83188f  sync(blockly): 镜像 CipherCat 的 procedure 拆分与生成器 prelude
+af508bf3836a50a77099ab076cb37c3e  af99af8  docs(sync): 同步 CipherCat 文档（procedure 路径引用与标准页更新）
+db09fb88193144d2aaf01c3667c49614  43b4e7c  sync(blockly): 镜像 CipherCat v2.0.0 的包边界与面板 chrome，运行链收敛到 runtime/
+36708f765560a55a0d99f77b1c268a5b  cfd2d13  sync(blockly): 镜像 CipherCat 的 arr_append / ctrl_range 与循环端点改造
+652f92456ae53493a265545d1b8cef1e  5012546  docs(mclprover): 引入 v1 设计语料、三门禁工具与冻结向量
+c0f19a96ebf5697114439185e586677d  3ab5106  docs(mclprover): 实现计划与设计评审轮次记录
+ff4e4707469839f2e05a5d012a595410  6883f4c  feat(mclprover): 引入 owl_common.mclprover 写路径包（34 模块 / 36k 行）
+a564f303b98cf466a30523971f95ad3f  753761f  feat(sql-mclprover): 16–31 号迁移（MySQL/PostgreSQL 双方言）
+97b768af9c0b2e839a13c8f8cbbaf3e3  ef214c7  test(mclprover): 单测 + 真库契约套件 + 冻结绑定门禁
+45d17c826429b9b61a04c66f40761aad  6a3a0e5  feat(sql-mclprover): 32 号族令牌 ALTER，补 claim 并带幂等守卫
+ab58efb508e3c571c6d872572cad6b57  2574493  test(mclprover): 32 号接入真库套件 + 存量库前后对咬 + 门禁文档更正
+aac0ff4c4ac8c34ab4420aefaf126ec7  9778b27  feat(mclprover): 冻结事件归 ClaimRevision 回执 + claim 两个摘要域登记，向量集 24→26
+60bb8af8cae9a4e3691e5648741811e9  e6417bb  test(mclprover): claim:freeze 用例起点改为 ready_to_freeze，对齐 05 §3 修订级冻结
+e2958697c0f9212b3ec63fd03542ecc8  1199395  feat(mclprover): 封 compiled_claim/protected-core 成员集，claim_revision 请求与响应行入册
+766f01ceb8cec6a258f997dd8c450b9d  ee77619  feat(mclprover): 迁移 33/34 + claim_revision 纯函数，第一刀表形落地
+580d76bc7a4480c1c5e537b508c793b7  4d364ba  feat(mclprover): claim_revision 冻结 writer + 回执第 21 个 kind + 重放重建器
+f24c2c668eeda58ee2dd24b2a4cda0e6  17b36ac  docs: 同步编辑器壳对齐页的结构数字与 CONFORMANCE 口径句

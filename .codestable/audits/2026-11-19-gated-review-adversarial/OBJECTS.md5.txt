@@ -1,0 +1,65 @@
+# 对抗层冻结对象清单 2026-11-19
+
+每个文件的指纹取自其**提交内 blob**：`git cat-file blob <commit>:<path> | md5sum`，
+因此不受工作区并发改动影响；结算前重算本清单 md5 并比对。
+
+## CipherCat @ 7b57abd
+e3d6baa1641ee296472d6ee7e46d2ed3  docs/guides/AI-HELPER.en.md@7b57abd
+b228f0e5a3c6bbeb16e9ad23ab53a469  docs/guides/AI-HELPER.md@7b57abd
+74a991721eb48831117c110481bd4e33  experiments/ai-helper-2026-11-14/RESULTS.md@7b57abd
+737437b80625dc01feafea8ed021b50d  experiments/ai-helper-2026-11-14/out/doc-index.json@7b57abd
+fb14a8f9c7d6b032b4ae709d7263a7b4  src/components/ai-helper/AnswerSection.vue@7b57abd
+ac306a5c22621648ecabdbe5358130f4  src/composables/model-failure-text.ts@7b57abd
+791da6449bfd18904cac570773654020  src/composables/useModelAnswer.ts@7b57abd
+737437b80625dc01feafea8ed021b50d  src/services/ai-helper/doc-index.json@7b57abd
+2fb50996ef596b86f0e3d7187e0d84c8  src/services/ai-helper/model/index.ts@7b57abd
+83ea432005c9f097ecb9cc67b21d61de  src/services/ai-helper/model/mock.ts@7b57abd
+291837c5b6db6170baf2ba45a2b51e66  src/services/ai-helper/model/notes.ts@7b57abd
+e5f9633ee35fd0d1ac7f50ede7ea468f  src/services/ai-helper/model/provider.ts@7b57abd
+fcba1de17b613bf3cfd4d4d672e45bee  src/services/ai-helper/model/types.ts@7b57abd
+3d1daba9a9ea0d7070900ad03a56115a  src/services/ai-helper/model/verify.ts@7b57abd
+a5ca3053b7f59866bb316d70e1b63972  tests/unit/ai-helper-model-failure-text.test.ts@7b57abd
+c8081c6402c59d5fdd040cdec7adb52d  tests/unit/ai-helper-model-notes.test.ts@7b57abd
+beeb121325fa5d4feae2c81b8fc7d321  tests/unit/ai-helper-model-provider.test.ts@7b57abd
+4e0e5c5197ba647ece3bee0f0fd7636f  tests/unit/ai-helper-model.test.ts@7b57abd
+
+## CipherCat @ 1272230
+8066e00472d2e948a170d917862f1bb9  scripts/sync-docs-to-metacrypt.sh@1272230
+
+## metacrypt_server @ bd0b09f
+ab373052d5adc3b3ee6d854e2d070881  frontend/src/features/blockly/core/utils/locale/ui-messages.ts@bd0b09f
+
+## metacrypt_server @ 917f16e
+b033e27695704f31828cff6c2e01026d  docs/INDEX.md@917f16e
+87559f730c9f9880633eb35f776c3368  docs/blocks/BLOCK-IO-CONTRACT.json@917f16e
+5df65116db0354d697de975f7fc0faa2  docs/blocks/INDEX.en.md@917f16e
+12c1c2c67e4eb8f071e6e383589cb340  docs/blocks/INDEX.md@917f16e
+60786d46dda1d0835200e4568909bbb3  docs/blocks/data-encoding.en.md@917f16e
+de57ecec861864ca86242333b7287803  docs/blocks/data-encoding.md@917f16e
+da05ae1a72872e99220b4dff3abfd484  docs/blocks/ecc-sbox.en.md@917f16e
+02fb8a3e51f0b74480b69120a9855854  docs/blocks/ecc-sbox.md@917f16e
+e3d6baa1641ee296472d6ee7e46d2ed3  docs/guides/AI-HELPER.en.md@917f16e
+b228f0e5a3c6bbeb16e9ad23ab53a469  docs/guides/AI-HELPER.md@917f16e
+f5ce7dbfc14d7e30bda5a42a1e3392fb  docs/guides/METACRYPT-SYNC.en.md@917f16e
+1b07a6c4bfd4979967b29d53e9ba657a  docs/guides/METACRYPT-SYNC.md@917f16e
+dd8ba9ad75862ef912a5e68b01861a00  docs/research/AI-HELPER-RESEARCH-2026-11-13.md@917f16e
+7d8d0f5e6b7ab44c4971eb09c6c41550  docs/research/CRYPTO-RESEARCH-2026-09-12.md@917f16e
+012fb4593867a573f1a9b1c6589372c6  docs/research/CRYPTO-RESEARCH-2026-09.md@917f16e
+f27d80d37548c5101d637c21899f9ab1  docs/standards/CONFORMANCE-INVENTORY.md@917f16e
+30d68c9a771911e8e158d1a871130c9a  docs/standards/COVERAGE.en.md@917f16e
+de418c2babcdedce2789a38fe77aa377  docs/standards/COVERAGE.md@917f16e
+d85bbc43293a56cc28b49a58eb2afa48  docs/standards/DOCUMENT-STATUS.en.md@917f16e
+42658fad4d7017a7dd4d5162d1370c3e  docs/standards/DOCUMENT-STATUS.md@917f16e
+ce45ec9af4cdba875a4416e7624a5da8  docs/standards/PRODUCT-CERTIFICATION-FEASIBILITY.en.md@917f16e
+06840e7994dc9fadcfb5a8a97fac3588  docs/standards/PRODUCT-CERTIFICATION-FEASIBILITY.md@917f16e
+c5677736a0fa5c639cc5e349e50def8f  docs/standards/sp800-38b-cmac/SPEC-CARD.json@917f16e
+8e4facd5aff9d9ece79cce41195768a4  docs/standards/sp800-38c-ccm/SPEC-CARD.json@917f16e
+45f3d75a825e6e8a834cc6347a8146cf  docs/standards/sp800-38e-xts/SPEC-CARD.json@917f16e
+
+## metacrypt_server @ d7a02ea
+94c9f1cb3a5087c060ae552190b10ca5  frontend/src/features/docs/utils/docsCatalog.ts@d7a02ea
+df927a9691bb355525902b7551c79f95  frontend/src/features/docs/utils/docsTaxonomyLabels.ts@d7a02ea
+41ffe93d1eb2dbe922d913eb4ebca936  frontend/src/features/docs/utils/markdown.ts@d7a02ea
+adb350d1919ce45b1dba998c83ac5610  frontend/src/features/docs/views/DocsView.css@d7a02ea
+45948ce1b0bab059d710a0ac89e398ad  frontend/src/features/docs/views/DocsView.vue@d7a02ea
+
