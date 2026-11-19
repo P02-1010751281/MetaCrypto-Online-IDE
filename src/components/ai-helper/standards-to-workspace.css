@@ -537,3 +537,15 @@
   flex-wrap: wrap;
   gap: 6px;
 }
+
+/* ── 选条目后的空态（浮条自己在 standards-entry-bar.css） ── */
+.stw-empty {
+  margin: 0;
+  padding: 10px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-subtle);
+}

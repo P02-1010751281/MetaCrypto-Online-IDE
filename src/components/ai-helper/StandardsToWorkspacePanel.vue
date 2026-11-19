@@ -38,24 +38,18 @@
         <p v-if="error" class="stw-error">{{ uiFormat('stwError', { message: error }) }}</p>
         <p v-else-if="!index" class="stw-loading">{{ ui('loading') }}</p>
 
-        <template v-else-if="standard">
-          <!-- 标准切片：目前两份，切换只换数据，不换视图结构。 -->
-          <div class="stw-standards" role="tablist" :aria-label="ui('standardsToWorkspace')">
-            <button
-              v-for="item in index.standards"
-              :key="item.standard.id"
-              type="button"
-              role="tab"
-              class="stw-standard"
-              :class="{ active: item.standard.id === standard.standard.id }"
-              :aria-selected="item.standard.id === standard.standard.id"
-              @click="selectStandard(item.standard.id)"
-            >
-              <span class="stw-standard-name">{{ item.standard.name }}</span>
-              <span class="stw-standard-meta">{{ item.standard.version ? `${item.standard.version} · ` : '' }}{{ item.standard.source_checked_at }}</span>
-            </button>
-          </div>
+        <template v-else>
+          <!-- 选条目在面板之外：没选中时只给引导，不替用户选第一条。 -->
+          <StandardsEntryBar
+            :standards="entryStandards"
+            :active-id="standard?.standard.id ?? ''"
+            :note="matchNote"
+            @select="selectStandard"
+          />
 
+          <p v-if="!standard" class="stw-empty">{{ ui('stwPickEmpty') }}</p>
+
+          <template v-if="standard">
           <dl class="stw-counts">
             <div v-for="tier in TIERS" :key="tier" class="stw-count" :class="`stw-count--${tier}`">
               <dt>{{ tierLabel(tier) }}</dt>
@@ -207,6 +201,7 @@
           <p class="stw-provenance">
             {{ uiFormat('stwProvenance', { path: standard.inputs.anchorsSource?.path ?? '—', hash: sourceHash }) }}
           </p>
+          </template>
         </template>
       </div>
     </div>
@@ -221,6 +216,8 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+import StandardsEntryBar from '@/components/ai-helper/StandardsEntryBar.vue';
+import { useStandardsIntake } from '@/components/ai-helper/useStandardsIntake';
 import { ui, uiFormat } from '@/composables/locale';
 import { openPilotProject } from '@/services/ai-helper/pilotProjects';
 import {
@@ -251,10 +248,12 @@ import {
   type VerdictsIndex,
 } from '@/services/ai-helper/verdicts';
 
-defineProps<{
+const props = defineProps<{
   visible: boolean;
   /** docked：停靠进左栏；缺省（窄屏）是遮罩浮层。 */
   docked?: boolean;
+  /** 单入口带来的文档：**只用于匹配与提示**，不参与判据（像哪份 ≠ 就是那份）。 */
+  intake?: { name?: string; text?: string } | null;
 }>();
 
 const emit = defineEmits<{
@@ -268,6 +267,15 @@ const index = ref<VerdictsIndex | null>(null);
 const error = ref('');
 const activeStandardId = ref('');
 const expandedClauseId = ref('');
+/** 单入口带来的匹配：预选与说明都归组合式函数，面板只负责切到它选中的那一条。 */
+const { entryStandards, matchNote, applyIntake, clearNote } = useStandardsIntake({
+  index,
+  intake: () => props.intake,
+  onPick: (id) => {
+    activeStandardId.value = id;
+    expandedClauseId.value = '';
+  },
+});
 
 /* 试点工程：制品只在点击后读入；「本机已有同一份」的覆盖确认与签核表单互不相干。 */
 const router = useRouter();
@@ -285,7 +293,8 @@ const noteDraft = ref('');
 const standard = computed<StandardVerdict | null>(() => {
   const loaded = index.value;
   if (!loaded) return null;
-  return loaded.standards.find((item) => item.standard.id === activeStandardId.value) ?? loaded.standards[0];
+  // 没有选中就是没有：这里**不回退到第一条**，否则等于替用户选了 SHA-2。
+  return loaded.standards.find((item) => item.standard.id === activeStandardId.value) ?? null;
 });
 
 const summary = computed(() =>
@@ -314,7 +323,7 @@ onMounted(async () => {
   try {
     const loaded = await loadVerdictsIndex();
     index.value = loaded;
-    activeStandardId.value = loaded.standards[0].standard.id;
+    applyIntake();
   } catch (loadError) {
     error.value = (loadError as Error).message;
   }
@@ -322,6 +331,8 @@ onMounted(async () => {
 
 function selectStandard(id: string): void {
   activeStandardId.value = id;
+  // 用户自己点的：之前的「按你带来的内容匹配到 X」不再成立。
+  clearNote();
   expandedClauseId.value = '';
   dismissPilotConfirm();
   pilotError.value = '';

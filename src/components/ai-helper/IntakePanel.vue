@@ -120,7 +120,7 @@ defineProps<{
 const emit = defineEmits<{
   (e: 'close'): void;
   (e: 'route-code', payload: { source: string; name: string }): void;
-  (e: 'route-doc', payload: { name: string }): void;
+  (e: 'route-doc', payload: { name: string; text: string }): void;
 }>();
 
 /** 与 B 线面板同一口径：参考实现通常几十 KB，超过 2 MB 多半是选错了文件。 */
@@ -200,7 +200,8 @@ function confirm(): void {
     emit('route-code', { source: source.value, name: fileName.value });
     return;
   }
-  emit('route-doc', { name: fileName.value });
+  // 文档路由带上正文：A 线只用它按编号认条目，二进制（PDF/DOCX）本来就没读，这里自然是空串。
+  emit('route-doc', { name: fileName.value, text: source.value });
 }
 </script>
 

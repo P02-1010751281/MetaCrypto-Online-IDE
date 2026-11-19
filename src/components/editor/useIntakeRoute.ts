@@ -12,11 +12,15 @@ import { ref } from 'vue';
 
 import { ui } from '@/composables/locale';
 
-export interface IntakePayload {
-  readonly kind: 'doc' | 'code';
-  readonly source: string;
-  readonly name: string;
-}
+/**
+ * 单入口路由的两种载荷。
+ *
+ * 代码带正文（B 线预填）；文档带文件名 + **可读正文**——A 线只用它按标准编号认条目，
+ * 二进制（PDF/DOCX）在单入口里就没读正文，这里自然是空串，也就认不出条目。
+ */
+export type IntakeRoutePayload =
+  | { readonly kind: 'code'; readonly source: string; readonly name: string }
+  | { readonly kind: 'doc'; readonly name: string; readonly text: string };
 
 interface Options {
   /** 切到目标面板（`code` / `standards`）。 */
@@ -33,17 +37,25 @@ export function useIntakeRoute(options: Options) {
    */
   const codeIntake = ref<{ source: string; name: string } | null>(null);
 
-  function onIntakeRoute(payload: IntakePayload): void {
+  /**
+   * 路由过来的文档：同样只留到 A 线面板消费为止。
+   * 不缓存「上次匹配到哪份标准」——那是面板的状态，留一份在这里迟早会和面板不同步。
+   */
+  const docIntake = ref<{ name: string; text: string } | null>(null);
+
+  function onIntakeRoute(payload: IntakeRoutePayload): void {
     options.showSidebar();
     if (payload.kind === 'code') {
       codeIntake.value = { source: payload.source, name: payload.name };
+      docIntake.value = null;
       options.openPanel('code');
       return;
     }
     codeIntake.value = null;
+    docIntake.value = { name: payload.name, text: payload.text };
     options.openPanel('standards');
     options.notify(ui('intakeDocHint'), 6000);
   }
 
-  return { codeIntake, onIntakeRoute };
+  return { codeIntake, docIntake, onIntakeRoute };
 }

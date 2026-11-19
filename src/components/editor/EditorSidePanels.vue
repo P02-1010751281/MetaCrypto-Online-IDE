@@ -31,7 +31,7 @@
     :docked="!narrow"
     @close="emit('close')"
     @route-code="(payload) => emit('intake-route', { kind: 'code', ...payload })"
-    @route-doc="(payload) => emit('intake-route', { kind: 'doc', source: '', ...payload })"
+    @route-doc="(payload) => emit('intake-route', { kind: 'doc', ...payload })"
   />
   <CodeToWorkspaceDialog
     v-else-if="activePanel === 'code'"
@@ -46,6 +46,7 @@
     v-else-if="activePanel === 'standards'"
     :visible="true"
     :docked="!narrow"
+    :intake="docIntake"
     @close="emit('close')"
     @open-source="(payload) => emit('open-source', payload)"
   />
@@ -67,6 +68,7 @@ import CryptoFunctionPanel from '@/components/CryptoFunctionPanel.vue';
 import ProjectPanel from '@/components/editor/ProjectPanel.vue';
 import type { DocHit } from '@/services/ai-helper/doc-search';
 import type { SerializedWorkspace } from '@/services/ai-helper/reverse';
+import type { IntakeRoutePayload } from './useIntakeRoute';
 import type { EditorPanel } from './useEditorPanels';
 
 defineProps<{
@@ -77,6 +79,8 @@ defineProps<{
   blockCount: number;
   /** 单入口路由过来的代码正文：非空时 B 线面板预填它。 */
   intake: { source: string; name: string } | null;
+  /** 单入口路由过来的文档：A 线面板只用它按编号认条目，并给出「匹配≠核对」的说明。 */
+  docIntake: { name: string; text: string } | null;
 }>();
 
 const emit = defineEmits<{
@@ -86,6 +90,6 @@ const emit = defineEmits<{
   (e: 'browse-all-docs', query: string): void;
   (e: 'apply-workspace', state: SerializedWorkspace): void;
   (e: 'open-source', payload: { doc: string; line: number }): void;
-  (e: 'intake-route', payload: { kind: 'doc' | 'code'; source: string; name: string }): void;
+  (e: 'intake-route', payload: IntakeRoutePayload): void;
 }>();
 </script>

@@ -27,6 +27,7 @@
         :workspace="currentWorkspace"
         :block-count="blockCount"
         :intake="codeIntake"
+        :doc-intake="docIntake"
         @close="closePanel"
         @project-renamed="onProjectRenamed"
         @open-doc-hit="onOpenDocHit"
@@ -356,7 +357,7 @@ const { openCodeToWorkspace, onApplyReversedWorkspace } = useCodeToWorkspaceImpo
 });
 
 /** A/B 单入口（PLAN P5）：判别在面板里，这里只管路由与预填（细节在组合式函数里）。 */
-const { codeIntake, onIntakeRoute } = useIntakeRoute({
+const { codeIntake, docIntake, onIntakeRoute } = useIntakeRoute({
   openPanel,
   showSidebar: () => {
     sidebarVisible.value = true;

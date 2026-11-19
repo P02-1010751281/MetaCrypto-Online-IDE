@@ -115,7 +115,9 @@ The syntax-tree parser is the Pyodide Python runtime inside the browser (about 1
 
 ## 6. Standards → workspace (preview + human sign-off)
 
-The entry point of line A (standard text → workspace) is reached by routing from the single entry once the content is judged a document; it pre-fills no specific standard, because line A only covers standards and papers registered in the repository. It lays out "standard slices → clause units → three tiers" for a person to read and **generates no workspace**; next to the tiers it records a **human sign-off**: who signed or rejected which clause, when, with an optional note, and the verdict fingerprint at that moment.
+The entry point of line A (standard text → workspace) is reached by routing from the single entry once the content is judged a document. It does **not pick an entry for you**: the panel first lists the three registered standards and, until one is chosen, only shows guidance. Two separate actions help you choose. **Matching by designation** answers only "which registered standard does what you brought look like": when the text or file name carries a designation or algorithm name such as `FIPS 180-4`, `800-38B` or `CMAC`, the panel pre-selects that entry and states that this only reads the designation, not that your copy is the registered source. **Checking a file** answers "is it the same bytes": it hashes a local file with sha256 and compares it with the registered source, selects the entry on a match, and reports a mismatch explicitly rather than guessing. Neither action splits arbitrary text into clauses: the tiers hold for the registered source only, and importing an arbitrary PDF generates no new verdicts.
+
+It lays out "standard slices → clause units → three tiers" for a person to read and **generates no workspace**; next to the tiers it records a **human sign-off**: who signed or rejected which clause, when, with an optional note, and the verdict fingerprint at that moment.
 
 | View | What it answers |
 |---|---|

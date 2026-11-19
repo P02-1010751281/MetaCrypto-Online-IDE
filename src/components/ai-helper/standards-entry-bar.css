@@ -1,0 +1,139 @@
+/* 选条目浮条的样式。为什么不复用面板那份：面板的 <style> 是 scoped，
+   不会作用到子组件的元素上——写在那边只会渲染成裸文本。 */
+
+.stw-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.stw-standards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 6px;
+}
+
+.stw-standard {
+  /* grid item 默认 min-width:auto，里面的 nowrap 文本会把轨道顶宽、卡片越出面板。 */
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.stw-standard:hover {
+  border-color: var(--color-border-hover);
+  background: var(--color-bg-hover);
+}
+
+.stw-standard.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.stw-standard-name {
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stw-standard-meta {
+  min-width: 0;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stw-entry-note {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.stw-entry-note--hit {
+  color: var(--color-primary);
+}
+
+.stw-entry-note--miss {
+  color: var(--color-warning);
+}
+
+.stw-entry-note--hint {
+  color: var(--color-text-secondary);
+}
+
+.stw-entry-empty {
+  margin: 0;
+  padding: 10px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-subtle);
+}
+
+.stw-verify {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.stw-verify-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stw-verify-result {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.stw-verify-result--ok {
+  color: var(--color-success);
+}
+
+.stw-verify-result--mismatch,
+.stw-verify-result--error {
+  color: var(--color-danger);
+}
+
+/* 与面板里的 .stw-btn 同一套观感（子组件拿不到那份 scoped 规则）。 */
+.stw-btn {
+  padding: 3px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.stw-btn:hover:not(:disabled) {
+  border-color: var(--color-border-hover);
+  background: var(--color-bg-hover);
+}
+
+.stw-btn:disabled {
+  color: var(--color-text-tertiary);
+  cursor: not-allowed;
+}
