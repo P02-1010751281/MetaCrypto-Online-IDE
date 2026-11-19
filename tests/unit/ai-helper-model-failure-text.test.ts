@@ -18,14 +18,15 @@
 import { describe, expect, it } from 'vitest';
 
 import { VERIFY_VIOLATION_KEYS, modelFailureTexts } from '@/composables/model-failure-text';
-import { UI_MESSAGES } from '@/composables/locale/ui-messages';
+import { UI_MESSAGES_EN } from '@/composables/locale/ui-messages-en';
+import { UI_MESSAGES_ZH_HANS } from '@/composables/locale/ui-messages-zh';
 import type { ModelFailure } from '@/composables/useModelAnswer';
 import { applySelection } from '@/services/ai-helper/model/apply';
 import type { RewriteRequest, RewriteResult } from '@/services/ai-helper/model/types';
 import type { RewriteViolationCode } from '@/services/ai-helper/model/verify';
 
-const zh = UI_MESSAGES['zh-hans'];
-const en = UI_MESSAGES.en;
+const zh = UI_MESSAGES_ZH_HANS;
+const en = UI_MESSAGES_EN;
 
 /** 假 locale：key 原样返回，断言的是「选了哪一句」而不是文案内容。 */
 const context = { text: (key: string) => `[${key}]`, status: (status: number) => `[status:${status}]` };

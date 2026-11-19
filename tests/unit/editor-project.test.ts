@@ -76,7 +76,7 @@ describe('useEditorProject saving', () => {
     const project = useEditorProject({
       getWorkspaceXml: () => workspace,
       language: ref('python'),
-      loadWorkspaceXml: () => true,
+      loadWorkspace: () => true,
       onWorkspaceChange: () => () => {},
       clearWorkspace: () => {},
     });
@@ -107,7 +107,7 @@ describe('useEditorProject saving', () => {
         project = useEditorProject({
           getWorkspaceXml: () => '<xml></xml>',
           language: ref('python'),
-          loadWorkspaceXml: () => true,
+          loadWorkspace: () => true,
           onWorkspaceChange: () => () => {},
           clearWorkspace: () => {},
         });
@@ -144,7 +144,7 @@ describe('useEditorProject saving', () => {
         project = useEditorProject({
           getWorkspaceXml: () => '<xml></xml>',
           language: ref('python'),
-          loadWorkspaceXml: () => false,
+          loadWorkspace: () => false,
           onWorkspaceChange: () => () => {},
           clearWorkspace: () => {},
         });
@@ -180,7 +180,7 @@ describe('useEditorProject saving', () => {
         project = useEditorProject({
           getWorkspaceXml: () => '<xml>w</xml>',
           language: ref('python'),
-          loadWorkspaceXml: () => true,
+          loadWorkspace: () => true,
           onWorkspaceChange: () => () => {},
           clearWorkspace: () => {},
         });
@@ -236,7 +236,7 @@ describe('useEditorProject saving', () => {
         project = useEditorProject({
           getWorkspaceXml: () => workspace,
           language: ref('python'),
-          loadWorkspaceXml: (xml) => {
+          loadWorkspace: (xml) => {
             workspace = xml;
             return true;
           },
@@ -267,6 +267,99 @@ describe('useEditorProject saving', () => {
     });
   });
 
+  it('按入口文件自己的 format 载入多文件工程（JSON 不能当 XML 解析）', async () => {
+    route.value!.params = { id: '9' };
+    getProject.mockResolvedValueOnce({
+      id: 9,
+      name: 'CCM pilot',
+      language: 'python',
+      format: 'json',
+      workspace: '{"blocks":{"blocks":[]}}',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+      files: [
+        {
+          fileId: 'file-algo',
+          name: 'algo.ccm.block.json',
+          format: 'json',
+          workspace: '{"blocks":{"blocks":[]}}',
+        },
+        {
+          fileId: 'file-main',
+          name: 'main.block.json',
+          format: 'json',
+          isEntry: true,
+          workspace: '{"blocks":{"blocks":[]}}',
+        },
+      ],
+      entryFileId: 'file-main',
+    });
+
+    const loaded: Array<{ payload: string; format?: string }> = [];
+    let project!: ReturnType<typeof useEditorProject>;
+    const app = createApp({
+      setup() {
+        project = useEditorProject({
+          getWorkspaceXml: () => '',
+          language: ref('python'),
+          loadWorkspace: (payload, format) => {
+            loaded.push({ payload, format });
+            return true;
+          },
+          onWorkspaceChange: () => () => {},
+          clearWorkspace: () => {},
+          applyProject: (record) => {
+            const entry = record.files?.find((file) => file.fileId === record.entryFileId);
+            return { workspace: entry?.workspace ?? '', format: entry?.format };
+          },
+        });
+        return () => h('div');
+      },
+    });
+    mountApp(app);
+    await vi.advanceTimersByTimeAsync(100);
+
+    // 试点工程这类 JSON 工程此前被一律按 XML 载入：DOMParser 报错、画布被清空、状态「加载失败」。
+    expect(loaded).toHaveLength(1);
+    expect(loaded[0].format).toBe('json');
+    expect(project.projectId.value).toBe(9);
+    expect(project.saveStatus.value).toBe('saved');
+  });
+
+  it('没有 applyProject 钩子时退回项目记录的 format', async () => {
+    route.value!.params = { id: '10' };
+    getProject.mockResolvedValueOnce({
+      id: 10,
+      name: 'json single',
+      language: 'python',
+      format: 'json',
+      workspace: '{"blocks":{"blocks":[]}}',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    });
+
+    const loaded: Array<{ format?: string }> = [];
+    const app = createApp({
+      setup() {
+        useEditorProject({
+          getWorkspaceXml: () => '',
+          language: ref('python'),
+          loadWorkspace: (_payload, format) => {
+            loaded.push({ format });
+            return true;
+          },
+          onWorkspaceChange: () => () => {},
+          clearWorkspace: () => {},
+        });
+        return () => h('div');
+      },
+    });
+    mountApp(app);
+    await vi.advanceTimersByTimeAsync(100);
+
+    expect(loaded).toEqual([{ format: 'json' }]);
+  });
+
   it('locks editing after navigation approval until the target project loads', async () => {
     route.value!.params = { id: '7' };
     getProject
@@ -294,7 +387,7 @@ describe('useEditorProject saving', () => {
         project = useEditorProject({
           getWorkspaceXml: () => '<xml>first</xml>',
           language: ref('python'),
-          loadWorkspaceXml: () => true,
+          loadWorkspace: () => true,
           onWorkspaceChange: () => () => {},
           clearWorkspace: () => {},
         });
@@ -334,7 +427,7 @@ describe('useEditorProject saving', () => {
     let workspace = '<xml>before</xml>';
     let onChange!: () => void;
     let project!: ReturnType<typeof useEditorProject>;
-    const loadWorkspaceXml = vi.fn((xml: string) => {
+    const loadWorkspace = vi.fn((xml: string) => {
       workspace = xml;
       return true;
     });
@@ -343,7 +436,7 @@ describe('useEditorProject saving', () => {
         project = useEditorProject({
           getWorkspaceXml: () => workspace,
           language: ref('python'),
-          loadWorkspaceXml,
+          loadWorkspace,
           onWorkspaceChange: (handler) => {
             onChange = handler;
             return () => {};
@@ -369,7 +462,7 @@ describe('useEditorProject saving', () => {
     await nextTick();
 
     expect(workspace).toBe('<xml>user edit</xml>');
-    expect(loadWorkspaceXml).not.toHaveBeenCalled();
+    expect(loadWorkspace).not.toHaveBeenCalled();
     expect(project.projectId.value).toBe(7);
     expect(project.saveStatus.value).toBe('unsaved');
     expect(await project.doSave()).toBe(true);
@@ -401,7 +494,7 @@ describe('useEditorProject saving', () => {
         project = useEditorProject({
           getWorkspaceXml: () => workspace,
           language: ref('python'),
-          loadWorkspaceXml: (xml) => { workspace = xml; return true; },
+          loadWorkspace: (xml) => { workspace = xml; return true; },
           onWorkspaceChange: (handler) => { onChange = handler; return () => {}; },
           clearWorkspace: () => { workspace = ''; },
         });
@@ -442,7 +535,7 @@ describe('useEditorProject saving', () => {
         project = useEditorProject({
           getWorkspaceXml: () => '<xml>edited</xml>',
           language: ref('python'),
-          loadWorkspaceXml: () => true,
+          loadWorkspace: () => true,
           onWorkspaceChange: () => () => {},
           clearWorkspace: () => {},
         });
@@ -479,7 +572,7 @@ describe('useEditorProject saving', () => {
         project = useEditorProject({
           getWorkspaceXml: () => workspace,
           language: ref('python'),
-          loadWorkspaceXml: (xml) => { workspace = xml; return true; },
+          loadWorkspace: (xml) => { workspace = xml; return true; },
           onWorkspaceChange: (handler) => { onChange = handler; return () => {}; },
           clearWorkspace,
         });
@@ -531,7 +624,7 @@ describe('useEditorProject saving', () => {
         project = useEditorProject({
           getWorkspaceXml: () => '<xml/>',
           language: ref('python'),
-          loadWorkspaceXml: () => true,
+          loadWorkspace: () => true,
           onWorkspaceChange: () => () => {},
           clearWorkspace,
         });
@@ -588,7 +681,7 @@ describe('useEditorProject saving', () => {
         project = useEditorProject({
           getWorkspaceXml: () => '<xml/>',
           language: ref('python'),
-          loadWorkspaceXml: () => true,
+          loadWorkspace: () => true,
           onWorkspaceChange: () => () => {},
           clearWorkspace: () => {},
         });
@@ -649,7 +742,7 @@ describe('useEditorProject saving', () => {
         project = useEditorProject({
           getWorkspaceXml: () => '<xml>first</xml>',
           language: ref('python'),
-          loadWorkspaceXml: () => true,
+          loadWorkspace: () => true,
           onWorkspaceChange: () => () => {},
           clearWorkspace: () => {},
         });
@@ -705,7 +798,7 @@ describe('useEditorProject saving', () => {
         project = useEditorProject({
           getWorkspaceXml: () => '<xml>first</xml>',
           language: ref('python'),
-          loadWorkspaceXml: () => true,
+          loadWorkspace: () => true,
           onWorkspaceChange: () => () => {},
           clearWorkspace: () => {},
         });
@@ -752,7 +845,7 @@ describe('useEditorProject saving', () => {
     const project = useEditorProject({
       getWorkspaceXml: () => '<xml/>',
       language: ref('python'),
-      loadWorkspaceXml: () => true,
+      loadWorkspace: () => true,
       onWorkspaceChange: () => () => {},
       clearWorkspace: () => {},
     });
@@ -803,7 +896,7 @@ describe('useEditorProject saving', () => {
         project = useEditorProject({
           getWorkspaceXml: () => workspace,
           language: ref('python'),
-          loadWorkspaceXml: (xml) => {
+          loadWorkspace: (xml) => {
             workspace = xml;
             return true;
           },
@@ -870,7 +963,7 @@ describe('useEditorProject saving', () => {
         project = useEditorProject({
           getWorkspaceXml: () => '<xml>current</xml>',
           language: ref('python'),
-          loadWorkspaceXml: () => true,
+          loadWorkspace: () => true,
           onWorkspaceChange: () => () => {},
           clearWorkspace: () => {},
         });
@@ -911,7 +1004,7 @@ describe('useEditorProject saving', () => {
         project = useEditorProject({
           getWorkspaceXml: () => workspace,
           language: ref('python'),
-          loadWorkspaceXml: () => true,
+          loadWorkspace: () => true,
           onWorkspaceChange: () => () => {},
           clearWorkspace: () => {},
         });
@@ -942,7 +1035,7 @@ describe('useEditorProject saving', () => {
         project = useEditorProject({
           getWorkspaceXml: () => '<xml>recoverable</xml>',
           language: ref('python'),
-          loadWorkspaceXml: () => true,
+          loadWorkspace: () => true,
           onWorkspaceChange: () => () => {},
           clearWorkspace: () => {},
         });
@@ -979,7 +1072,7 @@ describe('useEditorProject saving', () => {
         project = useEditorProject({
           getWorkspaceXml: () => '<xml>saved</xml>',
           language,
-          loadWorkspaceXml: () => true,
+          loadWorkspace: () => true,
           onWorkspaceChange: () => () => {},
           clearWorkspace: () => {},
         });

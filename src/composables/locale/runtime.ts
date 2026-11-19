@@ -8,7 +8,7 @@ import { MESSAGES_EN } from './messages-en';
 import { MESSAGES_ZH_HANS } from './messages-zh';
 import { BLOCKLY_OVERRIDES_ZH_HANS } from './overrides';
 import { BLOCKLY_LOCALES, type BlocklyLocale } from './types';
-import { uiLocaleRef } from './ui';
+import { loadUIMessages, uiLocaleRef } from './ui';
 
 const currentLocale = ref<BlocklyLocale>('zh-hans');
 const isLocaleInitialized = ref(false);
@@ -45,7 +45,12 @@ export function useBlocklyLocale() {
     return 'en';
   };
 
-  const setLocale = (locale: BlocklyLocale): void => {
+  /**
+   * 切换语言：语言包是懒加载的 chunk，先取回再应用，否则切换后 `ui()` 会退回键名。
+   * 调用方需要 await（或 allow-floating），保证切换与重绘顺序可控。
+   */
+  const setLocale = async (locale: BlocklyLocale): Promise<void> => {
+    await loadUIMessages(locale);
     applyLocale(locale);
   };
 

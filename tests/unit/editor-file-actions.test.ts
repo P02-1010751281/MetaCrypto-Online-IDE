@@ -88,7 +88,7 @@ function setup(project = TWO_FILE_PROJECT) {
     notify,
     afterWorkspaceSwitch,
   });
-  const entryWorkspace = actions.applyProject(project);
+  const entryWorkspace = actions.applyProject(project).workspace;
   return {
     actions,
     calls,

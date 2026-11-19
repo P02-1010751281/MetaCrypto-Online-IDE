@@ -20,14 +20,15 @@ import { join, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { ui, uiLocaleRef } from '@/composables/locale';
-import { UI_MESSAGES } from '@/composables/locale/ui-messages';
+import { UI_MESSAGES_EN } from '@/composables/locale/ui-messages-en';
+import { UI_MESSAGES_ZH_HANS } from '@/composables/locale/ui-messages-zh';
 
 const PROJECT_ROOT = process.cwd();
 const SRC_ROOT = join(PROJECT_ROOT, 'src');
 const CJK = /[\u4e00-\u9fff]/;
 
-const zh = UI_MESSAGES['zh-hans'];
-const en = UI_MESSAGES.en;
+const zh = UI_MESSAGES_ZH_HANS;
+const en = UI_MESSAGES_EN;
 
 interface UiKeyUsage {
   key: string;

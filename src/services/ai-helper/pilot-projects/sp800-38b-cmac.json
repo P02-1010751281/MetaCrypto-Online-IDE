@@ -1,0 +1,281 @@
+{
+  "name": "NIST SP 800-38B CMAC（src a1e96171）",
+  "language": "python",
+  "format": "json",
+  "createdAt": "2026-11-18T10:00:00.000Z",
+  "updatedAt": "2026-11-18T10:00:00.000Z",
+  "files": [
+    {
+      "fileId": "file-algo-cmac",
+      "name": "algo.cmac.block.json",
+      "format": "json",
+      "workspace": "{\n \"blocks\": {\n  \"languageVersion\": 0,\n  \"blocks\": [\n   {\n    \"type\": \"procedures_defreturn\",\n    \"id\": \"procedures_defreturn_004\",\n    \"x\": 40,\n    \"y\": 40,\n    \"extraState\": {\n     \"params\": [\n      {\n       \"name\": \"key\",\n       \"id\": \"algo_param_key\",\n       \"type\": \"bytes\"\n      },\n      {\n       \"name\": \"msg\",\n       \"id\": \"algo_param_msg\",\n       \"type\": \"bytes\"\n      }\n     ],\n     \"hasStatements\": false\n    },\n    \"fields\": {\n     \"NAME\": \"CMAC_AES\"\n    },\n    \"inputs\": {\n     \"RETURN\": {\n      \"block\": {\n       \"type\": \"cmac_mac\",\n       \"id\": \"cmac_mac_003\",\n       \"fields\": {\n        \"CIPHER\": \"aes\"\n       },\n       \"inputs\": {\n        \"KEY\": {\n         \"block\": {\n          \"type\": \"variables_get\",\n          \"id\": \"variables_get_001\",\n          \"fields\": {\n           \"VAR\": {\n            \"id\": \"algo_param_key\",\n            \"name\": \"key\"\n           }\n          }\n         }\n        },\n        \"MSG\": {\n         \"block\": {\n          \"type\": \"variables_get\",\n          \"id\": \"variables_get_002\",\n          \"fields\": {\n           \"VAR\": {\n            \"id\": \"algo_param_msg\",\n            \"name\": \"msg\"\n           }\n          }\n         }\n        }\n       }\n      }\n     }\n    }\n   },\n   {\n    \"type\": \"procedures_defreturn\",\n    \"id\": \"procedures_defreturn_007\",\n    \"x\": 40,\n    \"y\": 320,\n    \"extraState\": {\n     \"params\": [\n      {\n       \"name\": \"subkey\",\n       \"id\": \"sub_param_subkey\",\n       \"type\": \"bytes\"\n      }\n     ],\n     \"hasStatements\": false\n    },\n    \"fields\": {\n     \"NAME\": \"CMAC_SUBKEYS\"\n    },\n    \"inputs\": {\n     \"RETURN\": {\n      \"block\": {\n       \"type\": \"cmac_subkeys\",\n       \"id\": \"cmac_subkeys_006\",\n       \"inputs\": {\n        \"KEY\": {\n         \"block\": {\n          \"type\": \"variables_get\",\n          \"id\": \"variables_get_005\",\n          \"fields\": {\n           \"VAR\": {\n            \"id\": \"sub_param_subkey\",\n            \"name\": \"subkey\"\n           }\n          }\n         }\n        }\n       }\n      }\n     }\n    }\n   }\n  ]\n }\n}"
+    },
+    {
+      "fileId": "file-main",
+      "name": "main.block.json",
+      "format": "json",
+      "isEntry": true,
+      "workspace": "{\n \"blocks\": {\n  \"languageVersion\": 0,\n  \"blocks\": [\n   {\n    \"type\": \"variables_set\",\n    \"id\": \"variables_set_010\",\n    \"fields\": {\n     \"VAR\": {\n      \"id\": \"main_var_key\",\n      \"name\": \"key\"\n     }\n    },\n    \"inputs\": {\n     \"VALUE\": {\n      \"block\": {\n       \"type\": \"hex_to_bytes\",\n       \"id\": \"hex_to_bytes_009\",\n       \"inputs\": {\n        \"INPUT\": {\n         \"block\": {\n          \"type\": \"data_value\",\n          \"id\": \"data_value_008\",\n          \"fields\": {\n           \"NUM\": \"\\\"2b7e151628aed2a6abf7158809cf4f3c\\\"\"\n          }\n         }\n        }\n       }\n      }\n     }\n    },\n    \"next\": {\n     \"block\": {\n      \"type\": \"variables_set\",\n      \"id\": \"variables_set_013\",\n      \"fields\": {\n       \"VAR\": {\n        \"id\": \"main_var_msg\",\n        \"name\": \"msg\"\n       }\n      },\n      \"inputs\": {\n       \"VALUE\": {\n        \"block\": {\n         \"type\": \"hex_to_bytes\",\n         \"id\": \"hex_to_bytes_012\",\n         \"inputs\": {\n          \"INPUT\": {\n           \"block\": {\n            \"type\": \"data_value\",\n            \"id\": \"data_value_011\",\n            \"fields\": {\n             \"NUM\": \"\\\"6bc1bee22e409f96e93d7e117393172aae2d8a571e03ac9c9eb76fac45af8e5130c81c46a35ce411e5fbc1191a0a52eff69f2445df4f9b17ad2b417be66c3710\\\"\"\n            }\n           }\n          }\n         }\n        }\n       }\n      },\n      \"next\": {\n       \"block\": {\n        \"type\": \"variables_set\",\n        \"id\": \"variables_set_020\",\n        \"fields\": {\n         \"VAR\": {\n          \"id\": \"main_var_tag0\",\n          \"name\": \"tag0\"\n         }\n        },\n        \"inputs\": {\n         \"VALUE\": {\n          \"block\": {\n           \"type\": \"procedures_callreturn\",\n           \"id\": \"procedures_callreturn_019\",\n           \"fields\": {\n            \"NAME\": \"CMAC_AES\"\n           },\n           \"extraState\": {\n            \"params\": [\n             {\n              \"name\": \"key\",\n              \"id\": \"main_call_key_tag0\",\n              \"type\": \"bytes\"\n             },\n             {\n              \"name\": \"msg\",\n              \"id\": \"main_call_msg_tag0\",\n              \"type\": \"bytes\"\n             }\n            ]\n           },\n           \"inputs\": {\n            \"ARG0\": {\n             \"block\": {\n              \"type\": \"variables_get\",\n              \"id\": \"variables_get_018\",\n              \"fields\": {\n               \"VAR\": {\n                \"id\": \"main_var_key\",\n                \"name\": \"key\"\n               }\n              }\n             }\n            },\n            \"ARG1\": {\n             \"block\": {\n              \"type\": \"pq_bytes_slice\",\n              \"id\": \"pq_bytes_slice_017\",\n              \"inputs\": {\n               \"INPUT\": {\n                \"block\": {\n                 \"type\": \"variables_get\",\n                 \"id\": \"variables_get_014\",\n                 \"fields\": {\n                  \"VAR\": {\n                   \"id\": \"main_var_msg\",\n                   \"name\": \"msg\"\n                  }\n                 }\n                }\n               },\n               \"START\": {\n                \"block\": {\n                 \"type\": \"data_value\",\n                 \"id\": \"data_value_015\",\n                 \"fields\": {\n                  \"NUM\": \"0\"\n                 }\n                }\n               },\n               \"END\": {\n                \"block\": {\n                 \"type\": \"data_value\",\n                 \"id\": \"data_value_016\",\n                 \"fields\": {\n                  \"NUM\": \"0\"\n                 }\n                }\n               }\n              }\n             }\n            }\n           }\n          }\n         }\n        },\n        \"next\": {\n         \"block\": {\n          \"type\": \"variables_set\",\n          \"id\": \"variables_set_027\",\n          \"fields\": {\n           \"VAR\": {\n            \"id\": \"main_var_tag16\",\n            \"name\": \"tag16\"\n           }\n          },\n          \"inputs\": {\n           \"VALUE\": {\n            \"block\": {\n             \"type\": \"procedures_callreturn\",\n             \"id\": \"procedures_callreturn_026\",\n             \"fields\": {\n              \"NAME\": \"CMAC_AES\"\n             },\n             \"extraState\": {\n              \"params\": [\n               {\n                \"name\": \"key\",\n                \"id\": \"main_call_key_tag16\",\n                \"type\": \"bytes\"\n               },\n               {\n                \"name\": \"msg\",\n                \"id\": \"main_call_msg_tag16\",\n                \"type\": \"bytes\"\n               }\n              ]\n             },\n             \"inputs\": {\n              \"ARG0\": {\n               \"block\": {\n                \"type\": \"variables_get\",\n                \"id\": \"variables_get_025\",\n                \"fields\": {\n                 \"VAR\": {\n                  \"id\": \"main_var_key\",\n                  \"name\": \"key\"\n                 }\n                }\n               }\n              },\n              \"ARG1\": {\n               \"block\": {\n                \"type\": \"pq_bytes_slice\",\n                \"id\": \"pq_bytes_slice_024\",\n                \"inputs\": {\n                 \"INPUT\": {\n                  \"block\": {\n                   \"type\": \"variables_get\",\n                   \"id\": \"variables_get_021\",\n                   \"fields\": {\n                    \"VAR\": {\n                     \"id\": \"main_var_msg\",\n                     \"name\": \"msg\"\n                    }\n                   }\n                  }\n                 },\n                 \"START\": {\n                  \"block\": {\n                   \"type\": \"data_value\",\n                   \"id\": \"data_value_022\",\n                   \"fields\": {\n                    \"NUM\": \"0\"\n                   }\n                  }\n                 },\n                 \"END\": {\n                  \"block\": {\n                   \"type\": \"data_value\",\n                   \"id\": \"data_value_023\",\n                   \"fields\": {\n                    \"NUM\": \"16\"\n                   }\n                  }\n                 }\n                }\n               }\n              }\n             }\n            }\n           }\n          },\n          \"next\": {\n           \"block\": {\n            \"type\": \"variables_set\",\n            \"id\": \"variables_set_034\",\n            \"fields\": {\n             \"VAR\": {\n              \"id\": \"main_var_tag40\",\n              \"name\": \"tag40\"\n             }\n            },\n            \"inputs\": {\n             \"VALUE\": {\n              \"block\": {\n               \"type\": \"procedures_callreturn\",\n               \"id\": \"procedures_callreturn_033\",\n               \"fields\": {\n                \"NAME\": \"CMAC_AES\"\n               },\n               \"extraState\": {\n                \"params\": [\n                 {\n                  \"name\": \"key\",\n                  \"id\": \"main_call_key_tag40\",\n                  \"type\": \"bytes\"\n                 },\n                 {\n                  \"name\": \"msg\",\n                  \"id\": \"main_call_msg_tag40\",\n                  \"type\": \"bytes\"\n                 }\n                ]\n               },\n               \"inputs\": {\n                \"ARG0\": {\n                 \"block\": {\n                  \"type\": \"variables_get\",\n                  \"id\": \"variables_get_032\",\n                  \"fields\": {\n                   \"VAR\": {\n                    \"id\": \"main_var_key\",\n                    \"name\": \"key\"\n                   }\n                  }\n                 }\n                },\n                \"ARG1\": {\n                 \"block\": {\n                  \"type\": \"pq_bytes_slice\",\n                  \"id\": \"pq_bytes_slice_031\",\n                  \"inputs\": {\n                   \"INPUT\": {\n                    \"block\": {\n                     \"type\": \"variables_get\",\n                     \"id\": \"variables_get_028\",\n                     \"fields\": {\n                      \"VAR\": {\n                       \"id\": \"main_var_msg\",\n                       \"name\": \"msg\"\n                      }\n                     }\n                    }\n                   },\n                   \"START\": {\n                    \"block\": {\n                     \"type\": \"data_value\",\n                     \"id\": \"data_value_029\",\n                     \"fields\": {\n                      \"NUM\": \"0\"\n                     }\n                    }\n                   },\n                   \"END\": {\n                    \"block\": {\n                     \"type\": \"data_value\",\n                     \"id\": \"data_value_030\",\n                     \"fields\": {\n                      \"NUM\": \"40\"\n                     }\n                    }\n                   }\n                  }\n                 }\n                }\n               }\n              }\n             }\n            },\n            \"next\": {\n             \"block\": {\n              \"type\": \"variables_set\",\n              \"id\": \"variables_set_038\",\n              \"fields\": {\n               \"VAR\": {\n                \"id\": \"main_var_tag64\",\n                \"name\": \"tag64\"\n               }\n              },\n              \"inputs\": {\n               \"VALUE\": {\n                \"block\": {\n                 \"type\": \"procedures_callreturn\",\n                 \"id\": \"procedures_callreturn_037\",\n                 \"fields\": {\n                  \"NAME\": \"CMAC_AES\"\n                 },\n                 \"extraState\": {\n                  \"params\": [\n                   {\n                    \"name\": \"key\",\n                    \"id\": \"main_call_key_tag64\",\n                    \"type\": \"bytes\"\n                   },\n                   {\n                    \"name\": \"msg\",\n                    \"id\": \"main_call_msg_tag64\",\n                    \"type\": \"bytes\"\n                   }\n                  ]\n                 },\n                 \"inputs\": {\n                  \"ARG0\": {\n                   \"block\": {\n                    \"type\": \"variables_get\",\n                    \"id\": \"variables_get_036\",\n                    \"fields\": {\n                     \"VAR\": {\n                      \"id\": \"main_var_key\",\n                      \"name\": \"key\"\n                     }\n                    }\n                   }\n                  },\n                  \"ARG1\": {\n                   \"block\": {\n                    \"type\": \"variables_get\",\n                    \"id\": \"variables_get_035\",\n                    \"fields\": {\n                     \"VAR\": {\n                      \"id\": \"main_var_msg\",\n                      \"name\": \"msg\"\n                     }\n                    }\n                   }\n                  }\n                 }\n                }\n               }\n              },\n              \"next\": {\n               \"block\": {\n                \"type\": \"variables_set\",\n                \"id\": \"variables_set_041\",\n                \"fields\": {\n                 \"VAR\": {\n                  \"id\": \"main_var_subkeys\",\n                  \"name\": \"subkeys\"\n                 }\n                },\n                \"inputs\": {\n                 \"VALUE\": {\n                  \"block\": {\n                   \"type\": \"procedures_callreturn\",\n                   \"id\": \"procedures_callreturn_040\",\n                   \"fields\": {\n                    \"NAME\": \"CMAC_SUBKEYS\"\n                   },\n                   \"extraState\": {\n                    \"params\": [\n                     {\n                      \"name\": \"subkey\",\n                      \"id\": \"main_call_subkey\",\n                      \"type\": \"bytes\"\n                     }\n                    ]\n                   },\n                   \"inputs\": {\n                    \"ARG0\": {\n                     \"block\": {\n                      \"type\": \"variables_get\",\n                      \"id\": \"variables_get_039\",\n                      \"fields\": {\n                       \"VAR\": {\n                        \"id\": \"main_var_key\",\n                        \"name\": \"key\"\n                       }\n                      }\n                     }\n                    }\n                   }\n                  }\n                 }\n                }\n               }\n              }\n             }\n            }\n           }\n          }\n         }\n        }\n       }\n      }\n     }\n    }\n   }\n  ]\n }\n}"
+    }
+  ],
+  "entryFileId": "file-main",
+  "metadata": {
+    "aiHelper": {
+      "schemaVersion": 1,
+      "kind": "standards-to-project",
+      "standard": {
+        "id": "sp800-38b-cmac",
+        "name": "NIST SP 800-38B",
+        "version": "38B",
+        "source_url": "https://csrc.nist.gov/pubs/sp/800/38/b/final",
+        "source_checked_at": "2026-09-12",
+        "artifacts": [
+          {
+            "path": "NIST.SP.800-38B.pdf",
+            "sha256": "da9dc0f1e1f08af917caf4a831a7497cf18997b8046353af89570a812f1ec5a2"
+          }
+        ]
+      },
+      "source": {
+        "path": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+        "lines": 1000,
+        "sha256": "a1e96171e2c31baaf3338a19f68135c12d67b124ceb9b0aae59430b8130cc0d6"
+      },
+      "anchors": [
+        {
+          "clauseId": "01-CMAC#§6",
+          "entryId": "01-CMAC",
+          "entryPath": "docs/standards/sp800-38b-cmac/01-CMAC.md",
+          "section": "6",
+          "expandedFrom": null,
+          "anchorLevel": "line",
+          "clickable": true,
+          "matchesDeclared": false,
+          "click": {
+            "doc": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+            "line_start": 552,
+            "line_end": 759
+          },
+          "source": {
+            "path": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+            "line_start": 552,
+            "line_end": 759,
+            "heading": "CMAC Specification",
+            "firstLine": "                                                                                             6     CMAC Specification",
+            "slice_sha256": "43430801b9f315abd0d4aa592f67dbe440d9308d8374d7f2248816001f8c2d5d"
+          },
+          "reason": null
+        },
+        {
+          "clauseId": "02-Subkeys#§6.1",
+          "entryId": "02-Subkeys",
+          "entryPath": "docs/standards/sp800-38b-cmac/02-Subkeys.md",
+          "section": "6.1",
+          "expandedFrom": null,
+          "anchorLevel": "line",
+          "clickable": true,
+          "matchesDeclared": true,
+          "click": {
+            "doc": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+            "line_start": 568,
+            "line_end": 599
+          },
+          "source": {
+            "path": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+            "line_start": 568,
+            "line_end": 599,
+            "heading": "Subkey Generation",
+            "firstLine": "                                                                                             6.1    Subkey Generation",
+            "slice_sha256": "05f5166ec6443dd59cc3349770f58b307ef7b65f7774b26278a1c35fd1d39bb8"
+          },
+          "reason": null
+        },
+        {
+          "clauseId": "03-MAC#§6.2",
+          "entryId": "03-MAC",
+          "entryPath": "docs/standards/sp800-38b-cmac/03-MAC.md",
+          "section": "6.2",
+          "expandedFrom": null,
+          "anchorLevel": "line",
+          "clickable": true,
+          "matchesDeclared": true,
+          "click": {
+            "doc": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+            "line_start": 600,
+            "line_end": 712
+          },
+          "source": {
+            "path": "docs/standards/sp800-38b-cmac/00-Standard-Source.md",
+            "line_start": 600,
+            "line_end": 712,
+            "heading": "MAC Generation",
+            "firstLine": "                                                                                             6.2    MAC Generation",
+            "slice_sha256": "bb819847428c2c89ca20d2e7e8b98d0b0611301517df6ea09e93ff29584975fe"
+          },
+          "reason": null
+        }
+      ],
+      "coverage": {
+        "clauses": 3,
+        "build": 0,
+        "partial": 3,
+        "missing": 0,
+        "evidenceLayers": {
+          "L1": 3,
+          "L2": 0,
+          "L3": 0,
+          "none": 0
+        },
+        "clausesWithSameVariantL2": 3,
+        "gaps": [
+          {
+            "clauseId": "01-CMAC",
+            "gaps": [
+              "§6 步骤「最后块掩码（整块 xor K1；空消息/不完整块 pad 后 xor K2）」只在生成器闭包里，画布无法逐步核"
+            ]
+          },
+          {
+            "clauseId": "02-Subkeys",
+            "gaps": [
+              "§6.1 的四步在画布上拼不出来：L 的产物是 Bytes、cmac_double 入口是 IntList，画布拒绝这次连接且没有转换块（p4/connect-probe-sp800-38b.json 三条用例：两条被拒 + Bytes→cmac_mac 正对照通过）",
+              "§6.1 步骤「L = CIPH_K(0^b)」只在生成器闭包里，画布无法逐步核",
+              "§6.1 步骤「MSB1(L)=0 → K1=L<<1，否则 K1=(L<<1) xor Rb」只在生成器闭包里，画布无法逐步核",
+              "§6.1 步骤「MSB1(K1)=0 → K2=K1<<1，否则 K2=(K1<<1) xor Rb」只在生成器闭包里，画布无法逐步核"
+            ]
+          },
+          {
+            "clauseId": "03-MAC",
+            "gaps": [
+              "§6.2 步骤「Mn* 整块 → Mn=K1 xor Mn*；否则 Mn=K2 xor (Mn*‖1‖0^j)」只在生成器闭包里，画布无法逐步核"
+            ]
+          }
+        ],
+        "semantic_equivalence": "unverified"
+      },
+      "verdicts": [
+        {
+          "clauseId": "01-CMAC",
+          "tier": "partial",
+          "tierReason": "mixed-steps",
+          "evidenceLayer": "L1",
+          "steps": {
+            "total": 4,
+            "canvas": 3,
+            "internal": 1,
+            "none": 0
+          },
+          "gaps": [
+            "§6 步骤「最后块掩码（整块 xor K1；空消息/不完整块 pad 后 xor K2）」只在生成器闭包里，画布无法逐步核"
+          ]
+        },
+        {
+          "clauseId": "02-Subkeys",
+          "tier": "partial",
+          "tierReason": "mixed-steps",
+          "evidenceLayer": "L1",
+          "steps": {
+            "total": 4,
+            "canvas": 1,
+            "internal": 3,
+            "none": 0
+          },
+          "gaps": [
+            "§6.1 的四步在画布上拼不出来：L 的产物是 Bytes、cmac_double 入口是 IntList，画布拒绝这次连接且没有转换块（p4/connect-probe-sp800-38b.json 三条用例：两条被拒 + Bytes→cmac_mac 正对照通过）",
+            "§6.1 步骤「L = CIPH_K(0^b)」只在生成器闭包里，画布无法逐步核",
+            "§6.1 步骤「MSB1(L)=0 → K1=L<<1，否则 K1=(L<<1) xor Rb」只在生成器闭包里，画布无法逐步核",
+            "§6.1 步骤「MSB1(K1)=0 → K2=K1<<1，否则 K2=(K1<<1) xor Rb」只在生成器闭包里，画布无法逐步核"
+          ]
+        },
+        {
+          "clauseId": "03-MAC",
+          "tier": "partial",
+          "tierReason": "mixed-steps",
+          "evidenceLayer": "L1",
+          "steps": {
+            "total": 8,
+            "canvas": 7,
+            "internal": 1,
+            "none": 0
+          },
+          "gaps": [
+            "§6.2 步骤「Mn* 整块 → Mn=K1 xor Mn*；否则 Mn=K2 xor (Mn*‖1‖0^j)」只在生成器闭包里，画布无法逐步核"
+          ]
+        }
+      ],
+      "tests": {
+        "py": {
+          "driver": "print(bytes(tag0).hex())\nprint(bytes(tag16).hex())\nprint(bytes(tag40).hex())\nprint(bytes(tag64).hex())\nprint(bytes(subkeys).hex())",
+          "expect": "bb1d6929e95937287fa37d129b756746\n070a16b46b4d4144f79bdd9dd04a287c\ndfa66747de9ae63030ca32611497c827\n51f0bebf7e3b9d92fc49741779363cfe\nfbeed618357133667c85e08f7236a8def7ddac306ae266ccf90bc11ee46d513b"
+        },
+        "js": {
+          "driver": "[tag0, tag16, tag40, tag64, subkeys].forEach(function (v) { console.log(Buffer.from(v).toString('hex')); });",
+          "expect": "bb1d6929e95937287fa37d129b756746\n070a16b46b4d4144f79bdd9dd04a287c\ndfa66747de9ae63030ca32611497c827\n51f0bebf7e3b9d92fc49741779363cfe\nfbeed618357133667c85e08f7236a8def7ddac306ae266ccf90bc11ee46d513b"
+        },
+        "vector": {
+          "name": "RFC 4493 §4 (AES-128)",
+          "key": "2b7e151628aed2a6abf7158809cf4f3c",
+          "message": "6bc1bee22e409f96e93d7e117393172aae2d8a571e03ac9c9eb76fac45af8e5130c81c46a35ce411e5fbc1191a0a52eff69f2445df4f9b17ad2b417be66c3710",
+          "lengths": [
+            0,
+            16,
+            40,
+            64
+          ],
+          "tags": {
+            "tag0": "bb1d6929e95937287fa37d129b756746",
+            "tag16": "070a16b46b4d4144f79bdd9dd04a287c",
+            "tag40": "dfa66747de9ae63030ca32611497c827",
+            "tag64": "51f0bebf7e3b9d92fc49741779363cfe"
+          },
+          "subkeys": "fbeed618357133667c85e08f7236a8def7ddac306ae266ccf90bc11ee46d513b",
+          "note": "0 字节走 K2 空消息分支，16 字节走 K1 整块分支，40 字节不完整末块，64 字节多整块。"
+        },
+        "formattingGap": "标签是 Bytes；hex 格式化在 driver 里做（画布上有 bytes_to_hex，但本试点不在 entry 里绕一圈）。",
+        "control": {
+          "note": "15 字节对照：末块由「整块 xor K1」改走「pad 后 xor K2」，输出必须 ≠ 16 字节官方向量",
+          "mustDifferFrom": "070a16b46b4d4144f79bdd9dd04a287c",
+          "py": {
+            "driver": "print(bytes(CMAC_AES(key, bytes(msg)[:15])).hex())"
+          },
+          "js": {
+            "driver": "console.log(Buffer.from(CMAC_AES(key, msg.slice(0, 15))).toString('hex'));"
+          }
+        }
+      },
+      "project": {
+        "roles": {
+          "algo.cmac.block.json": {
+            "role": "procedure 定义：CMAC_AES(key, msg) 与 CMAC_SUBKEYS(subkey)",
+            "covers": [
+              "§6.1 子密钥生成",
+              "§6.2 MAC 生成"
+            ],
+            "blocks": 7,
+            "notEntry": true
+          },
+          "main.block.json": {
+            "role": "entry 顶层演示：RFC 4493 §4 的 key/msg → 四个长度标签 + K1‖K2",
+            "covers": [
+              "§6.2 四种长度分支（空消息 / 整块 / 多块 / 不完整末块）"
+            ],
+            "blocks": 34,
+            "notEntry": false
+          }
+        },
+        "blockTypes": [
+          "cmac_mac",
+          "cmac_subkeys",
+          "data_value",
+          "hex_to_bytes",
+          "pq_bytes_slice",
+          "procedures_callreturn",
+          "procedures_defreturn",
+          "variables_get",
+          "variables_set"
+        ]
+      },
+      "semantic_equivalence": "unverified"
+    }
+  }
+}

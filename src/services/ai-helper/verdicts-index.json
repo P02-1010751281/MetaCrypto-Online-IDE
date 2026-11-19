@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "generatedBy": "scripts/build-verdicts-index.mjs",
-  "note": "三档判据是构建期机器候选，语义等价未验证；签核在人，界面不得把 tier 说成「已覆盖」。",
+  "note": "三档判据是构建期机器候选，语义等价未验证；签核在人，界面不得把 tier 说成「已覆盖」。pilot 是把同一份切片用现有块搭出来的工程，打开只是在本机复制，不是「生成工作区」。",
   "generatedFrom": [
     {
       "path": "experiments/ai-helper-2026-11-14/p4/verdicts.json",
@@ -858,7 +858,45 @@
           "claimBoundaries": [],
           "semantic_equivalence": "unverified"
         }
-      ]
+      ],
+      "pilot": {
+        "artifact": "fips180-4-SHA2.json",
+        "standardId": "fips180-4-SHA2",
+        "name": "FIPS 180-4 SHA-256 多分组（src 58d09d35）",
+        "language": "python",
+        "entryFileId": "file-main",
+        "files": [
+          {
+            "fileId": "file-algo-sha256",
+            "name": "algo.sha256.block.json",
+            "roots": 1,
+            "blocks": 28,
+            "entry": false
+          },
+          {
+            "fileId": "file-main",
+            "name": "main.block.json",
+            "roots": 1,
+            "blocks": 5,
+            "entry": true
+          }
+        ],
+        "blocks": 33,
+        "clauseIds": [
+          "01-SHA2",
+          "02-Padding",
+          "03-MessageExpansion",
+          "04-Compression",
+          "05-Digest"
+        ],
+        "bytes": 33879,
+        "sha256": "0b2f79c80b420391ea2e1c4142538272d443bf2777d7c63cc3957607242a3ebf",
+        "source": {
+          "path": "experiments/ai-helper-2026-11-14/p4/project/sha256-multiblock.project.json",
+          "sha256": "d8a034009efe0f74cf8175e6d2ddfeeabddd4df7d8b000ff73596161573bd98f",
+          "bytes": 33921
+        }
+      }
     },
     {
       "schemaVersion": 1,
@@ -1372,7 +1410,43 @@
           ],
           "semantic_equivalence": "unverified"
         }
-      ]
+      ],
+      "pilot": {
+        "artifact": "sp800-38b-cmac.json",
+        "standardId": "sp800-38b-cmac",
+        "name": "NIST SP 800-38B CMAC（src a1e96171）",
+        "language": "python",
+        "entryFileId": "file-main",
+        "files": [
+          {
+            "fileId": "file-algo-cmac",
+            "name": "algo.cmac.block.json",
+            "roots": 2,
+            "blocks": 7,
+            "entry": false
+          },
+          {
+            "fileId": "file-main",
+            "name": "main.block.json",
+            "roots": 1,
+            "blocks": 34,
+            "entry": true
+          }
+        ],
+        "blocks": 41,
+        "clauseIds": [
+          "01-CMAC",
+          "02-Subkeys",
+          "03-MAC"
+        ],
+        "bytes": 26270,
+        "sha256": "40b0acc004da7b2d2e460e5bbcf4db1bf4c6814ea5ee8603e7f9cff7510edd95",
+        "source": {
+          "path": "experiments/ai-helper-2026-11-14/p4/project-cmac/cmac-rfc4493.project.json",
+          "sha256": "3b0a0dce207274700ba69ce62e78e1147e8ffe5b88125f6b0a126f98eccf67f0",
+          "bytes": 26307
+        }
+      }
     },
     {
       "schemaVersion": 1,
@@ -2065,7 +2139,44 @@
           ],
           "semantic_equivalence": "unverified"
         }
-      ]
+      ],
+      "pilot": {
+        "artifact": "sp800-38c-ccm.json",
+        "standardId": "sp800-38c-ccm",
+        "name": "NIST SP 800-38C CCM（src fa850e54）",
+        "language": "python",
+        "entryFileId": "file-main",
+        "files": [
+          {
+            "fileId": "file-algo-ccm",
+            "name": "algo.ccm.block.json",
+            "roots": 7,
+            "blocks": 35,
+            "entry": false
+          },
+          {
+            "fileId": "file-main",
+            "name": "main.block.json",
+            "roots": 1,
+            "blocks": 78,
+            "entry": true
+          }
+        ],
+        "blocks": 113,
+        "clauseIds": [
+          "01-CCM",
+          "02-Formatting",
+          "03-CBC-MAC",
+          "04-CTR"
+        ],
+        "bytes": 80971,
+        "sha256": "ed313d527c1cf916bee963ae70c54d58377392fcaaf9ec04f1379f74dd4f5142",
+        "source": {
+          "path": "experiments/ai-helper-2026-11-14/p4/project-ccm/ccm-appendix-c.project.json",
+          "sha256": "c2719729ee4ca6ec462c868ee67756b8a1f64b5913f280f1e2a977d29aab5e30",
+          "bytes": 81010
+        }
+      }
     }
   ]
 }

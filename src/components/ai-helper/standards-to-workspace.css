@@ -65,12 +65,140 @@
   color: var(--color-text-secondary);
 }
 
-/* 未签核不是脚注：它决定这张表能当作什么，所以放在判据上方。 */
-.stw-signoff {
+/* 签核状态不是脚注：它决定这张表能当作什么，所以放在判据上方。 */
+.stw-signoffbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   padding: 4px 8px;
   border-left: 3px solid var(--color-warning);
   background: color-mix(in srgb, var(--color-warning) 8%, transparent);
   color: var(--color-text);
+}
+
+.stw-signoff-summary {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.stw-signoff-export {
+  flex: none;
+  padding: 2px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.stw-signoff-export:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.stw-signoff-export:disabled {
+  color: var(--color-text-tertiary);
+  cursor: not-allowed;
+}
+
+.stw-signoff-stale {
+  color: var(--color-danger);
+}
+
+.stw-signoff-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.stw-signoff-badge {
+  flex: none;
+  padding: 1px 8px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.stw-signoff-badge--none {
+  color: var(--color-warning);
+}
+
+.stw-signoff-badge--signed {
+  color: var(--color-success);
+}
+
+.stw-signoff-badge--rejected {
+  color: var(--color-danger);
+}
+
+.stw-signoff-badge--stale {
+  color: var(--color-danger);
+}
+
+.stw-signoff-meta,
+.stw-signoff-note,
+.stw-signoff-hint {
+  margin: 0;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.stw-signoff-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.stw-input {
+  min-width: 0;
+  padding: 4px 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.stw-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.stw-btn {
+  padding: 3px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-card);
+  color: var(--color-text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.stw-btn:hover:not(:disabled) {
+  border-color: var(--color-border-hover);
+  background: var(--color-bg-hover);
+}
+
+.stw-btn:disabled {
+  color: var(--color-text-tertiary);
+  cursor: not-allowed;
+}
+
+.stw-btn--sign {
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.stw-btn--reject {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
 }
 
 .stw-error {
@@ -375,4 +503,37 @@
   font-size: 11px;
   color: var(--color-text-tertiary);
   word-break: break-all;
+}
+
+/* ── 试点工程 ──
+   与判据分开放：判据是读的，工程是能打开的；两者都不是「已覆盖」的证据。 */
+.stw-pilot {
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-bg-card);
+}
+
+.stw-pilot-name {
+  margin: 0;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.stw-pilot-meta {
+  margin: 0;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.stw-pilot-note {
+  margin: 0;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+}
+
+.stw-pilot-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }

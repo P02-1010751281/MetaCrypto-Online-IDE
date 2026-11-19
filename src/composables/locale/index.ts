@@ -4,4 +4,4 @@ export { MESSAGES_EN } from './messages-en';
 export { MESSAGES_ZH_HANS } from './messages-zh';
 export { useBlocklyLocale } from './runtime';
 export { BLOCKLY_LOCALES, type BlocklyLocale } from './types';
-export { ui, uiFormat, uiLocaleRef, useUILocale } from './ui';
+export { isUIMessagesLoaded, loadUIMessages, ui, uiFormat, uiLocaleRef, useUILocale } from './ui';

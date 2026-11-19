@@ -184,8 +184,8 @@ const {
   showLater,
 } = useEditorToast();
 
-const toggleBlocklyLocale = (): void => {
-  blocklyLocale.setLocale(
+const toggleBlocklyLocale = async (): Promise<void> => {
+  await blocklyLocale.setLocale(
     blocklyLocale.getCurrentLocale() === 'zh-hans' ? 'en' : 'zh-hans',
   );
   blocklyEditor.value?.updateToolbox();
@@ -275,8 +275,8 @@ const {
 } = useEditorProject({
   getWorkspaceXml: () => blocklyEditor.value?.exportWorkspace('xml') || '',
   language: selectedLanguage,
-  loadWorkspaceXml: (xml: string) =>
-    blocklyEditor.value?.loadWorkspace(xml, 'xml') || false,
+  loadWorkspace: (payload: string, format?: 'json' | 'xml') =>
+    blocklyEditor.value?.loadWorkspace(payload, format ?? 'xml') || false,
   onWorkspaceChange: (handler: () => void) => {
     cleanupWorkspaceHandler = handler;
     return () => {

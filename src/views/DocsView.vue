@@ -73,8 +73,8 @@ const {
 const router = useRouter();
 const route = useRoute();
 const blocklyLocale = useBlocklyLocale();
-function toggleLocale() {
-  blocklyLocale.setLocale(
+async function toggleLocale(): Promise<void> {
+  await blocklyLocale.setLocale(
     blocklyLocale.getCurrentLocale() === 'zh-hans' ? 'en' : 'zh-hans',
   );
 }

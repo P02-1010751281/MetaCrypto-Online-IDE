@@ -59,7 +59,7 @@ describe('ProjectStore 端口', () => {
         project = useEditorProject({
           getWorkspaceXml: () => '<xml>seam</xml>',
           language: ref('python'),
-          loadWorkspaceXml: () => true,
+          loadWorkspace: () => true,
           onWorkspaceChange: () => () => {},
           clearWorkspace: () => {},
           store,

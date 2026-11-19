@@ -244,6 +244,14 @@ npm run standards:check   # 标准元数据、PDF 哈希和 Errata 检查
 npm run cycles:check      # TypeScript/Vue 循环依赖检查
 ```
 
+### 界面文案与入口体积
+
+`ui()` 的语言包是**按语言懒加载的 chunk**（`src/composables/locale/ui-messages-zh.ts` / `ui-messages-en.ts`），入口 chunk 只留访问器。拆分后入口从 65523 字节降到 33587 字节，预算仍是 65536。
+
+- 增改文案直接改这两个文件，不再顶入口预算；中英键集、`{占位符}` 集合与「英文里不许残留中文」由 `tests/unit/locale-ui-messages.test.ts` 守。
+- `ui()` 在语言包到位前返回**键名本身**，所以不要在模块顶层调用它（会在加载完成前就把键名捕获进常量）。启动链在 `src/main.ts` 里先 `await loadUIMessages()` 再挂载；切换语言是 `setLocale()` 的 await，不要当成同步调用。
+- 单测由 `tests/setup-ui-locale.ts` 预取两种语言，用例里不必自己加载。
+
 ---
 
 ## 代码风格约定

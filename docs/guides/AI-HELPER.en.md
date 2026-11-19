@@ -2,7 +2,7 @@
 
 The AI assistant in MetaCrypto Online IDE is a local-first search tool: repository docs, standard PDF page text and block metadata are indexed at build time, and queries run in the browser to return an answer with evidence; no network and no model are required. Model-assisted sentence picking is an optional enhancement: it is off by default, the provider and key are supplied by the user, and the model may only pick among candidate sentences — it cannot rewrite a sentence, add content or replace the evidence.
 
-This page describes the current behaviour of three entry points: **Q&A assistant** in the sidebar (doc search / block search), **Generate workspace from code**, the fifth panel in the left activity bar (the same item is also in the **More** menu), and **Standards → workspace**, the sixth panel, a read-only preview. Evaluation readings (recall@5, eval-set pass rates) are not usage instructions; see the [feasibility research](../research/AI-HELPER-RESEARCH-2026-11-13.md) and the records under `experiments/ai-helper-2026-11-14/`.
+This page describes the current behaviour of three entry points: **Q&A assistant** in the sidebar (doc search / block search), **Generate workspace from code**, the fifth panel in the left activity bar (the same item is also in the **More** menu), and **Standards → workspace**, the sixth panel (preview + human sign-off). Evaluation readings (recall@5, eval-set pass rates) are not usage instructions; see the [feasibility research](../research/AI-HELPER-RESEARCH-2026-11-13.md) and the records under `experiments/ai-helper-2026-11-14/`.
 
 ## 1. Entry points and boundaries
 
@@ -10,7 +10,7 @@ This page describes the current behaviour of three entry points: **Q&A assistant
 |---|---|---|
 | Q&A assistant | Assistant icon in the left activity bar; click again to return to the **Files** panel | Doc search and block search share one panel with two tabs |
 | Generate workspace from code | Fifth icon in the left activity bar, a panel (the same item is in the **More** menu) | Reverse-parse pasted or selected code into a block workspace |
-| Standards → workspace | Sixth icon in the left activity bar (read-only preview) | Shows three-tier verdicts, gaps and source anchors per standard slice; generates no workspace |
+| Standards → workspace | Sixth icon in the left activity bar (preview + human sign-off) | Shows three-tier verdicts, gaps and source anchors per standard slice, records a per-clause sign-off, and opens that slice's pilot project; generates no workspace |
 
 Three boundaries come first:
 
@@ -110,9 +110,9 @@ JavaScript and C/C++ reference implementations are not supported: code judged to
 
 The syntax-tree parser is the Pyodide Python runtime inside the browser (about 12 MB), bundled with the app at the same origin (`public/pyodide/`), loaded on the first parse and reused afterwards; it depends on no external CDN, and a load or parse failure reports the reason as-is (missing assets, or the 45-second parse timeout).
 
-## 6. Standards → workspace (read-only preview)
+## 6. Standards → workspace (preview + human sign-off)
 
-The sixth icon in the left activity bar is the entry point of line A (standard text → workspace). This round is a **read-only preview**: it lays out "standard slices → clause units → three tiers" for a person to read. It generates no workspace and writes no sign-off.
+The sixth icon in the left activity bar is the entry point of line A (standard text → workspace). It lays out "standard slices → clause units → three tiers" for a person to read and **generates no workspace**; next to the tiers it records a **human sign-off**: who signed or rejected which clause, when, with an optional note, and the verdict fingerprint at that moment.
 
 | View | What it answers |
 |---|---|
@@ -121,14 +121,17 @@ The sixth icon in the left activity bar is the entry point of line A (standard t
 | Three tiers | Buildable / partial / not buildable — whether a clause's steps can be assembled from canvas blocks |
 | Gaps and claim boundaries | Which steps live only inside generator closures, and which parameter ranges the block model does not express |
 | Source anchors | Every anchor carries a line range; clicking it opens the doc centre at that line |
+| Pilot project | The same slice actually assembled from existing blocks as a multi-file project (SHA-2 33 blocks / CMAC 41 / CCM 113), driven by official vectors |
 
 Three qualifiers must be read together with the tiers:
 
 1. The tiers are **build-time machine candidates**: `scripts/p4-*` produce the verdict JSON and `scripts/build-verdicts-index.mjs` merges it into `src/services/ai-helper/verdicts-index.json` (regenerated before every build);
 2. **Semantic equivalence is always unverified** (`semantic_equivalence = unverified`): a tier says whether steps can be assembled, never that an implementation matches the standard;
-3. **Sign-off stays with a person**: the panel says "no sign-off yet", and this round has neither a sign-off action nor one-click generation.
+3. **Sign-off stays with a person**: the panel header shows signed / rejected / pending counts, and each clause lets a person record a name, a note and either a sign-off or a rejection. A record is bound to the verdict fingerprint at that moment (step text, gaps, anchor line ranges); when the artifact is regenerated and the clause changes, the old record is shown as **data changed, re-review required** instead of still counting as signed. Records live in browser storage only and can be exported as JSON carrying both the export-time and the record-time index fingerprints. There is no one-click generation.
 
-After changing a verdict JSON, rerun `npm run verdicts:index` (`verdicts:index:check` only compares). The source JSON must be committed, otherwise the script refuses to generate — the artifact has to be reproducible.
+Next to the tiers the panel also lists a **pilot project**: the same slice actually assembled from existing blocks as a multi-file project, with block totals and the file list taken from the artifact. "Open pilot project" only **copies an editable record** into this device's project list and jumps to the editor — the build artifact is untouched, and it is not "generate a workspace from the standard text". If this device already holds the same pilot, the panel first asks whether to replace it or open the existing one (replacing discards those edits). The pilot itself is still a machine-candidate demo, not a proof of conformance.
+
+After changing a verdict JSON or a pilot project, rerun `npm run verdicts:index` (`verdicts:index:check` only compares): the index and `src/services/ai-helper/pilot-projects/*.json` are regenerated together, and a stale artifact is named in the error. The source JSON must be committed, otherwise the script refuses to generate — the artifact has to be reproducible.
 
 ## 7. Let the model pick sentences (bring your own key)
 

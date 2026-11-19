@@ -99,12 +99,20 @@ export function useEditorFileActions(options: Options) {
 
   // ---- 供 useEditorProject 的落库钩子（保存层不直接碰 useProjectFiles）----
 
-  /** 载入项目时初始化文件清单，返回要装进画布的入口负载。 */
+  /**
+   * 载入项目时初始化文件清单，返回要装进画布的入口负载**与格式**。
+   *
+   * 格式必须一起回传：JSON 工程按 XML 解析会失败（画布被清空、状态显示「加载失败」），
+   * 而项目记录里的 `format` 是旧的单文件字段，多文件时以入口文件自己的 `format` 为准。
+   */
   function applyProject(
     record: Pick<ProjectRecord, 'workspace' | 'files' | 'entryFileId' | 'format'>,
-  ): string {
+  ): { workspace: string; format?: 'json' | 'xml' } {
     projectFiles.applyProject(record);
-    return activeFile.value?.workspace ?? record.workspace ?? '';
+    return {
+      workspace: activeFile.value?.workspace ?? record.workspace ?? '',
+      format: activeFile.value?.format ?? record.format,
+    };
   }
 
   function getFiles(): ProjectFileRecord[] {

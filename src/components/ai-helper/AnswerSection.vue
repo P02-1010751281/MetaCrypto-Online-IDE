@@ -91,9 +91,9 @@ const {
 /**
  * 丢弃计数的悬浮说明：复用既有两条越界文案，不新增 locale 键。
  *
- * 为什么苛刻到不写新键：入口 chunk 只剩 13 字节余量（`build:check-bundle` 65523/65536），
- * 而 `ui-messages.ts` 整份进入口 chunk，加一句中文就会把它顶红。真正的解法是按面板拆 locale
- * 块（RESULTS §66.7），属独立一轮；在那之前，界面文案只能用已有键拼。
+ * 早先的理由是打包预算：语言包当时整份进入口 chunk，入口只剩 13 字节余量（65523/65536）。
+ * 2026-11-19 语言包改为按语言懒加载后，入口降到 33587 字节，预算不再是约束；这里仍复用
+ * 既有两条文案，理由变成语义——它们与这两类丢弃同义，新增键只会让同一含义出现两种说法。
  */
 const DROP_TEXT_KEYS: Record<string, string> = {
   'unsupported-note': 'modelVerifyUnsupportedNote',

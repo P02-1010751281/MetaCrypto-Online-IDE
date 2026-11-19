@@ -18,6 +18,8 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['tests/**/*.test.ts'],
+    // 语言包是懒加载 chunk，单测靠这个 setup 预取两种语言（见该文件注释）。
+    setupFiles: ['tests/setup-ui-locale.ts'],
     passWithNoTests: false,
     // 默认 5s 在多 worker 并行 + 外部盘 IO 下会偶发超时（已观察到 gmdrbg/hmac 用例）。
     // 统一给 30s 预算：只放宽“等待时间”，不放宽任何断言或期望值。

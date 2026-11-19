@@ -245,6 +245,14 @@ npm run standards:check   # Standards metadata, PDF hash and errata checks
 npm run cycles:check      # TypeScript/Vue circular-dependency check
 ```
 
+### UI copy and entry size
+
+The `ui()` language packs are **per-language lazy-loaded chunks** (`src/composables/locale/ui-messages-zh.ts` / `ui-messages-en.ts`); the entry chunk only keeps the accessor. After the split the entry is 33587 bytes against a 65536 budget.
+
+- Edit copy in those two files; it no longer competes for entry budget. Key parity, `{placeholder}` parity and "no CJK left in the English pack" are enforced by `tests/unit/locale-ui-messages.test.ts`.
+- `ui()` returns **the key itself** before the pack is loaded, so never call it at module top level (the key would be captured before load). `src/main.ts` awaits `loadUIMessages()` before mounting, and `setLocale()` is async — do not treat a language switch as synchronous.
+- Unit tests preload both languages via `tests/setup-ui-locale.ts`; individual cases need not load anything.
+
 ---
 
 ## Code style conventions

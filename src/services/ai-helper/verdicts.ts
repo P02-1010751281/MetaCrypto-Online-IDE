@@ -7,7 +7,10 @@
  *
  * 制品由 `scripts/build-verdicts-index.mjs` 从 p4 裁决 JSON 重算生成：
  * 计数、缺口数、源文件 sha256 都在脚本里重算过，`totals` 与 `generatedFrom` 不是抄来的。
+ * 每份标准还可以带一份 `pilot`（同一份切片用现有块搭出来的工程），打开逻辑见
+ * `./pilotProjects.ts`——它与「三档判据」是两份证据，不能互相顶替。
  */
+import type { PilotProjectSummary } from './pilotProjects';
 
 export type CoverageTier = 'build' | 'partial' | 'missing';
 export type StepVisibility = 'canvas' | 'internal' | 'none';
@@ -69,6 +72,8 @@ export interface StandardVerdict {
     gaps: number;
   };
   clauses: ClauseVerdict[];
+  /** 同一份切片的试点工程（构建期制品）；没有登记就缺省，界面不给打开按钮。 */
+  pilot?: PilotProjectSummary;
 }
 
 export interface VerdictsIndex {
@@ -81,7 +86,14 @@ export interface VerdictsIndex {
     standardId: string;
     counts: { clauses: number; build: number; partial: number; missing: number; gaps: number };
   }>;
-  totals: { standards: number; clauses: number; build: number; partial: number; missing: number; gaps: number };
+  totals: {
+    standards: number;
+    clauses: number;
+    build: number;
+    partial: number;
+    missing: number;
+    gaps: number;
+  };
   standards: StandardVerdict[];
 }
 
@@ -122,6 +134,18 @@ export function parseVerdictsIndex(raw: string): VerdictsIndex {
       }
       if (!Array.isArray(clause.steps)) {
         throw new Error(`${standard.standard.id}/${clause.clauseId} 缺 steps`);
+      }
+    }
+    if (standard.pilot !== undefined) {
+      const pilot = standard.pilot;
+      if (!isObject(pilot) || typeof pilot.artifact !== 'string' || typeof pilot.standardId !== 'string') {
+        throw new Error(`${standard.standard.id} 的 pilot 缺 artifact/standardId`);
+      }
+      if (pilot.standardId !== standard.standard.id) {
+        throw new Error(`pilot.standardId=${pilot.standardId} 与 ${standard.standard.id} 不是同一份标准`);
+      }
+      if (!Array.isArray(pilot.files) || pilot.files.length === 0 || typeof pilot.blocks !== 'number') {
+        throw new Error(`${standard.standard.id} 的 pilot 缺 files/blocks`);
       }
     }
   }

@@ -19,18 +19,25 @@ export type EditorStatus = 'saved' | 'unsaved' | 'error' | 'load-error';
 interface EditorProjectDeps<TLanguage extends string> {
   getWorkspaceXml: () => string;
   language: Ref<TLanguage>;
-  loadWorkspaceXml: (_xml: string) => boolean;
+  /**
+   * 把一段负载装进画布。格式必须跟着负载走：多文件项目里每个文件各带 `format`，
+   * 试点工程这类 JSON 工程按 XML 解析会直接失败（DOMParser 报错、画布被清空）。
+   */
+  loadWorkspace: (_payload: string, _format?: 'json' | 'xml') => boolean;
   onWorkspaceChange: (_handler: () => void) => () => void;
   clearWorkspace: () => void;
   /** 项目存储端口；缺省用单机 IndexedDB 实现。 */
   store?: ProjectStore<number>;
   /**
    * 多文件项目钩子（全部可选）：
-   * - applyProject：载入记录时初始化文件清单，返回要载入的入口文件负载（undefined 用 record.workspace）
+   * - applyProject：载入记录时初始化文件清单，返回要载入的入口文件负载与格式
+   *   （undefined 时退回 record.workspace / record.format）
    * - getFiles / getEntryFileId：落库时取当前文件清单与入口 id
    * - getEntryWorkspace：落库时取入口文件负载，写进 record.workspace 供只认单文件的旧读取方使用
    */
-  applyProject?: (_record: ProjectRecord) => string | undefined;
+  applyProject?: (
+    _record: ProjectRecord,
+  ) => { workspace: string; format?: 'json' | 'xml' } | undefined;
   getFiles?: () => ProjectFileRecord[];
   getEntryFileId?: () => string;
   getEntryWorkspace?: () => string;
@@ -327,8 +334,11 @@ export function useEditorProject<TLanguage extends string>(
       }
       applyingProjectWorkspace = true;
       try {
-        const workspaceText = deps.applyProject ? deps.applyProject(record) : record.workspace;
-        if (workspaceText && !deps.loadWorkspaceXml(workspaceText)) {
+        const target = deps.applyProject
+          ? deps.applyProject(record)
+          : { workspace: record.workspace ?? '', format: record.format };
+        const workspaceText = target?.workspace;
+        if (workspaceText && !deps.loadWorkspace(workspaceText, target?.format)) {
           throw new Error(`Project ${id} workspace could not be loaded`);
         }
         if (!workspaceText) deps.clearWorkspace();
