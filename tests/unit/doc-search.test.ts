@@ -81,6 +81,25 @@ describe('doc index', () => {
       }
     }
   });
+  it('两条 PDF 索引带源字节摘要（门禁才不必比 mtime）', () => {
+    // 没有它，`docs:index:check` 只能比「源文件是否比索引新」，而在干净检出里 git 把
+    // 源 PDF 与索引写成同一时刻、顺序不定 → 假红。字段缺失时门禁退回 mtime，这条会红。
+    const litIndex = resolve(ROOT, 'experiments/ai-helper-2026-11-14/out/lit-index.json');
+    for (const [label, path] of [
+      ['PDF', PDF_INDEX],
+      ['文献', litIndex],
+    ] as const) {
+      const parsed = parseDocIndex(readFileSync(path, 'utf8'));
+      expect(parsed.corpus.sourceHash, `${label} 索引缺 corpus.sourceHash`).toMatch(/^[0-9a-f]{16}$/);
+    }
+  });
+
+  it('sourceHash 不参与合并：mergeIndexes 丢掉它也不影响检索', () => {
+    const merged = mergeIndexes(pdfIndex, index);
+    expect(merged.corpus.sourceHash).toBeUndefined();
+    expect(merged.kind).toBe('mixed');
+    expect(searchDocs(merged, 'GCM 认证', { limit: 3 }).length).toBeGreaterThan(0);
+  });
 });
 
 describe('doc tokenizer', () => {

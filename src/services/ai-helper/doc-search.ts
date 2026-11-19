@@ -19,7 +19,21 @@ export interface DocIndex {
   v: 1;
   /** 语料类型：Markdown 正文 / PDF 页 / 合并索引。 */
   kind?: 'md' | 'pdf' | 'mixed';
-  corpus: { files: number; sections: number; tokens: number; hash: string };
+  corpus: {
+    files: number;
+    sections: number;
+    tokens: number;
+    hash: string;
+    /**
+     * 源文件**字节**的摘要（只有 PDF / 文献索引带，Markdown 索引不带）。
+     *
+     * 为什么要有它：PDF 的重建要重新抽文本（7~9 s），门禁里不重建，只能比新鲜度。
+     * 比 mtime 在干净检出里是假红——git 把源 PDF 与索引写成同一时刻、顺序不定，
+     * 「源比索引新」会有几十毫秒的随机胜负。字节摘要与 mtime 无关，谁新谁旧都只看内容。
+     * 缺这个字段（旧索引）时门禁退回 mtime 比较。
+     */
+    sourceHash?: string;
+  };
   /** [路径, 标题] */
   docs: Array<[string, string]>;
   /** [文档下标, 行号, 标题级别, 标题, 摘录, 词数] */

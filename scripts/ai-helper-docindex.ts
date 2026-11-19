@@ -11,6 +11,7 @@
  */
 
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { mkdirSync, readdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 
@@ -163,6 +164,15 @@ function listPdfFiles(dir: string): string[] {
   return files;
 }
 
+/** 文献 PDF 不随包分发：目录整份不在时按「没有源」处理，而不是让门禁炸掉。 */
+function listPdfFilesSafe(dir: string): string[] {
+  try {
+    return listPdfFiles(dir);
+  } catch {
+    return [];
+  }
+}
+
 function buildPdfCorpus(): Corpus {
   const files = listPdfFiles(DOCS_DIR);
 
@@ -304,6 +314,7 @@ function commandIndexLit(): void {
   const corpus = buildLitCorpus();
   const built = Date.now();
   const index = buildIndex(corpus, 'lit');
+  index.corpus.sourceHash = sourceHashOf(listPdfFiles(LIT_DIR));
   // 文献索引只有一份（不进前端包），不需要留档副本。
   const text = `${JSON.stringify(index)}\n`;
   writeJsonAtomic(LIT_INDEX_PATH, text);
@@ -405,19 +416,61 @@ function commandIndexPdf(): void {
   const corpus = buildPdfCorpus();
   const built = Date.now();
   const index = buildIndex(corpus, 'pdf');
+  index.corpus.sourceHash = sourceHashOf(listPdfFiles(DOCS_DIR));
   const runtimeBytes = writeJsonPair(PDF_RUNTIME_PATH, PDF_ARCHIVE_PATH, index);
   console.log(`DOC_INDEX_PDF build_ms=${built - started} total_ms=${Date.now() - started}`);
   summarize(index, runtimeBytes);
+}
+
+/**
+ * 源文件字节摘要：`path␀sha256(字节)␀` 依路径排序后串起来再取 sha256 前 16 位。
+ *
+ * 与 `corpus.hash`（抽取文本）分工：那个只有重建才能算（PDF 要抽文本 7~9 s），
+ * 这个只读字节（49+19 份 PDF 约 117 MB，实测 ~2 s），够便宜到放进每次门禁。
+ * 新增、删除、改动都会被它抓到，且与 mtime 无关。
+ */
+function sourceHashOf(files: string[]): string {
+  const hash = createHash('sha256');
+  for (const path of files) {
+    hash.update(path);
+    hash.update('\u0000');
+    hash.update(createHash('sha256').update(readFileSync(resolve(ROOT, path))).digest('hex'));
+    hash.update('\u0000');
+  }
+  return hash.digest('hex').slice(0, 16);
 }
 
 function mtimeOf(path: string): number {
   try {
     return statSync(path).mtimeMs;
   } catch {
+    // 明确的兜底：0 表示「文件不存在」。两条副索引本就可选，调用方据 0 给出 warn 而不是 fail。
     return 0;
   }
 }
 
+/**
+ * 读索引里存的源字节摘要。
+ *
+ * 返回 `''` = 旧索引没有该字段（调用方退回 mtime 比较）；返回 `null` = 索引读不出或解析失败
+ * （这是真问题，调用方按 fail 处理）——两种情况都不吞掉。
+ */
+function readSourceHash(indexPath: string): string | null {
+  let raw: string;
+  try {
+    raw = readFileSync(indexPath, 'utf8');
+  } catch (error) {
+    console.warn(`DOC_INDEX warn: 读不出索引 ${indexPath}（${(error as Error).message}）`);
+    return null;
+  }
+  try {
+    const parsed = JSON.parse(raw) as DocIndex;
+    return typeof parsed.corpus?.sourceHash === 'string' ? parsed.corpus.sourceHash : '';
+  } catch (error) {
+    console.warn(`DOC_INDEX warn: 索引无法解析 ${indexPath}（${(error as Error).message}）`);
+    return null;
+  }
+}
 function newestMtime(files: string[]): number {
   let newest = 0;
   for (const path of files) newest = Math.max(newest, mtimeOf(resolve(ROOT, path)));
@@ -428,9 +481,11 @@ function newestMtime(files: string[]): number {
  * 新鲜度门禁（不重建、不落盘）。
  *
  * - Markdown：语料是纯文本，摘要可精确重算（~1 s），过期即失败。
- * - PDF / 文献：重算要重新抽 19~49 份 PDF 的文本（7~9 s），门禁里不做；
- *   改比「源文件是否比索引新」。新增文件自带新 mtime 能被抓到；删除不报
- *   （扫描版 PDF 本来就不进索引，按文件数断言会误报），由重建时自然收敛。
+ * - PDF / 文献：重算要重新抽 19~49 份 PDF 的文本（7~9 s），门禁里不做。
+ *   改为比**源文件字节摘要**（`corpus.sourceHash`，读 117 MB 约 2 s）：新增、删除、
+ *   改动都能抓到，且与 mtime 无关。旧索引没有这个字段时退回比 mtime——那条路在干净
+ *   检出里会假红（git 把源 PDF 与索引写成同一时刻、顺序不定），所以重建一次索引即可
+ *   永久摆脱；见到 `sourceHash` 缺失的提示就重跑对应 `docs:index:pdf` / `docs:index:lit`。
  */
 function commandCheck(): void {
   const problems: string[] = [];
@@ -449,15 +504,35 @@ function commandCheck(): void {
     }
   }
 
-  const secondary: Array<[string, string, string[], string]> = [
-    ['PDF', PDF_RUNTIME_PATH, listPdfFiles(DOCS_DIR), 'docs:index:pdf'],
-    ['文献', LIT_INDEX_PATH, listPdfFiles(LIT_DIR), 'docs:index:lit'],
+  const secondary: Array<[string, string, () => string[], string]> = [
+    ['PDF', PDF_RUNTIME_PATH, () => listPdfFiles(DOCS_DIR), 'docs:index:pdf'],
+    ['文献', LIT_INDEX_PATH, () => listPdfFilesSafe(LIT_DIR), 'docs:index:lit'],
   ];
-  for (const [label, indexPath, sources, rebuild] of secondary) {
+  for (const [label, indexPath, listSources, rebuild] of secondary) {
     const indexMtime = mtimeOf(indexPath);
     if (!indexMtime) {
       // 两条索引都是可选的：PDF 缺了面板降级为只查 Markdown，文献缺了不影响前端。
       warnings.push(`${label} 索引不存在（可选，跳过）：${rebuild}`);
+      continue;
+    }
+    const sources = listSources();
+    if (sources.length === 0) {
+      // 源整份不在（例如只检出代码、没带文献 PDF）时无从比较，跳过而不是报红。
+      warnings.push(`${label} 源目录没有 PDF（跳过新鲜度比较）：${rebuild}`);
+      continue;
+    }
+    const stored = readSourceHash(indexPath);
+    if (stored === null) {
+      problems.push(`${label} 索引读不出或无法解析：${indexPath} → npm run ${rebuild}`);
+      continue;
+    }
+    if (stored) {
+      const current = sourceHashOf(sources);
+      if (current !== stored) {
+        problems.push(
+          `${label} 索引过期：源文件字节摘要 ${current} ≠ 索引 ${stored} → npm run ${rebuild}`,
+        );
+      }
       continue;
     }
     const newest = newestMtime(sources);
