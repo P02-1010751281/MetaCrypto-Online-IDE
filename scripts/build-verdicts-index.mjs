@@ -24,6 +24,7 @@ const OUT = 'src/services/ai-helper/verdicts-index.json';
 const SOURCES = [
   'experiments/ai-helper-2026-11-14/p4/verdicts.json',
   'experiments/ai-helper-2026-11-14/p4/verdicts-sp800-38b-cmac.json',
+  'experiments/ai-helper-2026-11-14/p4/verdicts-sp800-38c-ccm.json',
 ];
 
 const TIERS = ['build', 'partial', 'missing'];

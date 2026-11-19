@@ -3,7 +3,7 @@
  *
  * 这里守的是四件容易被「看起来对」骗过去的事：
  *   1. 制品里的计数必须能由 clauses 重算出来（不是抄源文件的 counts）；
- *   2. 三条档位数字与 p4 的实测结论一致（1/3/1 与 0/3/0），换数据时会红；
+ *   2. 三条档位数字与 p4 的实测结论一致（1/3/1、0/3/0、0/3/1），换数据时会红；
  *   3. 每一步点名的块必须真的在块索引里（拼错块名 → 界面显示不存在的块）；
  *   4. 锚点指向的文档必须存在、行号在文件范围内，否则「点回原文」落到越界行；
  *   5. 源文件 sha256 与制品记录一致（源改了没重生成 = 制品过期）。
@@ -94,13 +94,15 @@ describe('裁决索引：结构与新鲜度', () => {
     }
   });
 
-  it('两份切片的实测档位没有被改写（SHA-2 1/3/1，CMAC 0/3/0）', () => {
+  it('三份切片的实测档位没有被改写（SHA-2 1/3/1，CMAC 0/3/0，CCM 0/3/1）', () => {
     const sha2 = index.standards.find((standard) => standard.standard.id === 'fips180-4-SHA2');
     const cmac = index.standards.find((standard) => standard.standard.id === 'sp800-38b-cmac');
-    if (!sha2 || !cmac) throw new Error('制品缺 SHA-2 或 CMAC 切片');
+    const ccm = index.standards.find((standard) => standard.standard.id === 'sp800-38c-ccm');
+    if (!sha2 || !cmac || !ccm) throw new Error('制品缺 SHA-2 / CMAC / CCM 切片');
     expect(summarizeStandard(sha2)).toMatchObject({ clauses: 5, build: 1, partial: 3, missing: 1 });
     expect(summarizeStandard(cmac)).toMatchObject({ clauses: 3, build: 0, partial: 3, missing: 0 });
-    expect(index.totals).toMatchObject({ standards: 2, clauses: 8, build: 1, partial: 6, missing: 1, gaps: 17 });
+    expect(summarizeStandard(ccm)).toMatchObject({ clauses: 4, build: 0, partial: 3, missing: 1 });
+    expect(index.totals).toMatchObject({ standards: 3, clauses: 12, build: 1, partial: 9, missing: 2, gaps: 25 });
   });
 
   it('否定对照：缺标准 / 非法档位都要被 parse 拒绝', () => {

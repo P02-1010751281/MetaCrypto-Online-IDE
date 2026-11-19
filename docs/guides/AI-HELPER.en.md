@@ -116,7 +116,7 @@ The sixth icon in the left activity bar is the entry point of line A (standard t
 
 | View | What it answers |
 |---|---|
-| Standard slices | Verdicts for two slices today: NIST FIPS 180-4 (SHA-2) and NIST SP 800-38B (CMAC) |
+| Standard slices | Verdicts for three slices today: NIST FIPS 180-4 (SHA-2), NIST SP 800-38B (CMAC) and NIST SP 800-38C (CCM) |
 | Clause units | Clauses split out of entry pages, with their standard position and step count |
 | Three tiers | Buildable / partial / not buildable — whether a clause's steps can be assembled from canvas blocks |
 | Gaps and claim boundaries | Which steps live only inside generator closures, and which parameter ranges the block model does not express |

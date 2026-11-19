@@ -38,15 +38,33 @@
         },
         "gaps": 6
       }
+    },
+    {
+      "path": "experiments/ai-helper-2026-11-14/p4/verdicts-sp800-38c-ccm.json",
+      "sha256": "f9e27a98ebed5482036d8ead27d278d5e675eb29c569fc5151a7fd508bdda78b",
+      "standardId": "sp800-38c-ccm",
+      "counts": {
+        "clauses": 4,
+        "build": 0,
+        "partial": 3,
+        "missing": 1,
+        "evidenceLayers": {
+          "L1": 4,
+          "L2": 0,
+          "L3": 0,
+          "none": 0
+        },
+        "gaps": 8
+      }
     }
   ],
   "totals": {
-    "standards": 2,
-    "clauses": 8,
+    "standards": 3,
+    "clauses": 12,
     "build": 1,
-    "partial": 6,
-    "missing": 1,
-    "gaps": 17
+    "partial": 9,
+    "missing": 2,
+    "gaps": 25
   },
   "standards": [
     {
@@ -1351,6 +1369,699 @@
           "claimBoundaries": [
             "块模型不表达 bit 级截断（Tlen 非 8 的倍数）",
             "没有独立验证块（VER 路径不在块集合里）"
+          ],
+          "semantic_equivalence": "unverified"
+        }
+      ]
+    },
+    {
+      "schemaVersion": 1,
+      "generatedBy": "scripts/p4-verdicts.ts",
+      "standard": {
+        "id": "sp800-38c-ccm",
+        "name": "NIST SP 800-38C",
+        "version": "38C",
+        "source_checked_at": "2026-09-12"
+      },
+      "inputs": {
+        "anchors": "experiments/ai-helper-2026-11-14/p4/anchors-sp800-38c-ccm.json",
+        "anchorsSource": {
+          "path": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+          "lines": 1206,
+          "sha256": "fa850e54502d229a95266435fee3d6722a2ac5a327e5e89d687ca8ba370c1360"
+        },
+        "blockIndex": "src/services/ai-helper/block-index.json",
+        "blockTypes": 224,
+        "tooltipStandardPool": {
+          "size": 7,
+          "blocks": [
+            "ccm_aad_len_prefix",
+            "ccm_b0",
+            "ccm_cbc_mac",
+            "ccm_counter_block",
+            "ccm_ctr",
+            "ccm_decrypt",
+            "ccm_encrypt"
+          ]
+        }
+      },
+      "rules": {
+        "noProjectStatusField": true,
+        "tiers": "build = 全部步骤 canvas 且有 L1/L2；partial = 混合或仅内部；missing = 无可执行单元 / 全无块",
+        "evidence": "L1 映射块名 > L2 tooltip 标准号 ∩ BM25 候选 > L3 BM25 候选（只作候选）",
+        "semanticEquivalence": "unverified"
+      },
+      "counts": {
+        "clauses": 4,
+        "build": 0,
+        "partial": 3,
+        "missing": 1,
+        "evidenceLayers": {
+          "L1": 4,
+          "L2": 0,
+          "L3": 0,
+          "none": 0
+        },
+        "clausesWithSameVariantL2": 4,
+        "gaps": 8
+      },
+      "clauses": [
+        {
+          "clauseId": "01-CCM",
+          "entryPath": "docs/standards/sp800-38c-ccm/01-CCM.md",
+          "title": "NIST SP 800-38C — CCM 参考",
+          "standardPosition": "NIST SP 800-38C — CCM 参考",
+          "tier": "missing",
+          "tierReason": "non-executable",
+          "evidenceLayer": "L1",
+          "anchors": [
+            {
+              "section": "6.1",
+              "click": {
+                "doc": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+                "line_start": 592,
+                "line_end": 644
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": false,
+              "slice_sha256": "d8705e129958f17c163161439808c9c93afc87c80be2f18b5dc769c07390c214",
+              "heading": "Generation-Encryption Process"
+            },
+            {
+              "section": "6.2",
+              "click": {
+                "doc": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+                "line_start": 645,
+                "line_end": 715
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": true,
+              "slice_sha256": "99e0355c4c7faf78cedd928c7ec25040dd3989bd477a9876befe7672bdd09bcb",
+              "heading": "Decryption-Verification Process"
+            }
+          ],
+          "evidence": {
+            "l1": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "ccm_encrypt",
+                  "quote": "`ccm_encrypt(key, nonce, aad, msg, tagLen)` 实现 §6.1 的 AES-128 生成-加密路径，`ccm_decrypt("
+                },
+                {
+                  "blockType": "ccm_decrypt",
+                  "quote": "msg, tagLen)` 实现 §6.1 的 AES-128 生成-加密路径，`ccm_decrypt(key, nonce, aad, ctTag, tagLen)` 实现 §6.2 的解密-验证路径：先 CTR 解出明文，再对 (N, A, P"
+                },
+                {
+                  "blockType": "ccm_aad_len_prefix",
+                  "quote": "- 抛出错误只保证调用方拿不到未认证明文，**不**构成常量时间或认证安全证明；`ccm_aad_len_prefix` 只实现 2 字节与 6 字节两档（a < 2³²）。"
+                }
+              ],
+              "source": {
+                "path": "docs/standards/sp800-38c-ccm/01-CCM.md",
+                "line": 34,
+                "heading": "项目映射"
+              }
+            },
+            "l2": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "ccm_cbc_mac",
+                  "tooltip": "CCM CBC-MAC（SP 800-38C §A.2）：对 B0 ‖ 长度编码 AAD ‖ 明文（各段零填充到 16 字节）做整串 CBC-MAC，输出 16 字节 X。实际标签还需与 E_K(A_0) 异或后截断，本块不代替 ccm_encrypt。 CCM CBC-MAC（SP 800-38C §A.2）：对 B",
+                  "sameVariant": true
+                },
+                {
+                  "blockType": "ccm_ctr",
+                  "tooltip": "CCM 计数器模式（SP 800-38C §A.3）：用 A_1… 生成密钥流并与明文异或，只输出密文，不含认证标签。认证与标签由 ccm_cbc_mac / ccm_encrypt 负责。 CCM 计数器模式（SP 800-38C §A.3）：用 A_1… 生成密钥流并与明文异或，只输出密文，不含认证标签。认证与标签",
+                  "sameVariant": true
+                },
+                {
+                  "blockType": "ccm_decrypt",
+                  "tooltip": "CCM 解密并验证 (NIST SP 800-38C §6.2)：输入 密文‖标签，先 CTR 解出明文，再重算 CBC-MAC 标签逐字节比对；标签不符直接抛错，不返回未认证明文。返回的明文只代表标签比对通过，不代表常量时间。 CCM 解密并验证 (NIST SP 800-38C §6.2)：输入 密文‖标签，先 C",
+                  "sameVariant": true
+                },
+                {
+                  "blockType": "ccm_encrypt",
+                  "tooltip": "CCM 认证加密 (NIST SP 800-38C)：CBC-MAC 认证标签（B0 标志位含 nonce 长度/明文长度/标签长度）+ CTR 加密，输出 密文‖标签。AES-128 官方向量（附录 C Example 1-3）验证通过。 CCM 认证加密 (NIST SP 800-38C)：CBC-MAC 认证标签",
+                  "sameVariant": true
+                }
+              ],
+              "note": "标准号取自块 tooltip，且该块须出现在同一查询的前 5 个 BM25 候选里；sameVariant 标出是否就是本条路径的变体"
+            },
+            "l3": {
+              "hit": true,
+              "query": "NIST SP 800-38C NIST SP 800-38C — CCM 参考 - AES 分组长度固定为 128 bit；nonce 长度为 7–13 字节，`L = 15 − nonceLen`",
+              "top5": [
+                {
+                  "blockType": "cmac_mac",
+                  "score": 65.5
+                },
+                {
+                  "blockType": "ccm_cbc_mac",
+                  "score": 52.66
+                },
+                {
+                  "blockType": "ccm_ctr",
+                  "score": 49.78
+                },
+                {
+                  "blockType": "ccm_decrypt",
+                  "score": 49.78
+                },
+                {
+                  "blockType": "ccm_encrypt",
+                  "score": 49.78
+                }
+              ],
+              "note": "L3 只作候选，不单独升级档位"
+            }
+          },
+          "steps": [
+            {
+              "id": "s1",
+              "section": "§6.1",
+              "text": "生成-加密：格式化 (N,A,P) → CBC-MAC → CTR → C‖T",
+              "blocks": [
+                "ccm_encrypt"
+              ],
+              "visibility": "none",
+              "note": "整段过程由 ccm_encrypt 一步吸收；L1 记在 evidence.l1，不进档位"
+            },
+            {
+              "id": "s2",
+              "section": "§6.2",
+              "text": "解密-验证：CTR 解出 P → 重算标签 → 比对，失败不返回明文",
+              "blocks": [
+                "ccm_decrypt"
+              ],
+              "visibility": "none",
+              "note": "同上：整段由 ccm_decrypt 吸收，Clen ≤ Tlen 判 INVALID"
+            }
+          ],
+          "stepCounts": {
+            "total": 2,
+            "canvas": 0,
+            "internal": 0,
+            "none": 2
+          },
+          "gaps": [
+            "本页是 CCM 组合导航页，条目页自己写明「没有独立归属的公式或伪代码规范单元」；§6.1/§6.2 的过程在 02–04 三页拆开判，本页不能重复记「能搭」"
+          ],
+          "claimBoundaries": [
+            "导航页的「能搭」应读成 02–04 三页的并集，不是本页自身可执行"
+          ],
+          "semantic_equivalence": "unverified"
+        },
+        {
+          "clauseId": "02-Formatting",
+          "entryPath": "docs/standards/sp800-38c-ccm/02-Formatting.md",
+          "title": "CCM — B0、AAD 与计数器编码原语",
+          "standardPosition": "NIST SP 800-38C §6.1–§6.2",
+          "tier": "partial",
+          "tierReason": "mixed-steps",
+          "evidenceLayer": "L1",
+          "anchors": [
+            {
+              "section": "6.1",
+              "click": {
+                "doc": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+                "line_start": 592,
+                "line_end": 644
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": true,
+              "slice_sha256": "d8705e129958f17c163161439808c9c93afc87c80be2f18b5dc769c07390c214",
+              "heading": "Generation-Encryption Process"
+            },
+            {
+              "section": "6.2",
+              "click": {
+                "doc": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+                "line_start": 645,
+                "line_end": 715
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": false,
+              "slice_sha256": "99e0355c4c7faf78cedd928c7ec25040dd3989bd477a9876befe7672bdd09bcb",
+              "heading": "Decryption-Verification Process"
+            }
+          ],
+          "evidence": {
+            "l1": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "ccm_encrypt",
+                  "quote": "编码不再是 `ccm_encrypt` 的独占内部步骤：`ccm_b0` 输出首块、`ccm_aad_len_pref"
+                },
+                {
+                  "blockType": "ccm_b0",
+                  "quote": "编码不再是 `ccm_encrypt` 的独占内部步骤：`ccm_b0` 输出首块、`ccm_aad_len_prefix` 输出 AAD 长度前缀、`"
+                },
+                {
+                  "blockType": "ccm_aad_len_prefix",
+                  "quote": "不再是 `ccm_encrypt` 的独占内部步骤：`ccm_b0` 输出首块、`ccm_aad_len_prefix` 输出 AAD 长度前缀、`ccm_counter_block` 输出计数器块 "
+                },
+                {
+                  "blockType": "ccm_counter_block",
+                  "quote": "` 输出首块、`ccm_aad_len_prefix` 输出 AAD 长度前缀、`ccm_counter_block` 输出计数器块 `A_i`，`ccm_encrypt` 消费同一组积木。CBC-"
+                }
+              ],
+              "source": {
+                "path": "docs/standards/sp800-38c-ccm/02-Formatting.md",
+                "line": 58,
+                "heading": "项目映射"
+              }
+            },
+            "l2": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "ccm_b0",
+                  "tooltip": "CCM 首块 B0（SP 800-38C §A.2）：flags（Adata 位 + (M−2)/2 + L−1）‖ nonce ‖ 明文长度（L 字节大端）。输出 16 字节，是 CBC-MAC 的起始块。 CCM 首块 B0（SP 800-38C §A.2）：flags（Adata 位 + (M−2)/2 + L−",
+                  "sameVariant": true
+                },
+                {
+                  "blockType": "ccm_ctr",
+                  "tooltip": "CCM 计数器模式（SP 800-38C §A.3）：用 A_1… 生成密钥流并与明文异或，只输出密文，不含认证标签。认证与标签由 ccm_cbc_mac / ccm_encrypt 负责。 CCM 计数器模式（SP 800-38C §A.3）：用 A_1… 生成密钥流并与明文异或，只输出密文，不含认证标签。认证与标签",
+                  "sameVariant": true
+                },
+                {
+                  "blockType": "ccm_aad_len_prefix",
+                  "tooltip": "CCM AAD 长度编码（SP 800-38C §A.2.2）：aadLen < 0xFF00 时用 2 字节大端；否则输出 0xFFFE ‖ 4 字节大端（aadLen 必须 < 2³²）。 CCM AAD 长度编码（SP 800-38C §A.2.2）：aadLen < 0xFF00 时用 2 字节大端；否则输出 ",
+                  "sameVariant": true
+                }
+              ],
+              "note": "标准号取自块 tooltip，且该块须出现在同一查询的前 5 个 BM25 候选里；sameVariant 标出是否就是本条路径的变体"
+            },
+            "l3": {
+              "hit": true,
+              "query": "NIST SP 800-38C CCM — B0、AAD 与计数器编码原语 CCM 使用 128-bit AES 分组",
+              "top5": [
+                {
+                  "blockType": "ccm_b0",
+                  "score": 62.7
+                },
+                {
+                  "blockType": "ccm_ctr",
+                  "score": 50.18
+                },
+                {
+                  "blockType": "mode_ctr_encrypt",
+                  "score": 45.18
+                },
+                {
+                  "blockType": "cmac_mac",
+                  "score": 43.08
+                },
+                {
+                  "blockType": "ccm_aad_len_prefix",
+                  "score": 40.8
+                }
+              ],
+              "note": "L3 只作候选，不单独升级档位"
+            }
+          },
+          "steps": [
+            {
+              "id": "s1",
+              "section": "§6.1",
+              "text": "L = 15 − len(nonce)；B0 = Flags(hasAAD, tagLen, L) ‖ nonce ‖ BE(len(M), L)",
+              "blocks": [
+                "ccm_b0"
+              ],
+              "visibility": "canvas",
+              "note": "ccm_b0 一个块吸收 L 与 flags 编码（Appendix A.2）"
+            },
+            {
+              "id": "s2",
+              "section": "§6.1",
+              "text": "AAD 长度前缀：a < 0xFF00 用 2 字节，否则 0xFFFE ‖ 4 字节",
+              "blocks": [
+                "ccm_aad_len_prefix"
+              ],
+              "visibility": "canvas"
+            },
+            {
+              "id": "s3",
+              "section": "§6.1",
+              "text": "AAD 正文拼接与零填充到 16 字节边界",
+              "blocks": [
+                "ccm_cbc_mac",
+                "ccm_encrypt"
+              ],
+              "visibility": "internal",
+              "note": "画布只有长度前缀；正文拼接与填充在 ccm_formatted 闭包里，ccm_aad_len_prefix 输出 IntList 接不上 ccm_cbc_mac.MSG 的 Bytes，探针 aadprefix-msg 被拒"
+            },
+            {
+              "id": "s4",
+              "section": "§6.1",
+              "text": "Ctr(i) = Flags(0, 0, L) ‖ nonce ‖ BE(i, L)",
+              "blocks": [
+                "ccm_counter_block"
+              ],
+              "visibility": "canvas"
+            },
+            {
+              "id": "s5",
+              "section": "§6.1",
+              "text": "S_i = AES_K(Ctr(i))",
+              "blocks": [
+                "ccm_ctr",
+                "ccm_encrypt"
+              ],
+              "visibility": "internal",
+              "note": "计数器块输出 IntList、AES 块入口是 Bytes，224 块里没有 IntList→Bytes 转换块，探针 counter-ecb 被拒；AES 只在 ccm_ctr/ccm_encrypt 闭包内做"
+            },
+            {
+              "id": "s6",
+              "section": "§6.1",
+              "text": "B = B0 ‖ A 编码块 ‖ Pad(P) 的整串组装",
+              "blocks": [
+                "ccm_cbc_mac",
+                "ccm_encrypt"
+              ],
+              "visibility": "internal",
+              "note": "ccm_formatted 闭包内完成；画布没有 IntList 拼接/填充块"
+            }
+          ],
+          "stepCounts": {
+            "total": 6,
+            "canvas": 3,
+            "internal": 3,
+            "none": 0
+          },
+          "gaps": [
+            "§6.1 步骤「AAD 正文拼接与零填充到 16 字节边界」只在生成器闭包里，画布无法逐步核（画布只有长度前缀；正文拼接与填充在 ccm_formatted 闭包里，ccm_aad_len_prefix 输出 IntList 接不上 ccm_cbc_mac.MSG 的 Bytes，探针 aadprefix-msg 被拒）",
+            "§6.1 步骤「S_i = AES_K(Ctr(i))」只在生成器闭包里，画布无法逐步核（计数器块输出 IntList、AES 块入口是 Bytes，224 块里没有 IntList→Bytes 转换块，探针 counter-ecb 被拒；AES 只在 ccm_ctr/ccm_encrypt 闭包内做）",
+            "§6.1 步骤「B = B0 ‖ A 编码块 ‖ Pad(P) 的整串组装」只在生成器闭包里，画布无法逐步核（ccm_formatted 闭包内完成；画布没有 IntList 拼接/填充块）"
+          ],
+          "claimBoundaries": [
+            "标准允许 7–13 字节 nonce 与 4–16 偶数 tagLen 的取值域；块模型已固定 AES-128 路径，非 128-bit 分组不表达",
+            "AAD 长度 ≥ 0xFF00 的分支只在 ccm_aad_len_prefix 内表达（a < 2^32）"
+          ],
+          "semantic_equivalence": "unverified"
+        },
+        {
+          "clauseId": "03-CBC-MAC",
+          "entryPath": "docs/standards/sp800-38c-ccm/03-CBC-MAC.md",
+          "title": "CCM — CBC-MAC 认证原语",
+          "standardPosition": "NIST SP 800-38C §6.3",
+          "tier": "partial",
+          "tierReason": "mixed-steps",
+          "evidenceLayer": "L1",
+          "anchors": [
+            {
+              "section": "6.1",
+              "click": {
+                "doc": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+                "line_start": 592,
+                "line_end": 644
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": true,
+              "slice_sha256": "d8705e129958f17c163161439808c9c93afc87c80be2f18b5dc769c07390c214",
+              "heading": "Generation-Encryption Process"
+            }
+          ],
+          "evidence": {
+            "l1": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "ccm_cbc_mac",
+                  "quote": "`ccm_cbc_mac` 完成从 `B0` 起的 CBC-MAC 链并输出 16 字节链终值；标签掩码 "
+                },
+                {
+                  "blockType": "ccm_encrypt",
+                  "quote": "MSB_t(X_last xor S0)` 与 B0/AAD/明文块的拼接仍由 `ccm_encrypt` 组装，没有独立的 标签掩码块，也没有解密后先验标签再释放明文的路径。完整流程见"
+                }
+              ],
+              "source": {
+                "path": "docs/standards/sp800-38c-ccm/03-CBC-MAC.md",
+                "line": 45,
+                "heading": "项目映射"
+              }
+            },
+            "l2": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "ccm_cbc_mac",
+                  "tooltip": "CCM CBC-MAC（SP 800-38C §A.2）：对 B0 ‖ 长度编码 AAD ‖ 明文（各段零填充到 16 字节）做整串 CBC-MAC，输出 16 字节 X。实际标签还需与 E_K(A_0) 异或后截断，本块不代替 ccm_encrypt。 CCM CBC-MAC（SP 800-38C §A.2）：对 B",
+                  "sameVariant": true
+                },
+                {
+                  "blockType": "ccm_b0",
+                  "tooltip": "CCM 首块 B0（SP 800-38C §A.2）：flags（Adata 位 + (M−2)/2 + L−1）‖ nonce ‖ 明文长度（L 字节大端）。输出 16 字节，是 CBC-MAC 的起始块。 CCM 首块 B0（SP 800-38C §A.2）：flags（Adata 位 + (M−2)/2 + L−",
+                  "sameVariant": true
+                },
+                {
+                  "blockType": "ccm_aad_len_prefix",
+                  "tooltip": "CCM AAD 长度编码（SP 800-38C §A.2.2）：aadLen < 0xFF00 时用 2 字节大端；否则输出 0xFFFE ‖ 4 字节大端（aadLen 必须 < 2³²）。 CCM AAD 长度编码（SP 800-38C §A.2.2）：aadLen < 0xFF00 时用 2 字节大端；否则输出 ",
+                  "sameVariant": true
+                },
+                {
+                  "blockType": "ccm_decrypt",
+                  "tooltip": "CCM 解密并验证 (NIST SP 800-38C §6.2)：输入 密文‖标签，先 CTR 解出明文，再重算 CBC-MAC 标签逐字节比对；标签不符直接抛错，不返回未认证明文。返回的明文只代表标签比对通过，不代表常量时间。 CCM 解密并验证 (NIST SP 800-38C §6.2)：输入 密文‖标签，先 C",
+                  "sameVariant": true
+                }
+              ],
+              "note": "标准号取自块 tooltip，且该块须出现在同一查询的前 5 个 BM25 候选里；sameVariant 标出是否就是本条路径的变体"
+            },
+            "l3": {
+              "hit": true,
+              "query": "NIST SP 800-38C CCM — CBC-MAC 认证原语 将 `B0`、编码后的 AAD 和明文块按 CBC-MAC 链处理，得到认证值 `X`；再用 `S0` 掩码并截取前 `t`",
+              "top5": [
+                {
+                  "blockType": "ccm_cbc_mac",
+                  "score": 76.58
+                },
+                {
+                  "blockType": "ccm_b0",
+                  "score": 53.5
+                },
+                {
+                  "blockType": "cmac_mac",
+                  "score": 48.95
+                },
+                {
+                  "blockType": "ccm_aad_len_prefix",
+                  "score": 40.8
+                },
+                {
+                  "blockType": "ccm_decrypt",
+                  "score": 34.2
+                }
+              ],
+              "note": "L3 只作候选，不单独升级档位"
+            }
+          },
+          "steps": [
+            {
+              "id": "s1",
+              "section": "§6.1",
+              "text": "X0 = 0^128",
+              "blocks": [
+                "data_int_list"
+              ],
+              "visibility": "canvas",
+              "note": "16 字节零块用 data_int_list 字面量表达"
+            },
+            {
+              "id": "s2",
+              "section": "§6.1",
+              "text": "对 B0 ‖ EncodeAAD(A) ‖ Pad(P) 逐块 Xi = AES_K(X(i−1) ⊕ Bi)",
+              "blocks": [
+                "ccm_cbc_mac"
+              ],
+              "visibility": "canvas",
+              "note": "ccm_cbc_mac 的契约就是这条链（含 CCM 专用格式化输入），与裸 CBC-MAC 不同"
+            },
+            {
+              "id": "s3",
+              "section": "§6.1",
+              "text": "T = MSB_t(X_last ⊕ AES_K(Ctr(0)))",
+              "blocks": [
+                "ccm_encrypt"
+              ],
+              "visibility": "internal",
+              "note": "没有独立的标签掩码块；S0 与异或截断只在 ccm_encrypt 闭包内，03 页自己写明"
+            }
+          ],
+          "stepCounts": {
+            "total": 3,
+            "canvas": 2,
+            "internal": 1,
+            "none": 0
+          },
+          "gaps": [
+            "标签掩码没有独立块：ccm_cbc_mac 只输出 16 字节 X，T 的掩码与截断只能整体走 ccm_encrypt",
+            "§6.1 步骤「T = MSB_t(X_last ⊕ AES_K(Ctr(0)))」只在生成器闭包里，画布无法逐步核（没有独立的标签掩码块；S0 与异或截断只在 ccm_encrypt 闭包内，03 页自己写明）"
+          ],
+          "claimBoundaries": [
+            "CBC-MAC 的输入编码是 CCM 专用（B0 / AAD 长度编码 / 各自零填充），不能替换成裸 CBC-MAC"
+          ],
+          "semantic_equivalence": "unverified"
+        },
+        {
+          "clauseId": "04-CTR",
+          "entryPath": "docs/standards/sp800-38c-ccm/04-CTR.md",
+          "title": "CCM — CTR 加密原语",
+          "standardPosition": "CCM — CTR 加密原语",
+          "tier": "partial",
+          "tierReason": "mixed-steps",
+          "evidenceLayer": "L1",
+          "anchors": [
+            {
+              "section": "5.5",
+              "click": {
+                "doc": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+                "line_start": 554,
+                "line_end": 579
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": true,
+              "slice_sha256": "fcb9e933e4c8ee396a11ffc48b66102ed54f71185ea1b3e00bf9b4dcd74d7d28",
+              "heading": "Examples of Operations and Functions"
+            },
+            {
+              "section": "6",
+              "click": {
+                "doc": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+                "line_start": 580,
+                "line_end": 715
+              },
+              "anchorLevel": "line",
+              "matchesDeclared": false,
+              "slice_sha256": "b8363835d7651e12e6f1ffa4c24c31c125a635790918a99539b328eda7807402",
+              "heading": "CCM Specification"
+            }
+          ],
+          "evidence": {
+            "l1": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "ccm_ctr",
+                  "quote": "`ccm_ctr` 只做密钥流异或，输出密文段 `C`，不含认证标签；`S0` 的标签掩码与 `C"
+                },
+                {
+                  "blockType": "ccm_encrypt",
+                  "quote": " `C`，不含认证标签；`S0` 的标签掩码与 `C ‖ T` 的拼装仍封装在 `ccm_encrypt` 内。解密后先验标签再释放明文的完整路径仍未开放。"
+                }
+              ],
+              "source": {
+                "path": "docs/standards/sp800-38c-ccm/04-CTR.md",
+                "line": 38,
+                "heading": "项目映射"
+              }
+            },
+            "l2": {
+              "hit": true,
+              "blocks": [
+                {
+                  "blockType": "ccm_ctr",
+                  "tooltip": "CCM 计数器模式（SP 800-38C §A.3）：用 A_1… 生成密钥流并与明文异或，只输出密文，不含认证标签。认证与标签由 ccm_cbc_mac / ccm_encrypt 负责。 CCM 计数器模式（SP 800-38C §A.3）：用 A_1… 生成密钥流并与明文异或，只输出密文，不含认证标签。认证与标签",
+                  "sameVariant": true
+                },
+                {
+                  "blockType": "ccm_encrypt",
+                  "tooltip": "CCM 认证加密 (NIST SP 800-38C)：CBC-MAC 认证标签（B0 标志位含 nonce 长度/明文长度/标签长度）+ CTR 加密，输出 密文‖标签。AES-128 官方向量（附录 C Example 1-3）验证通过。 CCM 认证加密 (NIST SP 800-38C)：CBC-MAC 认证标签",
+                  "sameVariant": true
+                },
+                {
+                  "blockType": "ccm_cbc_mac",
+                  "tooltip": "CCM CBC-MAC（SP 800-38C §A.2）：对 B0 ‖ 长度编码 AAD ‖ 明文（各段零填充到 16 字节）做整串 CBC-MAC，输出 16 字节 X。实际标签还需与 E_K(A_0) 异或后截断，本块不代替 ccm_encrypt。 CCM CBC-MAC（SP 800-38C §A.2）：对 B",
+                  "sameVariant": true
+                }
+              ],
+              "note": "标准号取自块 tooltip，且该块须出现在同一查询的前 5 个 BM25 候选里；sameVariant 标出是否就是本条路径的变体"
+            },
+            "l3": {
+              "hit": true,
+              "query": "NIST SP 800-38C CCM — CTR 加密原语 ",
+              "top5": [
+                {
+                  "blockType": "ccm_ctr",
+                  "score": 38.6
+                },
+                {
+                  "blockType": "ccm_encrypt",
+                  "score": 28.95
+                },
+                {
+                  "blockType": "mode_ctr_encrypt",
+                  "score": 28.95
+                },
+                {
+                  "blockType": "cmac_mac",
+                  "score": 21.06
+                },
+                {
+                  "blockType": "ccm_cbc_mac",
+                  "score": 20.1
+                }
+              ],
+              "note": "L3 只作候选，不单独升级档位"
+            }
+          },
+          "steps": [
+            {
+              "id": "s1",
+              "section": "§5.5",
+              "text": "计数器块 Ctr_0 … Ctr_m（A_i 格式，i 从 0 起）",
+              "blocks": [
+                "ccm_counter_block",
+                "ctrl_iterate"
+              ],
+              "visibility": "canvas",
+              "note": "ccm_counter_block 给单块，多块用 ctrl_iterate 组合"
+            },
+            {
+              "id": "s2",
+              "section": "§6.1",
+              "text": "S_j = AES_K(Ctr_j)",
+              "blocks": [
+                "ccm_ctr",
+                "ccm_encrypt"
+              ],
+              "visibility": "internal",
+              "note": "同 02：IntList 计数器块接不上 Bytes 入口的 AES 块，探针 counter-ecb 被拒"
+            },
+            {
+              "id": "s3",
+              "section": "§6.1",
+              "text": "C_i = P_i ⊕ S_i",
+              "blocks": [
+                "ccm_ctr"
+              ],
+              "visibility": "canvas"
+            },
+            {
+              "id": "s4",
+              "section": "§6.1",
+              "text": "T = MSB_t(X ⊕ S0)",
+              "blocks": [
+                "ccm_encrypt"
+              ],
+              "visibility": "internal",
+              "note": "ccm_ctr 只输出密文段；标签掩码在 ccm_encrypt（04 页自己写明）"
+            }
+          ],
+          "stepCounts": {
+            "total": 4,
+            "canvas": 2,
+            "internal": 2,
+            "none": 0
+          },
+          "gaps": [
+            "§6.1 步骤「S_j = AES_K(Ctr_j)」只在生成器闭包里，画布无法逐步核（同 02：IntList 计数器块接不上 Bytes 入口的 AES 块，探针 counter-ecb 被拒）",
+            "§6.1 步骤「T = MSB_t(X ⊕ S0)」只在生成器闭包里，画布无法逐步核（ccm_ctr 只输出密文段；标签掩码在 ccm_encrypt（04 页自己写明））"
+          ],
+          "claimBoundaries": [
+            "同一 key 下 nonce 重用会破坏 CCM 安全性；块模型没有 nonce 唯一性检查"
           ],
           "semantic_equivalence": "unverified"
         }
