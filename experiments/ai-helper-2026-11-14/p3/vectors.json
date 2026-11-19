@@ -151,6 +151,23 @@
           "note": "只激活一个字节，专测 GF(2^8) 的 xtime 分支（不含 0x1b 折减）"
         }
       ]
+    },
+    "kokke-keyexpansion": {
+      "kind": "keyexp-176",
+      "pyFn": "P3_KeyExpansion",
+      "fn": "KeyExpansion",
+      "vectors": [
+        {
+          "id": "fips197-a1-expansion",
+          "inputs": [
+            "2b7e151628aed2a6abf7158809cf4f3c"
+          ],
+          "expectHex": "2b7e151628aed2a6abf7158809cf4f3ca0fafe1788542cb123a339392a6c7605f2c295f27a96b9435935807a7359f67f3d80477d4716fe3e1e237e446d7a883bef44a541a8525b7fb671253bdb0bad00d4d1c6f87c839d87caf2b8bc11f915bc6d88a37a110b3efddbf98641ca0093fd4e54f70e5f5fc9f384a64fb24ea6dc4fead27321b58dbad2312bf5607f8d292fac7766f319fadc2128d12941575c006ed014f9a8c9ee2589e13f0cc8b6630ca6",
+          "source": "FIPS 197-upd1 附录 A.1「Expansion of a 128-bit Key」（仓库语料 docs/standards/fips197-AES/00-Standard-Source.md 行 1362-1422，印刷页 29-30）：w0-w43 共 44 个字 = 176 字节，逐字取表格最后一列 w[i]；同页 Key 行给出 16 字节种子。附录 B（同语料行 1597）写明「The Round Key values are taken from the Key Expansion example in Appendix A.1」",
+          "note": "任务书写「key 000102…0f 的 11 组轮密钥」，但仓库内语料是 FIPS 197-upd1（2023），附录 C 已删除，A.1 打印的种子是另一个值；000102…0f 的 176 字节扩展表在这份语料里不存在。为守住「向量必须取自语料、不凭记忆」，此处用 A.1 实际打印的种子与其 w0-w43。提取规则与断言见 p3/lib/fips197-a1.mjs（44 字互不相同、前 4 字等于 Key 行）。"
+        }
+      ],
+      "fnNote": "void KeyExpansion(uint8_t* RoundKey, const uint8_t* Key)：C 侧就地写 176 字节；若未来新增 aes_key_expansion 整函数块，块以 Bytes[176] 返回值给出同一缓冲区。"
     }
   }
 }

@@ -1,5 +1,5 @@
 P3 第一步切片读数（B 线：外部 C 参考实现 → Blockly 工作区）
-生成时间 2026-11-18T00:57:09.836Z  git 002e594  node v26.13.1
+生成时间 2026-11-18T06:33:17.433Z  git 25539e6  node v26.13.1
 gcc: gcc (GCC) 16.2.1 20260810
 python: Python 3.14.10
 harness: dist-verify/verify-demo.js sha256=722636849cf51024…
@@ -11,6 +11,7 @@ yi-aes-ecb                28  OK        自撰，非第三方参考实现
 bing-sm4-sbox             23  OK        自撰，非第三方参考实现
 kokke-shiftrows           37  OK        第三方参考实现（kokke/tiny-AES-c），非自撰、非改写
 kokke-mixcolumns          27  OK        第三方参考实现（kokke/tiny-AES-c），非自撰、非改写
+kokke-keyexpansion       134  OK        第三方参考实现（kokke/tiny-AES-c），非自撰、非改写
 别名 8 条，全部在契约键内且证据行可定位：是；契约键本轮实测 224 个；V0 总判定 PASS
 
 V1 结构解析（N=样本数 / 通过 / 诊断）
@@ -20,6 +21,7 @@ yi-aes-ecb                2    7  1      17     9     24      9            1    
 bing-sm4-sbox             1    0  0       0     0      1      0            1      0
 kokke-shiftrows           1    0  0       0     0      0      0            2      0
 kokke-mixcolumns          2    0  0       0     0      0      0            2      0
+kokke-keyexpansion        1    2  1      28     4     47     21            2      5
 
 V2 映射（别名命中 / 结构骨架 / 工作区可生成）
 - jia-aes-round: 别名命中 8（定义 4 / 调用点 4）（定义 sub_bytes→aes_sub_bytes, 定义 shift_rows→aes_shift_rows, 定义 mix_columns→aes_mix_columns, 定义 add_round_key→aes_add_round_key, 调用 aes_round:39→aes_sub_bytes, 调用 aes_round:39→aes_shift_rows, 调用 aes_round:39→aes_mix_columns, 调用 aes_round:39→aes_add_round_key）
@@ -33,8 +35,11 @@ V2 映射（别名命中 / 结构骨架 / 工作区可生成）
   骨架节点 0 个（有块候选 0）；工作区可生成：是 → P3_ShiftRows（whole-function-alias）
 - kokke-mixcolumns: 别名命中 1（定义 1 / 调用点 0）（定义 MixColumns→aes_mix_columns）
   骨架节点 1 个（有块候选 1）；工作区可生成：是 → P3_MixColumns（whole-function-alias）
+- kokke-keyexpansion: 别名命中 0（定义 0 / 调用点 0）（无）
+  骨架节点 32 个（有块候选 32）；工作区可生成：否（函数体第 65 行不是原语调用，链式规则不适用；另有 5 类构造无候选块（见 coverage））
+  KeyExpansion(): 无候选块的构造 5 类 — multi-buffer-io[KeyExpansion(uint8_t* RoundKey, const uint8_t* Key)]（行 63），pointer-param-index-io[RoundKey[...]]（行 71/72/73/74…），pointer-param-index-io[Key[...]]（行 71/72/73/74），function-like-macro-call[call getSBoxValue(...)]（行 108/109/110/111），global-const-table-index-read[read Rcon[...]]（行 114）
 
-V3 差分：可达样本 5/5，向量 13/13 通过
+V3 差分：可达样本 5/6，向量 13/14 通过
 - jia-aes-round: 1/1 通过（inplace16）
     PASS fips197-c1-round1  expect=89d810e8855ace682d1843d8cb128fe4 c=89d810e8855ace682d1843d8cb128fe4 py=89d810e8855ace682d1843d8cb128fe4
 - yi-aes-ecb: 5/5 通过（ecb-block）
@@ -53,7 +58,11 @@ V3 差分：可达样本 5/5，向量 13/13 通过
 - kokke-mixcolumns: 2/2 通过（inplace16-ptr）
     PASS fips197-c1-mixcolumns expect=5f72641557f5bc92f7be3b291db9f91a c=5f72641557f5bc92f7be3b291db9f91a py=5f72641557f5bc92f7be3b291db9f91a
     PASS gf-single-byte     expect=02010103000000000000000000000000 c=02010103000000000000000000000000 py=02010103000000000000000000000000
+- kokke-keyexpansion: V3 不可达 — V2 不可生成工作区：函数体第 65 行不是原语调用，链式规则不适用；另有 5 类构造无候选块（见 coverage）
 
 阴性对照：已捕获 — sub_bytes → aes_shift_rows（同一 C 函数，语义错误；类型仍可生成）；向量 fips197-c1-round1 expect=89d810e8855ace682d1843d8cb128fe4 got=ed416f36a904297161cde3ba2d80adf5
+
+阻断记录（机器可读）：experiments/ai-helper-2026-11-14/p3/out/blocked-kokke-keyexpansion.json
+- kokke-keyexpansion: no whole-function block for KeyExpansion + V2 has no statement-level workspace builder
 
 说明：V3 的 Python 侧代码由 dist-verify/verify-demo.js 载入 V2 生成的工作区后，用本仓库 Python 生成器输出；C 侧由 gcc 编译样本 + 生成的驱动。两侧跑同一组向量。

@@ -1,0 +1,1003 @@
+{
+  "schema": 1,
+  "generatedAt": "2026-11-18T06:33:21.612Z",
+  "kind": "blocked",
+  "sample": {
+    "id": "kokke-keyexpansion",
+    "file": "kokke-keyexpansion.c",
+    "sha256": "ddc0680e0d530e335752886bb47f6c4f58847fb97e6c88b0c43f8042b6408eec",
+    "lines": 134,
+    "entry": "KeyExpansion",
+    "upstream": {
+      "repo": "https://github.com/kokke/tiny-AES-c",
+      "commit": "23856752fbd139da0b8ca6e471a13d5bcc99a08d",
+      "commitDate": "2024-10-04",
+      "file": "aes.c",
+      "fileSha256": "f7f78b44654efd3542b6886923dd05194286807ebcfeb078ea05d21fe901ee9e",
+      "lines": [
+        45,
+        56,
+        76,
+        96,
+        118,
+        121,
+        137,
+        143,
+        145,
+        217
+      ],
+      "lineRanges": [
+        "45-56",
+        "76-96",
+        "118-121",
+        "137-143",
+        "145-217"
+      ]
+    },
+    "standard": "FIPS 197 §5.2 KeyExpansion（AES-128 配置：Nk=4、Nb=4、Nr=10）"
+  },
+  "pipeline": {
+    "v0": {
+      "ok": true,
+      "hashOk": true,
+      "lines": 134,
+      "maxLines": 140,
+      "contractKeys": 224
+    },
+    "v1": {
+      "ok": true,
+      "constructs": {
+        "functions": 1,
+        "params": 2,
+        "returns": 0,
+        "for": 2,
+        "while": 0,
+        "if": 1,
+        "else": 0,
+        "compound": 6,
+        "assignments": 28,
+        "declarations": 7,
+        "arrayInitializers": 2,
+        "subscriptReads": 47,
+        "subscriptWrites": 21,
+        "calls": 4,
+        "casts": 0,
+        "break": 0,
+        "continue": 0,
+        "binaryOps": 45,
+        "binaryByOp": {
+          "<": 2,
+          "+": 21,
+          "*": 12,
+          "-": 2,
+          "==": 1,
+          "%": 1,
+          "^": 5,
+          "/": 1
+        }
+      },
+      "preprocessor": {
+        "conditionals": [
+          {
+            "line": 16,
+            "kind": "if",
+            "expr": "defined(AES256) && (AES256 == 1)",
+            "branchActive": false
+          },
+          {
+            "line": 19,
+            "kind": "elif",
+            "expr": "defined(AES192) && (AES192 == 1)",
+            "branchActive": false
+          },
+          {
+            "line": 22,
+            "kind": "else",
+            "expr": "",
+            "branchActive": true
+          },
+          {
+            "line": 25,
+            "kind": "endif",
+            "expr": "",
+            "branchActive": true
+          },
+          {
+            "line": 116,
+            "kind": "if",
+            "expr": "defined(AES256) && (AES256 == 1)",
+            "branchActive": false
+          },
+          {
+            "line": 127,
+            "kind": "endif",
+            "expr": "",
+            "branchActive": true
+          }
+        ],
+        "defines": [
+          {
+            "name": "Nb",
+            "line": 14,
+            "value": "4",
+            "functionLike": false,
+            "params": []
+          },
+          {
+            "name": "Nk",
+            "line": 23,
+            "value": "4",
+            "functionLike": false,
+            "params": []
+          },
+          {
+            "name": "Nr",
+            "line": 24,
+            "value": "10",
+            "functionLike": false,
+            "params": []
+          },
+          {
+            "name": "getSBoxValue",
+            "line": 60,
+            "value": "(sbox[(num)])",
+            "functionLike": true,
+            "params": [
+              "num"
+            ]
+          }
+        ]
+      },
+      "preprocessorNote": "条件编译已按 C 语义求值：样本第 16/19 行的 #if/#elif 为假，取 #else 的 Nk=4/Nr=10；第 116 行 #if defined(AES256) 为假，AES-256 的额外 SubWord 分支被裁掉并留空行保行号，所以 V1 的 if 计数是 1（只有默认配置的 i % Nk == 0）。",
+      "diagnosticSummary": {
+        "total": 7,
+        "byKind": {
+          "unsupported": 2,
+          "semantic-drift": 5
+        },
+        "byCode": {
+          "preprocessor": 1,
+          "pointer": 1,
+          "implicit-narrowing": 5
+        }
+      },
+      "diagnostics": [
+        {
+          "stage": "V1",
+          "line": 12,
+          "kind": "unsupported",
+          "code": "preprocessor",
+          "message": "预处理行未展开：#include <stdint.h>",
+          "snippet": "#include <stdint.h>"
+        },
+        {
+          "stage": "V1",
+          "line": 63,
+          "kind": "unsupported",
+          "code": "pointer",
+          "message": "不支持指针参数",
+          "snippet": "static void KeyExpansion(uint8_t* RoundKey, const uint8_t* Key)"
+        },
+        {
+          "stage": "V1",
+          "line": 114,
+          "kind": "semantic-drift",
+          "code": "implicit-narrowing",
+          "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+          "snippet": "tempa[0] = tempa[0] ^ Rcon[i/Nk];"
+        },
+        {
+          "stage": "V1",
+          "line": 129,
+          "kind": "semantic-drift",
+          "code": "implicit-narrowing",
+          "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+          "snippet": "RoundKey[j + 0] = RoundKey[k + 0] ^ tempa[0];"
+        },
+        {
+          "stage": "V1",
+          "line": 130,
+          "kind": "semantic-drift",
+          "code": "implicit-narrowing",
+          "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+          "snippet": "RoundKey[j + 1] = RoundKey[k + 1] ^ tempa[1];"
+        },
+        {
+          "stage": "V1",
+          "line": 131,
+          "kind": "semantic-drift",
+          "code": "implicit-narrowing",
+          "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+          "snippet": "RoundKey[j + 2] = RoundKey[k + 2] ^ tempa[2];"
+        },
+        {
+          "stage": "V1",
+          "line": 132,
+          "kind": "semantic-drift",
+          "code": "implicit-narrowing",
+          "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+          "snippet": "RoundKey[j + 3] = RoundKey[k + 3] ^ tempa[3];"
+        }
+      ]
+    },
+    "v2": {
+      "buildable": false,
+      "reason": "函数体第 65 行不是原语调用，链式规则不适用；另有 5 类构造无候选块（见 coverage）",
+      "aliasHits": [],
+      "coverage": [
+        {
+          "function": "KeyExpansion",
+          "line": 63,
+          "gaps": [
+            {
+              "id": "multi-buffer-io",
+              "construct": "KeyExpansion(uint8_t* RoundKey, const uint8_t* Key)",
+              "capability": "一个输入缓冲 + 一个 176 字节输出缓冲的整函数 IO",
+              "why": "函数以 void 返回、用两个指针形参分别传输入与输出；现有整函数别名块的 IO 契约是单 STATE/单 BYTES（如 aes_sub_bytes 只有 STATE），没有承接 16 字节 key → 176 字节轮密钥的块",
+              "missingBlockType": "无（整段密钥扩展块）",
+              "sourceLines": [
+                63
+              ],
+              "firstSnippets": [
+                {
+                  "line": 63,
+                  "text": "static void KeyExpansion(uint8_t* RoundKey, const uint8_t* Key)"
+                }
+              ]
+            },
+            {
+              "id": "pointer-param-index-io",
+              "construct": "RoundKey[...]（指针形参按计算下标读写）",
+              "capability": "输入/输出缓冲区按 32 位字下标读写",
+              "why": "RoundKey 是 uint8_t* 指针形参：C 里它与调用方缓冲区同一份内存；块模型是值语义列表，同一效果要先声明 176 元素列表再逐下标写（Blockly 内置 lists_setIndex），没有「外部字节缓冲」概念",
+              "missingBlockType": "无（按字节下标写外部缓冲的块；只能展开成列表块组合）",
+              "sourceLines": [
+                71,
+                72,
+                73,
+                74,
+                82,
+                83,
+                84,
+                85,
+                129,
+                130,
+                131,
+                132
+              ],
+              "firstSnippets": [
+                {
+                  "line": 71,
+                  "text": "RoundKey[(i * 4) + 0] = Key[(i * 4) + 0];"
+                },
+                {
+                  "line": 72,
+                  "text": "RoundKey[(i * 4) + 1] = Key[(i * 4) + 1];"
+                },
+                {
+                  "line": 73,
+                  "text": "RoundKey[(i * 4) + 2] = Key[(i * 4) + 2];"
+                },
+                {
+                  "line": 74,
+                  "text": "RoundKey[(i * 4) + 3] = Key[(i * 4) + 3];"
+                }
+              ]
+            },
+            {
+              "id": "pointer-param-index-io",
+              "construct": "Key[...]（指针形参按计算下标读写）",
+              "capability": "输入/输出缓冲区按 32 位字下标读写",
+              "why": "Key 是 uint8_t* 指针形参：C 里它与调用方缓冲区同一份内存；块模型是值语义列表，同一效果要先声明 176 元素列表再逐下标写（Blockly 内置 lists_setIndex），没有「外部字节缓冲」概念",
+              "missingBlockType": "无（按字节下标写外部缓冲的块；只能展开成列表块组合）",
+              "sourceLines": [
+                71,
+                72,
+                73,
+                74
+              ],
+              "firstSnippets": [
+                {
+                  "line": 71,
+                  "text": "RoundKey[(i * 4) + 0] = Key[(i * 4) + 0];"
+                },
+                {
+                  "line": 72,
+                  "text": "RoundKey[(i * 4) + 1] = Key[(i * 4) + 1];"
+                },
+                {
+                  "line": 73,
+                  "text": "RoundKey[(i * 4) + 2] = Key[(i * 4) + 2];"
+                },
+                {
+                  "line": 74,
+                  "text": "RoundKey[(i * 4) + 3] = Key[(i * 4) + 3];"
+                }
+              ]
+            },
+            {
+              "id": "function-like-macro-call",
+              "construct": "call getSBoxValue(...)",
+              "capability": "(sbox[(num)])",
+              "why": "函数式宏 getSBoxValue() 未展开：它把「常量表按字节下标取值」藏进宏体；块模型里 sbox 只作为 aes_sub_bytes / sbox_sub 的内部常量，没有可索引的字节查表块",
+              "missingBlockType": "无（按字节查表的原子块）",
+              "sourceLines": [
+                108,
+                109,
+                110,
+                111
+              ],
+              "firstSnippets": [
+                {
+                  "line": 108,
+                  "text": "tempa[0] = getSBoxValue(tempa[0]);"
+                },
+                {
+                  "line": 109,
+                  "text": "tempa[1] = getSBoxValue(tempa[1]);"
+                },
+                {
+                  "line": 110,
+                  "text": "tempa[2] = getSBoxValue(tempa[2]);"
+                },
+                {
+                  "line": 111,
+                  "text": "tempa[3] = getSBoxValue(tempa[3]);"
+                }
+              ]
+            },
+            {
+              "id": "global-const-table-index-read",
+              "construct": "read Rcon[...]",
+              "capability": "常量表 Rcon 按下标取值",
+              "why": "全局常量表 Rcon 的读：表本身可落 data_int_list，但「按下标从表里取值」在密码原语块里没有对应类型（data_int_list 只是字面量）",
+              "missingBlockType": "无（常量表下标读取原语；可由 Blockly 内置 lists_getIndex 承担，但不在本项目密码块集内）",
+              "sourceLines": [
+                114
+              ],
+              "firstSnippets": [
+                {
+                  "line": 114,
+                  "text": "tempa[0] = tempa[0] ^ Rcon[i/Nk];"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "skeleton": [
+        {
+          "function": "KeyExpansion",
+          "line": 63,
+          "nodes": 32,
+          "blockHistogram": {
+            "variables_set": 8,
+            "controls_for": 2,
+            "lists_setIndex": 21,
+            "controls_if": 1
+          }
+        }
+      ]
+    },
+    "v3": {
+      "reachable": false,
+      "reason": "V2 不可生成工作区：函数体第 65 行不是原语调用，链式规则不适用；另有 5 类构造无候选块（见 coverage）",
+      "vectorId": "fips197-a1-expansion"
+    }
+  },
+  "standardVector": {
+    "id": "fips197-a1-expansion",
+    "kind": "keyexp-176",
+    "keyHex": "2b7e151628aed2a6abf7158809cf4f3c",
+    "expectBytes": 176,
+    "source": "FIPS 197-upd1 附录 A.1「Expansion of a 128-bit Key」（仓库语料 docs/standards/fips197-AES/00-Standard-Source.md 行 1362-1422，印刷页 29-30）：w0-w43 共 44 个字 = 176 字节，逐字取表格最后一列 w[i]；同页 Key 行给出 16 字节种子。附录 B（同语料行 1597）写明「The Round Key values are taken from the Key Expansion example in Appendix A.1」",
+    "note": "任务书写「key 000102…0f 的 11 组轮密钥」，但仓库内语料是 FIPS 197-upd1（2023），附录 C 已删除，A.1 打印的种子是另一个值；000102…0f 的 176 字节扩展表在这份语料里不存在。为守住「向量必须取自语料、不凭记忆」，此处用 A.1 实际打印的种子与其 w0-w43。提取规则与断言见 p3/lib/fips197-a1.mjs（44 字互不相同、前 4 字等于 Key 行）。"
+  },
+  "blockGap": {
+    "rootCause": "阻断点不是「画布一个块都没有」，而是 (a) 没有任何块以「密钥扩展」为单位承接该函数，(b) V2 只能在整函数吸收/单链折叠两种形态下产出工作区。画布若要白盒表达，得手搭数十个块（V2 骨架已识别 32 个语句节点，实际块数只会更多）并把 uint8 截断显式掩码；本轮没有做这种手搭，也不把它算作 B 线映射能力。",
+    "assessment": "static-inspection-only",
+    "assessmentNote": "whiteBox 的 expressible 只表示「按块定义/IO 契约存在候选块」，本轮没有用手搭工作区实跑验证；它不是生成能力结论，也不改变 V3 不可达。",
+    "minimalUnblock": {
+      "blockType": "aes_key_expansion",
+      "capability": "整段 AES 密钥扩展：16 字节 key → Nb*(Nr+1)*4 = 176 字节轮密钥（AES-128：Nk=4/Nb=4/Nr=10）",
+      "ioHint": {
+        "inputs": [
+          {
+            "name": "KEY",
+            "check": [
+              "Bytes"
+            ],
+            "size": 16
+          }
+        ],
+        "output": {
+          "name": "ROUND_KEYS",
+          "check": [
+            "Bytes"
+          ],
+          "size": 176
+        }
+      },
+      "pattern": "与 kokke-shiftrows / kokke-mixcolumns 相同的 whole-function-alias：块整体吸收 KeyExpansion，块闭包里保留 Nk/Nb/Nr、sbox、Rcon",
+      "searchTerms": [
+        "key_expansion",
+        "keyexpansion",
+        "expand_key",
+        "key_schedule",
+        "keyschedule",
+        "round_keys",
+        "key_expand",
+        "expandkey"
+      ],
+      "whyThisIsMinimal": "现有别名表的两种形态是「整函数吸收」和「单链折叠」；新增这一个整函数块后，本样本走 whole-function-alias，不需要语句级组装器，也不需要改 V2 的映射模型。",
+      "inContract": false,
+      "contractKeys": 224,
+      "contractSearch": [
+        {
+          "term": "key_expansion",
+          "hits": []
+        },
+        {
+          "term": "keyexpansion",
+          "hits": []
+        },
+        {
+          "term": "expand_key",
+          "hits": []
+        },
+        {
+          "term": "key_schedule",
+          "hits": []
+        },
+        {
+          "term": "keyschedule",
+          "hits": []
+        },
+        {
+          "term": "round_keys",
+          "hits": []
+        },
+        {
+          "term": "key_expand",
+          "hits": []
+        },
+        {
+          "term": "expandkey",
+          "hits": []
+        }
+      ],
+      "absenceOk": true
+    },
+    "whiteBox": [
+      {
+        "id": "loop",
+        "construct": "for (i = 0; i < Nk; ++i) / for (i = Nk; i < Nb * (Nr + 1); ++i)",
+        "candidateBlocks": [
+          "controls_for"
+        ],
+        "candidateSource": "Blockly 内置块（BLOCK-IO-CONTRACT.json 只收密码原语，故不在表内；本仓库 mapSkeletonStatement 已把 for 映射到 controls_for）",
+        "expressible": true,
+        "why": "Nk/Nr/Nb 已由预处理取值（4/10/4），上下界与步长都是数字常量；controls_for 可表达。",
+        "evidence": [
+          {
+            "line": 69,
+            "contains": "for (i = 0",
+            "text": "for (i = 0; i < Nk; ++i)",
+            "matched": true
+          },
+          {
+            "line": 78,
+            "contains": "for (i = Nk",
+            "text": "for (i = Nk; i < Nb * (Nr + 1); ++i)",
+            "matched": true
+          }
+        ],
+        "evidenceOk": true,
+        "candidatesInContract": [
+          {
+            "block": "controls_for",
+            "inContract": false
+          }
+        ]
+      },
+      {
+        "id": "branch",
+        "construct": "if (i % Nk == 0)",
+        "candidateBlocks": [
+          "controls_if",
+          "math_arithmetic(MODULO)",
+          "logic_compare(EQ)"
+        ],
+        "candidateSource": "Blockly 内置块",
+        "expressible": true,
+        "why": "取模 + 相等比较 + 单分支，全部有内置块。",
+        "evidence": [
+          {
+            "line": 89,
+            "contains": "if (i % Nk == 0)",
+            "text": "if (i % Nk == 0)",
+            "matched": true
+          }
+        ],
+        "evidenceOk": true,
+        "candidatesInContract": [
+          {
+            "block": "controls_if",
+            "inContract": false
+          },
+          {
+            "block": "math_arithmetic(MODULO)",
+            "inContract": false
+          },
+          {
+            "block": "logic_compare(EQ)",
+            "inContract": false
+          }
+        ]
+      },
+      {
+        "id": "rotword",
+        "construct": "RotWord：tempa[0..3] 循环左移 1 字节（含 u8tmp 暂存）",
+        "candidateBlocks": [
+          "bit_rotate_left",
+          "lists_setIndex / variables_set"
+        ],
+        "candidateSource": "bit_rotate_left 在 BLOCK-IO-CONTRACT.json 内；list 读写为 Blockly 内置",
+        "expressible": true,
+        "why": "两种写法都有块：把 4 字节打包成 32 位字后 bit_rotate_left(8)，或用变量与列表元素搬运实现同样置换。",
+        "evidence": [
+          {
+            "line": 96,
+            "contains": "u8tmp",
+            "text": "const uint8_t u8tmp = tempa[0];",
+            "matched": true
+          },
+          {
+            "line": 97,
+            "contains": "tempa[0] = tempa[1]",
+            "text": "tempa[0] = tempa[1];",
+            "matched": true
+          },
+          {
+            "line": 100,
+            "contains": "tempa[3] = u8tmp",
+            "text": "tempa[3] = u8tmp;",
+            "matched": true
+          }
+        ],
+        "evidenceOk": true,
+        "candidatesInContract": [
+          {
+            "block": "bit_rotate_left",
+            "inContract": true
+          },
+          {
+            "block": "lists_setIndex / variables_set",
+            "inContract": false
+          }
+        ]
+      },
+      {
+        "id": "subword",
+        "construct": "SubWord：tempa[k] = getSBoxValue(tempa[k])（函数式宏）",
+        "candidateBlocks": [
+          "sbox(PRESET=aes, OUTPUT_FORMAT=1d) + lists_getIndex",
+          "sbox_sub（32 位字）"
+        ],
+        "candidateSource": "sbox / sbox_sub 在 BLOCK-IO-CONTRACT.json 内；lists_getIndex 为 Blockly 内置",
+        "expressible": "partial",
+        "why": "宏本身不是块，但语义可用「sbox 预设生成 256 项 AES 表 + 按下标取值」表达；sbox 的 gridData 会随 extraState 序列化（src/blocks/sbox/sbox.ts:156-188，loadExtraState 在无 data 时按 preset 回填），所以生成式工作区也能带表。缺的不是块，是 V2 不会把宏调用改写成这种组合。",
+        "evidence": [
+          {
+            "line": 108,
+            "contains": "getSBoxValue(tempa[0])",
+            "text": "tempa[0] = getSBoxValue(tempa[0]);",
+            "matched": true
+          },
+          {
+            "line": 111,
+            "contains": "getSBoxValue(tempa[3])",
+            "text": "tempa[3] = getSBoxValue(tempa[3]);",
+            "matched": true
+          }
+        ],
+        "evidenceOk": true,
+        "candidatesInContract": [
+          {
+            "block": "sbox(PRESET=aes, OUTPUT_FORMAT=1d) + lists_getIndex",
+            "inContract": false
+          },
+          {
+            "block": "sbox_sub（32 位字）",
+            "inContract": false
+          }
+        ]
+      },
+      {
+        "id": "rcon",
+        "construct": "Rcon[i/Nk]（全局常量表按下标读取）",
+        "candidateBlocks": [
+          "data_int_list + lists_getIndex"
+        ],
+        "candidateSource": "data_int_list 在 BLOCK-IO-CONTRACT.json 内；lists_getIndex 为 Blockly 内置",
+        "expressible": true,
+        "why": "Rcon 的 11 个值可原样写进 data_int_list（上游 120-121 行），下标表达式由 i/Nk 得到；V2 没有「全局表读取」的映射规则。",
+        "evidence": [
+          {
+            "line": 114,
+            "contains": "Rcon[i/Nk]",
+            "text": "tempa[0] = tempa[0] ^ Rcon[i/Nk];",
+            "matched": true
+          }
+        ],
+        "evidenceOk": true,
+        "candidatesInContract": [
+          {
+            "block": "data_int_list + lists_getIndex",
+            "inContract": false
+          }
+        ]
+      },
+      {
+        "id": "narrowing",
+        "construct": "uint8_t 元素赋值隐式截断：tempa[0] ^= Rcon[...] / RoundKey[j+k] = RoundKey[k+k] ^ tempa[k]",
+        "candidateBlocks": [
+          "bit_operation(XOR) + bit_operation(AND 0xFF)"
+        ],
+        "candidateSource": "bit_operation 在 BLOCK-IO-CONTRACT.json 内",
+        "expressible": "partial",
+        "why": "块算术按 32 位，必须显式 & 0xFF 才与 C 的 uint8_t 截断等价；V1 已把 5 处赋值为 semantic-drift，V2 不会自动补掩码。",
+        "evidence": [
+          {
+            "line": 114,
+            "contains": "Rcon[i/Nk]",
+            "text": "tempa[0] = tempa[0] ^ Rcon[i/Nk];",
+            "matched": true
+          },
+          {
+            "line": 129,
+            "contains": "RoundKey[j + 0]",
+            "text": "RoundKey[j + 0] = RoundKey[k + 0] ^ tempa[0];",
+            "matched": true
+          },
+          {
+            "line": 132,
+            "contains": "RoundKey[j + 3] =",
+            "text": "RoundKey[j + 3] = RoundKey[k + 3] ^ tempa[3];",
+            "matched": true
+          }
+        ],
+        "evidenceOk": true,
+        "candidatesInContract": [
+          {
+            "block": "bit_operation(XOR) + bit_operation(AND 0xFF)",
+            "inContract": false
+          }
+        ]
+      },
+      {
+        "id": "buffer-io",
+        "construct": "void KeyExpansion(uint8_t* RoundKey, const uint8_t* Key)：输入 16 字节、输出 176 字节，按 32 位字下标读写",
+        "candidateBlocks": [
+          "procedures_defreturn + lists_*（值语义列表）"
+        ],
+        "candidateSource": "Blockly 内置过程块；列表长度 176 可由 data_int_list/循环初始化",
+        "expressible": "partial",
+        "why": "C 的指针形参是缓冲区别名；块模型是值语义列表，要先建 176 元素列表再按下标写，最后 return。语义在该函数里等价（只读已写过的前序字），但没有「外部字节缓冲」概念，且 V2 无语句级组装器。",
+        "evidence": [
+          {
+            "line": 63,
+            "contains": "static void KeyExpansion",
+            "text": "static void KeyExpansion(uint8_t* RoundKey, const uint8_t* Key)",
+            "matched": true
+          },
+          {
+            "line": 71,
+            "contains": "RoundKey[(i * 4) + 0]",
+            "text": "RoundKey[(i * 4) + 0] = Key[(i * 4) + 0];",
+            "matched": true
+          },
+          {
+            "line": 132,
+            "contains": "RoundKey[j + 3] =",
+            "text": "RoundKey[j + 3] = RoundKey[k + 3] ^ tempa[3];",
+            "matched": true
+          }
+        ],
+        "evidenceOk": true,
+        "candidatesInContract": [
+          {
+            "block": "procedures_defreturn + lists_*（值语义列表）",
+            "inContract": false
+          }
+        ]
+      }
+    ],
+    "nearestExisting": [
+      {
+        "block": "aes_sub_bytes",
+        "inContract": true,
+        "inputs": [
+          {
+            "name": "STATE",
+            "type": 1,
+            "check": [
+              "IntList"
+            ]
+          },
+          {
+            "name": "",
+            "type": 5,
+            "check": null
+          }
+        ],
+        "outputCheck": [
+          "IntList"
+        ],
+        "aliasEvidence": {
+          "blockDef": {
+            "file": "src/blocks/symmetric/aes/blocks.ts",
+            "line": 15
+          },
+          "generator": {
+            "file": "src/generators/python/symmetric/aes/blocks.ts",
+            "line": 35
+          }
+        }
+      },
+      {
+        "block": "aes_add_round_key",
+        "inContract": true,
+        "inputs": [
+          {
+            "name": "STATE",
+            "type": 1,
+            "check": [
+              "IntList"
+            ]
+          },
+          {
+            "name": "ROUND_KEY",
+            "type": 1,
+            "check": [
+              "IntList"
+            ]
+          },
+          {
+            "name": "",
+            "type": 5,
+            "check": null
+          }
+        ],
+        "outputCheck": [
+          "IntList"
+        ],
+        "aliasEvidence": {
+          "blockDef": {
+            "file": "src/blocks/symmetric/aes/blocks.ts",
+            "line": 51
+          },
+          "generator": {
+            "file": "src/generators/python/symmetric/aes/blocks.ts",
+            "line": 87
+          }
+        }
+      },
+      {
+        "block": "sbox",
+        "inContract": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": 5,
+            "check": null
+          },
+          {
+            "name": "",
+            "type": 5,
+            "check": null
+          }
+        ],
+        "outputCheck": [
+          "SBox"
+        ],
+        "aliasEvidence": null
+      },
+      {
+        "block": "sbox_sub",
+        "inContract": true,
+        "inputs": [
+          {
+            "name": "INPUT_VAR",
+            "type": 1,
+            "check": null
+          },
+          {
+            "name": "SBOX_VAR",
+            "type": 1,
+            "check": [
+              "SBox"
+            ]
+          },
+          {
+            "name": "OUTPUT_VAR",
+            "type": 1,
+            "check": null
+          }
+        ],
+        "outputCheck": null,
+        "aliasEvidence": null
+      },
+      {
+        "block": "bit_rotate_left",
+        "inContract": true,
+        "inputs": [
+          {
+            "name": "Input",
+            "type": 1,
+            "check": [
+              "Number"
+            ]
+          },
+          {
+            "name": "",
+            "type": 5,
+            "check": null
+          },
+          {
+            "name": "Output",
+            "type": 1,
+            "check": null
+          }
+        ],
+        "outputCheck": null,
+        "aliasEvidence": null
+      },
+      {
+        "block": "bit_operation",
+        "inContract": true,
+        "inputs": [
+          {
+            "name": "A",
+            "type": 1,
+            "check": [
+              "Number"
+            ]
+          },
+          {
+            "name": "",
+            "type": 5,
+            "check": null
+          },
+          {
+            "name": "B",
+            "type": 1,
+            "check": [
+              "Number"
+            ]
+          }
+        ],
+        "outputCheck": [
+          "Number"
+        ],
+        "aliasEvidence": null
+      },
+      {
+        "block": "data_int_list",
+        "inContract": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": 5,
+            "check": null
+          }
+        ],
+        "outputCheck": [
+          "IntList"
+        ],
+        "aliasEvidence": null
+      }
+    ]
+  },
+  "documentationClaimCheck": {
+    "file": "docs/standards/fips197-AES/07-KEY-EXPANSION.md",
+    "claim": "条目元数据写「项目状态：部分实现」，并给出项目映射 `aes_key_expand`",
+    "contractHasBlock": false,
+    "srcBlockHits": [],
+    "note": "src/blocks 与 BLOCK-IO-CONTRACT.json 都找不到 aes_key_expand；文档的「部分实现」是文档侧状态，不是可映射块。本轮只记录，不改 docs/。"
+  },
+  "parserExtension": {
+    "file": "experiments/ai-helper-2026-11-14/p3/out/keyexpansion-parser-gap.json",
+    "v0LineRule": {
+      "maxLines": 40,
+      "lines": 134,
+      "wouldPass": false
+    },
+    "before": {
+      "if": 2,
+      "assignments": 32,
+      "diagnostics": 21,
+      "preprocLines": 13
+    },
+    "after": {
+      "if": 1,
+      "assignments": 28,
+      "diagnostics": 7,
+      "preprocLines": 5,
+      "defines": [
+        "Nb=4",
+        "Nk=4",
+        "Nr=10",
+        "getSBoxValue=(sbox[(num)])"
+      ],
+      "conditionals": 6
+    },
+    "note": "旧解析器不抛错，但把 AES-256 分支当活动代码读（if=2/assignments=32）；扩展后与默认构建一致（if=1/assignments=28）。"
+  },
+  "evidence": {
+    "cSideReading": {
+      "file": "experiments/ai-helper-2026-11-14/p3/out/keyexpansion-cside.json",
+      "differential": false,
+      "ok": true,
+      "vector": "fips197-a1-expansion",
+      "bytes": 176,
+      "wordsPassed": 44,
+      "wordsTotal": 44,
+      "roundKeysPassed": 11,
+      "note": "C 侧读数，不是 V3 双侧差分；不得读作 PASS"
+    },
+    "sampleUpstreamContiguity": {
+      "checked": true,
+      "file": "/tmp/kokke-ssh/aes.c",
+      "sha256": "f7f78b44654efd3542b6886923dd05194286807ebcfeb078ea05d21fe901ee9e",
+      "segments": [
+        {
+          "range": "45-56",
+          "found": true,
+          "inOrder": true,
+          "at": 750
+        },
+        {
+          "range": "76-96",
+          "found": true,
+          "inOrder": true,
+          "at": 1051
+        },
+        {
+          "range": "118-121",
+          "found": true,
+          "inOrder": true,
+          "at": 3009
+        },
+        {
+          "range": "137-143",
+          "found": true,
+          "inOrder": true,
+          "at": 3273
+        },
+        {
+          "range": "145-217",
+          "found": true,
+          "inOrder": true,
+          "at": 3385
+        }
+      ],
+      "ok": true
+    },
+    "note": "其余证据（V0/V1/V2/V3 读数、13/13 旧样本回归）见 p3/out/p3-summary.json 与 p3-summary.txt"
+  },
+  "verdict": {
+    "status": "blocked",
+    "v3": "not-reachable",
+    "notClaimed": [
+      "没有生成 keyexpansion 的工作区（V2 buildable=false）",
+      "没有跑双侧差分；没有把 C 侧读数写成 V3 PASS",
+      "没有验证手搭白盒组合能否生成等价 Python",
+      "没有改 src/** 的块定义或生成器"
+    ],
+    "nextRound": [
+      "选项 A（口径最小）：新增 aes_key_expansion 整函数块（KEY Bytes[16] → ROUND_KEYS Bytes[176]），别名表上限从 8 放宽到 9，然后重跑本样本，期望进入 V3 差分。",
+      "选项 B（管线能力）：给 p3 的 V2 增加语句级组装器（for/if/赋值/列表下标/表达式的块级翻译），并把 uint8 截断显式落成 & 0xFF；工作量大，但能把 loops/branches/arrays 这类第三方函数体纳入 B 线。"
+    ]
+  }
+}

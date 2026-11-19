@@ -1,0 +1,124 @@
+{
+  "schema": 1,
+  "generatedAt": "2026-11-18T06:29:55.104Z",
+  "sample": "kokke-keyexpansion.c",
+  "sampleLines": 134,
+  "preExtension": {
+    "parser": "git HEAD:experiments/ai-helper-2026-11-14/p3/lib/c-parse.mjs",
+    "functions": 1,
+    "constructCounts": {
+      "functions": 1,
+      "params": 2,
+      "returns": 0,
+      "for": 2,
+      "while": 0,
+      "if": 2,
+      "else": 0,
+      "compound": 8,
+      "assignments": 32,
+      "declarations": 7,
+      "arrayInitializers": 2,
+      "subscriptReads": 55,
+      "subscriptWrites": 25,
+      "calls": 8,
+      "casts": 0,
+      "break": 0,
+      "continue": 0,
+      "binaryOps": 47,
+      "binaryByOp": {
+        "<": 2,
+        "+": 21,
+        "*": 12,
+        "-": 2,
+        "==": 2,
+        "%": 2,
+        "^": 5,
+        "/": 1
+      }
+    },
+    "diagnosticCount": 21,
+    "diagnosticByCode": {
+      "preprocessor": 15,
+      "pointer": 1,
+      "implicit-narrowing": 5
+    },
+    "preprocLineCount": 13,
+    "hasPreprocessorTable": false,
+    "defines": null,
+    "conditionals": null,
+    "v0LineRule": {
+      "maxLines": 40,
+      "lines": 134,
+      "wouldPass": false
+    },
+    "whatWentWrong": [
+      "V0：样本 134 行，旧规则硬上限 40 行（run-p3.mjs 的 linesOk = lines <= 40），V0 会直接 FAIL；本轮改成 manifest 显式 maxLines=140，不自动放宽。",
+      "V1：没有条件编译求值，`#if defined(AES256)` 的分支被当成活动代码 → if=2、assignments=32，而默认配置应是 if=1、assignments=28。",
+      "V1：宏表未登记 → Nk/Nr/Nb 三个 #define 只是 13 条预处理诊断里的三行，默认配置（Nk=4/Nr=10）没有可核对的取值。"
+    ]
+  },
+  "postExtension": {
+    "parser": "working tree:experiments/ai-helper-2026-11-14/p3/lib/c-parse.mjs",
+    "functions": 1,
+    "constructCounts": {
+      "functions": 1,
+      "params": 2,
+      "returns": 0,
+      "for": 2,
+      "while": 0,
+      "if": 1,
+      "else": 0,
+      "compound": 6,
+      "assignments": 28,
+      "declarations": 7,
+      "arrayInitializers": 2,
+      "subscriptReads": 47,
+      "subscriptWrites": 21,
+      "calls": 4,
+      "casts": 0,
+      "break": 0,
+      "continue": 0,
+      "binaryOps": 45,
+      "binaryByOp": {
+        "<": 2,
+        "+": 21,
+        "*": 12,
+        "-": 2,
+        "==": 1,
+        "%": 1,
+        "^": 5,
+        "/": 1
+      }
+    },
+    "diagnosticCount": 7,
+    "diagnosticByCode": {
+      "preprocessor": 1,
+      "pointer": 1,
+      "implicit-narrowing": 5
+    },
+    "preprocLineCount": 5,
+    "hasPreprocessorTable": true,
+    "defines": [
+      "Nb=4",
+      "Nk=4",
+      "Nr=10",
+      "getSBoxValue=(sbox[(num)])"
+    ],
+    "conditionals": 6,
+    "whatChanged": [
+      "preprocessConditionals()：按行求值 #if/#ifdef/#ifndef/#elif/#else/#endif，非活动分支留空行保行号；表达式只支持 defined/整数/宏名/! && || == !=。",
+      "宏表随 V1 读数给出（对象式与函数式都登记），#define 不再记成 unsupported 诊断。",
+      "AES-256 分支被裁掉后，V1 的 if=1、assignments=28 与默认构建一致；5 条 implicit-narrowing 仍保留为 semantic-drift，没有被当成通过。"
+    ]
+  },
+  "delta": {
+    "if": -1,
+    "assignments": -4,
+    "diagnosticCount": -14,
+    "preprocLineCount": -8
+  },
+  "verdict": {
+    "parseCrashBefore": false,
+    "note": "旧解析器不崩，但结构读数与默认构建不一致；因此不能把「旧 V1 通过」当成样本可接。"
+  }
+}

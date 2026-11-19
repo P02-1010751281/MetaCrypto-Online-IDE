@@ -29,12 +29,19 @@ const P4_DIR = 'experiments/ai-helper-2026-11-14/p4';
  * 声明变成可点的行区间」——语料版式不同，标题识别与 § 出处也不同，所以这三项按标准配置：
  *
  * - `layout`：`strict-column0` = 标题顶格（FIPS 180-4 的提取稿）；`indented` = 标题被
- *   pdftotext -layout 缩进到固定列（SP 800-38B），只认「编号 + 两个以上空格 + 纯字母标题」，
+ *   pdftotext -layout 缩进到固定列（SP 800-38B / 38C），只认「编号 + 两个以上空格 + 纯字母标题」，
  *   正文步骤（`1.     Let L = CIPHK(0b).`）因为带 `=()0` 不会被当成标题。
  * - `sectionRef`：条款单元从哪取 § 号。`standard-position` = 只认条目元数据的「标准定位」；
  *   `position-fallback` = 「标准定位」没有 § 时退回「原文位置」里的 §（CMAC 三页都是后者）。
  * - `appendices`：提取稿末尾的 `Appendix A: …` 是否算一级标题。不算时章级跨度会一路吃掉附录，
  *   把 §6 的锚点撑到文件尾；FIPS 180-4 保持关闭以维持既有产物逐字节不变。
+ *
+ * 第三份标准（SP 800-38C）另有两处版式差异，同样进配置、默认关闭以免动到前两份产物：
+ * - `hyphenatedHeadings`：标题首个词允许连字符（`6.1 Generation-Encryption Process`）；
+ * - `singleSpaceChapterHeadings`：章标题编号后只有一个空格（`6 CCM Specification`）。
+ * 还有一项判定口径的补丁：`sectionRefFallbackOnUnresolved` —— 「标准定位」写了 §、但该 § 在
+ * 提取稿里根本不存在时（CCM 03 写 §6.3，而 SP 800-38C 只有 §6.1/§6.2），退回「原文位置」的 §，
+ * 并在条目里记 `declaredSectionsMissing`，不静默改写语料。
  */
 const STANDARDS = {
   'fips180-4-SHA2': {
@@ -54,6 +61,18 @@ const STANDARDS = {
     appendices: true,
     out: `${P4_DIR}/anchors-sp800-38b-cmac.json`,
     note: '第二份标准切片（非哈希标准）：SP 800-38B CMAC 三个条目页；同一套锚点口径，只换版式适配',
+  },
+  'sp800-38c-ccm': {
+    dir: 'docs/standards/sp800-38c-ccm',
+    entries: ['01-CCM.md', '02-Formatting.md', '03-CBC-MAC.md', '04-CTR.md'],
+    layout: 'indented',
+    sectionRef: 'position-fallback',
+    sectionRefFallbackOnUnresolved: true,
+    hyphenatedHeadings: true,
+    singleSpaceChapterHeadings: true,
+    appendices: true,
+    out: `${P4_DIR}/anchors-sp800-38c-ccm.json`,
+    note: '第三份标准切片（认证加密组合）：SP 800-38C CCM 四个条目页；缩进版式 + 连字符标题/单空格章标题 + § 解析失败回退',
   },
 };
 
@@ -81,6 +100,10 @@ const HEADING_RE = /^(\d+(?:\.\d+)*)\.?\s+([A-Z][^:{}]{2,80})$/;
  * 正文步骤带 `=`、`(`、数字或逗号，因此不会被误认；`Appendix A: …` 由 APPENDIX_RE 单独认。
  */
 const INDENTED_HEADING_RE = /^[ \t]*(\d+(?:\.\d+)*)\.?[ ]{2,}([A-Z][A-Za-z]*(?:[ ][A-Za-z][A-Za-z-]*){0,7})\s*$/;
+/** 同一版式，但标题首个词允许连字符（`6.1 Generation-Encryption Process`）；默认关闭。 */
+const INDENTED_HEADING_HYPHEN_RE = /^[ \t]*(\d+(?:\.\d+)*)\.?[ ]{2,}([A-Z][A-Za-z]*(?:-[A-Za-z]+)*(?:[ ][A-Za-z][A-Za-z-]*){0,7})\s*$/;
+/** 章标题：编号后只有一个空格（`6 CCM Specification`）；默认关闭。 */
+const CHAPTER_HEADING_RE = /^[ \t]*(\d+)[ ]{1,}([A-Z][A-Za-z]*(?:-[A-Za-z]+)*(?:[ ][A-Za-z][A-Za-z-]*){0,7})\s*$/;
 const APPENDIX_RE = /^[ \t]*Appendix\s+([A-Z]):\s+([A-Za-z][A-Za-z -]{2,60})\s*$/;
 
 function sha256(text) {
@@ -97,7 +120,9 @@ function buildHeadings(lines, config) {
   lines.forEach((line, index) => {
     const cleaned = line.replace(/\f/g, '');
     if (cleaned.includes('....')) return;
-    const pattern = config.layout === 'indented' ? INDENTED_HEADING_RE : HEADING_RE;
+    const pattern = config.layout === 'indented'
+      ? (config.hyphenatedHeadings ? INDENTED_HEADING_HYPHEN_RE : INDENTED_HEADING_RE)
+      : HEADING_RE;
     const match = pattern.exec(cleaned);
     if (match) {
       const number = match[1];
@@ -109,6 +134,18 @@ function buildHeadings(lines, config) {
         line: index + 1,
       });
       return;
+    }
+    if (config.singleSpaceChapterHeadings) {
+      const chapter = CHAPTER_HEADING_RE.exec(cleaned);
+      if (chapter) {
+        headings.push({
+          number: chapter[1],
+          title: chapter[2].trim(),
+          level: 1,
+          line: index + 1,
+        });
+        return;
+      }
     }
     if (!config.appendices) return;
     const appendix = APPENDIX_RE.exec(cleaned);
@@ -203,6 +240,11 @@ function main() {
     entryAnchorMismatch: 0,
     declaredOutsideSections: 0,
   };
+  // 只在启用该项的标准（CCM）里加计数键：FIPS/CMAC 的产物要保持逐字节不变。
+  if (config.sectionRefFallbackOnUnresolved) {
+    counts.entriesSectionRefFallback = 0;
+    counts.entriesDeclaredSectionMissing = 0;
+  }
 
   for (const file of config.entries) {
     const entryPath = `${config.dir}/${file}`;
@@ -211,9 +253,27 @@ function main() {
     const scopeCell = metadataRow(text, '标准定位');
     const declared = parseDeclaredAnchors(positionCell);
     // 「标准定位」没有 § 的语料（CMAC 三页）退回「原文位置」里的 §；两处都没有才真的无条款单元。
-    const refs = config.sectionRef === 'position-fallback' && parseSectionRefs(scopeCell).length === 0
-      ? parseSectionRefs(positionCell)
-      : parseSectionRefs(scopeCell);
+    // 第三种情况（CCM 03）：「标准定位」写了 §，但该 § 在提取稿里不存在（§6.3），此时同样退回
+    // 「原文位置」的 §，并把缺失的 § 记进 entry.declaredSectionsMissing —— 不静默改写语料。
+    const scopeRefs = parseSectionRefs(scopeCell);
+    const positionRefs = parseSectionRefs(positionCell);
+    const declaredSectionsMissing = scopeRefs
+      .filter((ref) => !headings.some((item) => item.number === ref.section))
+      .map((ref) => ref.section);
+    let sectionRefSource = 'standard-position';
+    let refs = scopeRefs;
+    if (config.sectionRef === 'position-fallback' && scopeRefs.length === 0) {
+      refs = positionRefs;
+      sectionRefSource = 'position-fallback';
+    } else if (config.sectionRefFallbackOnUnresolved && scopeRefs.length > 0
+      && declaredSectionsMissing.length === scopeRefs.length) {
+      refs = positionRefs;
+      sectionRefSource = 'position-fallback-unresolved';
+    }
+    if (config.sectionRefFallbackOnUnresolved) {
+      counts.entriesSectionRefFallback += sectionRefSource === 'position-fallback-unresolved' ? 1 : 0;
+      counts.entriesDeclaredSectionMissing += declaredSectionsMissing.length > 0 ? 1 : 0;
+    }
     const clauseId = file.replace(/\.md$/, '');
 
     counts.entries += 1;
@@ -312,6 +372,10 @@ function main() {
         lineText: (lines[anchor.line_start - 1] || '').trim().slice(0, 80),
       })),
       entryLevelAnchor: declared.length > 0 ? declared[0] : null,
+      // 只给启用 fallback 的标准（CCM）加字段：FIPS/CMAC 产物逐字节不变。
+      ...(config.sectionRefFallbackOnUnresolved
+        ? { sectionRefSource, declaredSectionsMissing }
+        : {}),
     });
 
     for (const item of resolved) {
@@ -403,6 +467,10 @@ function main() {
     `unresolved=${counts.clauseUnitsWithoutHeading} mismatch=${counts.entryAnchorMismatch} ` +
     `outsideSections=${counts.declaredOutsideSections}`);
   console.log(`ANCHORS source=${sourcePath} lines=${lines.length} sha256=${payload.source.sha256.slice(0, 12)}…`);
+  if (config.sectionRefFallbackOnUnresolved) {
+    console.log(`ANCHORS sectionRefFallback=${counts.entriesSectionRefFallback} ` +
+      `declaredSectionMissing=${counts.entriesDeclaredSectionMissing}`);
+  }
   if (specCard) {
     console.log(`ANCHORS specCard=${specCard.anchors} quoteText=${specCard.quoteTextMatch} ` +
       `quoteHash=${specCard.quoteHashMatch} insideSpan=${specCard.insideResolvedSpan}`);

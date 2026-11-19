@@ -212,9 +212,11 @@ node dist-verify/inbox/ai-helper-inbox.js --check    # 校验收件箱，坏文�
 | 2 | PQClean ml-kem-512 的 KAT 摘要对齐（C 侧摘要 vs 生成代码摘要） | B2 | 同上 | 1 的管线（已就绪） | **已完成 2026-11-18**：C 侧摘要复现 = `c70041a7…`；`pk/sk`（K-PKE.KeyGen，146 块 IR 组装）与 `ct/ss` 全部由生成代码产出、四项逐字节相同，六行组装摘要 = META（RESULTS.md §51–§52） |
 | 3 | 缺块回流 channel 1：ticket 结构与本地收件箱 | 共享 | 新增 `inbox/`、面板计数 | 无 | **数据面完成 2026-11-18**：7 条 unsupported 诊断 → 7 条 ticket，幂等重跑新增 0，`--check` PASS，篡改 id 与已 shipped 不再触发两条对照都开火；面板徽标未接（RESULTS.md §53） |
 | 4 | A 线第二份标准切片（换一个非哈希标准，验证三档判据可复用） | A | `p4/` | 两处判据修正 | **已完成 2026-11-18**：换 SP 800-38B CMAC，锚点 3/3 可点、专卡 2/2 复算通过、FIPS 产物逐字节未变（§54）；工程构建段补完后三档改为 **0 能搭 / 3 部分 / 0 不能**——02-Subkeys 初判「能搭」被画布类型门推翻（`Bytes→IntList` 无转换块，探针 2 拒 1 通），41 块 CMAC 试点工程双语言跑通 RFC 4493 §4 四条标签 + K1‖K2，typecheck 判据首次在非哈希语料上触达（32 对 0 mismatch / 32 unknown 归因）（RESULTS.md §55） |
-| 5 | D 线接模型（检索增强回答），判据仍走 recall@5 | D | `components/ai-helper/` | §3.2 已定；限额按 §3.4 的 D 档 | 待做 |
+| 5 | D 线接模型（检索增强回答），判据仍走 recall@5 | D | `components/ai-helper/` | §3.2 已定；限额按 §3.4 的 D 档 | **服务层 + 面板 + 真浏览器验收已完成 2026-11-18**：配置/存储档位、OpenAI 兼容适配器（一次调用、20 s 真取消、0 重试、key 只走请求头）、候选投影（只取最佳段）、面板开关与 token/耗时/失败原因；48 例单测（模型 44 + 联动缓存 4）；真浏览器 **57/57** 断言（本地假 provider 走真实 HTTP，穿 CSP），并因此修掉五处缺陷——保存配置不触发调用、一次提问两次计费、CSP 里失效的 IPv6 回环源、校验失败把「说明没给依据」说成「句子不在候选里」、只改「记住」也白烧一次调用（RESULTS.md §59、§60、§61）。**未做**：真实 provider 调用（仓库无 key）、费用估算 |
 | 6 | 合并前整树 `verify:all` | 共享 | 无（只读） | 1–5 | **已完成 2026-11-18 10:43**：先 `npm run docs:index` 追平 b54f5f0 的文档改动（437 篇 / `14a943a2…`），整树 `verify:all` **rc=0**（contract errors=0、`FIELD_CHECK ok blocks=224`、`CLOSURE_CHECK ok names=226`、模板 29/29、demos 60/60、`DOC_INDEX_CHECK ok`）；同轮 `test:unit` 117 文件 / 1303 通过 1 跳过（RESULTS.md §56） |
-| 7 | AI Helper 是否镜像到 metacrypt_server | 共享 | `frontend/src/features/blockly/**`（跨仓） | 需 owner 裁决口径 | **未开始**：`sync-to-metacrypt.sh` 的写入前缀只有 `core/blocks`、`core/generators`、`core/constants`、`components`（Blockly 面板）、`services/projects`、`runtime`、`utils/{locale,migration}`；`src/services/ai-helper/`（47 个 ts）与 `src/components/ai-helper/`（5 个 vue）一条都不在镜像范围，metacrypt_server 侧实测 0 处 AI Helper 代码。最近一次跨仓动作是 `cfd2d13`（11-18 08:21）镜像 blockly core，与本线无关 |
+| 7 | AI Helper 是否镜像到 metacrypt_server | 共享 | `frontend/src/features/blockly/**`（跨仓） | owner 2026-11-18 裁决 ⓒ：服务层 + 5 面板一起镜像 | **口径已定、未开始**：`sync-to-metacrypt.sh` 的写入前缀只有 `core/blocks`、`core/generators`、`core/constants`、`components`（Blockly 面板）、`services/projects`、`runtime`、`utils/{locale,migration}`；`src/services/ai-helper/`（47 个 ts）与 `src/components/ai-helper/`（5 个 vue）一条都不在镜像范围，metacrypt_server 侧实测 0 处 AI Helper 代码。最近一次跨仓动作是 `cfd2d13`（11-18 08:21）镜像 blockly core，与本线无关 |
+| 8 | A 线第三份标准切片（SP 800-38C CCM） | A | `p4/`、三段 `p4-*` 脚本 | 4 的通用化 | **已完成 2026-11-18**：4 条目 / 7 单元 / 7-7 可点；三档 **0 能搭 / 3 部分 / 1 不能**（01-CCM 是组合导航页，判「不能」并给理由）；探针 6 用例 3 通 3 拒（运行时与契约同向 6/6）；113 块试点工程双语言 11/11 向量 + 阴性对照；FIPS/CMAC 6 份产物逐字节未变（RESULTS.md §57） |
+| 9 | B 线把 KeyExpansion 这类带循环/分支的第三方体送进 V3 | B2 | `p3/` | 1 的管线 | **本轮结论：阻断（可复跑）2026-11-18**：V0 6/6、V1 完整解析（`for=2 if=1 assigns=28 indexR=47 indexW=21`）、V2 **buildable=false**（5 类无候选块构造）、V3 不可达（13/14 向量）；C 侧单侧读数 176 B / 44 字 / 11 轮密钥全等但 `differential:false`；阻断记录机器可读，`--allow-blocked` 只在失败全有阻断记录时退 0（RESULTS.md §58） |
 
 **#2 已关闭的方式**（2026-11-18，RESULTS.md §52）：没有手工在画布里拼积木，而是让
 `p3/lib/gen-mlkem-keygen-ws.mjs` 用 IR 组装 K-PKE.KeyGen（146 块）→ `assembleIr` → harness 出码。
@@ -235,12 +237,12 @@ node dist-verify/inbox/ai-helper-inbox.js --check    # 校验收件箱，坏文�
 
 | 线 | 已完成（有读数） | 未做（明确挂着） | 判据 |
 |---|---|---|---|
-| **A** 标准/论文 → 工作区 | 两条纵向切片：FIPS 180-4（5 条目 / 14 条款单元 / 14 条全部可点、三档 1 能搭 3 部分 1 不能、33 块 SHA-256 试点跑通 B.2 向量）与 SP 800-38B CMAC（3 条目 / 3 单元全可点、专卡 2/2 复算、三档 **0 能搭 3 部分 0 不能**、缺口 6 条、41 块 CMAC 试点跑通 RFC 4493 §4 四条标签 + K1‖K2）；typecheck 判据首次在非哈希语料触达（32 对 0 mismatch / 32 unknown 逐条归因） | 第三条标准；`Bytes→IntList` 转换块缺位，使 §6.1 子密钥分解**没法在画布上表达**；CMAC 的 `Tlen` 截断与 VER 路径；语义等价永远 `unverified`（交人签核） | 能搭 / 部分 / 不能 + 锚点可点率；不读条目页的「项目状态」 |
-| **B** 参考代码 → 工作区 | V0–V3 四段管线（V3 = 本机 gcc 编 C 与仓库生成器双侧差分）：自撰 3 份样本 3/3、kokke/tiny-AES-c 两份真实样本 13/13；PQClean ML-KEM-512 的 KAT 六行全部由生成代码产出（`pk`/`sk`/`ct`/`ss` 四项逐字节相同，六行组装摘要 = META） | 带分支/循环的第三方体（tiny-AES-c 的 `Cipher` / `KeyExpansion`）不进 V3；KEM 解封装侧（`crypto_kem_dec` 的隐式拒绝）未接；浏览器内没有编译器，真编译比对要桌面 sidecar；缺块回流只到 channel 1 数据面，面板徽标未接 | 编译跑向量 vs 生成代码跑向量，逐例差分 |
-| **D** 检索助手 | 检索内核（块 / 文档 / 文献三索引）+ 查块、查文档面板；六套评测集：查块 30/30 与困难集 30/30、查文档 eval 30/30、holdout 18/20（90%）、文献 16/16；doc-answer 句子可回链 + 点名实体闸门（§29） | **D 线接模型（检索增强回答）未做**（本表第 5 行）——现在是纯检索，不是「模型答」 | 检索 recall@5 / 出处正确率 |
+| **A** 标准/论文 → 工作区 | 三条纵向切片：FIPS 180-4（5 条目 / 14 条款单元 / 14 条全部可点、三档 1 能搭 3 部分 1 不能、33 块 SHA-256 试点跑通 B.2 向量）与 SP 800-38B CMAC（3 条目 / 3 单元全可点、专卡 2/2 复算、三档 **0 能搭 3 部分 0 不能**、缺口 6 条、41 块 CMAC 试点跑通 RFC 4493 §4 四条标签 + K1‖K2）；typecheck 判据首次在非哈希语料触达（32 对 0 mismatch / 32 unknown 逐条归因）；SP 800-38C CCM（4 条目 / 7 单元 / 7-7 可点、三档 **0 能搭 3 部分 1 不能**、探针 6 用例 3 通 3 拒、113 块试点双语言 11/11 向量 + 阴性对照）（§57）；三套语料的 FIPS/CMAC 产物逐字节未变 | `Bytes→IntList` 转换块缺位，使 §6.1 子密钥分解**没法在画布上表达**（CCM 的 Formatting 同样卡这里）；CMAC/CCM 的标签截断与 VER 路径；语义等价永远 `unverified`（交人签核） | 能搭 / 部分 / 不能 + 锚点可点率；不读条目页的「项目状态」 |
+| **B** 参考代码 → 工作区 | V0–V3 四段管线（V3 = 本机 gcc 编 C 与仓库生成器双侧差分）：自撰 3 份样本 3/3、kokke/tiny-AES-c 两份真实样本 13/13；KeyExpansion 样本 V0/V1 通过但 V2 生成不了工作区、V3 不可达（5 类缺块构造已机器可读记录，C 侧单侧读数 176 B/44 字/11 轮密钥全等但 `differential:false`）（§58）；PQClean ML-KEM-512 的 KAT 六行全部由生成代码产出（`pk`/`sk`/`ct`/`ss` 四项逐字节相同，六行组装摘要 = META） | 带分支/循环的第三方体（tiny-AES-c 的 `Cipher` / `KeyExpansion`）仍不进 V3（缺整函数块与 V2 语句级组装器）；KEM 解封装侧（`crypto_kem_dec` 的隐式拒绝）未接；浏览器内没有编译器，真编译比对要桌面 sidecar；缺块回流只到 channel 1 数据面，面板徽标未接 | 编译跑向量 vs 生成代码跑向量，逐例差分 |
+| **D** 检索助手 | 检索内核（块 / 文档 / 文献三索引）+ 查块、查文档面板；BYOK 模型服务层与「让模型选句」面板（33 例单测；CSP 只放行 connect-src，IPv6 回环已同时从 CSP 与白名单里去掉）；真浏览器验收 **52/52**（默认关 0 请求、存储档位互斥、429 不吞答案、模型选择不改变出处）；六套评测集：查块 30/30 与困难集 30/30、查文档 eval 30/30、holdout 18/20（90%）、文献 16/16；doc-answer 句子可回链 + 点名实体闸门（§29） | **未接真实 provider、无费用估算**（本表第 5 行）：模型只能选/重排同一段句子，生成式回答仍未落地 | 检索 recall@5 / 出处正确率 |
 
 三线共同边界（写进合同，免得被当成「都做完了」）：A 的原文没有可执行语义，只能给档位再交人签核；
-B 的差分只覆盖「整函数被别名吸收」与「纯原语调用链」两种形态；D 目前只到检索，没有生成式回答。
+B 的差分只覆盖「整函数被别名吸收」与「纯原语调用链」两种形态（KeyExpansion 的阻断就是第三条形态的样本）；D 的模型只做「选句」，真实 provider 与浏览器交互都未验证。
 
 ### 6.1 跨仓口径：这条线还没到 metacrypt_server
 

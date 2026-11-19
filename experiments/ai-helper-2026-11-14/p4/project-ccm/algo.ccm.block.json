@@ -1,0 +1,550 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "procedures_defreturn",
+        "id": "procedures_defreturn_006",
+        "x": 40,
+        "y": 40,
+        "extraState": {
+          "params": [
+            {
+              "name": "key",
+              "id": "algo_ccm_encrypt_ex1_key",
+              "type": "key"
+            },
+            {
+              "name": "nonce",
+              "id": "algo_ccm_encrypt_ex1_nonce",
+              "type": "int_list"
+            },
+            {
+              "name": "aad",
+              "id": "algo_ccm_encrypt_ex1_aad",
+              "type": "int_list"
+            },
+            {
+              "name": "msg",
+              "id": "algo_ccm_encrypt_ex1_msg",
+              "type": "message"
+            }
+          ],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "CCM_ENCRYPT_EX1"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "ccm_encrypt",
+              "id": "ccm_encrypt_005",
+              "fields": {
+                "TAGLEN": "4"
+              },
+              "inputs": {
+                "KEY": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_001",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_encrypt_ex1_key",
+                        "name": "key"
+                      }
+                    }
+                  }
+                },
+                "NONCE": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_002",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_encrypt_ex1_nonce",
+                        "name": "nonce"
+                      }
+                    }
+                  }
+                },
+                "AAD": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_003",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_encrypt_ex1_aad",
+                        "name": "aad"
+                      }
+                    }
+                  }
+                },
+                "MSG": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_004",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_encrypt_ex1_msg",
+                        "name": "msg"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defreturn",
+        "id": "procedures_defreturn_012",
+        "x": 40,
+        "y": 320,
+        "extraState": {
+          "params": [
+            {
+              "name": "key",
+              "id": "algo_ccm_decrypt_ex1_key",
+              "type": "key"
+            },
+            {
+              "name": "nonce",
+              "id": "algo_ccm_decrypt_ex1_nonce",
+              "type": "int_list"
+            },
+            {
+              "name": "aad",
+              "id": "algo_ccm_decrypt_ex1_aad",
+              "type": "int_list"
+            },
+            {
+              "name": "ct",
+              "id": "algo_ccm_decrypt_ex1_ct",
+              "type": "bytes"
+            }
+          ],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "CCM_DECRYPT_EX1"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "ccm_decrypt",
+              "id": "ccm_decrypt_011",
+              "fields": {
+                "TAGLEN": "4"
+              },
+              "inputs": {
+                "KEY": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_007",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_decrypt_ex1_key",
+                        "name": "key"
+                      }
+                    }
+                  }
+                },
+                "NONCE": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_008",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_decrypt_ex1_nonce",
+                        "name": "nonce"
+                      }
+                    }
+                  }
+                },
+                "AAD": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_009",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_decrypt_ex1_aad",
+                        "name": "aad"
+                      }
+                    }
+                  }
+                },
+                "CT": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_010",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_decrypt_ex1_ct",
+                        "name": "ct"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defreturn",
+        "id": "procedures_defreturn_017",
+        "x": 40,
+        "y": 520,
+        "extraState": {
+          "params": [
+            {
+              "name": "nonce",
+              "id": "algo_ccm_b0_nonce",
+              "type": "int_list"
+            },
+            {
+              "name": "msgLen",
+              "id": "algo_ccm_b0_msgLen",
+              "type": "int"
+            },
+            {
+              "name": "aadLen",
+              "id": "algo_ccm_b0_aadLen",
+              "type": "int"
+            }
+          ],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "CCM_B0"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "ccm_b0",
+              "id": "ccm_b0_016",
+              "fields": {
+                "TAGLEN": "4"
+              },
+              "inputs": {
+                "NONCE": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_013",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_b0_nonce",
+                        "name": "nonce"
+                      }
+                    }
+                  }
+                },
+                "MSGLEN": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_014",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_b0_msgLen",
+                        "name": "msgLen"
+                      }
+                    }
+                  }
+                },
+                "AADLEN": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_015",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_b0_aadLen",
+                        "name": "aadLen"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defreturn",
+        "id": "procedures_defreturn_021",
+        "x": 40,
+        "y": 700,
+        "extraState": {
+          "params": [
+            {
+              "name": "nonce",
+              "id": "algo_ccm_counter_block_nonce",
+              "type": "int_list"
+            },
+            {
+              "name": "i",
+              "id": "algo_ccm_counter_block_i",
+              "type": "int"
+            }
+          ],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "CCM_COUNTER_BLOCK"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "ccm_counter_block",
+              "id": "ccm_counter_block_020",
+              "fields": {
+                "TAGLEN": "4"
+              },
+              "inputs": {
+                "NONCE": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_018",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_counter_block_nonce",
+                        "name": "nonce"
+                      }
+                    }
+                  }
+                },
+                "I": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_019",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_counter_block_i",
+                        "name": "i"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defreturn",
+        "id": "procedures_defreturn_027",
+        "x": 40,
+        "y": 860,
+        "extraState": {
+          "params": [
+            {
+              "name": "key",
+              "id": "algo_ccm_cbc_mac_key",
+              "type": "key"
+            },
+            {
+              "name": "nonce",
+              "id": "algo_ccm_cbc_mac_nonce",
+              "type": "int_list"
+            },
+            {
+              "name": "aad",
+              "id": "algo_ccm_cbc_mac_aad",
+              "type": "int_list"
+            },
+            {
+              "name": "msg",
+              "id": "algo_ccm_cbc_mac_msg",
+              "type": "message"
+            }
+          ],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "CCM_CBC_MAC"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "ccm_cbc_mac",
+              "id": "ccm_cbc_mac_026",
+              "fields": {
+                "TAGLEN": "4"
+              },
+              "inputs": {
+                "KEY": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_022",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_cbc_mac_key",
+                        "name": "key"
+                      }
+                    }
+                  }
+                },
+                "NONCE": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_023",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_cbc_mac_nonce",
+                        "name": "nonce"
+                      }
+                    }
+                  }
+                },
+                "AAD": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_024",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_cbc_mac_aad",
+                        "name": "aad"
+                      }
+                    }
+                  }
+                },
+                "MSG": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_025",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_cbc_mac_msg",
+                        "name": "msg"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defreturn",
+        "id": "procedures_defreturn_032",
+        "x": 40,
+        "y": 1060,
+        "extraState": {
+          "params": [
+            {
+              "name": "key",
+              "id": "algo_ccm_ctr_key",
+              "type": "key"
+            },
+            {
+              "name": "nonce",
+              "id": "algo_ccm_ctr_nonce",
+              "type": "int_list"
+            },
+            {
+              "name": "msg",
+              "id": "algo_ccm_ctr_msg",
+              "type": "message"
+            }
+          ],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "CCM_CTR"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "ccm_ctr",
+              "id": "ccm_ctr_031",
+              "fields": {
+                "TAGLEN": "4"
+              },
+              "inputs": {
+                "KEY": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_028",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_ctr_key",
+                        "name": "key"
+                      }
+                    }
+                  }
+                },
+                "NONCE": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_029",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_ctr_nonce",
+                        "name": "nonce"
+                      }
+                    }
+                  }
+                },
+                "MSG": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_030",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_ctr_msg",
+                        "name": "msg"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "procedures_defreturn",
+        "id": "procedures_defreturn_035",
+        "x": 40,
+        "y": 1220,
+        "extraState": {
+          "params": [
+            {
+              "name": "aadLen",
+              "id": "algo_ccm_aad_prefix_aadLen",
+              "type": "int"
+            }
+          ],
+          "hasStatements": false
+        },
+        "fields": {
+          "NAME": "CCM_AAD_PREFIX"
+        },
+        "inputs": {
+          "RETURN": {
+            "block": {
+              "type": "ccm_aad_len_prefix",
+              "id": "ccm_aad_len_prefix_034",
+              "inputs": {
+                "AADLEN": {
+                  "block": {
+                    "type": "variables_get",
+                    "id": "variables_get_033",
+                    "fields": {
+                      "VAR": {
+                        "id": "algo_ccm_aad_prefix_aadLen",
+                        "name": "aadLen"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

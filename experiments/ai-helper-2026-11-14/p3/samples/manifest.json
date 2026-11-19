@@ -102,6 +102,46 @@
       "opaqueFunctions": [
         "MixColumns"
       ]
+    },
+    {
+      "id": "kokke-keyexpansion",
+      "file": "kokke-keyexpansion.c",
+      "sha256": "ddc0680e0d530e335752886bb47f6c4f58847fb97e6c88b0c43f8042b6408eec",
+      "lines": 134,
+      "maxLines": 140,
+      "source": "第三方参考实现（kokke/tiny-AES-c），非自撰、非改写",
+      "provenance": "上游 aes.c 的 45–56（Nb/Nk/Nr 的 #if 配置链）、76–96（sbox）、118–121（Rcon）、137–143（getSBoxValue 宏）、145–217（KeyExpansion 本体）原样摘录；除此之外只有一段 11 行来源注释与一行 #include <stdint.h>（上游由 aes.h 提供同一定义）。未改名、未去 static、未改签名、未展开宏、未删任何一个 #if。逐字节一致性用「上游片段是否按顺序作为连续子串出现在样本里」机械复核（5 段全部命中，见 p3/out/p3-summary.json 的 V0 与 RESULTS §57）。maxLines=140 是本样本的显式上限：KeyExpansion 本体 73 行 + 必需上下文，无法压到既有 40 行上限而不改写原文。",
+      "upstream": {
+        "repo": "https://github.com/kokke/tiny-AES-c",
+        "commit": "23856752fbd139da0b8ca6e471a13d5bcc99a08d",
+        "commitDate": "2024-10-04",
+        "file": "aes.c",
+        "fileSha256": "f7f78b44654efd3542b6886923dd05194286807ebcfeb078ea05d21fe901ee9e",
+        "lines": [
+          45,
+          56,
+          76,
+          96,
+          118,
+          121,
+          137,
+          143,
+          145,
+          217
+        ],
+        "lineRanges": [
+          "45-56",
+          "76-96",
+          "118-121",
+          "137-143",
+          "145-217"
+        ]
+      },
+      "standard": "FIPS 197 §5.2 KeyExpansion（AES-128 配置：Nk=4、Nb=4、Nr=10）",
+      "license": "Unlicense（上游 unlicense.txt，公有领域）",
+      "retrieved": "2026-11-18",
+      "verifyCommand": "sha256sum kokke-keyexpansion.c",
+      "dependsOn": []
     }
   ]
 }

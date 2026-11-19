@@ -196,7 +196,11 @@ class Parser {
       const t = this.peek();
       if (t.type === 'preproc') {
         preprocs.push({ line: t.line, text: t.value });
-        this.diag.unsupported(t.line, 'preprocessor', `预处理行未展开：${t.value.trim().slice(0, 80)}`);
+        // `#define` 已被 preprocessConditionals() 取值登记（宏表随 V1 读数给出），
+        // 只有 `#include` 这类「未展开」的指令才按不支持记录，避免把已理解的宏读成缺陷。
+        if (!isDefineDirective(t.value)) {
+          this.diag.unsupported(t.line, 'preprocessor', `预处理行未展开：${t.value.trim().slice(0, 80)}`);
+        }
         this.next();
         continue;
       }
@@ -844,6 +848,193 @@ class Parser {
   }
 }
 
+// ---------------------------------------------------------------------------
+// 预处理：只处理「影响结构」的两件事——条件编译分支与对象/函数式宏的取值登记。
+//
+// 为什么必须有这一层：上游 tiny-AES-c 的 KeyExpansion 体尾挂着
+// `#if defined(AES256) && (AES256 == 1) ... #endif` 的 AES-256 分支。不过这一层的话，
+// 解析器会把该分支当成默认配置读进结构骨架，V1/V2 的读数就是错的；而默认构建（不定义
+// AES256/AES192）应取 `#else` 的 Nk=4 / Nr=10。
+//
+// 边界：只按行为单位评估 `#if/#ifdef/#ifndef/#elif/#else/#endif`，表达式只支持
+// defined(X)、整数常量、宏名（未定义按 0）、! && || == != 与括号；不展开 #include，
+// 不做宏替换（宏调用在结构里保留为 call，由 V2 判是否有块承接），也不处理注释里的
+// 「伪指令」。被裁掉的行用空行占位，行号与上游保持一一对应。
+// ---------------------------------------------------------------------------
+const CONDITIONAL_RE = /^\s*#\s*(ifdef|ifndef|if|elif|else|endif)\b(.*)$/;
+const DEFINE_RE = /^\s*#\s*define\s+([A-Za-z_]\w*)(\()?/;
+
+export function isDefineDirective(text) {
+  return /^\s*#\s*define\b/.test(text);
+}
+
+function tokenizeDirective(expr, atLine) {
+  const toks = [];
+  let i = 0;
+  while (i < expr.length) {
+    const ch = expr[i];
+    if (/\s/.test(ch)) { i += 1; continue; }
+    if (expr.startsWith('defined', i) && !/[A-Za-z0-9_]/.test(expr[i + 7] || '')) {
+      toks.push({ t: 'defined' });
+      i += 7;
+      continue;
+    }
+    const two = expr.slice(i, i + 2);
+    if (['&&', '||', '==', '!='].includes(two)) { toks.push({ t: 'op', v: two }); i += 2; continue; }
+    if (ch === '!' || ch === '(' || ch === ')') { toks.push({ t: ch === '!' ? 'op' : 'punct', v: ch }); i += 1; continue; }
+    if (/[0-9]/.test(ch)) {
+      const m = /^[0-9]+/.exec(expr.slice(i));
+      toks.push({ t: 'num', v: Number(m[0]) });
+      i += m[0].length;
+      continue;
+    }
+    if (/[A-Za-z_]/.test(ch)) {
+      const m = /^[A-Za-z_][A-Za-z0-9_]*/.exec(expr.slice(i));
+      toks.push({ t: 'ident', v: m[0] });
+      i += m[0].length;
+      continue;
+    }
+    throw new Error(`预处理表达式无法识别：第 ${atLine} 行 ${JSON.stringify(expr)} 的 ${JSON.stringify(ch)}`);
+  }
+  return toks;
+}
+
+/** 评估条件编译表达式；只认 defined(X)、整数、宏名（未定义=0）、! && || == != 与括号。 */
+export function evalConditional(expr, macros, atLine) {
+  const toks = tokenizeDirective(expr, atLine);
+  let p = 0;
+  const peek = () => toks[p];
+  const eat = () => toks[p++];
+  const fail = () => { throw new Error(`预处理表达式不完整：第 ${atLine} 行 ${JSON.stringify(expr)}`); };
+  const primary = () => {
+    const t = eat();
+    if (!t) fail();
+    if (t.t === 'defined') {
+      let name;
+      if (peek()?.t === 'punct' && peek().v === '(') {
+        eat();
+        name = eat()?.v;
+        if (eat()?.v !== ')') fail();
+      } else {
+        name = eat()?.v;
+      }
+      if (typeof name !== 'string') fail();
+      return macros.has(name) ? 1 : 0;
+    }
+    if (t.t === 'num') return t.v;
+    if (t.t === 'ident') {
+      const m = macros.get(t.v);
+      if (!m) return 0;
+      const n = Number(m.value);
+      return Number.isFinite(n) ? n : 0;
+    }
+    if (t.t === 'punct' && t.v === '(') {
+      const v = orExpr();
+      if (eat()?.v !== ')') fail();
+      return v;
+    }
+    if (t.t === 'op' && t.v === '!') return primary() ? 0 : 1;
+    fail();
+    return 0;
+  };
+  const eqExpr = () => {
+    let left = primary();
+    while (peek()?.t === 'op' && (peek().v === '==' || peek().v === '!=')) {
+      const op = eat().v;
+      const right = primary();
+      left = op === '==' ? (left === right ? 1 : 0) : (left !== right ? 1 : 0);
+    }
+    return left;
+  };
+  const andExpr = () => {
+    let left = eqExpr();
+    while (peek()?.t === 'op' && peek().v === '&&') { eat(); const right = eqExpr(); left = left && right ? 1 : 0; }
+    return left;
+  };
+  const orExpr = () => {
+    let left = andExpr();
+    while (peek()?.t === 'op' && peek().v === '||') { eat(); const right = andExpr(); left = left || right ? 1 : 0; }
+    return left;
+  };
+  const value = orExpr();
+  if (p !== toks.length) fail();
+  return value !== 0;
+}
+
+/**
+ * 返回行号对齐后的源码（被裁分支留空行）与宏表/条件记录。
+ * 宏表既用于条件评估，也作为 V1 读数（Nk=4 / Nr=10 / Nb=4 与函数式宏 getSBoxValue）。
+ */
+export function preprocessConditionals(sourceText) {
+  const lines = sourceText.split(/\r?\n/);
+  const out = lines.slice();
+  const macros = new Map();
+  const conditionals = [];
+  const stack = [];
+  const active = () => stack.length === 0 || stack[stack.length - 1].active;
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i];
+    const m = CONDITIONAL_RE.exec(line);
+    if (m) {
+      const kw = m[1];
+      const rest = m[2].trim();
+      if (kw === 'if' || kw === 'ifdef' || kw === 'ifndef') {
+        const parentActive = active();
+        let cond = false;
+        if (parentActive) {
+          if (kw === 'if') cond = evalConditional(rest, macros, i + 1);
+          else {
+            const name = (/^([A-Za-z_]\w*)/.exec(rest) || [])[1];
+            if (!name) throw new Error(`预处理行缺少宏名：第 ${i + 1} 行 ${line.trim()}`);
+            cond = kw === 'ifdef' ? macros.has(name) : !macros.has(name);
+          }
+        }
+        const frame = { line: i + 1, kind: kw, expr: rest, parentActive, active: parentActive && cond, taken: parentActive && cond };
+        stack.push(frame);
+        conditionals.push({ line: i + 1, kind: kw, expr: rest, branchActive: frame.active });
+      } else if (kw === 'elif') {
+        const frame = stack[stack.length - 1];
+        if (!frame) throw new Error(`#elif 没有对应的 #if：第 ${i + 1} 行`);
+        const cond = frame.parentActive && !frame.taken ? evalConditional(rest, macros, i + 1) : false;
+        frame.active = !frame.taken && cond;
+        frame.taken = frame.taken || frame.active;
+        conditionals.push({ line: i + 1, kind: kw, expr: rest, branchActive: frame.active });
+      } else if (kw === 'else') {
+        const frame = stack[stack.length - 1];
+        if (!frame) throw new Error(`#else 没有对应的 #if：第 ${i + 1} 行`);
+        frame.active = frame.parentActive && !frame.taken;
+        frame.taken = true;
+        conditionals.push({ line: i + 1, kind: kw, expr: '', branchActive: frame.active });
+      } else {
+        if (stack.length === 0) throw new Error(`#endif 没有对应的 #if：第 ${i + 1} 行`);
+        stack.pop();
+        conditionals.push({ line: i + 1, kind: 'endif', expr: '', branchActive: active() });
+      }
+      out[i] = '';
+      continue;
+    }
+    if (!active()) { out[i] = ''; continue; }
+    const d = DEFINE_RE.exec(line);
+    if (d) {
+      // 宏值要能参与条件求值：先去掉行尾 // 与块注释，再 trim。
+      const stripComments = (s) => s.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/\/\/.*$/, '').trim();
+      const functionLike = Boolean(d[2]);
+      let params = [];
+      let value;
+      if (functionLike) {
+        const pm = /^\s*#\s*define\s+[A-Za-z_]\w*\(([^)]*)\)\s*(.*)$/.exec(line);
+        params = (pm?.[1] || '').split(',').map((x) => x.trim()).filter(Boolean);
+        value = stripComments(pm?.[2] || '');
+      } else {
+        value = stripComments(line.replace(/^\s*#\s*define\s+[A-Za-z_]\w*\s*/, ''));
+      }
+      macros.set(d[1], { name: d[1], value, functionLike, params, line: i + 1 });
+    }
+  }
+  if (stack.length > 0) throw new Error(`#if 未闭合：第 ${stack[stack.length - 1].line} 行起`);
+  return { text: out.join('\n'), macros, conditionals };
+}
+
 /**
  * @param {string} sourceText
  * @param {{ opaqueFunctions?: Set<string> }} [options]
@@ -852,8 +1043,10 @@ class Parser {
  *   强行按 C 子集解析只会把「不支持指针解引用」这类噪声当成样本缺陷。
  */
 export function parseC(sourceText, options = {}) {
-  const diagnostics = new DiagnosticBag(sourceText);
-  const tokens = lex(sourceText);
+  // 条件编译先按行裁掉非活动分支（保留行号），再走原有词法/语法分析。
+  const preprocessor = preprocessConditionals(sourceText);
+  const diagnostics = new DiagnosticBag(preprocessor.text);
+  const tokens = lex(preprocessor.text);
   const parser = new Parser(tokens, diagnostics, options);
   const program = parser.parseTranslationUnit();
   return {
@@ -861,6 +1054,16 @@ export function parseC(sourceText, options = {}) {
     diagnostics: diagnostics.items,
     constructCounts: countConstructs(program),
     callSites: collectCallSites(program),
+    preprocessor: {
+      conditionals: preprocessor.conditionals,
+      defines: [...preprocessor.macros.values()].map((m) => ({
+        name: m.name,
+        line: m.line,
+        value: m.value,
+        functionLike: m.functionLike,
+        params: m.params,
+      })),
+    },
   };
 }
 

@@ -1,0 +1,1070 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "variables_set",
+        "id": "variables_set_038",
+        "fields": {
+          "VAR": {
+            "id": "main_var_key",
+            "name": "key"
+          }
+        },
+        "inputs": {
+          "VALUE": {
+            "block": {
+              "type": "hex_to_bytes",
+              "id": "hex_to_bytes_037",
+              "inputs": {
+                "INPUT": {
+                  "block": {
+                    "type": "data_value",
+                    "id": "data_value_036",
+                    "fields": {
+                      "NUM": "\"404142434445464748494a4b4c4d4e4f\""
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "next": {
+          "block": {
+            "type": "variables_set",
+            "id": "variables_set_040",
+            "fields": {
+              "VAR": {
+                "id": "main_var_nonce_ex1",
+                "name": "nonce_ex1"
+              }
+            },
+            "inputs": {
+              "VALUE": {
+                "block": {
+                  "type": "data_int_list",
+                  "id": "data_int_list_039",
+                  "extraState": {
+                    "shape": "7",
+                    "data": "16,17,18,19,20,21,22"
+                  }
+                }
+              }
+            },
+            "next": {
+              "block": {
+                "type": "variables_set",
+                "id": "variables_set_042",
+                "fields": {
+                  "VAR": {
+                    "id": "main_var_aad_ex1",
+                    "name": "aad_ex1"
+                  }
+                },
+                "inputs": {
+                  "VALUE": {
+                    "block": {
+                      "type": "data_int_list",
+                      "id": "data_int_list_041",
+                      "extraState": {
+                        "shape": "8",
+                        "data": "0,1,2,3,4,5,6,7"
+                      }
+                    }
+                  }
+                },
+                "next": {
+                  "block": {
+                    "type": "variables_set",
+                    "id": "variables_set_045",
+                    "fields": {
+                      "VAR": {
+                        "id": "main_var_msg_ex1",
+                        "name": "msg_ex1"
+                      }
+                    },
+                    "inputs": {
+                      "VALUE": {
+                        "block": {
+                          "type": "hex_to_bytes",
+                          "id": "hex_to_bytes_044",
+                          "inputs": {
+                            "INPUT": {
+                              "block": {
+                                "type": "data_value",
+                                "id": "data_value_043",
+                                "fields": {
+                                  "NUM": "\"20212223\""
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "next": {
+                      "block": {
+                        "type": "variables_set",
+                        "id": "variables_set_047",
+                        "fields": {
+                          "VAR": {
+                            "id": "main_var_nonce_ex2",
+                            "name": "nonce_ex2"
+                          }
+                        },
+                        "inputs": {
+                          "VALUE": {
+                            "block": {
+                              "type": "data_int_list",
+                              "id": "data_int_list_046",
+                              "extraState": {
+                                "shape": "8",
+                                "data": "16,17,18,19,20,21,22,23"
+                              }
+                            }
+                          }
+                        },
+                        "next": {
+                          "block": {
+                            "type": "variables_set",
+                            "id": "variables_set_049",
+                            "fields": {
+                              "VAR": {
+                                "id": "main_var_aad_ex2",
+                                "name": "aad_ex2"
+                              }
+                            },
+                            "inputs": {
+                              "VALUE": {
+                                "block": {
+                                  "type": "data_int_list",
+                                  "id": "data_int_list_048",
+                                  "extraState": {
+                                    "shape": "16",
+                                    "data": "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15"
+                                  }
+                                }
+                              }
+                            },
+                            "next": {
+                              "block": {
+                                "type": "variables_set",
+                                "id": "variables_set_052",
+                                "fields": {
+                                  "VAR": {
+                                    "id": "main_var_msg_ex2",
+                                    "name": "msg_ex2"
+                                  }
+                                },
+                                "inputs": {
+                                  "VALUE": {
+                                    "block": {
+                                      "type": "hex_to_bytes",
+                                      "id": "hex_to_bytes_051",
+                                      "inputs": {
+                                        "INPUT": {
+                                          "block": {
+                                            "type": "data_value",
+                                            "id": "data_value_050",
+                                            "fields": {
+                                              "NUM": "\"202122232425262728292a2b2c2d2e2f\""
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "next": {
+                                  "block": {
+                                    "type": "variables_set",
+                                    "id": "variables_set_054",
+                                    "fields": {
+                                      "VAR": {
+                                        "id": "main_var_nonce_ex3",
+                                        "name": "nonce_ex3"
+                                      }
+                                    },
+                                    "inputs": {
+                                      "VALUE": {
+                                        "block": {
+                                          "type": "data_int_list",
+                                          "id": "data_int_list_053",
+                                          "extraState": {
+                                            "shape": "12",
+                                            "data": "16,17,18,19,20,21,22,23,24,25,26,27"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "next": {
+                                      "block": {
+                                        "type": "variables_set",
+                                        "id": "variables_set_056",
+                                        "fields": {
+                                          "VAR": {
+                                            "id": "main_var_aad_ex3",
+                                            "name": "aad_ex3"
+                                          }
+                                        },
+                                        "inputs": {
+                                          "VALUE": {
+                                            "block": {
+                                              "type": "data_int_list",
+                                              "id": "data_int_list_055",
+                                              "extraState": {
+                                                "shape": "20",
+                                                "data": "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "next": {
+                                          "block": {
+                                            "type": "variables_set",
+                                            "id": "variables_set_059",
+                                            "fields": {
+                                              "VAR": {
+                                                "id": "main_var_msg_ex3",
+                                                "name": "msg_ex3"
+                                              }
+                                            },
+                                            "inputs": {
+                                              "VALUE": {
+                                                "block": {
+                                                  "type": "hex_to_bytes",
+                                                  "id": "hex_to_bytes_058",
+                                                  "inputs": {
+                                                    "INPUT": {
+                                                      "block": {
+                                                        "type": "data_value",
+                                                        "id": "data_value_057",
+                                                        "fields": {
+                                                          "NUM": "\"202122232425262728292a2b2c2d2e2f3031323334353637\""
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "next": {
+                                              "block": {
+                                                "type": "variables_set",
+                                                "id": "variables_set_065",
+                                                "fields": {
+                                                  "VAR": {
+                                                    "id": "main_var_out_ex1",
+                                                    "name": "out_ex1"
+                                                  }
+                                                },
+                                                "inputs": {
+                                                  "VALUE": {
+                                                    "block": {
+                                                      "type": "procedures_callreturn",
+                                                      "id": "procedures_callreturn_064",
+                                                      "fields": {
+                                                        "NAME": "CCM_ENCRYPT_EX1"
+                                                      },
+                                                      "extraState": {
+                                                        "params": [
+                                                          {
+                                                            "name": "key",
+                                                            "id": "main_ccm_encrypt_ex1_key",
+                                                            "type": "key"
+                                                          },
+                                                          {
+                                                            "name": "nonce",
+                                                            "id": "main_ccm_encrypt_ex1_nonce",
+                                                            "type": "int_list"
+                                                          },
+                                                          {
+                                                            "name": "aad",
+                                                            "id": "main_ccm_encrypt_ex1_aad",
+                                                            "type": "int_list"
+                                                          },
+                                                          {
+                                                            "name": "msg",
+                                                            "id": "main_ccm_encrypt_ex1_msg",
+                                                            "type": "message"
+                                                          }
+                                                        ]
+                                                      },
+                                                      "inputs": {
+                                                        "ARG0": {
+                                                          "block": {
+                                                            "type": "variables_get",
+                                                            "id": "variables_get_060",
+                                                            "fields": {
+                                                              "VAR": {
+                                                                "id": "main_var_key",
+                                                                "name": "key"
+                                                              }
+                                                            }
+                                                          }
+                                                        },
+                                                        "ARG1": {
+                                                          "block": {
+                                                            "type": "variables_get",
+                                                            "id": "variables_get_061",
+                                                            "fields": {
+                                                              "VAR": {
+                                                                "id": "main_var_nonce_ex1",
+                                                                "name": "nonce_ex1"
+                                                              }
+                                                            }
+                                                          }
+                                                        },
+                                                        "ARG2": {
+                                                          "block": {
+                                                            "type": "variables_get",
+                                                            "id": "variables_get_062",
+                                                            "fields": {
+                                                              "VAR": {
+                                                                "id": "main_var_aad_ex1",
+                                                                "name": "aad_ex1"
+                                                              }
+                                                            }
+                                                          }
+                                                        },
+                                                        "ARG3": {
+                                                          "block": {
+                                                            "type": "variables_get",
+                                                            "id": "variables_get_063",
+                                                            "fields": {
+                                                              "VAR": {
+                                                                "id": "main_var_msg_ex1",
+                                                                "name": "msg_ex1"
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "next": {
+                                                  "block": {
+                                                    "type": "variables_set",
+                                                    "id": "variables_set_071",
+                                                    "fields": {
+                                                      "VAR": {
+                                                        "id": "main_var_out_ex2",
+                                                        "name": "out_ex2"
+                                                      }
+                                                    },
+                                                    "inputs": {
+                                                      "VALUE": {
+                                                        "block": {
+                                                          "type": "ccm_encrypt",
+                                                          "id": "ccm_encrypt_070",
+                                                          "fields": {
+                                                            "TAGLEN": "6"
+                                                          },
+                                                          "inputs": {
+                                                            "KEY": {
+                                                              "block": {
+                                                                "type": "variables_get",
+                                                                "id": "variables_get_066",
+                                                                "fields": {
+                                                                  "VAR": {
+                                                                    "id": "main_var_key",
+                                                                    "name": "key"
+                                                                  }
+                                                                }
+                                                              }
+                                                            },
+                                                            "NONCE": {
+                                                              "block": {
+                                                                "type": "variables_get",
+                                                                "id": "variables_get_067",
+                                                                "fields": {
+                                                                  "VAR": {
+                                                                    "id": "main_var_nonce_ex2",
+                                                                    "name": "nonce_ex2"
+                                                                  }
+                                                                }
+                                                              }
+                                                            },
+                                                            "AAD": {
+                                                              "block": {
+                                                                "type": "variables_get",
+                                                                "id": "variables_get_068",
+                                                                "fields": {
+                                                                  "VAR": {
+                                                                    "id": "main_var_aad_ex2",
+                                                                    "name": "aad_ex2"
+                                                                  }
+                                                                }
+                                                              }
+                                                            },
+                                                            "MSG": {
+                                                              "block": {
+                                                                "type": "variables_get",
+                                                                "id": "variables_get_069",
+                                                                "fields": {
+                                                                  "VAR": {
+                                                                    "id": "main_var_msg_ex2",
+                                                                    "name": "msg_ex2"
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    "next": {
+                                                      "block": {
+                                                        "type": "variables_set",
+                                                        "id": "variables_set_077",
+                                                        "fields": {
+                                                          "VAR": {
+                                                            "id": "main_var_out_ex3",
+                                                            "name": "out_ex3"
+                                                          }
+                                                        },
+                                                        "inputs": {
+                                                          "VALUE": {
+                                                            "block": {
+                                                              "type": "ccm_encrypt",
+                                                              "id": "ccm_encrypt_076",
+                                                              "fields": {
+                                                                "TAGLEN": "8"
+                                                              },
+                                                              "inputs": {
+                                                                "KEY": {
+                                                                  "block": {
+                                                                    "type": "variables_get",
+                                                                    "id": "variables_get_072",
+                                                                    "fields": {
+                                                                      "VAR": {
+                                                                        "id": "main_var_key",
+                                                                        "name": "key"
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                },
+                                                                "NONCE": {
+                                                                  "block": {
+                                                                    "type": "variables_get",
+                                                                    "id": "variables_get_073",
+                                                                    "fields": {
+                                                                      "VAR": {
+                                                                        "id": "main_var_nonce_ex3",
+                                                                        "name": "nonce_ex3"
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                },
+                                                                "AAD": {
+                                                                  "block": {
+                                                                    "type": "variables_get",
+                                                                    "id": "variables_get_074",
+                                                                    "fields": {
+                                                                      "VAR": {
+                                                                        "id": "main_var_aad_ex3",
+                                                                        "name": "aad_ex3"
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                },
+                                                                "MSG": {
+                                                                  "block": {
+                                                                    "type": "variables_get",
+                                                                    "id": "variables_get_075",
+                                                                    "fields": {
+                                                                      "VAR": {
+                                                                        "id": "main_var_msg_ex3",
+                                                                        "name": "msg_ex3"
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        },
+                                                        "next": {
+                                                          "block": {
+                                                            "type": "variables_set",
+                                                            "id": "variables_set_083",
+                                                            "fields": {
+                                                              "VAR": {
+                                                                "id": "main_var_dec_ex1",
+                                                                "name": "dec_ex1"
+                                                              }
+                                                            },
+                                                            "inputs": {
+                                                              "VALUE": {
+                                                                "block": {
+                                                                  "type": "procedures_callreturn",
+                                                                  "id": "procedures_callreturn_082",
+                                                                  "fields": {
+                                                                    "NAME": "CCM_DECRYPT_EX1"
+                                                                  },
+                                                                  "extraState": {
+                                                                    "params": [
+                                                                      {
+                                                                        "name": "key",
+                                                                        "id": "main_ccm_decrypt_ex1_key",
+                                                                        "type": "key"
+                                                                      },
+                                                                      {
+                                                                        "name": "nonce",
+                                                                        "id": "main_ccm_decrypt_ex1_nonce",
+                                                                        "type": "int_list"
+                                                                      },
+                                                                      {
+                                                                        "name": "aad",
+                                                                        "id": "main_ccm_decrypt_ex1_aad",
+                                                                        "type": "int_list"
+                                                                      },
+                                                                      {
+                                                                        "name": "ct",
+                                                                        "id": "main_ccm_decrypt_ex1_ct",
+                                                                        "type": "bytes"
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  "inputs": {
+                                                                    "ARG0": {
+                                                                      "block": {
+                                                                        "type": "variables_get",
+                                                                        "id": "variables_get_078",
+                                                                        "fields": {
+                                                                          "VAR": {
+                                                                            "id": "main_var_key",
+                                                                            "name": "key"
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    },
+                                                                    "ARG1": {
+                                                                      "block": {
+                                                                        "type": "variables_get",
+                                                                        "id": "variables_get_079",
+                                                                        "fields": {
+                                                                          "VAR": {
+                                                                            "id": "main_var_nonce_ex1",
+                                                                            "name": "nonce_ex1"
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    },
+                                                                    "ARG2": {
+                                                                      "block": {
+                                                                        "type": "variables_get",
+                                                                        "id": "variables_get_080",
+                                                                        "fields": {
+                                                                          "VAR": {
+                                                                            "id": "main_var_aad_ex1",
+                                                                            "name": "aad_ex1"
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    },
+                                                                    "ARG3": {
+                                                                      "block": {
+                                                                        "type": "variables_get",
+                                                                        "id": "variables_get_081",
+                                                                        "fields": {
+                                                                          "VAR": {
+                                                                            "id": "main_var_out_ex1",
+                                                                            "name": "out_ex1"
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            },
+                                                            "next": {
+                                                              "block": {
+                                                                "type": "variables_set",
+                                                                "id": "variables_set_088",
+                                                                "fields": {
+                                                                  "VAR": {
+                                                                    "id": "main_var_b0",
+                                                                    "name": "b0"
+                                                                  }
+                                                                },
+                                                                "inputs": {
+                                                                  "VALUE": {
+                                                                    "block": {
+                                                                      "type": "procedures_callreturn",
+                                                                      "id": "procedures_callreturn_087",
+                                                                      "fields": {
+                                                                        "NAME": "CCM_B0"
+                                                                      },
+                                                                      "extraState": {
+                                                                        "params": [
+                                                                          {
+                                                                            "name": "nonce",
+                                                                            "id": "main_ccm_b0_nonce",
+                                                                            "type": "int_list"
+                                                                          },
+                                                                          {
+                                                                            "name": "msgLen",
+                                                                            "id": "main_ccm_b0_msgLen",
+                                                                            "type": "int"
+                                                                          },
+                                                                          {
+                                                                            "name": "aadLen",
+                                                                            "id": "main_ccm_b0_aadLen",
+                                                                            "type": "int"
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      "inputs": {
+                                                                        "ARG0": {
+                                                                          "block": {
+                                                                            "type": "variables_get",
+                                                                            "id": "variables_get_084",
+                                                                            "fields": {
+                                                                              "VAR": {
+                                                                                "id": "main_var_nonce_ex1",
+                                                                                "name": "nonce_ex1"
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        },
+                                                                        "ARG1": {
+                                                                          "block": {
+                                                                            "type": "data_value",
+                                                                            "id": "data_value_085",
+                                                                            "fields": {
+                                                                              "NUM": "4"
+                                                                            }
+                                                                          }
+                                                                        },
+                                                                        "ARG2": {
+                                                                          "block": {
+                                                                            "type": "data_value",
+                                                                            "id": "data_value_086",
+                                                                            "fields": {
+                                                                              "NUM": "8"
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                },
+                                                                "next": {
+                                                                  "block": {
+                                                                    "type": "variables_set",
+                                                                    "id": "variables_set_092",
+                                                                    "fields": {
+                                                                      "VAR": {
+                                                                        "id": "main_var_cb0",
+                                                                        "name": "cb0"
+                                                                      }
+                                                                    },
+                                                                    "inputs": {
+                                                                      "VALUE": {
+                                                                        "block": {
+                                                                          "type": "procedures_callreturn",
+                                                                          "id": "procedures_callreturn_091",
+                                                                          "fields": {
+                                                                            "NAME": "CCM_COUNTER_BLOCK"
+                                                                          },
+                                                                          "extraState": {
+                                                                            "params": [
+                                                                              {
+                                                                                "name": "nonce",
+                                                                                "id": "main_ccm_counter_block_nonce",
+                                                                                "type": "int_list"
+                                                                              },
+                                                                              {
+                                                                                "name": "i",
+                                                                                "id": "main_ccm_counter_block_i",
+                                                                                "type": "int"
+                                                                              }
+                                                                            ]
+                                                                          },
+                                                                          "inputs": {
+                                                                            "ARG0": {
+                                                                              "block": {
+                                                                                "type": "variables_get",
+                                                                                "id": "variables_get_089",
+                                                                                "fields": {
+                                                                                  "VAR": {
+                                                                                    "id": "main_var_nonce_ex1",
+                                                                                    "name": "nonce_ex1"
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            },
+                                                                            "ARG1": {
+                                                                              "block": {
+                                                                                "type": "data_value",
+                                                                                "id": "data_value_090",
+                                                                                "fields": {
+                                                                                  "NUM": "0"
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    },
+                                                                    "next": {
+                                                                      "block": {
+                                                                        "type": "variables_set",
+                                                                        "id": "variables_set_096",
+                                                                        "fields": {
+                                                                          "VAR": {
+                                                                            "id": "main_var_cb1",
+                                                                            "name": "cb1"
+                                                                          }
+                                                                        },
+                                                                        "inputs": {
+                                                                          "VALUE": {
+                                                                            "block": {
+                                                                              "type": "procedures_callreturn",
+                                                                              "id": "procedures_callreturn_095",
+                                                                              "fields": {
+                                                                                "NAME": "CCM_COUNTER_BLOCK"
+                                                                              },
+                                                                              "extraState": {
+                                                                                "params": [
+                                                                                  {
+                                                                                    "name": "nonce",
+                                                                                    "id": "main_ccm_counter_block_nonce",
+                                                                                    "type": "int_list"
+                                                                                  },
+                                                                                  {
+                                                                                    "name": "i",
+                                                                                    "id": "main_ccm_counter_block_i",
+                                                                                    "type": "int"
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              "inputs": {
+                                                                                "ARG0": {
+                                                                                  "block": {
+                                                                                    "type": "variables_get",
+                                                                                    "id": "variables_get_093",
+                                                                                    "fields": {
+                                                                                      "VAR": {
+                                                                                        "id": "main_var_nonce_ex1",
+                                                                                        "name": "nonce_ex1"
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                },
+                                                                                "ARG1": {
+                                                                                  "block": {
+                                                                                    "type": "data_value",
+                                                                                    "id": "data_value_094",
+                                                                                    "fields": {
+                                                                                      "NUM": "1"
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        },
+                                                                        "next": {
+                                                                          "block": {
+                                                                            "type": "variables_set",
+                                                                            "id": "variables_set_099",
+                                                                            "fields": {
+                                                                              "VAR": {
+                                                                                "id": "main_var_aad8",
+                                                                                "name": "aad8"
+                                                                              }
+                                                                            },
+                                                                            "inputs": {
+                                                                              "VALUE": {
+                                                                                "block": {
+                                                                                  "type": "procedures_callreturn",
+                                                                                  "id": "procedures_callreturn_098",
+                                                                                  "fields": {
+                                                                                    "NAME": "CCM_AAD_PREFIX"
+                                                                                  },
+                                                                                  "extraState": {
+                                                                                    "params": [
+                                                                                      {
+                                                                                        "name": "aadLen",
+                                                                                        "id": "main_ccm_aad_prefix_aadLen",
+                                                                                        "type": "int"
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  "inputs": {
+                                                                                    "ARG0": {
+                                                                                      "block": {
+                                                                                        "type": "data_value",
+                                                                                        "id": "data_value_097",
+                                                                                        "fields": {
+                                                                                          "NUM": "8"
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            },
+                                                                            "next": {
+                                                                              "block": {
+                                                                                "type": "variables_set",
+                                                                                "id": "variables_set_102",
+                                                                                "fields": {
+                                                                                  "VAR": {
+                                                                                    "id": "main_var_aad16",
+                                                                                    "name": "aad16"
+                                                                                  }
+                                                                                },
+                                                                                "inputs": {
+                                                                                  "VALUE": {
+                                                                                    "block": {
+                                                                                      "type": "procedures_callreturn",
+                                                                                      "id": "procedures_callreturn_101",
+                                                                                      "fields": {
+                                                                                        "NAME": "CCM_AAD_PREFIX"
+                                                                                      },
+                                                                                      "extraState": {
+                                                                                        "params": [
+                                                                                          {
+                                                                                            "name": "aadLen",
+                                                                                            "id": "main_ccm_aad_prefix_aadLen",
+                                                                                            "type": "int"
+                                                                                          }
+                                                                                        ]
+                                                                                      },
+                                                                                      "inputs": {
+                                                                                        "ARG0": {
+                                                                                          "block": {
+                                                                                            "type": "data_value",
+                                                                                            "id": "data_value_100",
+                                                                                            "fields": {
+                                                                                              "NUM": "16"
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                },
+                                                                                "next": {
+                                                                                  "block": {
+                                                                                    "type": "variables_set",
+                                                                                    "id": "variables_set_108",
+                                                                                    "fields": {
+                                                                                      "VAR": {
+                                                                                        "id": "main_var_mac_x",
+                                                                                        "name": "mac_x"
+                                                                                      }
+                                                                                    },
+                                                                                    "inputs": {
+                                                                                      "VALUE": {
+                                                                                        "block": {
+                                                                                          "type": "procedures_callreturn",
+                                                                                          "id": "procedures_callreturn_107",
+                                                                                          "fields": {
+                                                                                            "NAME": "CCM_CBC_MAC"
+                                                                                          },
+                                                                                          "extraState": {
+                                                                                            "params": [
+                                                                                              {
+                                                                                                "name": "key",
+                                                                                                "id": "main_ccm_cbc_mac_key",
+                                                                                                "type": "key"
+                                                                                              },
+                                                                                              {
+                                                                                                "name": "nonce",
+                                                                                                "id": "main_ccm_cbc_mac_nonce",
+                                                                                                "type": "int_list"
+                                                                                              },
+                                                                                              {
+                                                                                                "name": "aad",
+                                                                                                "id": "main_ccm_cbc_mac_aad",
+                                                                                                "type": "int_list"
+                                                                                              },
+                                                                                              {
+                                                                                                "name": "msg",
+                                                                                                "id": "main_ccm_cbc_mac_msg",
+                                                                                                "type": "message"
+                                                                                              }
+                                                                                            ]
+                                                                                          },
+                                                                                          "inputs": {
+                                                                                            "ARG0": {
+                                                                                              "block": {
+                                                                                                "type": "variables_get",
+                                                                                                "id": "variables_get_103",
+                                                                                                "fields": {
+                                                                                                  "VAR": {
+                                                                                                    "id": "main_var_key",
+                                                                                                    "name": "key"
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                            },
+                                                                                            "ARG1": {
+                                                                                              "block": {
+                                                                                                "type": "variables_get",
+                                                                                                "id": "variables_get_104",
+                                                                                                "fields": {
+                                                                                                  "VAR": {
+                                                                                                    "id": "main_var_nonce_ex1",
+                                                                                                    "name": "nonce_ex1"
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                            },
+                                                                                            "ARG2": {
+                                                                                              "block": {
+                                                                                                "type": "variables_get",
+                                                                                                "id": "variables_get_105",
+                                                                                                "fields": {
+                                                                                                  "VAR": {
+                                                                                                    "id": "main_var_aad_ex1",
+                                                                                                    "name": "aad_ex1"
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                            },
+                                                                                            "ARG3": {
+                                                                                              "block": {
+                                                                                                "type": "variables_get",
+                                                                                                "id": "variables_get_106",
+                                                                                                "fields": {
+                                                                                                  "VAR": {
+                                                                                                    "id": "main_var_msg_ex1",
+                                                                                                    "name": "msg_ex1"
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    },
+                                                                                    "next": {
+                                                                                      "block": {
+                                                                                        "type": "variables_set",
+                                                                                        "id": "variables_set_113",
+                                                                                        "fields": {
+                                                                                          "VAR": {
+                                                                                            "id": "main_var_cipher",
+                                                                                            "name": "cipher"
+                                                                                          }
+                                                                                        },
+                                                                                        "inputs": {
+                                                                                          "VALUE": {
+                                                                                            "block": {
+                                                                                              "type": "procedures_callreturn",
+                                                                                              "id": "procedures_callreturn_112",
+                                                                                              "fields": {
+                                                                                                "NAME": "CCM_CTR"
+                                                                                              },
+                                                                                              "extraState": {
+                                                                                                "params": [
+                                                                                                  {
+                                                                                                    "name": "key",
+                                                                                                    "id": "main_ccm_ctr_key",
+                                                                                                    "type": "key"
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "name": "nonce",
+                                                                                                    "id": "main_ccm_ctr_nonce",
+                                                                                                    "type": "int_list"
+                                                                                                  },
+                                                                                                  {
+                                                                                                    "name": "msg",
+                                                                                                    "id": "main_ccm_ctr_msg",
+                                                                                                    "type": "message"
+                                                                                                  }
+                                                                                                ]
+                                                                                              },
+                                                                                              "inputs": {
+                                                                                                "ARG0": {
+                                                                                                  "block": {
+                                                                                                    "type": "variables_get",
+                                                                                                    "id": "variables_get_109",
+                                                                                                    "fields": {
+                                                                                                      "VAR": {
+                                                                                                        "id": "main_var_key",
+                                                                                                        "name": "key"
+                                                                                                      }
+                                                                                                    }
+                                                                                                  }
+                                                                                                },
+                                                                                                "ARG1": {
+                                                                                                  "block": {
+                                                                                                    "type": "variables_get",
+                                                                                                    "id": "variables_get_110",
+                                                                                                    "fields": {
+                                                                                                      "VAR": {
+                                                                                                        "id": "main_var_nonce_ex1",
+                                                                                                        "name": "nonce_ex1"
+                                                                                                      }
+                                                                                                    }
+                                                                                                  }
+                                                                                                },
+                                                                                                "ARG2": {
+                                                                                                  "block": {
+                                                                                                    "type": "variables_get",
+                                                                                                    "id": "variables_get_111",
+                                                                                                    "fields": {
+                                                                                                      "VAR": {
+                                                                                                        "id": "main_var_msg_ex1",
+                                                                                                        "name": "msg_ex1"
+                                                                                                      }
+                                                                                                    }
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

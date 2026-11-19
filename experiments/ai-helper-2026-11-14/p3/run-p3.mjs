@@ -112,7 +112,10 @@ function stageV0(manifest, aliasMap, contract) {
     const actual = sha256(buf);
     const lines = exists ? buf.toString('utf8').split('\n').length - 1 : 0;
     const hashOk = actual === s.sha256;
-    const linesOk = lines <= 40;
+    // 行数上限默认 40（既有自撰小样本）。整函数被原样摘录的第三方样本（带必需上下文）
+    // 压不进 40 行，只能显式给 maxLines——不自动放宽，也不为凑 40 行改写原文。
+    const maxLines = s.maxLines ?? 40;
+    const linesOk = lines <= maxLines;
     // opaqueFunctions 是「函数体不解析」的豁免，必须只落在真被块吸收的函数上，
     // 否则它会变成「跳过分析」的万能开关。
     const opaque = s.opaqueFunctions || [];
@@ -133,6 +136,7 @@ function stageV0(manifest, aliasMap, contract) {
       hashOk,
       lines,
       linesOk,
+      ...(s.maxLines != null ? { maxLines } : {}),
       source: s.source,
       provenance: s.provenance,
       upstream: s.upstream ?? null,
@@ -250,6 +254,11 @@ function stageV1(manifest) {
         initLength: g.init?.elements?.length ?? null,
       })),
       preprocs: parsed.preprocs,
+      // 条件编译/宏表只在样本真的用到时出现：既有样本没有 #define/#if，
+      // 不新增字段就不会让旧读数的结构发生变化。
+      ...(parsed.preprocessor.conditionals.length > 0 || parsed.preprocessor.defines.length > 0
+        ? { preprocessor: parsed.preprocessor }
+        : {}),
       constructCounts: parsed.constructCounts,
       callSites: parsed.callSites,
       diagnostics: parsed.diagnostics,
@@ -405,6 +414,111 @@ function buildChainWorkspace({ fn, aliasIndex, contract, nextId }) {
   };
 }
 
+// ---------------------------------------------------------------------------
+// V2 覆盖差距：函数体既不是整函数别名、也不是单链折叠时，逐语句回答两个问题——
+// 哪类构造有块候选（骨架已有），哪类构造连「候选块」都指不出来。只记录证据
+// （样本行号 + 该行原文），不拼半截工作区、不用未经验证的块冒充可生成。
+// ---------------------------------------------------------------------------
+function walkStatements(stmts, cb) {
+  for (const s of stmts || []) {
+    cb(s);
+    if (s.kind === 'compound') walkStatements(s.body, cb);
+    else if (s.kind === 'for' || s.kind === 'while') walkStatements([s.body], cb);
+    else if (s.kind === 'if') {
+      walkStatements([s.then], cb);
+      if (s.alternate) walkStatements([s.alternate], cb);
+    }
+  }
+}
+
+function walkExprs(expr, cb) {
+  if (!expr) return;
+  cb(expr);
+  switch (expr.kind) {
+    case 'bin': walkExprs(expr.left, cb); walkExprs(expr.right, cb); break;
+    case 'un':
+    case 'cast':
+    case 'incdec': walkExprs(expr.expr, cb); break;
+    case 'assign': walkExprs(expr.target, cb); walkExprs(expr.value, cb); break;
+    case 'call': expr.args.forEach((a) => walkExprs(a, cb)); break;
+    case 'index': walkExprs(expr.base, cb); walkExprs(expr.index, cb); break;
+    default: break;
+  }
+}
+
+function collectUnexpressible(fn, parsed, sourceLines) {
+  const functionMacros = new Map((parsed.preprocessor?.defines || [])
+    .filter((d) => d.functionLike)
+    .map((d) => [d.name, d]));
+  const params = new Map(fn.params.map((p) => [p.name, p]));
+  const globals = new Map(parsed.globals.map((g) => [g.name, g]));
+  const found = new Map();
+  const note = (key, gap, line) => {
+    if (!found.has(key)) found.set(key, { ...gap, sourceLines: [] });
+    const g = found.get(key);
+    if (!g.sourceLines.includes(line)) g.sourceLines.push(line);
+  };
+  const visit = (e) => {
+    if (e.kind === 'call' && functionMacros.has(e.callee)) {
+      note(`macro:${e.callee}`, {
+        id: 'function-like-macro-call',
+        construct: `call ${e.callee}(...)`,
+        capability: functionMacros.get(e.callee).value,
+        why: `函数式宏 ${e.callee}() 未展开：它把「常量表按字节下标取值」藏进宏体；块模型里 sbox 只作为 aes_sub_bytes / sbox_sub 的内部常量，没有可索引的字节查表块`,
+        missingBlockType: '无（按字节查表的原子块）',
+      }, e.line);
+    }
+    if (e.kind === 'index' && e.base.kind === 'ident' && globals.has(e.base.name)) {
+      note(`global:${e.base.name}`, {
+        id: 'global-const-table-index-read',
+        construct: `read ${e.base.name}[...]`,
+        capability: `常量表 ${e.base.name} 按下标取值`,
+        why: `全局常量表 ${e.base.name} 的读：表本身可落 data_int_list，但「按下标从表里取值」在密码原语块里没有对应类型（data_int_list 只是字面量）`,
+        missingBlockType: '无（常量表下标读取原语；可由 Blockly 内置 lists_getIndex 承担，但不在本项目密码块集内）',
+      }, e.line);
+    }
+    if (e.kind === 'index' && e.base.kind === 'ident') {
+      const p = params.get(e.base.name);
+      if (p && p.isPointer) {
+        note(`pointer:${e.base.name}`, {
+          id: 'pointer-param-index-io',
+          construct: `${e.base.name}[...]（指针形参按计算下标读写）`,
+          capability: '输入/输出缓冲区按 32 位字下标读写',
+          why: `${e.base.name} 是 uint8_t* 指针形参：C 里它与调用方缓冲区同一份内存；块模型是值语义列表，同一效果要先声明 176 元素列表再逐下标写（Blockly 内置 lists_setIndex），没有「外部字节缓冲」概念`,
+          missingBlockType: '无（按字节下标写外部缓冲的块；只能展开成列表块组合）',
+        }, e.line);
+      }
+    }
+  };
+  walkStatements(fn.body, (s) => {
+    if (s.kind === 'expr') walkExprs(s.expr, visit);
+    else if (s.kind === 'decl') s.decls.forEach((d) => walkExprs(d.init, visit));
+    else if (s.kind === 'for') {
+      if (s.init?.kind === 'expr') walkExprs(s.init.expr, visit);
+      walkExprs(s.cond, visit);
+      walkExprs(s.incr, visit);
+    } else if (s.kind === 'if' || s.kind === 'while') walkExprs(s.cond, visit);
+  });
+  const pointerParams = fn.params.filter((p) => p.isPointer);
+  // 返回类型带限定符（`static void`），不能和 'void' 直接全等比较。
+  if (/\bvoid\b/.test(fn.returnType) && pointerParams.length >= 2) {
+    note('multi-buffer-io', {
+      id: 'multi-buffer-io',
+      construct: `${fn.name}(${fn.params.map((p) => `${p.type}${p.isPointer ? '*' : ''} ${p.name}`).join(', ')})`,
+      capability: '一个输入缓冲 + 一个 176 字节输出缓冲的整函数 IO',
+      why: '函数以 void 返回、用两个指针形参分别传输入与输出；现有整函数别名块的 IO 契约是单 STATE/单 BYTES（如 aes_sub_bytes 只有 STATE），没有承接 16 字节 key → 176 字节轮密钥的块',
+      missingBlockType: '无（整段密钥扩展块）',
+    }, fn.line);
+  }
+  return [...found.values()]
+    .map((g) => ({
+      ...g,
+      sourceLines: g.sourceLines.sort((a, b) => a - b),
+      firstSnippets: g.sourceLines.slice(0, 4).map((ln) => ({ line: ln, text: (sourceLines[ln - 1] || '').trim() })),
+    }))
+    .sort((a, b) => a.sourceLines[0] - b.sourceLines[0]);
+}
+
 function mapSkeletonStatement(s, aliasIndex) {
   switch (s.kind) {
     case 'compound':
@@ -469,11 +583,13 @@ function stageV2(manifest, aliasMap, contract, parseResults, vectors) {
     }
     const s = manifest.samples.find((x) => x.id === v1.id);
     const sourceText = fs.readFileSync(path.join(SAMPLES_DIR, s.file), 'utf8');
+    const sourceLines = sourceText.split(/\r?\n/);
     const parsed = parseC(sourceText, { opaqueFunctions: new Set(s.opaqueFunctions || []) });
     const entryName = vectors.samples[v1.id]?.fn ? vectors.samples[v1.id].fn : null;
     const aliasHits = [];
     const skeleton = [];
     const absorbed = [];
+    const coverage = [];
 
     for (const fn of parsed.functions) {
       const whole = aliasIndex.get(fn.name);
@@ -498,6 +614,8 @@ function stageV2(manifest, aliasMap, contract, parseResults, vectors) {
         continue;
       }
       const nodes = fn.body.flatMap((stmt) => mapSkeletonStatement(stmt, aliasIndex));
+      const gaps = collectUnexpressible(fn, parsed, sourceLines);
+      if (gaps.length > 0) coverage.push({ function: fn.name, line: fn.line, gaps });
       for (const site of parsed.callSites.filter((c) => c.fn === fn.name)) {
         const alias = aliasIndex.get(site.callee);
         if (alias) {
@@ -541,6 +659,11 @@ function stageV2(manifest, aliasMap, contract, parseResults, vectors) {
         buildable.entry = entryFn.name;
         buildable.sourceFile = s.file;
         buildable.via = whole ? 'whole-function-alias' : 'chain-fold';
+      } else if (coverage.length > 0) {
+        // 链式规则失败只是第一道闸；把「还有几类构造连候选块都指不出」一并写进原因，
+        // 免得读者把「不是调用链」当成唯一阻断点。
+        const gapCount = coverage.reduce((a, c) => a + c.gaps.length, 0);
+        buildable = { ...buildable, reason: `${buildable.reason}；另有 ${gapCount} 类构造无候选块（见 coverage）` };
       }
     }
     samples.push({
@@ -551,6 +674,7 @@ function stageV2(manifest, aliasMap, contract, parseResults, vectors) {
       absorbed,
       skeleton,
       globalTables,
+      ...(coverage.length > 0 ? { coverage } : {}),
       buildable,
       diagnostics: v1.diagnostics,
       diagnosticSummary: v1.diagnosticSummary,
@@ -837,6 +961,324 @@ function stageV3(manifest, v2Results, vectors, env, aliasMapRef, contractRef) {
 }
 
 // ---------------------------------------------------------------------------
+// 阻断记录：V3 不可达时，把「构造 → 缺的块/能力 → 样本证据行」写成机器可读 JSON。
+//
+// 这里的原则是「不许把没做的事写成做不了」：whiteBox 段落逐条列出**画布上已有**的候选块，
+// 只有真的指不出候选块的构造才写 missing。本轮 kokke-keyexpansion 的阻断点是两层：
+// (a) 别名表没有整段密钥扩展块（B 线现有形态只能整函数吸收或单链折叠）；
+// (b) V2 没有语句级组装器，73 行的双循环+分支+数组改写拼不成工作区。
+// 画布本身是否「表达不出」要分开写，不能用 (a)(b) 冒充画布缺块。
+// ---------------------------------------------------------------------------
+const BLOCK_GAP_PROFILES = {
+  'kokke-keyexpansion': {
+    minimalUnblock: {
+      blockType: 'aes_key_expansion',
+      capability: '整段 AES 密钥扩展：16 字节 key → Nb*(Nr+1)*4 = 176 字节轮密钥（AES-128：Nk=4/Nb=4/Nr=10）',
+      ioHint: {
+        inputs: [{ name: 'KEY', check: ['Bytes'], size: 16 }],
+        output: { name: 'ROUND_KEYS', check: ['Bytes'], size: 176 },
+      },
+      pattern: '与 kokke-shiftrows / kokke-mixcolumns 相同的 whole-function-alias：块整体吸收 KeyExpansion，块闭包里保留 Nk/Nb/Nr、sbox、Rcon',
+      searchTerms: ['key_expansion', 'keyexpansion', 'expand_key', 'key_schedule', 'keyschedule', 'round_keys', 'key_expand', 'expandkey'],
+      whyThisIsMinimal: '现有别名表的两种形态是「整函数吸收」和「单链折叠」；新增这一个整函数块后，本样本走 whole-function-alias，不需要语句级组装器，也不需要改 V2 的映射模型。',
+    },
+    whiteBox: [
+      {
+        id: 'loop',
+        construct: 'for (i = 0; i < Nk; ++i) / for (i = Nk; i < Nb * (Nr + 1); ++i)',
+        evidenceLines: [{ line: 69, contains: 'for (i = 0' }, { line: 78, contains: 'for (i = Nk' }],
+        candidateBlocks: ['controls_for'],
+        candidateSource: 'Blockly 内置块（BLOCK-IO-CONTRACT.json 只收密码原语，故不在表内；本仓库 mapSkeletonStatement 已把 for 映射到 controls_for）',
+        expressible: true,
+        why: 'Nk/Nr/Nb 已由预处理取值（4/10/4），上下界与步长都是数字常量；controls_for 可表达。',
+      },
+      {
+        id: 'branch',
+        construct: 'if (i % Nk == 0)',
+        evidenceLines: [{ line: 89, contains: 'if (i % Nk == 0)' }],
+        candidateBlocks: ['controls_if', 'math_arithmetic(MODULO)', 'logic_compare(EQ)'],
+        candidateSource: 'Blockly 内置块',
+        expressible: true,
+        why: '取模 + 相等比较 + 单分支，全部有内置块。',
+      },
+      {
+        id: 'rotword',
+        construct: 'RotWord：tempa[0..3] 循环左移 1 字节（含 u8tmp 暂存）',
+        evidenceLines: [{ line: 96, contains: 'u8tmp' }, { line: 97, contains: 'tempa[0] = tempa[1]' }, { line: 100, contains: 'tempa[3] = u8tmp' }],
+        candidateBlocks: ['bit_rotate_left', 'lists_setIndex / variables_set'],
+        candidateSource: 'bit_rotate_left 在 BLOCK-IO-CONTRACT.json 内；list 读写为 Blockly 内置',
+        expressible: true,
+        why: '两种写法都有块：把 4 字节打包成 32 位字后 bit_rotate_left(8)，或用变量与列表元素搬运实现同样置换。',
+      },
+      {
+        id: 'subword',
+        construct: 'SubWord：tempa[k] = getSBoxValue(tempa[k])（函数式宏）',
+        evidenceLines: [{ line: 108, contains: 'getSBoxValue(tempa[0])' }, { line: 111, contains: 'getSBoxValue(tempa[3])' }],
+        candidateBlocks: ['sbox(PRESET=aes, OUTPUT_FORMAT=1d) + lists_getIndex', 'sbox_sub（32 位字）'],
+        candidateSource: 'sbox / sbox_sub 在 BLOCK-IO-CONTRACT.json 内；lists_getIndex 为 Blockly 内置',
+        expressible: 'partial',
+        why: '宏本身不是块，但语义可用「sbox 预设生成 256 项 AES 表 + 按下标取值」表达；sbox 的 gridData 会随 extraState 序列化（src/blocks/sbox/sbox.ts:156-188，loadExtraState 在无 data 时按 preset 回填），所以生成式工作区也能带表。缺的不是块，是 V2 不会把宏调用改写成这种组合。',
+      },
+      {
+        id: 'rcon',
+        construct: 'Rcon[i/Nk]（全局常量表按下标读取）',
+        evidenceLines: [{ line: 114, contains: 'Rcon[i/Nk]' }],
+        candidateBlocks: ['data_int_list + lists_getIndex'],
+        candidateSource: 'data_int_list 在 BLOCK-IO-CONTRACT.json 内；lists_getIndex 为 Blockly 内置',
+        expressible: true,
+        why: 'Rcon 的 11 个值可原样写进 data_int_list（上游 120-121 行），下标表达式由 i/Nk 得到；V2 没有「全局表读取」的映射规则。',
+      },
+      {
+        id: 'narrowing',
+        construct: 'uint8_t 元素赋值隐式截断：tempa[0] ^= Rcon[...] / RoundKey[j+k] = RoundKey[k+k] ^ tempa[k]',
+        evidenceLines: [{ line: 114, contains: 'Rcon[i/Nk]' }, { line: 129, contains: 'RoundKey[j + 0]' }, { line: 132, contains: 'RoundKey[j + 3] =' }],
+        candidateBlocks: ['bit_operation(XOR) + bit_operation(AND 0xFF)'],
+        candidateSource: 'bit_operation 在 BLOCK-IO-CONTRACT.json 内',
+        expressible: 'partial',
+        why: '块算术按 32 位，必须显式 & 0xFF 才与 C 的 uint8_t 截断等价；V1 已把 5 处赋值为 semantic-drift，V2 不会自动补掩码。',
+      },
+      {
+        id: 'buffer-io',
+        construct: 'void KeyExpansion(uint8_t* RoundKey, const uint8_t* Key)：输入 16 字节、输出 176 字节，按 32 位字下标读写',
+        evidenceLines: [{ line: 63, contains: 'static void KeyExpansion' }, { line: 71, contains: 'RoundKey[(i * 4) + 0]' }, { line: 132, contains: 'RoundKey[j + 3] =' }],
+        candidateBlocks: ['procedures_defreturn + lists_*（值语义列表）'],
+        candidateSource: 'Blockly 内置过程块；列表长度 176 可由 data_int_list/循环初始化',
+        expressible: 'partial',
+        why: 'C 的指针形参是缓冲区别名；块模型是值语义列表，要先建 176 元素列表再按下标写，最后 return。语义在该函数里等价（只读已写过的前序字），但没有「外部字节缓冲」概念，且 V2 无语句级组装器。',
+      },
+    ],
+    verdictNote: '阻断点不是「画布一个块都没有」，而是 (a) 没有任何块以「密钥扩展」为单位承接该函数，(b) V2 只能在整函数吸收/单链折叠两种形态下产出工作区。画布若要白盒表达，得手搭数十个块（V2 骨架已识别 32 个语句节点，实际块数只会更多）并把 uint8 截断显式掩码；本轮没有做这种手搭，也不把它算作 B 线映射能力。',
+  },
+};
+
+/** 在 src/blocks 里做一次只读文本扫描（不 import、不改文件），用于核对「文档声称有块」是否属实。 */
+function scanSrcBlocks(needle) {
+  const base = path.join(ROOT, 'src/blocks');
+  const hits = [];
+  const walk = (dir) => {
+    if (!fs.existsSync(dir)) return;
+    for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, ent.name);
+      if (ent.isDirectory()) walk(p);
+      else if (ent.name.endsWith('.ts')) {
+        const lines = fs.readFileSync(p, 'utf8').split('\n');
+        lines.forEach((line, i) => {
+          if (line.includes(needle)) hits.push({ file: rel(p), line: i + 1, text: line.trim().slice(0, 120) });
+        });
+      }
+    }
+  };
+  walk(base);
+  return hits;
+}
+
+function writeBlockedRecords({ manifest, v0, v1, v2, v3, contract, aliasMap, vectors }) {
+  const out = [];
+  const contractKeys = Object.keys(contract);
+  for (const [sampleId, profile] of Object.entries(BLOCK_GAP_PROFILES)) {
+    const v3s = v3?.samples?.find((x) => x.id === sampleId);
+    if (!v3s || v3s.reachable) continue;
+    const v0s = v0?.samples?.find((x) => x.id === sampleId);
+    const v1s = v1?.samples?.find((x) => x.id === sampleId);
+    const v2s = v2?.samples?.find((x) => x.id === sampleId);
+    const s = manifest.samples.find((x) => x.id === sampleId);
+    const file = path.join(SAMPLES_DIR, s.file);
+    const sampleText = fs.readFileSync(file, 'utf8');
+    const sourceLines = sampleText.split(/\r?\n/);
+    const spec = vectors.samples[sampleId];
+
+    const searches = profile.minimalUnblock.searchTerms || [profile.minimalUnblock.blockType];
+    const contractSearch = searches.map((term) => ({
+      term,
+      hits: contractKeys.filter((k) => k.toLowerCase().includes(term.toLowerCase())),
+    }));
+    const absenceOk = contractSearch.every((x) => x.hits.length === 0);
+    const nearest = [];
+    for (const blockId of ['aes_sub_bytes', 'aes_add_round_key', 'sbox', 'sbox_sub', 'bit_rotate_left', 'bit_operation', 'data_int_list']) {
+      const entry = contract[blockId];
+      const aliasEntry = aliasMap.entries.find((e) => e.block === blockId);
+      nearest.push({
+        block: blockId,
+        inContract: Boolean(entry),
+        inputs: entry?.inputs ?? null,
+        outputCheck: entry?.outputCheck ?? null,
+        aliasEvidence: aliasEntry
+          ? { blockDef: aliasEntry.evidence.blockDef, generator: aliasEntry.evidence.generator }
+          : null,
+      });
+    }
+    const whiteBox = profile.whiteBox.map((w) => {
+      const evidence = w.evidenceLines.map(({ line, contains }) => {
+        const text = (sourceLines[line - 1] || '').trim();
+        return { line, contains, text, matched: text.includes(contains) };
+      });
+      return {
+        ...w,
+        evidenceLines: undefined,
+        evidence,
+        evidenceOk: evidence.every((e) => e.matched),
+        candidatesInContract: w.candidateBlocks.map((id) => ({ block: id, inContract: Object.prototype.hasOwnProperty.call(contract, id) })),
+      };
+    });
+
+    // 上游片段逐字节一致性：只有本机存在同一 clone 时才复核，否则如实写 skipped。
+    const upstreamPath = process.env.P3_KOKKE_AES || '/tmp/kokke-ssh/aes.c';
+    let contiguity = { checked: false, reason: `上游文件不存在：${upstreamPath}` };
+    if (fs.existsSync(upstreamPath) && s.upstream?.lineRanges) {
+      const upstreamText = fs.readFileSync(upstreamPath, 'utf8');
+      const segs = s.upstream.lineRanges.map((r) => {
+        const [a, b] = r.split('-').map(Number);
+        const lines = upstreamText.split(/\r?\n/);
+        return { range: r, text: lines.slice(a - 1, b).join('\n') };
+      });
+      let cursor = 0;
+      const hits = segs.map((seg) => {
+        const idx = sampleText.indexOf(seg.text);
+        const ok = idx >= 0 && idx >= cursor;
+        if (ok) cursor = idx + seg.text.length;
+        return { range: seg.range, found: idx >= 0, inOrder: ok, at: idx };
+      });
+      contiguity = { checked: true, file: upstreamPath, sha256: sha256(fs.readFileSync(upstreamPath)), segments: hits, ok: hits.every((h) => h.found && h.inOrder) };
+    }
+
+    const record = {
+      schema: 1,
+      generatedAt: now(),
+      kind: 'blocked',
+      sample: {
+        id: sampleId,
+        file: s.file,
+        sha256: sha256(fs.readFileSync(file)),
+        lines: sourceLines.length - 1,
+        entry: v2s?.entry ?? spec?.fn ?? null,
+        upstream: s.upstream ?? null,
+        standard: s.standard ?? null,
+      },
+      pipeline: {
+        v0: {
+          ok: Boolean(v0s?.ok),
+          hashOk: Boolean(v0s?.hashOk),
+          lines: v0s?.lines ?? sourceLines.length - 1,
+          maxLines: v0s?.maxLines ?? 40,
+          contractKeys: v0?.contractKeys ?? null,
+        },
+        v1: {
+          ok: Boolean(v1s?.ok),
+          constructs: v1s?.constructCounts ?? null,
+          preprocessor: v1s?.preprocessor ?? null,
+          preprocessorNote: v1s?.preprocessor
+            ? '条件编译已按 C 语义求值：样本第 16/19 行的 #if/#elif 为假，取 #else 的 Nk=4/Nr=10；第 116 行 #if defined(AES256) 为假，AES-256 的额外 SubWord 分支被裁掉并留空行保行号，所以 V1 的 if 计数是 1（只有默认配置的 i % Nk == 0）。'
+            : null,
+          diagnosticSummary: v1s?.diagnosticSummary ?? null,
+          diagnostics: v1s?.diagnostics ?? null,
+        },
+        v2: {
+          buildable: false,
+          reason: v2s?.buildable?.reason ?? null,
+          aliasHits: v2s?.aliasHits ?? [],
+          coverage: v2s?.coverage ?? [],
+          skeleton: (v2s?.skeleton ?? []).map((x) => ({ function: x.function, line: x.line, nodes: x.nodes.length, blockHistogram: x.blockHistogram })),
+        },
+        v3: { reachable: false, reason: v3s?.reason ?? null, vectorId: spec?.vectors?.[0]?.id ?? null },
+      },
+      standardVector: spec
+        ? {
+          id: spec.vectors[0].id,
+          kind: spec.kind,
+          keyHex: spec.vectors[0].inputs[0],
+          expectBytes: spec.vectors[0].expectHex.length / 2,
+          source: spec.vectors[0].source,
+          note: spec.vectors[0].note,
+        }
+        : null,
+      blockGap: {
+        rootCause: profile.verdictNote,
+        assessment: 'static-inspection-only',
+        assessmentNote: 'whiteBox 的 expressible 只表示「按块定义/IO 契约存在候选块」，本轮没有用手搭工作区实跑验证；它不是生成能力结论，也不改变 V3 不可达。',
+        minimalUnblock: {
+          ...profile.minimalUnblock,
+          inContract: Object.prototype.hasOwnProperty.call(contract, profile.minimalUnblock.blockType),
+          contractKeys: contractKeys.length,
+          contractSearch,
+          absenceOk,
+        },
+        whiteBox,
+        nearestExisting: nearest,
+      },
+      documentationClaimCheck: {
+        file: 'docs/standards/fips197-AES/07-KEY-EXPANSION.md',
+        claim: '条目元数据写「项目状态：部分实现」，并给出项目映射 `aes_key_expand`',
+        contractHasBlock: Object.prototype.hasOwnProperty.call(contract, 'aes_key_expand'),
+        srcBlockHits: scanSrcBlocks('aes_key_expand'),
+        note: 'src/blocks 与 BLOCK-IO-CONTRACT.json 都找不到 aes_key_expand；文档的「部分实现」是文档侧状态，不是可映射块。本轮只记录，不改 docs/。',
+      },
+      parserExtension: (() => {
+        const f = path.join(OUT_DIR, 'keyexpansion-parser-gap.json');
+        if (!fs.existsSync(f)) return { file: null, reason: '本轮未运行 run-keyexpansion-precheck.mjs' };
+        const r = readJson(f);
+        return {
+          file: rel(f),
+          v0LineRule: r.preExtension.v0LineRule,
+          before: {
+            if: r.preExtension.constructCounts.if,
+            assignments: r.preExtension.constructCounts.assignments,
+            diagnostics: r.preExtension.diagnosticCount,
+            preprocLines: r.preExtension.preprocLineCount,
+          },
+          after: {
+            if: r.postExtension.constructCounts.if,
+            assignments: r.postExtension.constructCounts.assignments,
+            diagnostics: r.postExtension.diagnosticCount,
+            preprocLines: r.postExtension.preprocLineCount,
+            defines: r.postExtension.defines,
+            conditionals: r.postExtension.conditionals,
+          },
+          note: '旧解析器不抛错，但把 AES-256 分支当活动代码读（if=2/assignments=32）；扩展后与默认构建一致（if=1/assignments=28）。',
+        };
+      })(),
+      evidence: {
+        cSideReading: (() => {
+          const f = path.join(OUT_DIR, 'keyexpansion-cside.json');
+          if (!fs.existsSync(f)) return { file: null, reason: '本轮未运行 run-keyexpansion-cside.mjs' };
+          const r = readJson(f);
+          return {
+            file: rel(f),
+            differential: r.differential,
+            ok: r.ok,
+            vector: r.vector?.id ?? null,
+            bytes: r.compare?.bytesCompared ?? null,
+            wordsPassed: r.compare?.wordsPassed ?? null,
+            wordsTotal: r.compare?.wordsTotal ?? null,
+            roundKeysPassed: r.compare?.roundKeysPassed ?? null,
+            note: 'C 侧读数，不是 V3 双侧差分；不得读作 PASS',
+          };
+        })(),
+        sampleUpstreamContiguity: contiguity,
+        note: '其余证据（V0/V1/V2/V3 读数、13/13 旧样本回归）见 p3/out/p3-summary.json 与 p3-summary.txt',
+      },
+      verdict: {
+        status: 'blocked',
+        v3: 'not-reachable',
+        notClaimed: [
+          '没有生成 keyexpansion 的工作区（V2 buildable=false）',
+          '没有跑双侧差分；没有把 C 侧读数写成 V3 PASS',
+          '没有验证手搭白盒组合能否生成等价 Python',
+          '没有改 src/** 的块定义或生成器',
+        ],
+        nextRound: [
+          '选项 A（口径最小）：新增 aes_key_expansion 整函数块（KEY Bytes[16] → ROUND_KEYS Bytes[176]），别名表上限从 8 放宽到 9，然后重跑本样本，期望进入 V3 差分。',
+          '选项 B（管线能力）：给 p3 的 V2 增加语句级组装器（for/if/赋值/列表下标/表达式的块级翻译），并把 uint8 截断显式落成 & 0xFF；工作量大，但能把 loops/branches/arrays 这类第三方函数体纳入 B 线。',
+        ],
+      },
+    };
+    const outFile = path.join(OUT_DIR, `blocked-${sampleId}.json`);
+    fs.writeFileSync(outFile, `${JSON.stringify(record, null, 2)}\n`);
+    out.push({ sample: sampleId, file: rel(outFile), status: 'blocked', blocker: 'no whole-function block for KeyExpansion + V2 has no statement-level workspace builder' });
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
 // 阴性对照：把 sub_bytes 的别名改成 shift_rows（同类型、能生成代码、语义错），V3 必须红
 // ---------------------------------------------------------------------------
 function runNegativeControl(manifest, aliasMap, contract, vectors) {
@@ -950,6 +1392,9 @@ function renderText(summary) {
     if (s.buildable?.paramRenames?.length) {
       L.push(`  参数改名：${s.buildable.paramRenames.map((r) => `${r.from}→${r.to}（${r.why}）`).join('，')}`);
     }
+    for (const cov of (s.coverage || [])) {
+      L.push(`  ${cov.function}(): 无候选块的构造 ${cov.gaps.length} 类 — ${cov.gaps.map((g) => `${g.id}[${g.construct.split('（')[0]}]（行 ${g.sourceLines.slice(0, 4).join('/')}${g.sourceLines.length > 4 ? '…' : ''}）`).join('，')}`);
+    }
   }
   L.push('');
   if (!summary.v3) {
@@ -971,6 +1416,11 @@ function renderText(summary) {
     const n = summary.v3.negativeControl;
     L.push('');
     L.push(`阴性对照：${n.ran ? `${n.detected ? '已捕获' : '未捕获（判据无牙）'} — ${n.mutation}；向量 ${n.vector} expect=${n.expect} got=${n.got}` : `未运行（${n.reason}）`}`);
+  }
+  if (summary.blocked?.length) {
+    L.push('');
+    L.push(`阻断记录（机器可读）：${summary.blocked.map((b) => `${b.file}`).join('，')}`);
+    for (const b of summary.blocked) L.push(`- ${b.sample}: ${b.blocker}`);
   }
   L.push('');
   L.push('说明：V3 的 Python 侧代码由 dist-verify/verify-demo.js 载入 V2 生成的工作区后，用本仓库 Python 生成器输出；C 侧由 gcc 编译样本 + 生成的驱动。两侧跑同一组向量。');
@@ -1014,6 +1464,10 @@ function main() {
   if (wants('v3')) {
     summary.v3 = stageV3(manifest, summary.v2, vectors, env, aliasMap, contract);
     if (!summary.v3.ok) summary.ok = false;
+    const blocked = writeBlockedRecords({
+      manifest, v0: summary.v0, v1: summary.v1, v2: summary.v2, v3: summary.v3, contract, aliasMap, vectors,
+    });
+    if (blocked.length > 0) summary.blocked = blocked;
   }
 
   fs.writeFileSync(path.join(OUT_DIR, 'p3-summary.json'), `${JSON.stringify(summary, null, 2)}\n`);
@@ -1021,8 +1475,21 @@ function main() {
   fs.writeFileSync(path.join(OUT_DIR, 'p3-summary.txt'), `${text}\n`);
   process.stdout.write(`${text}\n`);
   process.stdout.write(`\nJSON: ${rel(path.join(OUT_DIR, 'p3-summary.json'))}\n`);
-  // V0 对不上 / V3 有失败时退出码非 0，便于 CI 或 main thread 直接看 rc
-  process.exitCode = summary.ok ? 0 : 1;
+  // 默认严格：V0 对不上 / V3 有失败就非 0，便于 CI 或 main thread 直接看 rc。
+  // `--allow-blocked` 只在「失败样本都已有机器可读阻断记录、其余阶段全绿」时放行，
+  // 防止把真失败混进阻断里一起变绿。
+  const allowBlocked = process.argv.includes('--allow-blocked');
+  const blockedSamples = new Set((summary.blocked ?? []).map((b) => b.sample));
+  const upstreamStagesOk = [summary.v0, summary.v1, summary.v2].every((stage) => !stage || stage.ok !== false);
+  const failedOutsideBlocked = (summary.v3?.samples ?? []).some(
+    (s) => !blockedSamples.has(s.id) && (!s.reachable || s.passed !== s.total),
+  );
+  const blockedOnly = upstreamStagesOk && blockedSamples.size > 0 && !failedOutsideBlocked;
+  const exitOk = summary.ok || (allowBlocked && blockedOnly);
+  if (allowBlocked && blockedOnly && !summary.ok) {
+    process.stdout.write('\n--allow-blocked：失败只来自已记录的阻断样本，其余阶段全绿，按 0 退出。\n');
+  }
+  process.exitCode = exitOk ? 0 : 1;
 }
 
 main();

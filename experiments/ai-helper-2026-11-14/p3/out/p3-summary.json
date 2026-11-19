@@ -1,24 +1,24 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-18T00:57:09.836Z",
+  "generatedAt": "2026-11-18T06:33:17.433Z",
   "stage": "all",
   "env": {
     "node": "v26.13.1",
     "platform": "linux-x64",
     "gcc": "gcc (GCC) 16.2.1 20260810",
     "python": "Python 3.14.10",
-    "gitHead": "002e594",
+    "gitHead": "25539e6",
     "harness": {
       "ok": true,
       "path": "dist-verify/verify-demo.js",
       "sha256": "722636849cf51024d6e41f67c85eb9245b2b2bce8cea8b07f4cda0f36fb19482",
-      "mtime": "2026-11-18T00:19:42.465Z"
+      "mtime": "2026-11-18T02:41:15.543Z"
     }
   },
   "v0": {
     "ok": true,
     "contractKeys": 224,
-    "sampleCount": 5,
+    "sampleCount": 6,
     "aliasCount": 8,
     "aliasesOk": true,
     "samples": [
@@ -165,6 +165,54 @@
         "license": "Unlicense（上游 unlicense.txt，公有领域）",
         "retrieved": "2026-11-18",
         "verifyCommand": "sha256sum kokke-mixcolumns.c",
+        "dependsOn": [],
+        "ok": true
+      },
+      {
+        "id": "kokke-keyexpansion",
+        "file": "kokke-keyexpansion.c",
+        "exists": true,
+        "expectedSha256": "ddc0680e0d530e335752886bb47f6c4f58847fb97e6c88b0c43f8042b6408eec",
+        "actualSha256": "ddc0680e0d530e335752886bb47f6c4f58847fb97e6c88b0c43f8042b6408eec",
+        "hashOk": true,
+        "lines": 134,
+        "linesOk": true,
+        "maxLines": 140,
+        "source": "第三方参考实现（kokke/tiny-AES-c），非自撰、非改写",
+        "provenance": "上游 aes.c 的 45–56（Nb/Nk/Nr 的 #if 配置链）、76–96（sbox）、118–121（Rcon）、137–143（getSBoxValue 宏）、145–217（KeyExpansion 本体）原样摘录；除此之外只有一段 11 行来源注释与一行 #include <stdint.h>（上游由 aes.h 提供同一定义）。未改名、未去 static、未改签名、未展开宏、未删任何一个 #if。逐字节一致性用「上游片段是否按顺序作为连续子串出现在样本里」机械复核（5 段全部命中，见 p3/out/p3-summary.json 的 V0 与 RESULTS §57）。maxLines=140 是本样本的显式上限：KeyExpansion 本体 73 行 + 必需上下文，无法压到既有 40 行上限而不改写原文。",
+        "upstream": {
+          "repo": "https://github.com/kokke/tiny-AES-c",
+          "commit": "23856752fbd139da0b8ca6e471a13d5bcc99a08d",
+          "commitDate": "2024-10-04",
+          "file": "aes.c",
+          "fileSha256": "f7f78b44654efd3542b6886923dd05194286807ebcfeb078ea05d21fe901ee9e",
+          "lines": [
+            45,
+            56,
+            76,
+            96,
+            118,
+            121,
+            137,
+            143,
+            145,
+            217
+          ],
+          "lineRanges": [
+            "45-56",
+            "76-96",
+            "118-121",
+            "137-143",
+            "145-217"
+          ]
+        },
+        "opaqueFunctions": [],
+        "opaqueOk": true,
+        "opaqueUnknown": [],
+        "standard": "FIPS 197 §5.2 KeyExpansion（AES-128 配置：Nk=4、Nb=4、Nr=10）",
+        "license": "Unlicense（上游 unlicense.txt，公有领域）",
+        "retrieved": "2026-11-18",
+        "verifyCommand": "sha256sum kokke-keyexpansion.c",
         "dependsOn": [],
         "ok": true
       }
@@ -1110,6 +1158,274 @@
           }
         },
         "error": null
+      },
+      {
+        "id": "kokke-keyexpansion",
+        "file": "kokke-keyexpansion.c",
+        "ok": true,
+        "functions": [
+          {
+            "name": "KeyExpansion",
+            "line": 63,
+            "returnType": "static void",
+            "params": [
+              {
+                "name": "RoundKey",
+                "type": "uint8_t",
+                "arraySize": null,
+                "isConst": false,
+                "isPointer": true
+              },
+              {
+                "name": "Key",
+                "type": "const uint8_t",
+                "arraySize": null,
+                "isConst": true,
+                "isPointer": true
+              }
+            ],
+            "statements": 4,
+            "bodySkipped": false,
+            "bodyLines": null
+          }
+        ],
+        "globals": [
+          {
+            "name": "sbox",
+            "type": "uint8_t",
+            "arraySize": 256,
+            "initKind": "list",
+            "initLength": 256
+          },
+          {
+            "name": "Rcon",
+            "type": "uint8_t",
+            "arraySize": 11,
+            "initKind": "list",
+            "initLength": 11
+          }
+        ],
+        "preprocs": [
+          {
+            "line": 12,
+            "text": "#include <stdint.h>"
+          },
+          {
+            "line": 14,
+            "text": "#define Nb 4"
+          },
+          {
+            "line": 23,
+            "text": "#define Nk 4        // The number of 32 bit words in a key."
+          },
+          {
+            "line": 24,
+            "text": "#define Nr 10       // The number of rounds in AES Cipher."
+          },
+          {
+            "line": 60,
+            "text": "#define getSBoxValue(num) (sbox[(num)])"
+          }
+        ],
+        "preprocessor": {
+          "conditionals": [
+            {
+              "line": 16,
+              "kind": "if",
+              "expr": "defined(AES256) && (AES256 == 1)",
+              "branchActive": false
+            },
+            {
+              "line": 19,
+              "kind": "elif",
+              "expr": "defined(AES192) && (AES192 == 1)",
+              "branchActive": false
+            },
+            {
+              "line": 22,
+              "kind": "else",
+              "expr": "",
+              "branchActive": true
+            },
+            {
+              "line": 25,
+              "kind": "endif",
+              "expr": "",
+              "branchActive": true
+            },
+            {
+              "line": 116,
+              "kind": "if",
+              "expr": "defined(AES256) && (AES256 == 1)",
+              "branchActive": false
+            },
+            {
+              "line": 127,
+              "kind": "endif",
+              "expr": "",
+              "branchActive": true
+            }
+          ],
+          "defines": [
+            {
+              "name": "Nb",
+              "line": 14,
+              "value": "4",
+              "functionLike": false,
+              "params": []
+            },
+            {
+              "name": "Nk",
+              "line": 23,
+              "value": "4",
+              "functionLike": false,
+              "params": []
+            },
+            {
+              "name": "Nr",
+              "line": 24,
+              "value": "10",
+              "functionLike": false,
+              "params": []
+            },
+            {
+              "name": "getSBoxValue",
+              "line": 60,
+              "value": "(sbox[(num)])",
+              "functionLike": true,
+              "params": [
+                "num"
+              ]
+            }
+          ]
+        },
+        "constructCounts": {
+          "functions": 1,
+          "params": 2,
+          "returns": 0,
+          "for": 2,
+          "while": 0,
+          "if": 1,
+          "else": 0,
+          "compound": 6,
+          "assignments": 28,
+          "declarations": 7,
+          "arrayInitializers": 2,
+          "subscriptReads": 47,
+          "subscriptWrites": 21,
+          "calls": 4,
+          "casts": 0,
+          "break": 0,
+          "continue": 0,
+          "binaryOps": 45,
+          "binaryByOp": {
+            "<": 2,
+            "+": 21,
+            "*": 12,
+            "-": 2,
+            "==": 1,
+            "%": 1,
+            "^": 5,
+            "/": 1
+          }
+        },
+        "callSites": [
+          {
+            "callee": "getSBoxValue",
+            "line": 108,
+            "argc": 1,
+            "fn": "KeyExpansion"
+          },
+          {
+            "callee": "getSBoxValue",
+            "line": 109,
+            "argc": 1,
+            "fn": "KeyExpansion"
+          },
+          {
+            "callee": "getSBoxValue",
+            "line": 110,
+            "argc": 1,
+            "fn": "KeyExpansion"
+          },
+          {
+            "callee": "getSBoxValue",
+            "line": 111,
+            "argc": 1,
+            "fn": "KeyExpansion"
+          }
+        ],
+        "diagnostics": [
+          {
+            "stage": "V1",
+            "line": 12,
+            "kind": "unsupported",
+            "code": "preprocessor",
+            "message": "预处理行未展开：#include <stdint.h>",
+            "snippet": "#include <stdint.h>"
+          },
+          {
+            "stage": "V1",
+            "line": 63,
+            "kind": "unsupported",
+            "code": "pointer",
+            "message": "不支持指针参数",
+            "snippet": "static void KeyExpansion(uint8_t* RoundKey, const uint8_t* Key)"
+          },
+          {
+            "stage": "V1",
+            "line": 114,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "tempa[0] = tempa[0] ^ Rcon[i/Nk];"
+          },
+          {
+            "stage": "V1",
+            "line": 129,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "RoundKey[j + 0] = RoundKey[k + 0] ^ tempa[0];"
+          },
+          {
+            "stage": "V1",
+            "line": 130,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "RoundKey[j + 1] = RoundKey[k + 1] ^ tempa[1];"
+          },
+          {
+            "stage": "V1",
+            "line": 131,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "RoundKey[j + 2] = RoundKey[k + 2] ^ tempa[2];"
+          },
+          {
+            "stage": "V1",
+            "line": 132,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "RoundKey[j + 3] = RoundKey[k + 3] ^ tempa[3];"
+          }
+        ],
+        "diagnosticSummary": {
+          "total": 7,
+          "byKind": {
+            "unsupported": 2,
+            "semantic-drift": 5
+          },
+          "byCode": {
+            "preprocessor": 1,
+            "pointer": 1,
+            "implicit-narrowing": 5
+          }
+        },
+        "error": null
       }
     ]
   },
@@ -1920,11 +2236,429 @@
             "pointer": 1
           }
         }
+      },
+      {
+        "id": "kokke-keyexpansion",
+        "ok": true,
+        "entry": "KeyExpansion",
+        "aliasHits": [],
+        "absorbed": [],
+        "skeleton": [
+          {
+            "function": "KeyExpansion",
+            "line": 63,
+            "nodes": [
+              {
+                "construct": "declaration",
+                "block": "variables_set",
+                "line": 65,
+                "name": "i"
+              },
+              {
+                "construct": "declaration",
+                "block": "variables_set",
+                "line": 65,
+                "name": "j"
+              },
+              {
+                "construct": "declaration",
+                "block": "variables_set",
+                "line": 65,
+                "name": "k"
+              },
+              {
+                "construct": "declaration",
+                "block": "variables_set",
+                "line": 66,
+                "name": "tempa"
+              },
+              {
+                "construct": "for",
+                "block": "controls_for",
+                "line": 69
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 71
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 72
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 73
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 74
+              },
+              {
+                "construct": "for",
+                "block": "controls_for",
+                "line": 78
+              },
+              {
+                "construct": "assignment",
+                "block": "variables_set",
+                "line": 81
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 82
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 83
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 84
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 85
+              },
+              {
+                "construct": "if",
+                "block": "controls_if",
+                "line": 89
+              },
+              {
+                "construct": "declaration",
+                "block": "variables_set",
+                "line": 96,
+                "name": "u8tmp"
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 97
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 98
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 99
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 100
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 108
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 109
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 110
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 111
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 114
+              },
+              {
+                "construct": "assignment",
+                "block": "variables_set",
+                "line": 128
+              },
+              {
+                "construct": "assignment",
+                "block": "variables_set",
+                "line": 128
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 129
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 130
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 131
+              },
+              {
+                "construct": "assignment",
+                "block": "lists_setIndex",
+                "line": 132
+              }
+            ],
+            "blockHistogram": {
+              "variables_set": 8,
+              "controls_for": 2,
+              "lists_setIndex": 21,
+              "controls_if": 1
+            }
+          }
+        ],
+        "globalTables": [
+          {
+            "name": "sbox",
+            "line": 30,
+            "elements": 256,
+            "candidateBlock": "data_int_list",
+            "note": "结构上落 data_int_list；算法语义不在块里"
+          },
+          {
+            "name": "Rcon",
+            "line": 51,
+            "elements": 11,
+            "candidateBlock": "data_int_list",
+            "note": "结构上落 data_int_list；算法语义不在块里"
+          }
+        ],
+        "coverage": [
+          {
+            "function": "KeyExpansion",
+            "line": 63,
+            "gaps": [
+              {
+                "id": "multi-buffer-io",
+                "construct": "KeyExpansion(uint8_t* RoundKey, const uint8_t* Key)",
+                "capability": "一个输入缓冲 + 一个 176 字节输出缓冲的整函数 IO",
+                "why": "函数以 void 返回、用两个指针形参分别传输入与输出；现有整函数别名块的 IO 契约是单 STATE/单 BYTES（如 aes_sub_bytes 只有 STATE），没有承接 16 字节 key → 176 字节轮密钥的块",
+                "missingBlockType": "无（整段密钥扩展块）",
+                "sourceLines": [
+                  63
+                ],
+                "firstSnippets": [
+                  {
+                    "line": 63,
+                    "text": "static void KeyExpansion(uint8_t* RoundKey, const uint8_t* Key)"
+                  }
+                ]
+              },
+              {
+                "id": "pointer-param-index-io",
+                "construct": "RoundKey[...]（指针形参按计算下标读写）",
+                "capability": "输入/输出缓冲区按 32 位字下标读写",
+                "why": "RoundKey 是 uint8_t* 指针形参：C 里它与调用方缓冲区同一份内存；块模型是值语义列表，同一效果要先声明 176 元素列表再逐下标写（Blockly 内置 lists_setIndex），没有「外部字节缓冲」概念",
+                "missingBlockType": "无（按字节下标写外部缓冲的块；只能展开成列表块组合）",
+                "sourceLines": [
+                  71,
+                  72,
+                  73,
+                  74,
+                  82,
+                  83,
+                  84,
+                  85,
+                  129,
+                  130,
+                  131,
+                  132
+                ],
+                "firstSnippets": [
+                  {
+                    "line": 71,
+                    "text": "RoundKey[(i * 4) + 0] = Key[(i * 4) + 0];"
+                  },
+                  {
+                    "line": 72,
+                    "text": "RoundKey[(i * 4) + 1] = Key[(i * 4) + 1];"
+                  },
+                  {
+                    "line": 73,
+                    "text": "RoundKey[(i * 4) + 2] = Key[(i * 4) + 2];"
+                  },
+                  {
+                    "line": 74,
+                    "text": "RoundKey[(i * 4) + 3] = Key[(i * 4) + 3];"
+                  }
+                ]
+              },
+              {
+                "id": "pointer-param-index-io",
+                "construct": "Key[...]（指针形参按计算下标读写）",
+                "capability": "输入/输出缓冲区按 32 位字下标读写",
+                "why": "Key 是 uint8_t* 指针形参：C 里它与调用方缓冲区同一份内存；块模型是值语义列表，同一效果要先声明 176 元素列表再逐下标写（Blockly 内置 lists_setIndex），没有「外部字节缓冲」概念",
+                "missingBlockType": "无（按字节下标写外部缓冲的块；只能展开成列表块组合）",
+                "sourceLines": [
+                  71,
+                  72,
+                  73,
+                  74
+                ],
+                "firstSnippets": [
+                  {
+                    "line": 71,
+                    "text": "RoundKey[(i * 4) + 0] = Key[(i * 4) + 0];"
+                  },
+                  {
+                    "line": 72,
+                    "text": "RoundKey[(i * 4) + 1] = Key[(i * 4) + 1];"
+                  },
+                  {
+                    "line": 73,
+                    "text": "RoundKey[(i * 4) + 2] = Key[(i * 4) + 2];"
+                  },
+                  {
+                    "line": 74,
+                    "text": "RoundKey[(i * 4) + 3] = Key[(i * 4) + 3];"
+                  }
+                ]
+              },
+              {
+                "id": "function-like-macro-call",
+                "construct": "call getSBoxValue(...)",
+                "capability": "(sbox[(num)])",
+                "why": "函数式宏 getSBoxValue() 未展开：它把「常量表按字节下标取值」藏进宏体；块模型里 sbox 只作为 aes_sub_bytes / sbox_sub 的内部常量，没有可索引的字节查表块",
+                "missingBlockType": "无（按字节查表的原子块）",
+                "sourceLines": [
+                  108,
+                  109,
+                  110,
+                  111
+                ],
+                "firstSnippets": [
+                  {
+                    "line": 108,
+                    "text": "tempa[0] = getSBoxValue(tempa[0]);"
+                  },
+                  {
+                    "line": 109,
+                    "text": "tempa[1] = getSBoxValue(tempa[1]);"
+                  },
+                  {
+                    "line": 110,
+                    "text": "tempa[2] = getSBoxValue(tempa[2]);"
+                  },
+                  {
+                    "line": 111,
+                    "text": "tempa[3] = getSBoxValue(tempa[3]);"
+                  }
+                ]
+              },
+              {
+                "id": "global-const-table-index-read",
+                "construct": "read Rcon[...]",
+                "capability": "常量表 Rcon 按下标取值",
+                "why": "全局常量表 Rcon 的读：表本身可落 data_int_list，但「按下标从表里取值」在密码原语块里没有对应类型（data_int_list 只是字面量）",
+                "missingBlockType": "无（常量表下标读取原语；可由 Blockly 内置 lists_getIndex 承担，但不在本项目密码块集内）",
+                "sourceLines": [
+                  114
+                ],
+                "firstSnippets": [
+                  {
+                    "line": 114,
+                    "text": "tempa[0] = tempa[0] ^ Rcon[i/Nk];"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "buildable": {
+          "ok": false,
+          "reason": "函数体第 65 行不是原语调用，链式规则不适用；另有 5 类构造无候选块（见 coverage）",
+          "line": 65
+        },
+        "diagnostics": [
+          {
+            "stage": "V1",
+            "line": 12,
+            "kind": "unsupported",
+            "code": "preprocessor",
+            "message": "预处理行未展开：#include <stdint.h>",
+            "snippet": "#include <stdint.h>"
+          },
+          {
+            "stage": "V1",
+            "line": 63,
+            "kind": "unsupported",
+            "code": "pointer",
+            "message": "不支持指针参数",
+            "snippet": "static void KeyExpansion(uint8_t* RoundKey, const uint8_t* Key)"
+          },
+          {
+            "stage": "V1",
+            "line": 114,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "tempa[0] = tempa[0] ^ Rcon[i/Nk];"
+          },
+          {
+            "stage": "V1",
+            "line": 129,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "RoundKey[j + 0] = RoundKey[k + 0] ^ tempa[0];"
+          },
+          {
+            "stage": "V1",
+            "line": 130,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "RoundKey[j + 1] = RoundKey[k + 1] ^ tempa[1];"
+          },
+          {
+            "stage": "V1",
+            "line": 131,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "RoundKey[j + 2] = RoundKey[k + 2] ^ tempa[2];"
+          },
+          {
+            "stage": "V1",
+            "line": 132,
+            "kind": "semantic-drift",
+            "code": "implicit-narrowing",
+            "message": "赋值：uint8_t 右侧是算术表达式，C 会按声明宽度截断，块模型按 32 位整数",
+            "snippet": "RoundKey[j + 3] = RoundKey[k + 3] ^ tempa[3];"
+          }
+        ],
+        "diagnosticSummary": {
+          "total": 7,
+          "byKind": {
+            "unsupported": 2,
+            "semantic-drift": 5
+          },
+          "byCode": {
+            "preprocessor": 1,
+            "pointer": 1,
+            "implicit-narrowing": 5
+          }
+        }
       }
     ]
   },
   "v3": {
-    "ok": true,
+    "ok": false,
     "negativeControl": {
       "ran": true,
       "mutation": "sub_bytes → aes_shift_rows（同一 C 函数，语义错误；类型仍可生成）",
@@ -1939,14 +2673,14 @@
       "ok": true,
       "path": "dist-verify/verify-demo.js",
       "sha256": "722636849cf51024d6e41f67c85eb9245b2b2bce8cea8b07f4cda0f36fb19482",
-      "mtime": "2026-11-18T00:19:42.465Z"
+      "mtime": "2026-11-18T02:41:15.543Z"
     },
     "totals": {
-      "samples": 5,
+      "samples": 6,
       "reachable": 5,
-      "cases": 13,
+      "cases": 14,
       "passed": 13,
-      "unreachable": 0
+      "unreachable": 1
     },
     "samples": [
       {
@@ -2127,8 +2861,27 @@
         "workspace": "experiments/ai-helper-2026-11-14/p3/out/ws-kokke-mixcolumns.json",
         "generatedPython": "experiments/ai-helper-2026-11-14/p3/out/gen-kokke-mixcolumns.py",
         "cDriver": "experiments/ai-helper-2026-11-14/p3/out/driver-kokke-mixcolumns.c"
+      },
+      {
+        "id": "kokke-keyexpansion",
+        "reachable": false,
+        "reason": "V2 不可生成工作区：函数体第 65 行不是原语调用，链式规则不适用；另有 5 类构造无候选块（见 coverage）",
+        "kind": "keyexp-176",
+        "pyFn": "P3_KeyExpansion",
+        "cFn": "KeyExpansion",
+        "vectors": [],
+        "passed": 0,
+        "total": 1
       }
     ]
   },
-  "ok": true
+  "ok": false,
+  "blocked": [
+    {
+      "sample": "kokke-keyexpansion",
+      "file": "experiments/ai-helper-2026-11-14/p3/out/blocked-kokke-keyexpansion.json",
+      "status": "blocked",
+      "blocker": "no whole-function block for KeyExpansion + V2 has no statement-level workspace builder"
+    }
+  ]
 }

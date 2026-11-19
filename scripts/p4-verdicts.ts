@@ -50,6 +50,8 @@ interface StandardConfig {
   mappingHeading: RegExp;
   variantRe: RegExp;
   models: ClauseModel[];
+  /** 是否把步骤的 note（探针/缺口证据）追加进 gaps；默认关闭以保持前两份产物逐字节不变。 */
+  stepNotesInGaps?: boolean;
 }
 
 function selectStandard(argv: string[]): StandardConfig {
@@ -200,6 +202,65 @@ const CMAC_CLAUSE_MODELS: ClauseModel[] = [
   },
 ];
 
+/**
+ * SP 800-38C CCM 的步骤表（人工语义分解，依据 01–04 四页的「标准定义」「公式或伪代码」与
+ * Appendix A 的格式化 / 计数器函数）。口径与前两份一致：整段被一个块吸收的步骤记 internal。
+ *
+ * CCM 的分解链比 CMAC 长（格式化 → CBC-MAC → CTR → 标签掩码），画布上的类型门也更硬：
+ * ccm_b0 / ccm_counter_block / ccm_aad_len_prefix 输出 IntList，而 AES 块（mode_ecb_encrypt）
+ * 与明文入口（ccm_cbc_mac.MSG / ccm_ctr.MSG）要 Bytes。三条被拒的边见
+ * p4/connect-probe-sp800-38c-ccm.json；它们决定了 02 与 04 只能判「部分」。
+ */
+const CCM_CLAUSE_MODELS: ClauseModel[] = [
+  {
+    entryId: '01-CCM',
+    nonExecutable: '本页是 CCM 组合导航页，条目页自己写明「没有独立归属的公式或伪代码规范单元」；§6.1/§6.2 的过程在 02–04 三页拆开判，本页不能重复记「能搭」',
+    steps: [
+      { id: 's1', section: '§6.1', text: '生成-加密：格式化 (N,A,P) → CBC-MAC → CTR → C‖T', blocks: ['ccm_encrypt'], visibility: 'none', note: '整段过程由 ccm_encrypt 一步吸收；L1 记在 evidence.l1，不进档位' },
+      { id: 's2', section: '§6.2', text: '解密-验证：CTR 解出 P → 重算标签 → 比对，失败不返回明文', blocks: ['ccm_decrypt'], visibility: 'none', note: '同上：整段由 ccm_decrypt 吸收，Clen ≤ Tlen 判 INVALID' },
+    ],
+    claimBoundaries: ['导航页的「能搭」应读成 02–04 三页的并集，不是本页自身可执行'],
+    extraGaps: [],
+  },
+  {
+    entryId: '02-Formatting',
+    steps: [
+      { id: 's1', section: '§6.1', text: 'L = 15 − len(nonce)；B0 = Flags(hasAAD, tagLen, L) ‖ nonce ‖ BE(len(M), L)', blocks: ['ccm_b0'], visibility: 'canvas', note: 'ccm_b0 一个块吸收 L 与 flags 编码（Appendix A.2）' },
+      { id: 's2', section: '§6.1', text: 'AAD 长度前缀：a < 0xFF00 用 2 字节，否则 0xFFFE ‖ 4 字节', blocks: ['ccm_aad_len_prefix'], visibility: 'canvas' },
+      { id: 's3', section: '§6.1', text: 'AAD 正文拼接与零填充到 16 字节边界', blocks: ['ccm_cbc_mac', 'ccm_encrypt'], visibility: 'internal', note: '画布只有长度前缀；正文拼接与填充在 ccm_formatted 闭包里，ccm_aad_len_prefix 输出 IntList 接不上 ccm_cbc_mac.MSG 的 Bytes，探针 aadprefix-msg 被拒' },
+      { id: 's4', section: '§6.1', text: 'Ctr(i) = Flags(0, 0, L) ‖ nonce ‖ BE(i, L)', blocks: ['ccm_counter_block'], visibility: 'canvas' },
+      { id: 's5', section: '§6.1', text: 'S_i = AES_K(Ctr(i))', blocks: ['ccm_ctr', 'ccm_encrypt'], visibility: 'internal', note: '计数器块输出 IntList、AES 块入口是 Bytes，224 块里没有 IntList→Bytes 转换块，探针 counter-ecb 被拒；AES 只在 ccm_ctr/ccm_encrypt 闭包内做' },
+      { id: 's6', section: '§6.1', text: 'B = B0 ‖ A 编码块 ‖ Pad(P) 的整串组装', blocks: ['ccm_cbc_mac', 'ccm_encrypt'], visibility: 'internal', note: 'ccm_formatted 闭包内完成；画布没有 IntList 拼接/填充块' },
+    ],
+    claimBoundaries: [
+      '标准允许 7–13 字节 nonce 与 4–16 偶数 tagLen 的取值域；块模型已固定 AES-128 路径，非 128-bit 分组不表达',
+      'AAD 长度 ≥ 0xFF00 的分支只在 ccm_aad_len_prefix 内表达（a < 2^32）',
+    ],
+    extraGaps: [],
+  },
+  {
+    entryId: '03-CBC-MAC',
+    steps: [
+      { id: 's1', section: '§6.1', text: 'X0 = 0^128', blocks: ['data_int_list'], visibility: 'canvas', note: '16 字节零块用 data_int_list 字面量表达' },
+      { id: 's2', section: '§6.1', text: '对 B0 ‖ EncodeAAD(A) ‖ Pad(P) 逐块 Xi = AES_K(X(i−1) ⊕ Bi)', blocks: ['ccm_cbc_mac'], visibility: 'canvas', note: 'ccm_cbc_mac 的契约就是这条链（含 CCM 专用格式化输入），与裸 CBC-MAC 不同' },
+      { id: 's3', section: '§6.1', text: 'T = MSB_t(X_last ⊕ AES_K(Ctr(0)))', blocks: ['ccm_encrypt'], visibility: 'internal', note: '没有独立的标签掩码块；S0 与异或截断只在 ccm_encrypt 闭包内，03 页自己写明' },
+    ],
+    claimBoundaries: ['CBC-MAC 的输入编码是 CCM 专用（B0 / AAD 长度编码 / 各自零填充），不能替换成裸 CBC-MAC'],
+    extraGaps: ['标签掩码没有独立块：ccm_cbc_mac 只输出 16 字节 X，T 的掩码与截断只能整体走 ccm_encrypt'],
+  },
+  {
+    entryId: '04-CTR',
+    steps: [
+      { id: 's1', section: '§5.5', text: '计数器块 Ctr_0 … Ctr_m（A_i 格式，i 从 0 起）', blocks: ['ccm_counter_block', 'ctrl_iterate'], visibility: 'canvas', note: 'ccm_counter_block 给单块，多块用 ctrl_iterate 组合' },
+      { id: 's2', section: '§6.1', text: 'S_j = AES_K(Ctr_j)', blocks: ['ccm_ctr', 'ccm_encrypt'], visibility: 'internal', note: '同 02：IntList 计数器块接不上 Bytes 入口的 AES 块，探针 counter-ecb 被拒' },
+      { id: 's3', section: '§6.1', text: 'C_i = P_i ⊕ S_i', blocks: ['ccm_ctr'], visibility: 'canvas' },
+      { id: 's4', section: '§6.1', text: 'T = MSB_t(X ⊕ S0)', blocks: ['ccm_encrypt'], visibility: 'internal', note: 'ccm_ctr 只输出密文段；标签掩码在 ccm_encrypt（04 页自己写明）' },
+    ],
+    claimBoundaries: ['同一 key 下 nonce 重用会破坏 CCM 安全性；块模型没有 nonce 唯一性检查'],
+    extraGaps: [],
+  },
+];
+
 const CONFIGS: Record<string, StandardConfig> = {
   'fips180-4-SHA2': {
     id: 'fips180-4-SHA2',
@@ -218,6 +279,16 @@ const CONFIGS: Record<string, StandardConfig> = {
     mappingHeading: /^## .*(映射|边界)/,
     variantRe: /cmac/,
     models: CMAC_CLAUSE_MODELS,
+  },
+  'sp800-38c-ccm': {
+    id: 'sp800-38c-ccm',
+    anchors: `${OUT_DIR}/anchors-sp800-38c-ccm.json`,
+    out: `${OUT_DIR}/verdicts-sp800-38c-ccm.json`,
+    standardNumberRe: /SP\s*800-38C|800-38C/i,
+    mappingHeading: /^## .*(映射|边界)/,
+    variantRe: /ccm/,
+    models: CCM_CLAUSE_MODELS,
+    stepNotesInGaps: true,
   },
 };
 
@@ -355,7 +426,7 @@ function main(): void {
       ...model.extraGaps,
       ...model.steps
         .filter((step) => step.visibility !== 'canvas')
-        .map((step) => `${step.section} 步骤「${step.text}」${step.visibility === 'internal' ? '只在生成器闭包里，画布无法逐步核' : '没有对应块'}`),
+        .map((step) => `${step.section} 步骤「${step.text}」${step.visibility === 'internal' ? '只在生成器闭包里，画布无法逐步核' : '没有对应块'}${config.stepNotesInGaps && step.note ? `（${step.note}）` : ''}`),
     ];
     return {
       clauseId: page.entryId,

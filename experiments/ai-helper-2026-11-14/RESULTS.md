@@ -4082,6 +4082,181 @@ DOC_INDEX bytes=3.94MB hash=14a943a2909dde4d
 下次遇到读数翻转，先按 §56.1 的办法分辨「代码变了」还是「断言旧了」，再决定改哪一边。
 
 
+## 57. A 线第三条标准：SP 800-38C CCM（2026-11-18 下午，接 §55）
+
+同一套三段脚本（锚点 → 三档 → 连线探针）第三次复用，只换标准适配与步骤表；
+产物与「怎么判」全部现场重跑过，前两条的 6 份 JSON 逐字节未变。
+
+### 57.1 锚点：4 条目 / 7 单元，7/7 可点
+
+`p4/anchors-sp800-38c-ccm.json`（sha256 `5e846be7…`）：条目 4、条款单元 7、
+**可点 7/7**、节级 0、未解析 0、声明起点非标题 0；4/4 条目页都有可点锚点。
+源提取稿 1206 行（sha256 `fa850e54…`）。抽查：`L592 6.1 Generation-Encryption Process`、
+`L645 6.2 Decryption-Verification Process`、`L554 5.5 Examples of Operations and Functions`、
+`L580 6 CCM Specification`，四行都含对应条款文本。
+
+版式适配有两处新增（CCM 的 PDF 与 38B 不同）：连字符标题（`6.1 Generation-` / `Encryption
+Process` 跨行）与单空格章标题；`§` 号解析失败时回退到「该页声明的章节」而不是丢锚点。
+
+### 57.2 三档：0 能搭 / 3 部分 / 1 不能，缺口 8 条
+
+`p4/verdicts-sp800-38c-ccm.json`（sha256 `f9e27a98…`），证据层 L1×4，tooltip 标准号池 7 个
+`ccm_*` 块。
+
+| 条目 | 档位 | 依据 |
+|---|---|---|
+| 01-CCM | **不能** | 导航/组合页，页面自述「没有独立归属的公式或伪代码」；§6.1/§6.2 的过程交给 02–04 判，不重复记「能搭」 |
+| 02-Formatting | **部分**（画布 3/6） | B0、AAD 长度前缀、Ctr(i) 在画布；AAD 正文拼接与零填充、`S_i=AES_K(Ctr_i)`、整串 B 组装在闭包里（探针 `aadprefix-msg`、`counter-ecb` 被拒） |
+| 03-CBC-MAC | **部分**（2/3） | 链本身有 `ccm_cbc_mac`；`T=MSB_t(X⊕S0)` 没有独立标签掩码块 |
+| 04-CTR | **部分**（2/4） | Ctr(i)、`C_i=P_i⊕S_i` 在画布；`S_j=AES_K(Ctr_j)` 与标签掩码在闭包 |
+
+与 CMAC（§55：0 能搭 / 3 部分 / 0 不能）相比，这次多出一个「不能」——但那是**导航页**，
+不是分解失败；真正的分解页仍然全部「部分」，卡点同型：`IntList→Bytes` 转换块缺位。
+
+### 57.3 连线探针：6 用例，3 通 3 拒，运行时与契约同向 6/6
+
+`p4/connect-probe-sp800-38c-ccm.json`（sha256 `a063bdc0…`）：
+`cases=6 blocked=3 allowed=3 pass=6 fail=0`。
+
+| 边 | 结果 |
+|---|---|
+| `data_int_list(IntList) → ccm_b0.NONCE` | 通 |
+| `ccm_b0(IntList) → ccm_cbc_mac.AAD` | 通 |
+| `mode_ecb_encrypt(Bytes) → ccm_cbc_mac.KEY` | 通 |
+| `ccm_b0 → ccm_cbc_mac.MSG` | 拒（IntList→Bytes） |
+| `ccm_aad_len_prefix → ccm_cbc_mac.MSG` | 拒（IntList→Bytes） |
+| `ccm_counter_block → mode_ecb_encrypt.DATA` | 拒（IntList→Bytes） |
+
+`connect()` 被拒时不抛错、只是没连上——探针按「边是否真的建立」判，不按异常判。
+
+### 57.4 试点工程：113 块，双语言 11/11 向量
+
+`p4/build-project-ccm.py` 生成 `p4/project-ccm/`（algo 35 块 + main 78 块 = **113 块**，
+14 种块类型，7 个 `ccm_*` 块全部用到，0 个仓库外块、0 重复 id；连跑 4 次哈希相同）。
+
+`verify-project --exec` 读数（`p4/verify-project-readings-ccm.json`，sha256 `1b58a600…`）：
+Python 415 行 / JS 407 行，符号 7 个 errors=0；
+typecheck `pairs=85 ok=0 mismatch=0 unknown=85`（`coreBlockNoContract 56 / parentInputNoCheck 25 /
+childOutputNoCheck 4`）。向量 11 行 × 双语言全 PASS（附录 C Example 1/2/3 的 C‖T、Example 1
+解密 P、B0、Ctr0、Ctr1、AAD 前缀 8/16、CBC-MAC X、CTR 密文段）；阴性对照（翻转标签末位）
+双语言 `TAG-REJECTED` PASS。另用 Python `cryptography` 的 AESCCM 与 AES-ECB 手搭 CBC-MAC
+独立复算三例 C‖T 与 X，全部 match。
+
+### 57.5 回归：前两条逐字节不变
+
+| 产物 | sha256 | 结论 |
+|---|---|---|
+| `anchors.json`（FIPS 180-4） | `cb5b4cb3…` | 与 §54/§55 基线相同 |
+| `verdicts.json` | `0f7017f0…` | 相同 |
+| `anchors-sp800-38b-cmac.json` | `11d4f1b7…` | 相同 |
+| `verdicts-sp800-38b-cmac.json` | `e1fa3145…` | 相同 |
+| `connect-probe-sp800-38b.json` | `189a9105…` | 相同 |
+| `verify-project-readings.json`（FIPS） | `1df52835…` | 与 §56 相同 |
+| `verify-project-readings-cmac.json` | `5fdaaae9…` | 与 §56 相同 |
+
+本次由主线程**重跑了三段脚本**（`node scripts/p4-anchors.mjs` 三次、`p4-verdicts.js` 两次、
+`p4-connect-probe.js` 两次、`verify-project.js` 三次），以上哈希是复跑后实测，不是引用子代理报告。
+
+### 57.6 语料不一致（只记录，本轮不改 docs）
+
+1. `03-CBC-MAC.md` 的「标准定位」写 §6.3，但 SP 800-38C 只有 §6.1/§6.2；脚本按「§6.1 步骤
+   1–4」回退解析，并在 `declaredSectionsMissing: ["6.3"]` 留痕。
+2. `01-CCM.md` 的「§6.1，行 580–644」起点 580 实为 §6 章标题（§6.1 从 592 起），
+   `declaredOutsideSections=1`。
+3. `SPEC-CARD.json` 的 `A2-decrypt-steps` 声明 `[645,695]`，但 quote 从 661（`Steps:`）起——
+   这是 SPEC-CARD 7 个锚点里 quoteText/Hash 只有 6/7 的唯一原因。
+4. `03-CBC-MAC.md`/`04-CTR.md` 仍写「解密标签验证/拒绝路径尚未开放」，与 `ccm_decrypt` 及
+   demo 的 `TAG-REJECTED` 矛盾（01-CCM 已更新）。
+
+### 57.7 边界
+
+语义等价仍 `unverified`；试点只覆盖 AES-128 与 tag 4/6/8；`ccm_*` 块无 SM4 路径；
+未覆盖全部 nonce/tag 长度组合；不构成认证、常量时间或安全性证明。
+
+## 58. B 线：KeyExpansion 进 V3 —— 阻断点可复跑，不给假 PASS（接 §52）
+
+§50 把 kokke 的两个「纯原语」体送进了 V3。这一轮挑的是带**双循环 + 分支 + 数组改写 +
+指针参数 + 常量表下标**的 `KeyExpansion`：V0/V1 走通，V2 生成不了工作区，V3 因此不可达。
+本轮把「卡在哪」做成机器可读记录，而不是把单侧 C 读数写成差分通过。
+
+### 58.1 样本：上游原样摘录，来源可对
+
+`samples/kokke-keyexpansion.c`（134 行，sha256 `ddc0680e…`）逐段摘录
+`kokke/tiny-AES-c@2385675`（`aes.c` sha256 `f7f78b44…`）的 45–56 / 76–96 / 118–121 /
+137–143 / 145–217 五段，未改名、未去 `static`、未展开宏；`manifest.json` 给出
+`maxLines=140`（旧规则默认 40 行，新样本会被行数闸门误杀）与 `upstream.lineRanges`。
+
+### 58.2 V0–V3 读数
+
+| 阶段 | 结果 |
+|---|---|
+| V0 | 6/6 样本 PASS（新样本 134 行、hash 对、别名 8 条、契约键 224） |
+| V1 | `fns=1 for=2 if=1 assigns=28 calls=4 indexR=47 indexW=21 unsupported=2 drift=5`；条件编译求值后取默认配置 `Nb=4/Nk=4/Nr=10`，AES-256 分支被裁掉（`if` 由 2 变 1） |
+| V2 | **buildable=false**；骨架 32 节点（`variables_set 8 / controls_for 2 / lists_setIndex 21 / controls_if 1`）；5 类构造无候选块 |
+| V3 | 可达 5/6、向量 **13/14**；新样本「V2 不可生成工作区：函数体第 65 行不是原语调用，链式规则不适用；另有 5 类构造无候选块」 |
+
+V2 的 5 类缺口（`out/blocked-kokke-keyexpansion.json` 逐条带行号与原文片段）：
+
+| 构造 | 为什么画布接不住 |
+|---|---|
+| `multi-buffer-io` | 一个输入缓冲 + 一个 176 字节输出缓冲的整函数 IO；现有整函数别名块只有单 `STATE`/单 `BYTES` |
+| `pointer-param-index-io`（`RoundKey[...]`、`Key[...]`） | 指针形参的下标读写没有对应的块契约 |
+| `function-like-macro-call`（`getSBoxValue(...)`） | 函数式宏调用不等于原语调用，别名表也不收 |
+| `global-const-table-index-read`（`Rcon[...]`） | 全局常量表下标读无候选块 |
+
+准确的说法不是「一个块都没有」：白盒组合有候选块（`sbox` 的 AES 预设 + `lists_getIndex`、
+`sbox_sub`、`bit_rotate_left`、`bit_operation`、`data_int_list`、内置 for/if/list 读写），
+但 (a) 没有任何块代表这个函数，(b) 手搭组合未做生成验证，(c) `uint8` 截断要显式 `& 0xFF`。
+阻断记录里逐条标了 `expressible: true/partial` 与证据行。
+
+### 58.3 向量来源：仓库语料是 FIPS 197-upd1，A.1 的种子不是 `000102…0f`
+
+任务书原写「A.1 的 key 000102…0f」，但仓库 `docs/standards/fips197-AES/00-Standard-Source.md`
+是 **upd1**：A.1 打印的是另一个种子（L1364），w0–w43 在 L1367–1422（印刷页 29–30），
+附录 C 已在变更日志第 23 条删除；`000102…0f` 只作为 C.1/B 示例 key 出现，**没有它的
+176 字节扩展表**。为守住「不凭记忆写」，向量取 A.1 实际打印的种子，并由
+`lib/fips197-a1.mjs` 从语料机械提取（来源与提取规则写进 `vectors.json` 的 `source`）。
+
+C 侧单侧读数为 `out/keyexpansion-cside.json`：gcc 16.2.1 编译上游 C + 驱动，key 16 B →
+**176 B = 44 字 = 11 组轮密钥**，与语料机械提取整段相等（44/44 字、11/11 轮密钥）。
+该文件硬字段 `differential: false`——**它是单侧读数，不得读作 V3 通过**。
+
+### 58.4 解析器扩展：旧解析器「不抛错但读错」
+
+新增条件编译求值（`preprocessConditionals`/`evalConditional`，`#define` 不再记成 unsupported）：
+
+| 指标 | 扩展前 | 扩展后 |
+|---|---|---|
+| `if` | 2 | **1** |
+| `assignments` | 32 | **28** |
+| `diag` | 21 | **7** |
+| `preproc` | 13 | **5** |
+
+证据在 `out/keyexpansion-parser-gap.json`。旧规则还要求样本 ≤40 行，134 行的新样本会在 V0
+被误杀，因此 V0 加了显式 `maxLines`。
+
+### 58.5 回归与退出码
+
+旧 5 样本 V3 **13/13**（1+5+3+2+2），四个阶段逐样本 JSON 对比 0 处变化；`p3-summary.txt`
+的差异只有生成时间/git 行、V3 总数行、新样本行与阻断记录行；阴性对照仍开火
+（`sub_bytes → aes_shift_rows` 得 `ed416f36…` ≠ `89d810e8…`）。
+
+默认退出码仍是严格模式（有失败就 1）。新增 `--allow-blocked`：只在「失败样本都已有阻断
+记录、V0/V1/V2 全绿、其余样本全过」时退 0，防止真失败混进阻断里变绿。实测：
+`node run-p3.mjs` → rc=1；`--allow-blocked` → rc=0。
+
+### 58.6 顺带发现的文档冲突（不改，另开一轮）
+
+`docs/standards/fips197-AES/07-KEY-EXPANSION.md` 写「项目状态：部分实现」并给了
+`aes_key_expand` 映射，但 `src/blocks` 与契约里检索 **0 命中**——文档声明了一个并不存在的块。
+
+### 58.7 下一轮两个选项（已写进阻断记录）
+
+- **A**：新增 `aes_key_expansion`（`KEY Bytes[16] → ROUND_KEYS Bytes[176]`，别名上限 8→9），
+  走 whole-function-alias 形态，画布上就是「一个块做完整密钥扩展」；
+- **B**：给 V2 加语句级组装器（循环/分支/数组改写 → 块链），代价远大于 A，收益是能承接
+  更多第三方函数体。
+
 ## 59. D 线接模型（BYOK）第一段：服务层 + 面板，未接真实 provider（2026-11-18 下午）
 
 按 §3.2/§3.3/§3.4 落地「用户自带 key」的服务层与界面。**这一段没有真实 provider 调用，
@@ -4519,6 +4694,7 @@ owner 要的三件里的第 ②：A 线（标准原文 → 工作区）不能只
 SP 800-38B CMAC（0 / 3 / 0，6 处缺口）；合计 2 份标准 / 8 个条款 / 1 能搭 / 6 部分 / 1 不能 / 17 处缺口。
 第三份 SP 800-38C CCM 的裁决 JSON 尚未入库（另一会话的 §57 那笔），因此**没有**进制品：
 索引不能依赖未提交文件，否则干净克隆复现不出来。它落库后只需在 `SOURCES` 加一行并重跑。
+（2026-11-19 已入库并接线，当前口径 3 份 / 12 条款 / 1 能搭 / 9 部分 / 2 不能 / 25 处缺口，见 §68。）
 
 ### 66.3 界面
 
@@ -4665,3 +4841,45 @@ SP 800-38B CMAC（0 / 3 / 0，6 处缺口）；合计 2 份标准 / 8 个条款 
 2. 费用估算：仍只显示 token 与耗时，没有单价输入；`PARALLEL-EXECUTION.md` §3.4 的那条待办继续挂着（原写「owner 已裁决不做」查无记录，2026-11-19 对抗层复核后更正）。
 3. 自述的「重复/超上限」两类只有单测，没有在浏览器里造四句去验——不值得为一条计数再起一次假 provider。
 4. locale 拆分（§66.7）没动：本轮靠零新增键绕开，下一轮真要写新文案时仍会红。
+
+## 68. 落库与接线：CCM 进制品、B 线 C 侧阻断点入库（2026-11-19 上午，接 §57/§58/§66）
+
+### 68.1 这轮做了什么
+
+- **落库在飞产物**：§57（A 线 SP 800-38C CCM 工程与裁决）与 §58（B 线 KeyExpansion C 侧）的
+  `p3/`、`p4/` 产物与 `scripts/p4-{anchors,connect-probe,verdicts}` 三个脚本改动一并入库；
+  RESULTS 的 §57/§58 两节随之落库。
+- **CCM 接进裁决索引**（§66.2 留的那一行）：`SOURCES` 加 `verdicts-sp800-38c-ccm.json`，重跑
+  `verdicts:index`。计数仍从 clauses 重算、与源文件 `counts` 对账通过：
+
+| 切片 | 条款 | 能搭 / 部分 / 不能 | 缺口 |
+|---|---|---:|---:|
+| FIPS 180-4 SHA-2 | 5 | 1 / 3 / 1 | 11 |
+| SP 800-38B CMAC | 3 | 0 / 3 / 0 | 6 |
+| SP 800-38C CCM | 4 | 0 / 3 / 1 | 8 |
+| **合计** | **12** | **1 / 9 / 2** | **25** |
+
+  制品 hash `77cfa870030580a8`（收两份时是 `ae14d5bf7680f110`）。
+- **同步三处口径**：`tests/unit/verdicts-index.test.ts`（新增 CCM 0/3/1，总量改 3/12/1/9/2/25）、
+  `docs/guides/AI-HELPER.md` 与 `.en.md`（「两份切片」→「三份切片」，中英各 218 行不变）。
+
+### 68.2 现场验证
+
+- `verdicts:index:check` ok（3 份 / 12 条款 / `77cfa870…`）；裁决索引单测 11/11。
+- 锚点：7 个全部落在 `docs/standards/sp800-38c-ccm/00-Standard-Source.md`（1206 行）内，0 越界；
+  深链格式与块名落地由同一组单测覆盖。
+- p3 自洽：`samples/SHA256SUMS` 与 `samples/kokke-keyexpansion.c` 逐字节一致（`ddc0680e…`），
+  `manifest.json` 已登记该样本，三份新 `out/*.json` 均可解析。
+- **doc-index 必须重建**（改了两个文档页）：重跑后 439 篇 / 4052 段 / hash `8bba2ed0eab7811e`，
+  `docs:index:check` ok。不重建则 `tests/unit/doc-search.test.ts` 的「与 docs 语料同步」必红
+  （本轮先红了一次，这是判据生效而不是环境噪声）。
+- 全量：`vue-tsc` rc=0；`test:unit` **123 文件 / 1369 通过 1 跳过**；`docs:check-links` 445/0；
+  `npx vite build` 通过、`build:check-bundle` 入口 **65523 ≤ 65536**（本轮没动 locale，入口未变）。
+
+### 68.3 边界
+
+- B 线 C 侧与 CCM 工程**没有重跑**：沿用 §57/§58 记录的现场结果，本轮只做静态自洽（清单、JSON、
+  锚点范围）与门禁，不把「产物合法」说成「探针又跑过一遍」。
+- doc-index 重建把另外两条线未提交的 docs 小改一并计入语料摘要（`fips204-ML-DSA/README.md`
+  与两份 `SOURCE-SPLIT-INVENTORY`）；它们落库前若再改，需重跑 `docs:index`。
+- §67.7 的四条没变：真实 provider、费用估算、自述重复/上限的浏览器验证、locale 拆分仍按原状态挂着。

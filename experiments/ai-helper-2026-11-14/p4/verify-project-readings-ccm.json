@@ -1,0 +1,225 @@
+{
+  "project": "experiments/ai-helper-2026-11-14/p4/project-ccm/ccm-appendix-c.project.json",
+  "name": "NIST SP 800-38C CCM（src fa850e54）",
+  "language": "python",
+  "structure": {
+    "files": 2,
+    "names": [
+      "algo.ccm.block.json",
+      "main.block.json"
+    ],
+    "entryFileId": "file-main",
+    "entryMatches": true,
+    "perFile": [
+      {
+        "name": "algo.ccm.block.json",
+        "serializedBlocks": 35,
+        "loadedBlocks": 35,
+        "ok": true
+      },
+      {
+        "name": "main.block.json",
+        "serializedBlocks": 78,
+        "loadedBlocks": 78,
+        "ok": true
+      }
+    ]
+  },
+  "symbols": [
+    {
+      "name": "CCM_ENCRYPT_EX1",
+      "params": [
+        {
+          "name": "key",
+          "type": "key"
+        },
+        {
+          "name": "nonce",
+          "type": "int_list"
+        },
+        {
+          "name": "aad",
+          "type": "int_list"
+        },
+        {
+          "name": "msg",
+          "type": "message"
+        }
+      ],
+      "path": "algo.ccm.block.json",
+      "fileId": "file-algo-ccm"
+    },
+    {
+      "name": "CCM_DECRYPT_EX1",
+      "params": [
+        {
+          "name": "key",
+          "type": "key"
+        },
+        {
+          "name": "nonce",
+          "type": "int_list"
+        },
+        {
+          "name": "aad",
+          "type": "int_list"
+        },
+        {
+          "name": "ct",
+          "type": "bytes"
+        }
+      ],
+      "path": "algo.ccm.block.json",
+      "fileId": "file-algo-ccm"
+    },
+    {
+      "name": "CCM_B0",
+      "params": [
+        {
+          "name": "nonce",
+          "type": "int_list"
+        },
+        {
+          "name": "msgLen",
+          "type": "int"
+        },
+        {
+          "name": "aadLen",
+          "type": "int"
+        }
+      ],
+      "path": "algo.ccm.block.json",
+      "fileId": "file-algo-ccm"
+    },
+    {
+      "name": "CCM_COUNTER_BLOCK",
+      "params": [
+        {
+          "name": "nonce",
+          "type": "int_list"
+        },
+        {
+          "name": "i",
+          "type": "int"
+        }
+      ],
+      "path": "algo.ccm.block.json",
+      "fileId": "file-algo-ccm"
+    },
+    {
+      "name": "CCM_CBC_MAC",
+      "params": [
+        {
+          "name": "key",
+          "type": "key"
+        },
+        {
+          "name": "nonce",
+          "type": "int_list"
+        },
+        {
+          "name": "aad",
+          "type": "int_list"
+        },
+        {
+          "name": "msg",
+          "type": "message"
+        }
+      ],
+      "path": "algo.ccm.block.json",
+      "fileId": "file-algo-ccm"
+    },
+    {
+      "name": "CCM_CTR",
+      "params": [
+        {
+          "name": "key",
+          "type": "key"
+        },
+        {
+          "name": "nonce",
+          "type": "int_list"
+        },
+        {
+          "name": "msg",
+          "type": "message"
+        }
+      ],
+      "path": "algo.ccm.block.json",
+      "fileId": "file-algo-ccm"
+    },
+    {
+      "name": "CCM_AAD_PREFIX",
+      "params": [
+        {
+          "name": "aadLen",
+          "type": "int"
+        }
+      ],
+      "path": "algo.ccm.block.json",
+      "fileId": "file-algo-ccm"
+    }
+  ],
+  "generation": {
+    "pythonLines": 415,
+    "javascriptLines": 407,
+    "pythonFnv1a64": "159bd5e7df5e6567",
+    "javascriptFnv1a64": "9747cec253baf1b4",
+    "iterationProof": {
+      "pythonLoop": false,
+      "javascriptLoop": false,
+      "pythonChunk": false,
+      "javascriptChunk": false,
+      "pythonHasFor": true,
+      "javascriptHasFor": true
+    }
+  },
+  "typecheck": {
+    "pairs": 85,
+    "ok": 0,
+    "mismatch": 0,
+    "unknown": 85,
+    "unknownCauses": {
+      "coreBlockNoContract": 56,
+      "parentInputNoCheck": 25,
+      "childOutputNoCheck": 4
+    },
+    "findings": []
+  },
+  "vector": {
+    "name": "NIST SP 800-38C Appendix C Example 1/2/3 (AES-128)",
+    "expect": "7162015b4dac255d\nd2a1f0e051ea5f62081a7792073d593d1fc64fbfaccd\ne3b201a9f5b71a7a9b1ceaeccd97e70b6176aad9a4428aa5484392fbc1b09951\n20212223\n4f101112131415160000000000000004\n07101112131415160000000000000000\n07101112131415160000000000000001\n0008\n0010\n6084341b32042bf000b4b7995553a3c5\n7162015b",
+    "python": {
+      "lang": "Python",
+      "pass": true,
+      "got": "7162015b4dac255d\nd2a1f0e051ea5f62081a7792073d593d1fc64fbfaccd\ne3b201a9f5b71a7a9b1ceaeccd97e70b6176aad9a4428aa5484392fbc1b09951\n20212223\n4f101112131415160000000000000004\n07101112131415160000000000000000\n07101112131415160000000000000001\n0008\n0010\n6084341b32042bf000b4b7995553a3c5\n7162015b",
+      "expect": "7162015b4dac255d\nd2a1f0e051ea5f62081a7792073d593d1fc64fbfaccd\ne3b201a9f5b71a7a9b1ceaeccd97e70b6176aad9a4428aa5484392fbc1b09951\n20212223\n4f101112131415160000000000000004\n07101112131415160000000000000000\n07101112131415160000000000000001\n0008\n0010\n6084341b32042bf000b4b7995553a3c5\n7162015b"
+    },
+    "javascript": {
+      "lang": "JS",
+      "pass": true,
+      "got": "7162015b4dac255d\nd2a1f0e051ea5f62081a7792073d593d1fc64fbfaccd\ne3b201a9f5b71a7a9b1ceaeccd97e70b6176aad9a4428aa5484392fbc1b09951\n20212223\n4f101112131415160000000000000004\n07101112131415160000000000000000\n07101112131415160000000000000001\n0008\n0010\n6084341b32042bf000b4b7995553a3c5\n7162015b",
+      "expect": "7162015b4dac255d\nd2a1f0e051ea5f62081a7792073d593d1fc64fbfaccd\ne3b201a9f5b71a7a9b1ceaeccd97e70b6176aad9a4428aa5484392fbc1b09951\n20212223\n4f101112131415160000000000000004\n07101112131415160000000000000000\n07101112131415160000000000000001\n0008\n0010\n6084341b32042bf000b4b7995553a3c5\n7162015b"
+    },
+    "control": {
+      "note": "翻转 Example 1 标签最后一个 bit：ccm_decrypt 必须抛错（TAG-REJECTED），不得返回明文 20212223",
+      "mustDifferFrom": "20212223",
+      "results": [
+        {
+          "lang": "Python",
+          "got": "TAG-REJECTED",
+          "differ": true,
+          "error": ""
+        },
+        {
+          "lang": "JS",
+          "got": "TAG-REJECTED",
+          "differ": true,
+          "error": ""
+        }
+      ]
+    }
+  },
+  "pass": true,
+  "problems": []
+}

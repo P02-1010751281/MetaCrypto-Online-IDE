@@ -1,0 +1,488 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "scripts/p4-anchors.mjs",
+  "scope": {
+    "standardId": "sp800-38c-ccm",
+    "entries": 4,
+    "note": "第三份标准切片（认证加密组合）：SP 800-38C CCM 四个条目页；缩进版式 + 连字符标题/单空格章标题 + § 解析失败回退"
+  },
+  "standard": {
+    "id": "sp800-38c-ccm",
+    "name": "NIST SP 800-38C",
+    "version": "38C",
+    "source_url": "https://csrc.nist.gov/pubs/sp/800/38/c/final",
+    "source_checked_at": "2026-09-12",
+    "artifacts": [
+      {
+        "path": "NIST.SP.800-38C.pdf",
+        "sha256": "16ec6f99424192757b5b9928a7dcf41817be3aaf85d48366740dfdf7c16db250"
+      }
+    ]
+  },
+  "source": {
+    "path": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+    "lines": 1206,
+    "sha256": "fa850e54502d229a95266435fee3d6722a2ac5a327e5e89d687ca8ba370c1360"
+  },
+  "counts": {
+    "entries": 4,
+    "declaredLineStart": 2,
+    "declaredLineRange": 3,
+    "declaredHeadingOnly": 0,
+    "clauseUnits": 7,
+    "clauseUnitsClickable": 7,
+    "clauseUnitsSectionLevel": 0,
+    "clauseUnitsWithoutHeading": 0,
+    "entryAnchorMismatch": 0,
+    "declaredOutsideSections": 1,
+    "entriesSectionRefFallback": 1,
+    "entriesDeclaredSectionMissing": 1
+  },
+  "entries": [
+    {
+      "clauseId": "01-CCM",
+      "entryPath": "docs/standards/sp800-38c-ccm/01-CCM.md",
+      "standardPosition": "NIST SP 800-38C — CCM 参考",
+      "declaredPosition": "[提取稿 §6.1，行 580–644](./00-Standard-Source.md#L580-L644) · [§6.2，行 645–695](./00-Standard-Source.md#L645-L695)；PDF 物理页见 SPEC-CARD 锚点",
+      "declaredAnchors": [
+        {
+          "kind": "line-range",
+          "line_start": 580,
+          "line_end": 644
+        },
+        {
+          "kind": "line-range",
+          "line_start": 645,
+          "line_end": 695
+        }
+      ],
+      "resolvedSections": [
+        {
+          "section": "6.1",
+          "expandedFrom": null,
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 592,
+          "line_end": 644,
+          "heading": "Generation-Encryption Process",
+          "firstLine": "6.1   Generation-Encryption Process",
+          "slice_sha256": "d8705e129958f17c163161439808c9c93afc87c80be2f18b5dc769c07390c214",
+          "matchesDeclared": false
+        },
+        {
+          "section": "6.2",
+          "expandedFrom": null,
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 645,
+          "line_end": 715,
+          "heading": "Decryption-Verification Process",
+          "firstLine": "6.2   Decryption-Verification Process",
+          "slice_sha256": "99e0355c4c7faf78cedd928c7ec25040dd3989bd477a9876befe7672bdd09bcb",
+          "matchesDeclared": true
+        }
+      ],
+      "anchorMismatch": [],
+      "declaredOutsideSections": [
+        {
+          "declared": {
+            "kind": "line-range",
+            "line_start": 580,
+            "line_end": 644
+          },
+          "lineText": "6 CCM Specification"
+        }
+      ],
+      "entryLevelAnchor": {
+        "kind": "line-range",
+        "line_start": 580,
+        "line_end": 644
+      },
+      "sectionRefSource": "position-fallback",
+      "declaredSectionsMissing": []
+    },
+    {
+      "clauseId": "02-Formatting",
+      "entryPath": "docs/standards/sp800-38c-ccm/02-Formatting.md",
+      "standardPosition": "NIST SP 800-38C §6.1–§6.2",
+      "declaredPosition": "PDF 物理第 15–16 页（标准页 9–10）；[提取稿 §6.1](./00-Standard-Source.md#L592)",
+      "declaredAnchors": [
+        {
+          "kind": "line-start",
+          "line_start": 592,
+          "line_end": null
+        }
+      ],
+      "resolvedSections": [
+        {
+          "section": "6.1",
+          "expandedFrom": "§6.1–§6.2",
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 592,
+          "line_end": 644,
+          "heading": "Generation-Encryption Process",
+          "firstLine": "6.1   Generation-Encryption Process",
+          "slice_sha256": "d8705e129958f17c163161439808c9c93afc87c80be2f18b5dc769c07390c214",
+          "matchesDeclared": true
+        },
+        {
+          "section": "6.2",
+          "expandedFrom": "§6.1–§6.2",
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 645,
+          "line_end": 715,
+          "heading": "Decryption-Verification Process",
+          "firstLine": "6.2   Decryption-Verification Process",
+          "slice_sha256": "99e0355c4c7faf78cedd928c7ec25040dd3989bd477a9876befe7672bdd09bcb",
+          "matchesDeclared": false
+        }
+      ],
+      "anchorMismatch": [],
+      "declaredOutsideSections": [],
+      "entryLevelAnchor": {
+        "kind": "line-start",
+        "line_start": 592,
+        "line_end": null
+      },
+      "sectionRefSource": "standard-position",
+      "declaredSectionsMissing": []
+    },
+    {
+      "clauseId": "03-CBC-MAC",
+      "entryPath": "docs/standards/sp800-38c-ccm/03-CBC-MAC.md",
+      "standardPosition": "NIST SP 800-38C §6.3",
+      "declaredPosition": "PDF 物理第 15–17 页（标准页 9–11）；[提取稿 §6.1 步骤 1–4](./00-Standard-Source.md#L592)",
+      "declaredAnchors": [
+        {
+          "kind": "line-start",
+          "line_start": 592,
+          "line_end": null
+        }
+      ],
+      "resolvedSections": [
+        {
+          "section": "6.1",
+          "expandedFrom": null,
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 592,
+          "line_end": 644,
+          "heading": "Generation-Encryption Process",
+          "firstLine": "6.1   Generation-Encryption Process",
+          "slice_sha256": "d8705e129958f17c163161439808c9c93afc87c80be2f18b5dc769c07390c214",
+          "matchesDeclared": true
+        }
+      ],
+      "anchorMismatch": [],
+      "declaredOutsideSections": [],
+      "entryLevelAnchor": {
+        "kind": "line-start",
+        "line_start": 592,
+        "line_end": null
+      },
+      "sectionRefSource": "position-fallback-unresolved",
+      "declaredSectionsMissing": [
+        "6.3"
+      ]
+    },
+    {
+      "clauseId": "04-CTR",
+      "entryPath": "docs/standards/sp800-38c-ccm/04-CTR.md",
+      "standardPosition": "CCM — CTR 加密原语",
+      "declaredPosition": "[提取稿 §5.5、§6，行 554–715](./00-Standard-Source.md#L554-L715)；PDF 物理页需结合同目录 PDF 核对",
+      "declaredAnchors": [
+        {
+          "kind": "line-range",
+          "line_start": 554,
+          "line_end": 715
+        }
+      ],
+      "resolvedSections": [
+        {
+          "section": "5.5",
+          "expandedFrom": null,
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 554,
+          "line_end": 579,
+          "heading": "Examples of Operations and Functions",
+          "firstLine": "5.5     Examples of Operations and Functions",
+          "slice_sha256": "fcb9e933e4c8ee396a11ffc48b66102ed54f71185ea1b3e00bf9b4dcd74d7d28",
+          "matchesDeclared": true
+        },
+        {
+          "section": "6",
+          "expandedFrom": null,
+          "anchorLevel": "line",
+          "clickable": true,
+          "line_start": 580,
+          "line_end": 715,
+          "heading": "CCM Specification",
+          "firstLine": "6 CCM Specification",
+          "slice_sha256": "b8363835d7651e12e6f1ffa4c24c31c125a635790918a99539b328eda7807402",
+          "matchesDeclared": false
+        }
+      ],
+      "anchorMismatch": [],
+      "declaredOutsideSections": [],
+      "entryLevelAnchor": {
+        "kind": "line-range",
+        "line_start": 554,
+        "line_end": 715
+      },
+      "sectionRefSource": "position-fallback",
+      "declaredSectionsMissing": []
+    }
+  ],
+  "clauseUnits": [
+    {
+      "clauseId": "01-CCM#§6.1",
+      "entryId": "01-CCM",
+      "entryPath": "docs/standards/sp800-38c-ccm/01-CCM.md",
+      "section": "6.1",
+      "expandedFrom": null,
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": false,
+      "click": {
+        "doc": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+        "line_start": 592,
+        "line_end": 644
+      },
+      "source": {
+        "path": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+        "line_start": 592,
+        "line_end": 644,
+        "heading": "Generation-Encryption Process",
+        "firstLine": "6.1   Generation-Encryption Process",
+        "slice_sha256": "d8705e129958f17c163161439808c9c93afc87c80be2f18b5dc769c07390c214"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "01-CCM#§6.2",
+      "entryId": "01-CCM",
+      "entryPath": "docs/standards/sp800-38c-ccm/01-CCM.md",
+      "section": "6.2",
+      "expandedFrom": null,
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": true,
+      "click": {
+        "doc": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+        "line_start": 645,
+        "line_end": 715
+      },
+      "source": {
+        "path": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+        "line_start": 645,
+        "line_end": 715,
+        "heading": "Decryption-Verification Process",
+        "firstLine": "6.2   Decryption-Verification Process",
+        "slice_sha256": "99e0355c4c7faf78cedd928c7ec25040dd3989bd477a9876befe7672bdd09bcb"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "02-Formatting#§6.1",
+      "entryId": "02-Formatting",
+      "entryPath": "docs/standards/sp800-38c-ccm/02-Formatting.md",
+      "section": "6.1",
+      "expandedFrom": "§6.1–§6.2",
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": true,
+      "click": {
+        "doc": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+        "line_start": 592,
+        "line_end": 644
+      },
+      "source": {
+        "path": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+        "line_start": 592,
+        "line_end": 644,
+        "heading": "Generation-Encryption Process",
+        "firstLine": "6.1   Generation-Encryption Process",
+        "slice_sha256": "d8705e129958f17c163161439808c9c93afc87c80be2f18b5dc769c07390c214"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "02-Formatting#§6.2",
+      "entryId": "02-Formatting",
+      "entryPath": "docs/standards/sp800-38c-ccm/02-Formatting.md",
+      "section": "6.2",
+      "expandedFrom": "§6.1–§6.2",
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": false,
+      "click": {
+        "doc": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+        "line_start": 645,
+        "line_end": 715
+      },
+      "source": {
+        "path": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+        "line_start": 645,
+        "line_end": 715,
+        "heading": "Decryption-Verification Process",
+        "firstLine": "6.2   Decryption-Verification Process",
+        "slice_sha256": "99e0355c4c7faf78cedd928c7ec25040dd3989bd477a9876befe7672bdd09bcb"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "03-CBC-MAC#§6.1",
+      "entryId": "03-CBC-MAC",
+      "entryPath": "docs/standards/sp800-38c-ccm/03-CBC-MAC.md",
+      "section": "6.1",
+      "expandedFrom": null,
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": true,
+      "click": {
+        "doc": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+        "line_start": 592,
+        "line_end": 644
+      },
+      "source": {
+        "path": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+        "line_start": 592,
+        "line_end": 644,
+        "heading": "Generation-Encryption Process",
+        "firstLine": "6.1   Generation-Encryption Process",
+        "slice_sha256": "d8705e129958f17c163161439808c9c93afc87c80be2f18b5dc769c07390c214"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "04-CTR#§5.5",
+      "entryId": "04-CTR",
+      "entryPath": "docs/standards/sp800-38c-ccm/04-CTR.md",
+      "section": "5.5",
+      "expandedFrom": null,
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": true,
+      "click": {
+        "doc": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+        "line_start": 554,
+        "line_end": 579
+      },
+      "source": {
+        "path": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+        "line_start": 554,
+        "line_end": 579,
+        "heading": "Examples of Operations and Functions",
+        "firstLine": "5.5     Examples of Operations and Functions",
+        "slice_sha256": "fcb9e933e4c8ee396a11ffc48b66102ed54f71185ea1b3e00bf9b4dcd74d7d28"
+      },
+      "reason": null
+    },
+    {
+      "clauseId": "04-CTR#§6",
+      "entryId": "04-CTR",
+      "entryPath": "docs/standards/sp800-38c-ccm/04-CTR.md",
+      "section": "6",
+      "expandedFrom": null,
+      "anchorLevel": "line",
+      "clickable": true,
+      "matchesDeclared": false,
+      "click": {
+        "doc": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+        "line_start": 580,
+        "line_end": 715
+      },
+      "source": {
+        "path": "docs/standards/sp800-38c-ccm/00-Standard-Source.md",
+        "line_start": 580,
+        "line_end": 715,
+        "heading": "CCM Specification",
+        "firstLine": "6 CCM Specification",
+        "slice_sha256": "b8363835d7651e12e6f1ffa4c24c31c125a635790918a99539b328eda7807402"
+      },
+      "reason": null
+    }
+  ],
+  "specCard": {
+    "path": "docs/standards/sp800-38c-ccm/SPEC-CARD.json",
+    "anchors": 7,
+    "quoteTextMatch": 6,
+    "quoteHashMatch": 6,
+    "insideResolvedSpan": 4,
+    "checks": [
+      {
+        "id": "A1-encrypt-steps",
+        "line_range": [
+          611,
+          635
+        ],
+        "quoteTextMatch": true,
+        "quoteHashMatch": true,
+        "insideResolvedSpan": true
+      },
+      {
+        "id": "A2-decrypt-steps",
+        "line_range": [
+          645,
+          695
+        ],
+        "quoteTextMatch": false,
+        "quoteHashMatch": false,
+        "insideResolvedSpan": true
+      },
+      {
+        "id": "A2-cbc-mac-steps",
+        "line_range": [
+          618,
+          623
+        ],
+        "quoteTextMatch": true,
+        "quoteHashMatch": true,
+        "insideResolvedSpan": true
+      },
+      {
+        "id": "A3-counter-steps",
+        "line_range": [
+          631,
+          635
+        ],
+        "quoteTextMatch": true,
+        "quoteHashMatch": true,
+        "insideResolvedSpan": true
+      },
+      {
+        "id": "A4-b0-format",
+        "line_range": [
+          772,
+          802
+        ],
+        "quoteTextMatch": true,
+        "quoteHashMatch": true,
+        "insideResolvedSpan": false
+      },
+      {
+        "id": "A5-aad-encoding",
+        "line_range": [
+          844,
+          846
+        ],
+        "quoteTextMatch": true,
+        "quoteHashMatch": true,
+        "insideResolvedSpan": false
+      },
+      {
+        "id": "A6-counter-block-format",
+        "line_range": [
+          870,
+          892
+        ],
+        "quoteTextMatch": true,
+        "quoteHashMatch": true,
+        "insideResolvedSpan": false
+      }
+    ]
+  }
+}

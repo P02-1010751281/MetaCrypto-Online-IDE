@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "scripts/p4-connect-probe.ts",
+  "standard": "sp800-38c-ccm",
+  "purpose": "判定 SP 800-38C CCM 的分解链能否在画布上拼出来：格式化产物（IntList）与 CBC-MAC/CTR 入口（Bytes）之间的关键类型门（运行时连接结果，不读契约 JSON）",
+  "cases": [
+    {
+      "id": "nonce-format",
+      "note": "§A.2 格式化的入口：7–13 字节 nonce 用 IntList 字面量喂 ccm_b0.NONCE",
+      "source": "data_int_list",
+      "target": "ccm_b0.NONCE",
+      "sourceOutputCheck": [
+        "IntList"
+      ],
+      "targetInputCheck": [
+        "IntList"
+      ],
+      "contractVerdict": "ok",
+      "connected": true,
+      "blocked": false,
+      "error": "",
+      "expect": "allowed",
+      "pass": true
+    },
+    {
+      "id": "b0-aad",
+      "note": "同类型门正对照：ccm_b0 的 IntList 产物能接 ccm_cbc_mac 的 IntList 入口（只是类型门，B0 语义上不是 AAD）",
+      "source": "ccm_b0",
+      "target": "ccm_cbc_mac.AAD",
+      "sourceOutputCheck": [
+        "IntList"
+      ],
+      "targetInputCheck": [
+        "IntList"
+      ],
+      "contractVerdict": "ok",
+      "connected": true,
+      "blocked": false,
+      "error": "",
+      "expect": "allowed",
+      "pass": true
+    },
+    {
+      "id": "b0-msg",
+      "note": "格式化产物接明文入口：ccm_b0（IntList）→ ccm_cbc_mac.MSG（Bytes），预期被拒",
+      "source": "ccm_b0",
+      "target": "ccm_cbc_mac.MSG",
+      "sourceOutputCheck": [
+        "IntList"
+      ],
+      "targetInputCheck": [
+        "Bytes"
+      ],
+      "contractVerdict": "mismatch",
+      "connected": false,
+      "blocked": true,
+      "error": "connect() 未抛错但连接未建立",
+      "expect": "blocked",
+      "pass": true
+    },
+    {
+      "id": "aadprefix-msg",
+      "note": "AAD 长度前缀（IntList）接明文入口（Bytes），预期被拒——AAD 正文编码只能留在块闭包里",
+      "source": "ccm_aad_len_prefix",
+      "target": "ccm_cbc_mac.MSG",
+      "sourceOutputCheck": [
+        "IntList"
+      ],
+      "targetInputCheck": [
+        "Bytes"
+      ],
+      "contractVerdict": "mismatch",
+      "connected": false,
+      "blocked": true,
+      "error": "connect() 未抛错但连接未建立",
+      "expect": "blocked",
+      "pass": true
+    },
+    {
+      "id": "counter-ecb",
+      "note": "S_i = AES_K(Ctr_i)：计数器块（IntList）接 AES 块 DATA（Bytes），预期被拒——画布不能单独算计数器密钥流",
+      "source": "ccm_counter_block",
+      "target": "mode_ecb_encrypt.DATA",
+      "sourceOutputCheck": [
+        "IntList"
+      ],
+      "targetInputCheck": [
+        "Bytes"
+      ],
+      "contractVerdict": "mismatch",
+      "connected": false,
+      "blocked": true,
+      "error": "connect() 未抛错但连接未建立",
+      "expect": "blocked",
+      "pass": true
+    },
+    {
+      "id": "key-cbc",
+      "note": "正对照：AES 块的 Bytes 输出接 ccm_cbc_mac.KEY（Bytes→Bytes）必须连得上",
+      "source": "mode_ecb_encrypt",
+      "target": "ccm_cbc_mac.KEY",
+      "sourceOutputCheck": [
+        "Bytes"
+      ],
+      "targetInputCheck": [
+        "Bytes"
+      ],
+      "contractVerdict": "ok",
+      "connected": true,
+      "blocked": false,
+      "error": "",
+      "expect": "allowed",
+      "pass": true
+    }
+  ],
+  "counts": {
+    "cases": 6,
+    "blocked": 3,
+    "allowed": 3,
+    "pass": 6,
+    "fail": 0
+  }
+}

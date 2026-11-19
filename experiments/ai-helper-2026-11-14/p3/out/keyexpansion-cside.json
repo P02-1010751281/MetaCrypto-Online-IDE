@@ -1,0 +1,391 @@
+{
+  "schema": 1,
+  "generatedAt": "2026-11-18T06:29:55.185Z",
+  "sample": "kokke-keyexpansion",
+  "kind": "keyexp-176",
+  "differential": false,
+  "differentialReason": "V3 双侧差分不可达：V2 无工作区（没有整段密钥扩展块，也没有语句级组装器）。本文件只是 C 侧读数，不得读作 V3 PASS。",
+  "sampleFile": "kokke-keyexpansion.c",
+  "sampleSha256": "ddc0680e0d530e335752886bb47f6c4f58847fb97e6c88b0c43f8042b6408eec",
+  "manifestSha256": "ddc0680e0d530e335752886bb47f6c4f58847fb97e6c88b0c43f8042b6408eec",
+  "vector": {
+    "id": "fips197-a1-expansion",
+    "kind": "keyexp-176",
+    "keyHex": "2b7e151628aed2a6abf7158809cf4f3c",
+    "keyBytes": 16,
+    "expectHex": "2b7e151628aed2a6abf7158809cf4f3ca0fafe1788542cb123a339392a6c7605f2c295f27a96b9435935807a7359f67f3d80477d4716fe3e1e237e446d7a883bef44a541a8525b7fb671253bdb0bad00d4d1c6f87c839d87caf2b8bc11f915bc6d88a37a110b3efddbf98641ca0093fd4e54f70e5f5fc9f384a64fb24ea6dc4fead27321b58dbad2312bf5607f8d292fac7766f319fadc2128d12941575c006ed014f9a8c9ee2589e13f0cc8b6630ca6",
+    "expectBytes": 176,
+    "source": "FIPS 197-upd1 附录 A.1「Expansion of a 128-bit Key」（仓库语料 docs/standards/fips197-AES/00-Standard-Source.md 行 1362-1422，印刷页 29-30）：w0-w43 共 44 个字 = 176 字节，逐字取表格最后一列 w[i]；同页 Key 行给出 16 字节种子。附录 B（同语料行 1597）写明「The Round Key values are taken from the Key Expansion example in Appendix A.1」",
+    "note": "任务书写「key 000102…0f 的 11 组轮密钥」，但仓库内语料是 FIPS 197-upd1（2023），附录 C 已删除，A.1 打印的种子是另一个值；000102…0f 的 176 字节扩展表在这份语料里不存在。为守住「向量必须取自语料、不凭记忆」，此处用 A.1 实际打印的种子与其 w0-w43。提取规则与断言见 p3/lib/fips197-a1.mjs（44 字互不相同、前 4 字等于 Key 行）。",
+    "corpus": {
+      "file": "docs/standards/fips197-AES/00-Standard-Source.md",
+      "startLine": 1362,
+      "endLine": 1422,
+      "printedPages": "29-30",
+      "checks": {
+        "wordCount": 44,
+        "uniqueWords": 44,
+        "firstFourMatchKey": true,
+        "bytes": 176
+      }
+    },
+    "vectorMatchesCorpus": true
+  },
+  "build": {
+    "gcc": "gcc (GCC) 16.2.1 20260810",
+    "command": "gcc -O1 -std=c11 -Wall -Wextra -I experiments/ai-helper-2026-11-14/p3/samples -o .tmp-build/b-keyexp/keyexp-cside experiments/ai-helper-2026-11-14/p3/out/driver-kokke-keyexpansion-cside.c",
+    "rc": 0,
+    "ok": true,
+    "stderr": null
+  },
+  "run": {
+    "rc": 0,
+    "ok": true,
+    "stdoutBytes": 176,
+    "stderr": null
+  },
+  "compare": {
+    "expectHex": "2b7e151628aed2a6abf7158809cf4f3ca0fafe1788542cb123a339392a6c7605f2c295f27a96b9435935807a7359f67f3d80477d4716fe3e1e237e446d7a883bef44a541a8525b7fb671253bdb0bad00d4d1c6f87c839d87caf2b8bc11f915bc6d88a37a110b3efddbf98641ca0093fd4e54f70e5f5fc9f384a64fb24ea6dc4fead27321b58dbad2312bf5607f8d292fac7766f319fadc2128d12941575c006ed014f9a8c9ee2589e13f0cc8b6630ca6",
+    "cHex": "2b7e151628aed2a6abf7158809cf4f3ca0fafe1788542cb123a339392a6c7605f2c295f27a96b9435935807a7359f67f3d80477d4716fe3e1e237e446d7a883bef44a541a8525b7fb671253bdb0bad00d4d1c6f87c839d87caf2b8bc11f915bc6d88a37a110b3efddbf98641ca0093fd4e54f70e5f5fc9f384a64fb24ea6dc4fead27321b58dbad2312bf5607f8d292fac7766f319fadc2128d12941575c006ed014f9a8c9ee2589e13f0cc8b6630ca6",
+    "pass": true,
+    "bytesCompared": 176,
+    "words": [
+      {
+        "index": 0,
+        "expect": "2b7e1516",
+        "c": "2b7e1516",
+        "pass": true
+      },
+      {
+        "index": 1,
+        "expect": "28aed2a6",
+        "c": "28aed2a6",
+        "pass": true
+      },
+      {
+        "index": 2,
+        "expect": "abf71588",
+        "c": "abf71588",
+        "pass": true
+      },
+      {
+        "index": 3,
+        "expect": "09cf4f3c",
+        "c": "09cf4f3c",
+        "pass": true
+      },
+      {
+        "index": 4,
+        "expect": "a0fafe17",
+        "c": "a0fafe17",
+        "pass": true
+      },
+      {
+        "index": 5,
+        "expect": "88542cb1",
+        "c": "88542cb1",
+        "pass": true
+      },
+      {
+        "index": 6,
+        "expect": "23a33939",
+        "c": "23a33939",
+        "pass": true
+      },
+      {
+        "index": 7,
+        "expect": "2a6c7605",
+        "c": "2a6c7605",
+        "pass": true
+      },
+      {
+        "index": 8,
+        "expect": "f2c295f2",
+        "c": "f2c295f2",
+        "pass": true
+      },
+      {
+        "index": 9,
+        "expect": "7a96b943",
+        "c": "7a96b943",
+        "pass": true
+      },
+      {
+        "index": 10,
+        "expect": "5935807a",
+        "c": "5935807a",
+        "pass": true
+      },
+      {
+        "index": 11,
+        "expect": "7359f67f",
+        "c": "7359f67f",
+        "pass": true
+      },
+      {
+        "index": 12,
+        "expect": "3d80477d",
+        "c": "3d80477d",
+        "pass": true
+      },
+      {
+        "index": 13,
+        "expect": "4716fe3e",
+        "c": "4716fe3e",
+        "pass": true
+      },
+      {
+        "index": 14,
+        "expect": "1e237e44",
+        "c": "1e237e44",
+        "pass": true
+      },
+      {
+        "index": 15,
+        "expect": "6d7a883b",
+        "c": "6d7a883b",
+        "pass": true
+      },
+      {
+        "index": 16,
+        "expect": "ef44a541",
+        "c": "ef44a541",
+        "pass": true
+      },
+      {
+        "index": 17,
+        "expect": "a8525b7f",
+        "c": "a8525b7f",
+        "pass": true
+      },
+      {
+        "index": 18,
+        "expect": "b671253b",
+        "c": "b671253b",
+        "pass": true
+      },
+      {
+        "index": 19,
+        "expect": "db0bad00",
+        "c": "db0bad00",
+        "pass": true
+      },
+      {
+        "index": 20,
+        "expect": "d4d1c6f8",
+        "c": "d4d1c6f8",
+        "pass": true
+      },
+      {
+        "index": 21,
+        "expect": "7c839d87",
+        "c": "7c839d87",
+        "pass": true
+      },
+      {
+        "index": 22,
+        "expect": "caf2b8bc",
+        "c": "caf2b8bc",
+        "pass": true
+      },
+      {
+        "index": 23,
+        "expect": "11f915bc",
+        "c": "11f915bc",
+        "pass": true
+      },
+      {
+        "index": 24,
+        "expect": "6d88a37a",
+        "c": "6d88a37a",
+        "pass": true
+      },
+      {
+        "index": 25,
+        "expect": "110b3efd",
+        "c": "110b3efd",
+        "pass": true
+      },
+      {
+        "index": 26,
+        "expect": "dbf98641",
+        "c": "dbf98641",
+        "pass": true
+      },
+      {
+        "index": 27,
+        "expect": "ca0093fd",
+        "c": "ca0093fd",
+        "pass": true
+      },
+      {
+        "index": 28,
+        "expect": "4e54f70e",
+        "c": "4e54f70e",
+        "pass": true
+      },
+      {
+        "index": 29,
+        "expect": "5f5fc9f3",
+        "c": "5f5fc9f3",
+        "pass": true
+      },
+      {
+        "index": 30,
+        "expect": "84a64fb2",
+        "c": "84a64fb2",
+        "pass": true
+      },
+      {
+        "index": 31,
+        "expect": "4ea6dc4f",
+        "c": "4ea6dc4f",
+        "pass": true
+      },
+      {
+        "index": 32,
+        "expect": "ead27321",
+        "c": "ead27321",
+        "pass": true
+      },
+      {
+        "index": 33,
+        "expect": "b58dbad2",
+        "c": "b58dbad2",
+        "pass": true
+      },
+      {
+        "index": 34,
+        "expect": "312bf560",
+        "c": "312bf560",
+        "pass": true
+      },
+      {
+        "index": 35,
+        "expect": "7f8d292f",
+        "c": "7f8d292f",
+        "pass": true
+      },
+      {
+        "index": 36,
+        "expect": "ac7766f3",
+        "c": "ac7766f3",
+        "pass": true
+      },
+      {
+        "index": 37,
+        "expect": "19fadc21",
+        "c": "19fadc21",
+        "pass": true
+      },
+      {
+        "index": 38,
+        "expect": "28d12941",
+        "c": "28d12941",
+        "pass": true
+      },
+      {
+        "index": 39,
+        "expect": "575c006e",
+        "c": "575c006e",
+        "pass": true
+      },
+      {
+        "index": 40,
+        "expect": "d014f9a8",
+        "c": "d014f9a8",
+        "pass": true
+      },
+      {
+        "index": 41,
+        "expect": "c9ee2589",
+        "c": "c9ee2589",
+        "pass": true
+      },
+      {
+        "index": 42,
+        "expect": "e13f0cc8",
+        "c": "e13f0cc8",
+        "pass": true
+      },
+      {
+        "index": 43,
+        "expect": "b6630ca6",
+        "c": "b6630ca6",
+        "pass": true
+      }
+    ],
+    "wordsPassed": 44,
+    "wordsTotal": 44,
+    "roundKeys": [
+      {
+        "round": 0,
+        "expect": "2b7e151628aed2a6abf7158809cf4f3c",
+        "c": "2b7e151628aed2a6abf7158809cf4f3c",
+        "pass": true
+      },
+      {
+        "round": 1,
+        "expect": "a0fafe1788542cb123a339392a6c7605",
+        "c": "a0fafe1788542cb123a339392a6c7605",
+        "pass": true
+      },
+      {
+        "round": 2,
+        "expect": "f2c295f27a96b9435935807a7359f67f",
+        "c": "f2c295f27a96b9435935807a7359f67f",
+        "pass": true
+      },
+      {
+        "round": 3,
+        "expect": "3d80477d4716fe3e1e237e446d7a883b",
+        "c": "3d80477d4716fe3e1e237e446d7a883b",
+        "pass": true
+      },
+      {
+        "round": 4,
+        "expect": "ef44a541a8525b7fb671253bdb0bad00",
+        "c": "ef44a541a8525b7fb671253bdb0bad00",
+        "pass": true
+      },
+      {
+        "round": 5,
+        "expect": "d4d1c6f87c839d87caf2b8bc11f915bc",
+        "c": "d4d1c6f87c839d87caf2b8bc11f915bc",
+        "pass": true
+      },
+      {
+        "round": 6,
+        "expect": "6d88a37a110b3efddbf98641ca0093fd",
+        "c": "6d88a37a110b3efddbf98641ca0093fd",
+        "pass": true
+      },
+      {
+        "round": 7,
+        "expect": "4e54f70e5f5fc9f384a64fb24ea6dc4f",
+        "c": "4e54f70e5f5fc9f384a64fb24ea6dc4f",
+        "pass": true
+      },
+      {
+        "round": 8,
+        "expect": "ead27321b58dbad2312bf5607f8d292f",
+        "c": "ead27321b58dbad2312bf5607f8d292f",
+        "pass": true
+      },
+      {
+        "round": 9,
+        "expect": "ac7766f319fadc2128d12941575c006e",
+        "c": "ac7766f319fadc2128d12941575c006e",
+        "pass": true
+      },
+      {
+        "round": 10,
+        "expect": "d014f9a8c9ee2589e13f0cc8b6630ca6",
+        "c": "d014f9a8c9ee2589e13f0cc8b6630ca6",
+        "pass": true
+      }
+    ],
+    "roundKeysPassed": 11
+  },
+  "ok": true
+}
