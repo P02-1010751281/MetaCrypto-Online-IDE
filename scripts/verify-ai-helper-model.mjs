@@ -111,6 +111,38 @@ const fake = createServer((req, res) => {
       );
       return;
     }
+    if (mode === 'note-duplicate' || mode === 'note-too-many') {
+      // 自述的两类「非内容性」丢弃：重复（同一句换个空格也算）与超上限（4 句）。
+      // 两者都只丢那一句、不判整次失败，界面必须给 −n 且悬浮说得出原因（docs §7.5）。
+      const notes =
+        mode === 'note-duplicate'
+          ? [
+            { text: '轮密钥由种子密钥扩展得到', support: ['s1'] },
+            { text: '轮密钥由种子密钥扩展得到', support: ['s1'] },
+          ]
+          : [
+            { text: '第一句说明', support: ['s1'] },
+            { text: '第二句说明', support: ['s1'] },
+            { text: '第三句说明', support: ['s1'] },
+            { text: '第四句说明', support: ['s1'] },
+            { text: '第五句说明', support: ['s1'] },
+          ];
+      res.writeHead(200, { 'content-type': 'application/json' });
+      res.end(
+        JSON.stringify({
+          choices: [
+            {
+              message: {
+                role: 'assistant',
+                content: JSON.stringify({ selections: [{ id: 's1' }], notes }),
+              },
+            },
+          ],
+          usage: { prompt_tokens: 120, completion_tokens: 12, total_tokens: 132 },
+        }),
+      );
+      return;
+    }
     res.writeHead(200, { 'content-type': 'application/json' });
     res.end(
       JSON.stringify({
@@ -244,6 +276,22 @@ async function waitFor(expression, timeoutMs = 60000) {
       /* 页面正在渲染，重试 */
     }
     await sleep(200);
+  }
+  return false;
+}
+
+/**
+ * 等 Node 侧真的收到第 n 次 provider 调用。
+ *
+ * 前面的场景会在页面上留下「模型选了 1 句 · −1」这类**形状相同**的残留，只按 DOM
+ * 特征等待会立刻匹配到上一次的结果——本轮第一次跑就是这样：超上限的断言全绿，
+ * 紧接着「只改记住不重调」被迟到的请求带红。请求计数是唯一不会骗人的锚。
+ */
+async function waitForCalls(expected, timeoutMs = 30000) {
+  const started = Date.now();
+  while (Date.now() - started < timeoutMs) {
+    if (calls.length >= expected) return true;
+    await sleep(100);
   }
   return false;
 }
@@ -581,6 +629,54 @@ try {
     unknownBar?.status);
   check('整次失败后不重试（请求数只 +1）', calls.length === reloadCalls + 4, calls.length);
   await shoot('model-06c-verify-unknown-id');
+
+  // 5d. 自述重复：同一句写两遍只留第一条，第二条计入 −n 并且悬浮说得出是重复
+  mode = 'note-duplicate';
+  await setDocQuery('SM4 密钥扩展 轮密钥字');
+  check('重复自述的调用已发出', await waitForCalls(reloadCalls + 5));
+  check('重复自述只留一条，界面用 −1 如实计数', await waitFor(`(() => {
+    const bar = document.querySelector('.dsp .as-bar');
+    if (!bar) return false;
+    const status = bar.querySelector('.as-status');
+    const drop = bar.closest('.as')?.querySelector('.as-note-drop');
+    const lines = document.querySelectorAll('.dsp .as .as-note-line').length;
+    return !!status && !status.classList.contains('as-status-error')
+      && (status.textContent ?? '').includes('模型选了 1 句')
+      && (drop?.textContent ?? '').trim() === '−1'
+      && lines === 1;
+  })()`, 20000));
+  check('重复自述的悬浮原因说的是「重复」，不是复述别的丢弃原因', await js(`(() => {
+    const drop = document.querySelector('.dsp .as .as-note-drop');
+    const title = drop?.getAttribute('title') ?? '';
+    return title.includes('把同一句说明写了两遍') && !title.includes('没标注依据');
+  })()`));
+  check('重复自述不重试（请求数只 +1）', calls.length === reloadCalls + 5, calls.length);
+  await shoot('model-06d-note-duplicate');
+
+  // 5e. 自述超上限：多出来的不显示，但计数与原因都要在（docs §7.5 五种情况漏一不可）
+  mode = 'note-too-many';
+  await setDocQuery('SM4 密钥扩展 轮函数');
+  check('超上限自述的调用已发出', await waitForCalls(reloadCalls + 6));
+  check('超上限自述只计入丢弃计数，界面不说成别的错', await waitFor(`(() => {
+    const bar = document.querySelector('.dsp .as-bar');
+    if (!bar) return false;
+    const status = bar.querySelector('.as-status');
+    const drop = bar.closest('.as')?.querySelector('.as-note-drop');
+    const lines = document.querySelectorAll('.dsp .as .as-note-line').length;
+    return !!status && !status.classList.contains('as-status-error')
+      && (status.textContent ?? '').includes('模型选了 1 句')
+      && (drop?.textContent ?? '').trim() === '−1'
+      && lines === 4;
+  })()`, 20000));
+  check('超上限的悬浮原因说的是「超过句数上限」', await js(`(() => {
+    const drop = document.querySelector('.dsp .as .as-note-drop');
+    return (drop?.getAttribute('title') ?? '').includes('说明超过句数上限');
+  })()`));
+  check('超上限时保留的仍是 4 句（上限内不丢）', await js(`(() => {
+    return document.querySelectorAll('.dsp .as .as-note-line').length === 4;
+  })()`));
+  check('超上限自述不重试（请求数只 +1）', calls.length === reloadCalls + 6, calls.length);
+  await shoot('model-06e-note-too-many');
 
   // 6. 存储档位：勾「记住」→ 持久档，清会话档
   await js('document.querySelector(\'.dsp .as-bar .as-btn\').click()');

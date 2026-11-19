@@ -25,11 +25,20 @@
     @open="(hit) => emit('open-doc-hit', hit)"
     @browse-all="(query) => emit('browse-all-docs', query)"
   />
+  <IntakePanel
+    v-else-if="activePanel === 'intake'"
+    :visible="true"
+    :docked="!narrow"
+    @close="emit('close')"
+    @route-code="(payload) => emit('intake-route', { kind: 'code', ...payload })"
+    @route-doc="(payload) => emit('intake-route', { kind: 'doc', source: '', ...payload })"
+  />
   <CodeToWorkspaceDialog
     v-else-if="activePanel === 'code'"
     :visible="true"
     :current-block-count="blockCount"
     :docked="!narrow"
+    :intake="intake"
     @close="emit('close')"
     @apply="(state) => emit('apply-workspace', state)"
   />
@@ -48,6 +57,7 @@ import { defineAsyncComponent } from 'vue';
 
 import AssistantPanel from '@/components/ai-helper/AssistantPanel.vue';
 import CodeToWorkspaceDialog from '@/components/ai-helper/CodeToWorkspaceDialog.vue';
+import IntakePanel from '@/components/ai-helper/IntakePanel.vue';
 // A 线只读面板按需加载：它自带裁决数据加载器，且只有点第 6 个图标时才用得到；
 // 静态 import 会把面板与 52 KB 索引一起塞进入口 chunk（实测顶破 64 KB 预算）。
 const StandardsToWorkspacePanel = defineAsyncComponent(
@@ -65,6 +75,8 @@ defineProps<{
   currentProjectId: number | null;
   workspace: Blockly.WorkspaceSvg | null;
   blockCount: number;
+  /** 单入口路由过来的代码正文：非空时 B 线面板预填它。 */
+  intake: { source: string; name: string } | null;
 }>();
 
 const emit = defineEmits<{
@@ -74,5 +86,6 @@ const emit = defineEmits<{
   (e: 'browse-all-docs', query: string): void;
   (e: 'apply-workspace', state: SerializedWorkspace): void;
   (e: 'open-source', payload: { doc: string; line: number }): void;
+  (e: 'intake-route', payload: { kind: 'doc' | 'code'; source: string; name: string }): void;
 }>();
 </script>

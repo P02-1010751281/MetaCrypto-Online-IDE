@@ -55,36 +55,21 @@
           <path d="M8 9h5M8 12h3" />
         </svg>
       </button>
-      <!-- A/B 线入口（代码 → 工作区）：与另外四个一样是互斥面板，面板体是
-           `CodeToWorkspaceDialog` 的停靠形态（由 App 经 slot 传进来）。 -->
+      <!-- A/B 单入口（P5）：一个图标进来先判别文档/代码，判别结果可见可改，
+           确认后路由到 A 线（标准 → 工作区）或 B 线（代码 → 工作区）面板。
+           两个目标面板不再是活动条图标，但仍可由菜单/路由直接打开。 -->
       <button
         class="activity-btn"
-        :class="{ active: activePanel === 'code' }"
-        :title="ui('codeToWorkspaceAction')"
-        :aria-label="ui('codeToWorkspaceAction')"
-        :aria-pressed="activePanel === 'code'"
-        @click="$emit('toggle-panel', 'code')"
+        :class="{ active: activePanel === 'intake' || activePanel === 'code' || activePanel === 'standards' }"
+        :title="ui('intakeAction')"
+        :aria-label="ui('intakeAction')"
+        :aria-pressed="activePanel === 'intake'"
+        @click="$emit('toggle-panel', 'intake')"
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path d="M3 6h7M3 12h5M3 18h7" />
           <rect x="14" y="3" width="7" height="6" rx="1" />
           <rect x="14" y="15" width="7" height="6" rx="1" />
-        </svg>
-      </button>
-      <!-- A 线入口（标准 → 工作区）：只读预览面板（标准切片 → 条款 → 三档判据）。
-           图标是「标准页 + 积木块」，与上面「代码行 → 两块」的 B 线入口区分。 -->
-      <button
-        class="activity-btn"
-        :class="{ active: activePanel === 'standards' }"
-        :title="ui('standardsToWorkspace')"
-        :aria-label="ui('standardsToWorkspace')"
-        :aria-pressed="activePanel === 'standards'"
-        @click="$emit('toggle-panel', 'standards')"
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <rect x="3" y="4" width="10" height="12" rx="1" />
-          <path d="M5.5 8h5M5.5 11h3.5" />
-          <rect x="15" y="13" width="6" height="6" rx="1" />
         </svg>
       </button>
     </nav>

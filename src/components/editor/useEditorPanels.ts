@@ -25,8 +25,12 @@ const NARROW_VIEWPORT_QUERY = '(max-width: 1200px)';
  *
  * `standards` 是 A 线「标准 → 工作区」的只读预览：标准切片 → 条款单元 → 三档判据。
  * 本轮只读（不生成工作区、不写签核）；数据来自构建期制品 `verdicts-index.json`。
+ *
+ * `intake` 是 A/B 单入口（PLAN P5）：activity bar 上只留一个图标，进来先判别文档/代码，
+ * 判别结果可见可改，确认后路由到 `code` 或 `standards`。两个目标面板仍保留 id——
+ * 菜单与路由都要能直接打开它们，只是不再各占一个图标。
  */
-export type EditorPanel = 'projects' | 'files' | 'functions' | 'assistant' | 'code' | 'standards';
+export type EditorPanel = 'projects' | 'files' | 'functions' | 'assistant' | 'intake' | 'code' | 'standards';
 
 const DEFAULT_PANEL: EditorPanel = 'files';
 

@@ -21,6 +21,14 @@
     {
       "url": "/v1/chat/completions",
       "body": "{\"model\":\"fake-model\",\"messages\":[{\"role\":\"system\",\"content\":\"你是检索问答里的「选句器」：从给定候选句里挑出能回答问题的句子，并按需写一两句解释。\\n硬性规则：\\n1. `selections` 只能引用候选句的 id，不能改写、拼接、概括或新增任何句子；\\n2. 没有能回答的候选时就返回空的 `selections`（拒答是合法答案，不要硬凑）；\\n3. `notes` 是可选的解释，**写成一个句子数组**；每一句都必须用 `support` 列出它依据的候选 id，\\n   写不出依据的句子不要写——核对时挂不上候选 id 的句子会被整句丢弃；\\n4. `selections` 最多 5 句；\\n5. 只输出一个 JSON 对象，不要 Markdown 围栏、不要解释。\\n输出格式：{\\\"selections\\\":[{\\\"id\\\":\\\"s1\\\"}],\\\"notes\\\":[{\\\"text\\\":\\\"一句话解释\\\",\\\"support\\\":[\\\"s1\\\"]}]}\"},{\"role\":\"user\",\"content\":\"问题：SM4 密钥扩展 数据单元\\n\\n候选句：\\ns1 | docs/standards/gbt32907-SM4/01-Overview.md:15 | “SM4 密码算法是一个分组算法。\\ns2 | docs/standards/gbt32907-SM4/01-Overview.md:29 | 解密使用与加密 相反顺序的轮密钥，数据轮结构相同。\\ns3 | docs/standards/gbt32907-SM4/01-Overview.md:55 | 轮函数见  02-RoundFunction.md ，完整算法与密钥扩展见  03-Algorithm.md 。\"}],\"temperature\":0,\"max_tokens\":300,\"stream\":false}"
+    },
+    {
+      "url": "/v1/chat/completions",
+      "body": "{\"model\":\"fake-model\",\"messages\":[{\"role\":\"system\",\"content\":\"你是检索问答里的「选句器」：从给定候选句里挑出能回答问题的句子，并按需写一两句解释。\\n硬性规则：\\n1. `selections` 只能引用候选句的 id，不能改写、拼接、概括或新增任何句子；\\n2. 没有能回答的候选时就返回空的 `selections`（拒答是合法答案，不要硬凑）；\\n3. `notes` 是可选的解释，**写成一个句子数组**；每一句都必须用 `support` 列出它依据的候选 id，\\n   写不出依据的句子不要写——核对时挂不上候选 id 的句子会被整句丢弃；\\n4. `selections` 最多 5 句；\\n5. 只输出一个 JSON 对象，不要 Markdown 围栏、不要解释。\\n输出格式：{\\\"selections\\\":[{\\\"id\\\":\\\"s1\\\"}],\\\"notes\\\":[{\\\"text\\\":\\\"一句话解释\\\",\\\"support\\\":[\\\"s1\\\"]}]}\"},{\"role\":\"user\",\"content\":\"问题：SM4 密钥扩展 轮密钥字\\n\\n候选句：\\ns1 | docs/standards/gbt32907-SM4/03-Algorithm.md:25 | 密钥扩展使用不同的 线性变换  L' ；\"}],\"temperature\":0,\"max_tokens\":300,\"stream\":false}"
+    },
+    {
+      "url": "/v1/chat/completions",
+      "body": "{\"model\":\"fake-model\",\"messages\":[{\"role\":\"system\",\"content\":\"你是检索问答里的「选句器」：从给定候选句里挑出能回答问题的句子，并按需写一两句解释。\\n硬性规则：\\n1. `selections` 只能引用候选句的 id，不能改写、拼接、概括或新增任何句子；\\n2. 没有能回答的候选时就返回空的 `selections`（拒答是合法答案，不要硬凑）；\\n3. `notes` 是可选的解释，**写成一个句子数组**；每一句都必须用 `support` 列出它依据的候选 id，\\n   写不出依据的句子不要写——核对时挂不上候选 id 的句子会被整句丢弃；\\n4. `selections` 最多 5 句；\\n5. 只输出一个 JSON 对象，不要 Markdown 围栏、不要解释。\\n输出格式：{\\\"selections\\\":[{\\\"id\\\":\\\"s1\\\"}],\\\"notes\\\":[{\\\"text\\\":\\\"一句话解释\\\",\\\"support\\\":[\\\"s1\\\"]}]}\"},{\"role\":\"user\",\"content\":\"问题：SM4 密钥扩展 轮函数\\n\\n候选句：\\ns1 | docs/standards/gbt32907-SM4/03-Algorithm.md:25 | 密钥扩展使用不同的 线性变换  L' ；\\ns2 | docs/standards/gbt32907-SM4/03-Algorithm.md:60 | 原子轮函数见  02-RoundFunction.md 。\"}],\"temperature\":0,\"max_tokens\":300,\"stream\":false}"
     }
   ],
   "results": [
@@ -286,6 +294,42 @@
     },
     {
       "name": "整次失败后不重试（请求数只 +1）",
+      "ok": true
+    },
+    {
+      "name": "重复自述的调用已发出",
+      "ok": true
+    },
+    {
+      "name": "重复自述只留一条，界面用 −1 如实计数",
+      "ok": true
+    },
+    {
+      "name": "重复自述的悬浮原因说的是「重复」，不是复述别的丢弃原因",
+      "ok": true
+    },
+    {
+      "name": "重复自述不重试（请求数只 +1）",
+      "ok": true
+    },
+    {
+      "name": "超上限自述的调用已发出",
+      "ok": true
+    },
+    {
+      "name": "超上限自述只计入丢弃计数，界面不说成别的错",
+      "ok": true
+    },
+    {
+      "name": "超上限的悬浮原因说的是「超过句数上限」",
+      "ok": true
+    },
+    {
+      "name": "超上限时保留的仍是 4 句（上限内不丢）",
+      "ok": true
+    },
+    {
+      "name": "超上限自述不重试（请求数只 +1）",
       "ok": true
     },
     {

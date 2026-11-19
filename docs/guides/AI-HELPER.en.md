@@ -2,15 +2,18 @@
 
 The AI assistant in MetaCrypto Online IDE is a local-first search tool: repository docs, standard PDF page text and block metadata are indexed at build time, and queries run in the browser to return an answer with evidence; no network and no model are required. Model-assisted sentence picking is an optional enhancement: it is off by default, the provider and key are supplied by the user, and the model may only pick among candidate sentences — it cannot rewrite a sentence, add content or replace the evidence.
 
-This page describes the current behaviour of three entry points: **Q&A assistant** in the sidebar (doc search / block search), **Generate workspace from code**, the fifth panel in the left activity bar (the same item is also in the **More** menu), and **Standards → workspace**, the sixth panel (preview + human sign-off). Evaluation readings (recall@5, eval-set pass rates) are not usage instructions; see the [feasibility research](../research/AI-HELPER-RESEARCH-2026-11-13.md) and the records under `experiments/ai-helper-2026-11-14/`.
+This page describes the current behaviour of four entry points: **Q&A assistant** in the sidebar (doc search / block search), **Start from a file**, the fourth panel in the left activity bar (the A/B single entry), and the two panels it routes to — **Generate workspace from code** (also available directly from the **More** menu) and **Standards → workspace** (preview + human sign-off). Evaluation readings (recall@5, eval-set pass rates) are not usage instructions; see the [feasibility research](../research/AI-HELPER-RESEARCH-2026-11-13.md) and the records under `experiments/ai-helper-2026-11-14/`.
 
 ## 1. Entry points and boundaries
 
 | Entry | Location | Purpose |
 |---|---|---|
 | Q&A assistant | Assistant icon in the left activity bar; click again to return to the **Files** panel | Doc search and block search share one panel with two tabs |
-| Generate workspace from code | Fifth icon in the left activity bar, a panel (the same item is in the **More** menu) | Reverse-parse pasted or selected code into a block workspace |
-| Standards → workspace | Sixth icon in the left activity bar (preview + human sign-off) | Shows three-tier verdicts, gaps and source anchors per standard slice, records a per-clause sign-off, and opens that slice's pilot project; generates no workspace |
+| Start from a file | Fourth icon in the left activity bar (the A/B single entry) | Pick a file or paste content, decide whether it belongs to line A (documents) or line B (code), and route to that panel; the decision comes with its evidence and can be changed |
+| Generate workspace from code | Reached by routing from the single entry (the same item is in the **More** menu) | Reverse-parse pasted or selected code into a block workspace |
+| Standards → workspace | Reached by routing from the single entry (preview + human sign-off) | Shows three-tier verdicts, gaps and source anchors per standard slice, records a per-clause sign-off, and opens that slice's pilot project; generates no workspace |
+
+Detection only **pre-fills** the choice; it never locks it: a clear extension decides by extension, a missing or conflicting extension decides by content signals (imports, function definitions, `#include` versus chapter/clause structure, appendices, standard numbers, formulas), and when neither holds the panel says "cannot tell" and asks the user to pick with the switch. After an override the panel marks it as **changed by you**, so the machine's judgement and the user's choice stay distinguishable.
 
 Three boundaries come first:
 
@@ -90,7 +93,7 @@ A link only applies the next time the opposite tab is shown; clicking a tab your
 
 ## 5. Generate workspace from code
 
-The **Generate workspace from code** icon, the fifth panel in the left activity bar (the same item as in the **More** menu), is the entry point of line B (reference implementation → workspace). It is not the same path as **Import workspace**: importing loads an existing workspace file, while this reverse-parses code into a new workspace. Like the other four, it is a mutually exclusive panel: it docks in the left column (460px wide) and leaves the canvas visible and usable; on narrow screens the column collapses into a top strip and the panel appears as an overlay.
+The **Generate workspace from code** panel is the entry point of line B (reference implementation → workspace): it no longer has its own activity-bar icon and is reached by routing from **Start from a file** once the content is judged code (the **More** menu still opens it directly). It is not the same path as **Import workspace**: importing loads an existing workspace file, while this reverse-parses code into a new workspace. Like the other panels, it is a mutually exclusive panel: it docks in the left column (460px wide) and leaves the canvas visible and usable; on narrow screens the column collapses into a top strip and the panel appears as an overlay.
 
 The order is fixed: parse, review diagnostics, load. Each step can stop:
 
@@ -112,7 +115,7 @@ The syntax-tree parser is the Pyodide Python runtime inside the browser (about 1
 
 ## 6. Standards → workspace (preview + human sign-off)
 
-The sixth icon in the left activity bar is the entry point of line A (standard text → workspace). It lays out "standard slices → clause units → three tiers" for a person to read and **generates no workspace**; next to the tiers it records a **human sign-off**: who signed or rejected which clause, when, with an optional note, and the verdict fingerprint at that moment.
+The entry point of line A (standard text → workspace) is reached by routing from the single entry once the content is judged a document; it pre-fills no specific standard, because line A only covers standards and papers registered in the repository. It lays out "standard slices → clause units → three tiers" for a person to read and **generates no workspace**; next to the tiers it records a **human sign-off**: who signed or rejected which clause, when, with an optional note, and the verdict fingerprint at that moment.
 
 | View | What it answers |
 |---|---|

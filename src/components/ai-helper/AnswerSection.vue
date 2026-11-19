@@ -59,6 +59,7 @@ import { computed, ref, watch } from 'vue';
 
 import { ui, uiFormat, uiLocaleRef } from '@/composables/locale';
 import { modelFailureTexts } from '@/composables/model-failure-text';
+import { noteDropTexts } from '@/composables/model-note-text';
 import { useModelAnswer } from '@/composables/useModelAnswer';
 import type { AnswerResult } from '@/services/ai-helper/doc-answer';
 import type { ModelFailure } from '@/composables/useModelAnswer';
@@ -100,21 +101,15 @@ const {
 } = useModelAnswer();
 
 /**
- * 丢弃计数的悬浮说明：复用既有两条越界文案，不新增 locale 键。
+ * 丢弃计数的悬浮说明：五类丢弃各有文案，顺序按第一次出现的丢弃码。
  *
- * 早先的理由是打包预算：语言包当时整份进入口 chunk，入口只剩 13 字节余量（65523/65536）。
- * 2026-11-19 语言包改为按语言懒加载后，入口降到 33587 字节，预算不再是约束；这里仍复用
- * 既有两条文案，理由变成语义——它们与这两类丢弃同义，新增键只会让同一含义出现两种说法。
+ * 文案映射放在 `composables/model-note-text.ts`（纯函数），这里只负责按当前语言取文案
+ * 与拼接分隔符——映射本身要能被单测直接断言，且要守住「中英语言包都真实有键」
+ * （`ui('字面量')` 的扫描器看不见动态 key）。
  */
-const DROP_TEXT_KEYS: Record<string, string> = {
-  'unsupported-note': 'modelVerifyUnsupportedNote',
-  'unknown-support': 'modelVerifyUnknownSupport',
-};
-
-const droppedTitle = computed(() => {
-  const keys = [...new Set(droppedNotes.value.map((drop) => DROP_TEXT_KEYS[drop.code]).filter((key): key is string => Boolean(key)))];
-  return keys.map((key) => ui(key)).join(uiLocaleRef.value === 'en' ? '; ' : '；');
-});
+const droppedTitle = computed(() =>
+  noteDropTexts(droppedNotes.value, ui).join(uiLocaleRef.value === 'en' ? '; ' : '；'),
+);
 
 const settingsOpen = ref(false);
 /** 并发守卫：用户连点两次搜索时，只让最后一次的结果上屏。 */

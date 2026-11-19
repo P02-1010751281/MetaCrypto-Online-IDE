@@ -176,6 +176,9 @@ export const UI_MESSAGES_EN: Record<string, string> = {
   modelVerifyTooMany: 'the model picked more sentences than allowed',
   modelVerifyUnsupportedNote: 'the model added a note without naming the candidate sentences behind it',
   modelVerifyUnknownSupport: 'the model cited sentences outside the candidates in its note',
+  modelNoteDropEmpty: 'the model sent a blank note sentence',
+  modelNoteDropDuplicate: 'the model wrote the same note sentence twice',
+  modelNoteDropTooMany: 'the model sent more note sentences than allowed',
   modelErrorStatus: 'request rejected (HTTP {status})',
   answerExtractive: 'Quoted from the sources, each sentence traceable (no generative model)',
   answerCoverage: 'Evidence coverage',
@@ -364,6 +367,26 @@ export const UI_MESSAGES_EN: Record<string, string> = {
   codeToWorkspaceAstNote:
   'Recognised through the Python syntax tree (AST): structure only, parameter types fall back to the default bytes.',
   codeToWorkspaceLine: 'Line {line}',
+  // A/B single entry (P5): detection only pre-fills the switch; it never locks the choice.
+  intakeTitle: 'Start from a file',
+  intakeAction: 'Start from a file (document / code)',
+  intakeIntro:
+  'Pick a file or paste content: the extension and the text decide whether it belongs to line A (standards and papers) or line B (code). The result below is a pre-fill you can change.',
+  intakePickFile: 'Choose a file',
+  intakePlaceholder: 'Or paste the content here',
+  intakeVerdict: 'Detected: ',
+  intakeKindDoc: 'document (line A)',
+  intakeKindCode: 'code (line B)',
+  intakeKindUnknown: 'cannot tell',
+  intakeUnknownHint: 'The content does not clearly look like either one; pick a line with the switch below.',
+  intakeDocHint: 'Line A only covers standards and papers registered in the repository (pinned by content hash): after continuing, pick an entry from the catalog; arbitrary PDFs are not split into clauses.',
+  intakeCodeHint: 'Line B only reverses the Python shape this platform generates; the JavaScript shape is refused explicitly and loads no blocks.',
+  intakeEvidenceJoin: '; ',
+  intakeFileTooLarge: 'The file is larger than 2 MB — keep only the part you need.',
+  intakeReadFailed: 'Failed to read the file: ',
+  intakeContinue: 'Continue',
+  intakeOverridden: ' (changed by you)',
+  intakeSwitchLabel: 'Choose the line',
   // A-line standards -> workspace preview: build-time machine candidates, never "covered".
   standardsToWorkspace: 'Standards → workspace',
   stwLede:

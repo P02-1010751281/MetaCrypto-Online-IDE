@@ -166,19 +166,26 @@
  * 载荷（160 KB 模板表）在第一次解析时才拉，解析器本身不认识 Blockly。
  */
 
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { ui, uiFormat } from '@/composables/locale';
 import { countStateBlocks, loadFieldPayload, reverseCodeAuto } from '@/services/ai-helper/reverse';
 import type { ReverseCodeResult, SerializedWorkspace } from '@/services/ai-helper/reverse';
 import { parsePythonAst } from '@/runtime/python-parse';
 
-defineProps<{
+const props = defineProps<{
   visible: boolean;
   /** 当前画布已有多少块：只用于「将替换 N 块」的提示，不参与判定。 */
   currentBlockCount?: number;
   /** 停靠在左栏面板里（缺省入口）；false 时是中心浮层，窄屏与其它调用点仍可复用。 */
   docked?: boolean;
+  /**
+   * A/B 单入口路由过来的正文（非空时预填）。
+   *
+   * 用 prop 而不是 shared state：预填是一次性的输入，面板关掉就该消失；
+   * 留一份全局状态会让「上次导入的代码」在下次打开时阴魂不散。
+   */
+  intake?: { source: string; name: string } | null;
 }>();
 
 const emit = defineEmits<{
@@ -239,6 +246,23 @@ function resetResult(): void {
   result.value = null;
   error.value = '';
 }
+
+/**
+ * 单入口路由的预填：只覆盖正文与文件名，不自动解析。
+ *
+ * 不自动解析是刻意的——B 线的判据是「诊断先看、载入后点」，替用户按下解析
+ * 等于替他跳过了一次检查。`immediate` 让「先路由、后挂载」也能生效。
+ */
+watch(
+  () => props.intake,
+  (value) => {
+    if (!value) return;
+    source.value = value.source;
+    fileName.value = value.name;
+    resetResult();
+  },
+  { immediate: true },
+);
 
 async function onFile(event: Event): Promise<void> {
   const input = event.target as HTMLInputElement;

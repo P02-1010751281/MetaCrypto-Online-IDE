@@ -26,12 +26,14 @@
         :current-project-id="currentProjectId"
         :workspace="currentWorkspace"
         :block-count="blockCount"
+        :intake="codeIntake"
         @close="closePanel"
         @project-renamed="onProjectRenamed"
         @open-doc-hit="onOpenDocHit"
         @browse-all-docs="openDocs"
         @apply-workspace="onApplyReversedWorkspace"
         @open-source="openStandardSource"
+        @intake-route="onIntakeRoute"
       />
     </EditorSidebar>
 
@@ -135,6 +137,7 @@ import { useEditorPanels } from '@/components/editor/useEditorPanels';
 import { buildDocsLocation } from '@/utils/docs-search-entry';
 import { useEditorWorkspaceActions } from '@/components/editor/useEditorWorkspaceActions';
 import { useCodeToWorkspaceImport } from '@/components/editor/useCodeToWorkspaceImport';
+import { useIntakeRoute } from '@/components/editor/useIntakeRoute';
 import { useWorkspaceStats } from '@/components/editor/useWorkspaceStats';
 // 编辑器专属注册只在 /editor 路由加载，避免污染项目列表首屏。
 import '@/blocks';
@@ -225,7 +228,7 @@ const currentProjectId = computed(() => Number(route.params.id) || null);
 /** 问答助手（文档/积木检索）要读路径与摘录、函数面板是「名字 + 参数 + 两枚动作」的密排行、
  *  代码面板要放粘贴框与诊断清单，248px 都不够用；进这些面板自动展宽，回文件/项目收回缺省宽度。 */
 watch(activePanel, (panel) => {
-  const wide = panel === 'assistant' || panel === 'functions' || panel === 'code' || panel === 'standards';
+  const wide = panel === 'assistant' || panel === 'functions' || panel === 'intake' || panel === 'code' || panel === 'standards';
   setLeftWidth(wide ? (panel === 'assistant' || panel === 'functions' ? 400 : 460) : undefined);
 });
 
@@ -351,6 +354,16 @@ const { openCodeToWorkspace, onApplyReversedWorkspace } = useCodeToWorkspaceImpo
   afterApplied: onWorkspaceChanged,
   beforeOpen: closeMenus,
 });
+
+/** A/B 单入口（PLAN P5）：判别在面板里，这里只管路由与预填（细节在组合式函数里）。 */
+const { codeIntake, onIntakeRoute } = useIntakeRoute({
+  openPanel,
+  showSidebar: () => {
+    sidebarVisible.value = true;
+  },
+  notify: showToast,
+});
+
 
 async function onManualSave(): Promise<void> {
   if (!(await doSave())) return;
