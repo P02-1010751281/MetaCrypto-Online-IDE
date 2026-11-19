@@ -21,6 +21,41 @@
         <input v-model="apiKey" class="msd-input" type="password" spellcheck="false" autocomplete="off" />
       </label>
 
+      <!-- 费用估算用的单价：可选，留空就不显示费用。独立存储（不是密钥、也不随「记住」），
+           所以「清除」只清上面三项，不会把这里的价目一起删掉。 -->
+      <div class="msd-price-head">{{ ui('modelPriceTitle') }}</div>
+      <label class="msd-field">
+        <span class="msd-label">{{ ui('modelPriceInput') }}</span>
+        <input
+          v-model="priceInput"
+          class="msd-input msd-price"
+          inputmode="decimal"
+          spellcheck="false"
+          :placeholder="ui('modelPricePlaceholder')"
+        />
+      </label>
+      <label class="msd-field">
+        <span class="msd-label">{{ ui('modelPriceOutput') }}</span>
+        <input
+          v-model="priceOutput"
+          class="msd-input msd-price"
+          inputmode="decimal"
+          spellcheck="false"
+          :placeholder="ui('modelPriceSameAsInput')"
+        />
+      </label>
+      <label class="msd-field">
+        <span class="msd-label">{{ ui('modelPriceCurrency') }}</span>
+        <input
+          v-model="currency"
+          class="msd-input msd-price"
+          spellcheck="false"
+          :maxlength="MAX_CURRENCY_LENGTH"
+          :placeholder="DEFAULT_CURRENCY"
+        />
+      </label>
+      <p class="msd-price-hint">{{ ui('modelPriceHint') }}</p>
+
       <label class="msd-remember">
         <input v-model="remember" type="checkbox" />
         <span>{{ ui('modelRemember') }}</span>
@@ -49,21 +84,34 @@
  *
  * 限额不开放编辑：D 档固定 20 s / ≤300 token / 不重试（§3.4），把三个数字摆出来，
  * 让用户知道一次点击最多值多少钱、最多等多久。
+ *
+ * 单价（可选）与三项必填分开：它不是连上 provider 的前提，只是让状态位能换算金额。
+ * 留空 = 不估价；填了就按「每百万 token」折算，界面上标「≈」，实际以 provider 账单为准。
  */
 import { computed, ref, watch } from 'vue';
 
-import { ui } from '@/composables/locale';
+import { ui, uiFormat } from '@/composables/locale';
 import { checkConfig, type ConfigIssue, type ModelConfig } from '@/services/ai-helper/model/config';
+import {
+  checkPricing,
+  DEFAULT_CURRENCY,
+  MAX_CURRENCY_LENGTH,
+  type ModelPricing,
+  type PricingIssue,
+} from '@/services/ai-helper/model/pricing';
+
+type DialogIssue = ConfigIssue | PricingIssue;
 
 const props = defineProps<{
   open: boolean;
   config: ModelConfig | null;
   remembered: boolean;
+  pricing: ModelPricing | null;
 }>();
 
 const emit = defineEmits<{
   (e: 'close'): void;
-  (e: 'save', payload: { config: ModelConfig; remember: boolean }): void;
+  (e: 'save', payload: { config: ModelConfig; remember: boolean; pricing: ModelPricing | null }): void;
   (e: 'clear'): void;
 }>();
 
@@ -71,7 +119,10 @@ const baseUrl = ref('');
 const modelId = ref('');
 const apiKey = ref('');
 const remember = ref(false);
-const issues = ref<readonly ConfigIssue[]>([]);
+const priceInput = ref('');
+const priceOutput = ref('');
+const currency = ref(DEFAULT_CURRENCY);
+const issues = ref<readonly DialogIssue[]>([]);
 const baseUrlEl = ref<HTMLInputElement | null>(null);
 
 /** 每次打开都从当前已存的配置回填：用户看到的就是「现在真正在用的」。 */
@@ -83,24 +134,44 @@ watch(
     modelId.value = props.config?.modelId ?? '';
     apiKey.value = props.config?.apiKey ?? '';
     remember.value = props.remembered;
+    priceInput.value = props.pricing ? String(props.pricing.inputPerMillion) : '';
+    priceOutput.value = props.pricing?.outputPerMillion != null ? String(props.pricing.outputPerMillion) : '';
+    currency.value = props.pricing?.currency ?? DEFAULT_CURRENCY;
     issues.value = [];
   },
   { immediate: true },
 );
+
+/** 用户一改输入就清掉上一次的报错：提示描述的是「上次提交」，不是当前内容。 */
+watch([baseUrl, modelId, apiKey, priceInput, priceOutput, currency], () => {
+  if (issues.value.length > 0) issues.value = [];
+});
 
 const issueText = computed(() => {
   const parts: string[] = [];
   if (issues.value.includes('base-url')) parts.push(ui('modelInvalidBaseUrl'));
   if (issues.value.includes('model-id')) parts.push(`${ui('modelModelId')}：${ui('modelRequired')}`);
   if (issues.value.includes('api-key')) parts.push(`${ui('modelApiKey')}：${ui('modelRequired')}`);
+  if (issues.value.includes('price-input') || issues.value.includes('price-output')) {
+    parts.push(ui('modelPriceInvalid'));
+  }
+  if (issues.value.includes('price-need-input')) parts.push(ui('modelPriceNeedInput'));
+  if (issues.value.includes('price-currency')) {
+    parts.push(uiFormat('modelPriceCurrencyInvalid', { max: MAX_CURRENCY_LENGTH }));
+  }
   return parts.join('；');
 });
 
 function onSave(): void {
   const { check, config } = checkConfig({ baseUrl: baseUrl.value, modelId: modelId.value, apiKey: apiKey.value });
-  issues.value = check.issues;
-  if (!check.ok) return;
-  emit('save', { config, remember: remember.value });
+  const prices = checkPricing({
+    inputPerMillion: priceInput.value,
+    outputPerMillion: priceOutput.value,
+    currency: currency.value,
+  });
+  issues.value = [...check.issues, ...prices.issues];
+  if (!check.ok || prices.issues.length > 0) return;
+  emit('save', { config, remember: remember.value, pricing: prices.pricing });
 }
 
 function onClear(): void {
@@ -153,6 +224,20 @@ function onClear(): void {
 }
 .msd-notice,
 .msd-risk {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+.msd-price-head {
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid var(--color-border, #d0d3d9);
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+}
+.msd-price-hint {
   margin: 0;
   font-size: 11px;
   line-height: 1.5;

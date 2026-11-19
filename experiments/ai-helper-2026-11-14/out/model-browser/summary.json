@@ -1,22 +1,26 @@
 {
-  "baseUrl": "http://localhost:5242",
+  "baseUrl": "http://127.0.0.1:5216",
   "fakePort": 9137,
   "calls": [
     {
       "url": "/v1/chat/completions",
-      "body": "{\"model\":\"fake-model\",\"messages\":[{\"role\":\"system\",\"content\":\"你是检索问答里的「选句器」，只做一件事：从给定的候选句里挑出能回答问题的句子。\\n硬性规则：\\n1. 只能引用候选句的 id，不能改写、拼接、概括或新增任何句子；\\n2. 没有能回答的候选时就返回空数组（拒答是合法答案，不要硬凑）；\\n3. `note` 是可选的简短说明，提到依据时必须用 `support` 列出所依据的候选 id；\\n4. 最多选 5 句；\\n5. 只输出一个 JSON 对象，不要 Markdown 围栏、不要解释。\\n输出格式：{\\\"selections\\\":[{\\\"id\\\":\\\"s1\\\"}],\\\"note\\\":\\\"可选\\\",\\\"support\\\":[\\\"s1\\\"]}\"},{\"role\":\"user\",\"content\":\"问题：SM4 密钥扩展\\n\\n候选句：\\ns1 | docs/standards/gbt32907-SM4/03-Algorithm.md:25 | 密钥扩展使用不同的 线性变换  L' ；\"}],\"temperature\":0,\"max_tokens\":300,\"stream\":false}"
+      "body": "{\"model\":\"fake-model\",\"messages\":[{\"role\":\"system\",\"content\":\"你是检索问答里的「选句器」：从给定候选句里挑出能回答问题的句子，并按需写一两句解释。\\n硬性规则：\\n1. `selections` 只能引用候选句的 id，不能改写、拼接、概括或新增任何句子；\\n2. 没有能回答的候选时就返回空的 `selections`（拒答是合法答案，不要硬凑）；\\n3. `notes` 是可选的解释，**写成一个句子数组**；每一句都必须用 `support` 列出它依据的候选 id，\\n   写不出依据的句子不要写——核对时挂不上候选 id 的句子会被整句丢弃；\\n4. `selections` 最多 5 句；\\n5. 只输出一个 JSON 对象，不要 Markdown 围栏、不要解释。\\n输出格式：{\\\"selections\\\":[{\\\"id\\\":\\\"s1\\\"}],\\\"notes\\\":[{\\\"text\\\":\\\"一句话解释\\\",\\\"support\\\":[\\\"s1\\\"]}]}\"},{\"role\":\"user\",\"content\":\"问题：SM4 密钥扩展\\n\\n候选句：\\ns1 | docs/standards/gbt32907-SM4/03-Algorithm.md:25 | 密钥扩展使用不同的 线性变换  L' ；\"}],\"temperature\":0,\"max_tokens\":300,\"stream\":false}"
     },
     {
       "url": "/v1/chat/completions",
-      "body": "{\"model\":\"fake-model\",\"messages\":[{\"role\":\"system\",\"content\":\"你是检索问答里的「选句器」，只做一件事：从给定的候选句里挑出能回答问题的句子。\\n硬性规则：\\n1. 只能引用候选句的 id，不能改写、拼接、概括或新增任何句子；\\n2. 没有能回答的候选时就返回空数组（拒答是合法答案，不要硬凑）；\\n3. `note` 是可选的简短说明，提到依据时必须用 `support` 列出所依据的候选 id；\\n4. 最多选 5 句；\\n5. 只输出一个 JSON 对象，不要 Markdown 围栏、不要解释。\\n输出格式：{\\\"selections\\\":[{\\\"id\\\":\\\"s1\\\"}],\\\"note\\\":\\\"可选\\\",\\\"support\\\":[\\\"s1\\\"]}\"},{\"role\":\"user\",\"content\":\"问题：SM4 密钥扩展\\n\\n候选句：\\ns1 | docs/standards/gbt32907-SM4/03-Algorithm.md:25 | 密钥扩展使用不同的 线性变换  L' ；\"}],\"temperature\":0,\"max_tokens\":300,\"stream\":false}"
+      "body": "{\"model\":\"fake-model\",\"messages\":[{\"role\":\"system\",\"content\":\"你是检索问答里的「选句器」：从给定候选句里挑出能回答问题的句子，并按需写一两句解释。\\n硬性规则：\\n1. `selections` 只能引用候选句的 id，不能改写、拼接、概括或新增任何句子；\\n2. 没有能回答的候选时就返回空的 `selections`（拒答是合法答案，不要硬凑）；\\n3. `notes` 是可选的解释，**写成一个句子数组**；每一句都必须用 `support` 列出它依据的候选 id，\\n   写不出依据的句子不要写——核对时挂不上候选 id 的句子会被整句丢弃；\\n4. `selections` 最多 5 句；\\n5. 只输出一个 JSON 对象，不要 Markdown 围栏、不要解释。\\n输出格式：{\\\"selections\\\":[{\\\"id\\\":\\\"s1\\\"}],\\\"notes\\\":[{\\\"text\\\":\\\"一句话解释\\\",\\\"support\\\":[\\\"s1\\\"]}]}\"},{\"role\":\"user\",\"content\":\"问题：SM4 密钥扩展\\n\\n候选句：\\ns1 | docs/standards/gbt32907-SM4/03-Algorithm.md:25 | 密钥扩展使用不同的 线性变换  L' ；\"}],\"temperature\":0,\"max_tokens\":300,\"stream\":false}"
     },
     {
       "url": "/v1/chat/completions",
-      "body": "{\"model\":\"fake-model\",\"messages\":[{\"role\":\"system\",\"content\":\"你是检索问答里的「选句器」，只做一件事：从给定的候选句里挑出能回答问题的句子。\\n硬性规则：\\n1. 只能引用候选句的 id，不能改写、拼接、概括或新增任何句子；\\n2. 没有能回答的候选时就返回空数组（拒答是合法答案，不要硬凑）；\\n3. `note` 是可选的简短说明，提到依据时必须用 `support` 列出所依据的候选 id；\\n4. 最多选 5 句；\\n5. 只输出一个 JSON 对象，不要 Markdown 围栏、不要解释。\\n输出格式：{\\\"selections\\\":[{\\\"id\\\":\\\"s1\\\"}],\\\"note\\\":\\\"可选\\\",\\\"support\\\":[\\\"s1\\\"]}\"},{\"role\":\"user\",\"content\":\"问题：SM4 密钥扩展 轮密钥\\n\\n候选句：\\ns1 | docs/standards/gbt32907-SM4/03-Algorithm.md:25 | 密钥扩展使用不同的 线性变换  L' ；\"}],\"temperature\":0,\"max_tokens\":300,\"stream\":false}"
+      "body": "{\"model\":\"fake-model\",\"messages\":[{\"role\":\"system\",\"content\":\"你是检索问答里的「选句器」：从给定候选句里挑出能回答问题的句子，并按需写一两句解释。\\n硬性规则：\\n1. `selections` 只能引用候选句的 id，不能改写、拼接、概括或新增任何句子；\\n2. 没有能回答的候选时就返回空的 `selections`（拒答是合法答案，不要硬凑）；\\n3. `notes` 是可选的解释，**写成一个句子数组**；每一句都必须用 `support` 列出它依据的候选 id，\\n   写不出依据的句子不要写——核对时挂不上候选 id 的句子会被整句丢弃；\\n4. `selections` 最多 5 句；\\n5. 只输出一个 JSON 对象，不要 Markdown 围栏、不要解释。\\n输出格式：{\\\"selections\\\":[{\\\"id\\\":\\\"s1\\\"}],\\\"notes\\\":[{\\\"text\\\":\\\"一句话解释\\\",\\\"support\\\":[\\\"s1\\\"]}]}\"},{\"role\":\"user\",\"content\":\"问题：SM4 密钥扩展 轮密钥\\n\\n候选句：\\ns1 | docs/standards/gbt32907-SM4/03-Algorithm.md:25 | 密钥扩展使用不同的 线性变换  L' ；\"}],\"temperature\":0,\"max_tokens\":300,\"stream\":false}"
     },
     {
       "url": "/v1/chat/completions",
-      "body": "{\"model\":\"fake-model\",\"messages\":[{\"role\":\"system\",\"content\":\"你是检索问答里的「选句器」，只做一件事：从给定的候选句里挑出能回答问题的句子。\\n硬性规则：\\n1. 只能引用候选句的 id，不能改写、拼接、概括或新增任何句子；\\n2. 没有能回答的候选时就返回空数组（拒答是合法答案，不要硬凑）；\\n3. `note` 是可选的简短说明，提到依据时必须用 `support` 列出所依据的候选 id；\\n4. 最多选 5 句；\\n5. 只输出一个 JSON 对象，不要 Markdown 围栏、不要解释。\\n输出格式：{\\\"selections\\\":[{\\\"id\\\":\\\"s1\\\"}],\\\"note\\\":\\\"可选\\\",\\\"support\\\":[\\\"s1\\\"]}\"},{\"role\":\"user\",\"content\":\"问题：SM4 密钥扩展\\n\\n候选句：\\ns1 | docs/standards/gbt32907-SM4/03-Algorithm.md:25 | 密钥扩展使用不同的 线性变换  L' ；\"}],\"temperature\":0,\"max_tokens\":300,\"stream\":false}"
+      "body": "{\"model\":\"fake-model\",\"messages\":[{\"role\":\"system\",\"content\":\"你是检索问答里的「选句器」：从给定候选句里挑出能回答问题的句子，并按需写一两句解释。\\n硬性规则：\\n1. `selections` 只能引用候选句的 id，不能改写、拼接、概括或新增任何句子；\\n2. 没有能回答的候选时就返回空的 `selections`（拒答是合法答案，不要硬凑）；\\n3. `notes` 是可选的解释，**写成一个句子数组**；每一句都必须用 `support` 列出它依据的候选 id，\\n   写不出依据的句子不要写——核对时挂不上候选 id 的句子会被整句丢弃；\\n4. `selections` 最多 5 句；\\n5. 只输出一个 JSON 对象，不要 Markdown 围栏、不要解释。\\n输出格式：{\\\"selections\\\":[{\\\"id\\\":\\\"s1\\\"}],\\\"notes\\\":[{\\\"text\\\":\\\"一句话解释\\\",\\\"support\\\":[\\\"s1\\\"]}]}\"},{\"role\":\"user\",\"content\":\"问题：SM4 密钥扩展\\n\\n候选句：\\ns1 | docs/standards/gbt32907-SM4/03-Algorithm.md:25 | 密钥扩展使用不同的 线性变换  L' ；\"}],\"temperature\":0,\"max_tokens\":300,\"stream\":false}"
+    },
+    {
+      "url": "/v1/chat/completions",
+      "body": "{\"model\":\"fake-model\",\"messages\":[{\"role\":\"system\",\"content\":\"你是检索问答里的「选句器」：从给定候选句里挑出能回答问题的句子，并按需写一两句解释。\\n硬性规则：\\n1. `selections` 只能引用候选句的 id，不能改写、拼接、概括或新增任何句子；\\n2. 没有能回答的候选时就返回空的 `selections`（拒答是合法答案，不要硬凑）；\\n3. `notes` 是可选的解释，**写成一个句子数组**；每一句都必须用 `support` 列出它依据的候选 id，\\n   写不出依据的句子不要写——核对时挂不上候选 id 的句子会被整句丢弃；\\n4. `selections` 最多 5 句；\\n5. 只输出一个 JSON 对象，不要 Markdown 围栏、不要解释。\\n输出格式：{\\\"selections\\\":[{\\\"id\\\":\\\"s1\\\"}],\\\"notes\\\":[{\\\"text\\\":\\\"一句话解释\\\",\\\"support\\\":[\\\"s1\\\"]}]}\"},{\"role\":\"user\",\"content\":\"问题：SM4 密钥扩展 数据单元\\n\\n候选句：\\ns1 | docs/standards/gbt32907-SM4/01-Overview.md:15 | “SM4 密码算法是一个分组算法。\\ns2 | docs/standards/gbt32907-SM4/01-Overview.md:29 | 解密使用与加密 相反顺序的轮密钥，数据轮结构相同。\\ns3 | docs/standards/gbt32907-SM4/01-Overview.md:55 | 轮函数见  02-RoundFunction.md ，完整算法与密钥扩展见  03-Algorithm.md 。\"}],\"temperature\":0,\"max_tokens\":300,\"stream\":false}"
     }
   ],
   "results": [
@@ -141,6 +145,54 @@
       "ok": true
     },
     {
+      "name": "没填单价时状态位只有 tokens/耗时，没有费用",
+      "ok": true
+    },
+    {
+      "name": "设置窗打开（费用区就在里面）",
+      "ok": true
+    },
+    {
+      "name": "设置窗有单价三项且说明按每百万 token 计价",
+      "ok": true
+    },
+    {
+      "name": "非数字单价被对话框拦下",
+      "ok": true
+    },
+    {
+      "name": "被拦下时单价没写进存储",
+      "ok": true
+    },
+    {
+      "name": "被拦下时对话框不关闭",
+      "ok": true
+    },
+    {
+      "name": "改成合法单价后，上一次的报错立即消失（不留一条旧的红色提示）",
+      "ok": true
+    },
+    {
+      "name": "保存单价后对话框关闭",
+      "ok": true
+    },
+    {
+      "name": "只填单价不重新调用模型（不烧额度）",
+      "ok": true
+    },
+    {
+      "name": "状态位按 120×3 + 12×15 每百万估出 ≈USD 0.00054",
+      "ok": true
+    },
+    {
+      "name": "单价写进本机 localStorage（不是会话档）",
+      "ok": true
+    },
+    {
+      "name": "费用元素带口径说明（悬浮给出「以 provider 账单为准」）",
+      "ok": true
+    },
+    {
       "name": "重载后编辑器就绪",
       "ok": true
     },
@@ -177,6 +229,10 @@
       "ok": true
     },
     {
+      "name": "重载后单价仍在，新的一次调用照样给出估算金额",
+      "ok": true
+    },
+    {
       "name": "第二次调用仍是 1 次请求（共 2 次）",
       "ok": true
     },
@@ -193,23 +249,43 @@
       "ok": true
     },
     {
+      "name": "429 没有用量就不显示费用（不把「没花钱」当成「没数据」）",
+      "ok": true
+    },
+    {
       "name": "失败后不重试（请求数只 +1）",
       "ok": true
     },
     {
-      "name": "校验失败按类别说话：模型给了说明却没标注依据",
+      "name": "自述没标注依据时只丢那一句，整次选择照常采用",
       "ok": true
     },
     {
-      "name": "校验失败不会冒充「句子不在候选里」（URL 越界的说法）",
+      "name": "丢弃计数悬浮给出原因（说明必须由候选句支撑）",
       "ok": true
     },
     {
-      "name": "校验失败时检索答案与出处仍在",
+      "name": "逐句丢弃不影响用量与费用读数",
       "ok": true
     },
     {
-      "name": "校验失败后不重试（请求数只 +1）",
+      "name": "自述被丢弃时检索答案与出处仍在",
+      "ok": true
+    },
+    {
+      "name": "自述被丢弃后不重试（请求数只 +1）",
+      "ok": true
+    },
+    {
+      "name": "整次失败按类别说话：模型选了候选之外的句子",
+      "ok": true
+    },
+    {
+      "name": "整次失败也如实给出用量与费用（失败的调用一样花了钱）",
+      "ok": true
+    },
+    {
+      "name": "整次失败后不重试（请求数只 +1）",
       "ok": true
     },
     {
@@ -218,6 +294,10 @@
     },
     {
       "name": "弹窗回填当前真正在用的配置",
+      "ok": true
+    },
+    {
+      "name": "弹窗也回填已存的单价（不是空白重填）",
       "ok": true
     },
     {
@@ -234,6 +314,10 @@
     },
     {
       "name": "清除后开关关闭、状态位清空",
+      "ok": true
+    },
+    {
+      "name": "「清除」只清密钥与配置，不删单价（单价不是密钥）",
       "ok": true
     },
     {

@@ -74,6 +74,24 @@ const fake = createServer((req, res) => {
       res.end(JSON.stringify({ error: { message: 'rate limited by fake provider' } }));
       return;
     }
+    if (mode === 'unknown-id') {
+      // 整次失败（不是逐句丢弃）：选了一个不在候选里的 id。用来看「失败也照样算钱」。
+      res.writeHead(200, { 'content-type': 'application/json' });
+      res.end(
+        JSON.stringify({
+          choices: [
+            {
+              message: {
+                role: 'assistant',
+                content: JSON.stringify({ selections: [{ id: 's99' }] }),
+              },
+            },
+          ],
+          usage: { prompt_tokens: 120, completion_tokens: 12, total_tokens: 132 },
+        }),
+      );
+      return;
+    }
     if (mode === 'note-only') {
       // 校验层失败：给了 note 却不给 support（`unsupported-note`）。界面必须说
       // 「说明没标注依据」，不能笼统说成「选中的句子不在候选里」（RESULTS §60.8 第 3 条）。
@@ -268,6 +286,9 @@ const READ_STORAGE = `(() => ({
   persist: window.localStorage.getItem('ciphercat.ai-model.persist'),
 }))()`;
 
+/** 单价存本机 localStorage（不是密钥，不随「记住」开关，也不随「清除」删除）。 */
+const READ_PRICING = '(() => window.localStorage.getItem(\'ciphercat.ai-model.pricing\'))()';
+
 const READ_DIALOG_ERROR = 'document.querySelector(\'.dsp .msd .msd-error\')?.textContent?.trim() ?? \'\'';
 
 async function openAssistant() {
@@ -291,10 +312,24 @@ async function setDocQuery(value) {
 
 async function fillDialog(values) {
   return js(`(() => {
-    const inputs = [...document.querySelectorAll('.dsp .msd .msd-input')];
+    const inputs = [...document.querySelectorAll('.dsp .msd .msd-input:not(.msd-price)')];
     if (inputs.length !== 3) return { ok: false, count: inputs.length };
     const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
     ${JSON.stringify([values.baseUrl, values.modelId, values.apiKey])}.forEach((value, index) => {
+      setter.call(inputs[index], value);
+      inputs[index].dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    return { ok: true, count: inputs.length };
+  })()`);
+}
+
+/** 单价三项（输入 / 输出 / 币种）。留空就是「不估价」，与填 0 是两件事。 */
+async function fillPrices(values) {
+  return js(`(() => {
+    const inputs = [...document.querySelectorAll('.dsp .msd .msd-price')];
+    if (inputs.length !== 3) return { ok: false, count: inputs.length };
+    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+    ${JSON.stringify([values.input, values.output, values.currency])}.forEach((value, index) => {
       setter.call(inputs[index], value);
       inputs[index].dispatchEvent(new Event('input', { bubbles: true }));
     });
@@ -406,6 +441,51 @@ try {
     barAfter.note);
   await shoot('model-04-selected');
 
+  // 3b. 费用估算：没填单价不显示费用；填了按本次 usage 折算，并标「≈」且能悬浮看口径
+  check('没填单价时状态位只有 tokens/耗时，没有费用', !(barAfter.status ?? '').includes('≈'), barAfter.status);
+  await js('document.querySelector(\'.dsp .as-bar .as-btn\').click()');
+  check('设置窗打开（费用区就在里面）', await waitFor('document.querySelector(\'.dsp .msd\') !== null', 5000));
+  check('设置窗有单价三项且说明按每百万 token 计价', await js(`(() => {
+    const dialog = document.querySelector('.dsp .msd');
+    if (!dialog) return false;
+    const labels = [...dialog.querySelectorAll('.msd-label')].map((el) => el.textContent.trim());
+    return dialog.querySelectorAll('.msd-price').length === 3
+      && ['输入单价', '输出单价', '币种'].every((label) => labels.includes(label))
+      && (dialog.querySelector('.msd-price-head')?.textContent ?? '').includes('每百万 token')
+      && (dialog.querySelector('.msd-price-hint')?.textContent ?? '').includes('不随「记住」开关');
+  })()`));
+
+  // 非法单价必须被拦下：不落存储、不关窗
+  await fillPrices({ input: 'abc', output: '', currency: 'USD' });
+  await js('document.querySelector(\'.dsp .msd .msd-primary\').click()');
+  await sleep(300);
+  const badPrice = await js(READ_DIALOG_ERROR);
+  check('非数字单价被对话框拦下', badPrice.includes('单价必须是不小于 0 的数字'), badPrice);
+  check('被拦下时单价没写进存储', (await js(READ_PRICING)) === null);
+  check('被拦下时对话框不关闭', await js('!!document.querySelector(\'.dsp .msd\')'));
+
+  // 合法单价：保存后立刻用「上一次调用的用量」估出金额，且不重新调用模型
+  const callsBeforePrice = calls.length;
+  await fillPrices({ input: '3', output: '15', currency: 'USD' });
+  check('改成合法单价后，上一次的报错立即消失（不留一条旧的红色提示）',
+    (await js(READ_DIALOG_ERROR)) === '');
+  await shoot('model-04c-price-fields');
+  await js('document.querySelector(\'.dsp .msd .msd-primary\').click()');
+  check('保存单价后对话框关闭', await waitFor('document.querySelector(\'.dsp .msd\') === null', 5000));
+  check('只填单价不重新调用模型（不烧额度）', calls.length === callsBeforePrice, { callsBeforePrice, now: calls.length });
+  check('状态位按 120×3 + 12×15 每百万估出 ≈USD 0.00054', await waitFor(`(() => {
+    const status = document.querySelector('.dsp .as-bar .as-status');
+    return !!status && (status.textContent ?? '').includes('≈USD 0.00054');
+  })()`, 5000));
+  const priced = await js(READ_PRICING);
+  check('单价写进本机 localStorage（不是会话档）',
+    typeof priced === 'string' && priced.includes('"inputPerMillion":3') && priced.includes('"outputPerMillion":15'), priced);
+  check('费用元素带口径说明（悬浮给出「以 provider 账单为准」）', await js(`(() => {
+    const cost = document.querySelector('.dsp .as-bar .as-cost');
+    return !!cost && (cost.getAttribute('title') ?? '').includes('provider 账单');
+  })()`));
+  await shoot('model-04b-cost');
+
   // 4. 重载后：配置还在（会话档），但开关回到默认关，且不发请求
   //    必须用 Page.reload：导航到同一个带 hash 的 URL 是 same-document，并不会真的重载。
   await send('Page.reload', { ignoreCache: false });
@@ -433,6 +513,10 @@ try {
     const status = document.querySelector('.dsp .as-bar .as-status');
     return !!status && (status.textContent ?? '').includes('模型选了 1 句');
   })()`, 20000));
+  check('重载后单价仍在，新的一次调用照样给出估算金额', await waitFor(`(() => {
+    const status = document.querySelector('.dsp .as-bar .as-status');
+    return !!status && (status.textContent ?? '').includes('≈USD 0.00054');
+  })()`, 10000));
   check('第二次调用仍是 1 次请求（共 2 次）', calls.length === reloadCalls + 1, calls.length);
   await shoot('model-05-reload-on');
 
@@ -450,38 +534,71 @@ try {
       && /docs\/standards\/.+:\d+/.test(failedAnswer.source ?? ''), failedAnswer);
   const failedBar = await js(READ_BAR);
   check('失败原因前面有「模型调用失败：」前缀', failedBar.status.startsWith('模型调用失败：'), failedBar.status);
+  check('429 没有用量就不显示费用（不把「没花钱」当成「没数据」）',
+    !(failedBar.status ?? '').includes('≈'), failedBar.status);
   check('失败后不重试（请求数只 +1）', calls.length === reloadCalls + 2, calls.length);
   await shoot('model-06-rate-limited');
 
-  // 5b. 校验层失败要说对原因：note 没给 support 是「说明没标注依据」，不是「句子不在候选里」
+  // 5b. 自述缺依据是「逐句丢弃」，不是整次失败：选句仍被采用，界面给 −1 计数并说明原因
   mode = 'note-only';
   await setDocQuery('SM4 密钥扩展');
   await waitFor(ANSWER_READY, 30000);
-  check('校验失败按类别说话：模型给了说明却没标注依据', await waitFor(`(() => {
-    const status = document.querySelector('.dsp .as-bar .as-status');
-    return !!status && status.classList.contains('as-status-error')
-      && (status.textContent ?? '').includes('模型给了说明却没标注依据');
+  check('自述没标注依据时只丢那一句，整次选择照常采用', await waitFor(`(() => {
+    const bar = document.querySelector('.dsp .as-bar');
+    if (!bar) return false;
+    const status = bar.querySelector('.as-status');
+    const drop = bar.closest('.as')?.querySelector('.as-note-drop');
+    return !!status && !status.classList.contains('as-status-error')
+      && (status.textContent ?? '').includes('模型选了 1 句')
+      && (drop?.textContent ?? '').trim() === '−1';
   })()`, 20000));
   const verifyBar = await js(READ_BAR);
-  check('校验失败不会冒充「句子不在候选里」（URL 越界的说法）',
-    !(verifyBar?.status ?? '').includes('不在候选里'), verifyBar?.status);
+  check('丢弃计数悬浮给出原因（说明必须由候选句支撑）', await js(`(() => {
+    const drop = document.querySelector('.dsp .as .as-note-drop');
+    return !!drop && (drop.getAttribute('title') ?? '').includes('说明必须由候选句支撑');
+  })()`));
+  check('逐句丢弃不影响用量与费用读数',
+    (verifyBar?.status ?? '').includes('108 tokens') && (verifyBar?.status ?? '').includes('≈USD 0.00042'),
+    verifyBar?.status);
   const verifyAnswer = await js(READ_ANSWER);
-  check('校验失败时检索答案与出处仍在',
+  check('自述被丢弃时检索答案与出处仍在',
     !!verifyAnswer && verifyAnswer.miss === false && verifyAnswer.sentences.length >= 1
       && /docs\/standards\/.+:\d+/.test(verifyAnswer.source ?? ''), verifyAnswer);
-  check('校验失败后不重试（请求数只 +1）', calls.length === reloadCalls + 3, calls.length);
-  await shoot('model-06b-verify-unsupported');
+  check('自述被丢弃后不重试（请求数只 +1）', calls.length === reloadCalls + 3, calls.length);
+  await shoot('model-06b-note-dropped');
+
+  // 5c. 整次失败（引用了候选之外的 id）：状态位说类别，并照样给出用量与费用
+  mode = 'unknown-id';
+  await setDocQuery('SM4 密钥扩展 数据单元');
+  check('整次失败按类别说话：模型选了候选之外的句子', await waitFor(`(() => {
+    const status = document.querySelector('.dsp .as-bar .as-status');
+    return !!status && status.classList.contains('as-status-error')
+      && (status.textContent ?? '').includes('模型选了候选之外的句子');
+  })()`, 20000));
+  const unknownBar = await js(READ_BAR);
+  check('整次失败也如实给出用量与费用（失败的调用一样花了钱）',
+    (unknownBar?.status ?? '').includes('132 tokens') && (unknownBar?.status ?? '').includes('≈USD 0.00054'),
+    unknownBar?.status);
+  check('整次失败后不重试（请求数只 +1）', calls.length === reloadCalls + 4, calls.length);
+  await shoot('model-06c-verify-unknown-id');
 
   // 6. 存储档位：勾「记住」→ 持久档，清会话档
   await js('document.querySelector(\'.dsp .as-bar .as-btn\').click()');
   check('「模型设置」按钮打开弹窗', await waitFor('document.querySelector(\'.dsp .msd\') !== null', 5000));
   const prefilled = await js(`(() => {
-    const inputs = [...document.querySelectorAll('.dsp .msd .msd-input')];
+    const inputs = [...document.querySelectorAll('.dsp .msd .msd-input:not(.msd-price)')];
     return { baseUrl: inputs[0]?.value ?? '', modelId: inputs[1]?.value ?? '', apiKey: inputs[2]?.value ?? '' };
   })()`);
   check('弹窗回填当前真正在用的配置',
     prefilled.baseUrl === `http://127.0.0.1:${FAKE_PORT}/v1` && prefilled.modelId === MODEL_ID && prefilled.apiKey === KEY,
     prefilled);
+  const prefilledPrices = await js(`(() => {
+    const inputs = [...document.querySelectorAll('.dsp .msd .msd-price')];
+    return { input: inputs[0]?.value ?? '', output: inputs[1]?.value ?? '', currency: inputs[2]?.value ?? '' };
+  })()`);
+  check('弹窗也回填已存的单价（不是空白重填）',
+    prefilledPrices.input === '3' && prefilledPrices.output === '15' && prefilledPrices.currency === 'USD',
+    prefilledPrices);
   await js('document.querySelector(\'.dsp .msd .msd-remember input\').click()');
   const callsBeforeRemember = calls.length;
   await js('document.querySelector(\'.dsp .msd .msd-primary\').click()');
@@ -502,6 +619,9 @@ try {
   const clearedBar = await js(READ_BAR);
   check('清除后开关关闭、状态位清空',
     clearedBar?.checked === false && clearedBar?.status === '' && clearedBar?.hint === '', clearedBar);
+  const clearedPricing = await js(READ_PRICING);
+  check('「清除」只清密钥与配置，不删单价（单价不是密钥）',
+    typeof clearedPricing === 'string' && clearedPricing.includes('"inputPerMillion":3'), clearedPricing);
   await shoot('model-07-cleared');
 
   check('CSP 未拦截回环 provider（0 条 CSP 违规）', cspViolations.length === 0, cspViolations.slice(0, 3));

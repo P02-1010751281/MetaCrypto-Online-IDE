@@ -141,13 +141,15 @@ After changing a verdict JSON or a pilot project, rerun `npm run verdicts:index`
 
 ### 7.2 Configuration
 
-The **Model settings (bring your own key)** dialog has three required fields and one risk notice:
+The **Model settings (bring your own key)** dialog has three required fields, an optional unit-price group and one risk notice:
 
 | Field | Validation |
 |---|---|
 | Base URL | Must be `https://` on any host, or `http://127.0.0.1` / `localhost` on this machine; plain http on any other host is rejected |
 | Model id | Required |
 | API key | Required; sent only in a request header |
+
+The unit price is optional and turns this call's tokens into an amount: state it **per million tokens**, input and output separately (their ratio is often 3–5×); leave the output price blank to reuse the input price, and leave the currency blank for `USD`. The repository keeps no price list — prices differ per provider, model and month, so a built-in table would only go stale; you enter the price from your own bill. Leave it blank and no cost is shown: a blank price is not the same as free.
 
 The repository ships no default provider, default model or key: an empty configuration means "no model attached", not "use the default".
 
@@ -186,7 +188,7 @@ The model may pick sentences and may also write a short explanation; the two go 
 
 **The explanation** (`notes`) is not evidence: the answer card shows it in its own block (left rule plus the "model note (not part of the answer evidence)" tag), and **every sentence must name its basis** — the candidate ids it rests on. A sentence that cannot be tied to a candidate id is **dropped whole** without failing the call: empty text, no support, a support id outside the candidates, a duplicate, or more than four sentences each cost only that one sentence, and the card shows a `−n` counter for how many were dropped (hovering gives the reasons). A well-written explanation never becomes evidence, and an unsupported one never discards the usable picks.
 
-After the checks pass, the answer card shows only the selected sentences, and the evidence remains the `path:line` of that one section — picking sentences cannot make the evidence point at a different file. The status line reports the call: `model picked n sentence(s) · N tokens · M ms`.
+After the checks pass, the answer card shows only the selected sentences, and the evidence remains the `path:line` of that one section — picking sentences cannot make the evidence point at a different file. The status line reports the call: `model picked n sentence(s) · N tokens · M ms`, and appends `≈USD 0.00054` once a unit price is set (hovering states that it is an estimate and the provider bill is the authority). A verification failure or a declined answer keeps the same readout and cost and only adds a reason line — a failed call still costs money.
 
 ### 7.6 How failures are shown
 
@@ -198,7 +200,8 @@ A failure never swallows the answer: the retrieval result and its evidence stay 
 
 - The key lives in browser storage: same-origin scripts and extensions can read it, and it may reach disk backups. By default it is kept for this tab only and lost when the tab closes.
 - With the toggle on, the question and candidate sentence text go to the provider the user configured; how that data is handled depends on that provider.
-- Cost estimation is not implemented: the UI reports tokens and elapsed time only, with no unit-price input.
+- **The cost is an estimate, not a bill**: the amount is converted from the unit price you entered and the `usage` the provider returned, then rounded for display; cached-input pricing, reasoning-token surcharges and tiered prices are outside the model. When the provider returns no `usage` (or only a total without the input/output split) no cost is shown — the status line says "no usage" instead of pretending zero.
+- Unit prices live in this machine's `localStorage` (they are not secrets); **Clear** removes the key and the configuration only, never the prices you entered.
 - No real provider has been verified inside the repository (it ships no key); the existing acceptance run uses a local fake provider over real HTTP, crossing the CSP.
 
 ## 8. Index and corpus maintenance

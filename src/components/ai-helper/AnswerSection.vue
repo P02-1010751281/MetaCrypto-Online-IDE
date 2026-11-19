@@ -8,13 +8,19 @@
         <span>{{ ui('modelSelectToggle') }}</span>
       </label>
       <button class="as-btn" type="button" @click="settingsOpen = true">{{ ui('modelSettings') }}</button>
-      <span class="as-status" :class="{ 'as-status-error': failure }">{{ statusText }}</span>
+      <span class="as-status" :class="{ 'as-status-error': failure }">
+        <span>{{ statusText }}</span>
+        <!-- 费用单独成元素：它能带悬浮说明（按你填的单价估算），拼进一串文字就没法解释口径。 -->
+        <span v-if="costText" class="as-cost" :title="ui('modelCostHint')"> · {{ costText }}</span>
+      </span>
     </div>
 
     <!-- 模型自述：与上面的「逐句引用原文」分区（左侧竖线 + 「不进答案证据」标签）。
          每句后面挂它自报依据的候选 id，悬浮给出 path:line；依据句本身的原文在上面的列表里。
-         被丢弃的句子不显示正文，只给一个计数（-N），原因在悬浮说明里——没依据的说法不该占版面。 -->
-    <div v-if="enabled && notes.length" class="as-note">
+         被丢弃的句子不显示正文，只给一个计数（-N），原因在悬浮说明里——没依据的说法不该占版面。
+         全部被丢弃时这块仍要出现：否则「模型说了话但一句都没留下」会变成静默，
+         用户看不到自己为哪几句话付了钱。 -->
+    <div v-if="enabled && (notes.length || droppedNotes.length)" class="as-note">
       <p class="as-note-head">
         <span class="as-note-tag">{{ ui('modelNote') }}</span>
         <span v-if="droppedNotes.length" class="as-note-drop" :title="droppedTitle || undefined">−{{ droppedNotes.length }}</span>
@@ -30,6 +36,7 @@
       :open="settingsOpen"
       :config="config"
       :remembered="remembered"
+      :pricing="pricing"
       @close="settingsOpen = false"
       @save="onSave"
       @clear="onClear"
@@ -39,13 +46,14 @@
 
 <script setup lang="ts">
 /**
- * 答案区：检索答案卡 + 「让模型选句」开关 + 本次调用的 token/耗时/失败原因。
+ * 答案区：检索答案卡 + 「让模型选句」开关 + 本次调用的 token/耗时/估算费用/失败原因。
  *
- * 三条界面纪律：
+ * 四条界面纪律：
  *   1. 默认关。不勾就不发任何外部请求，用户的 key 也不用填。
  *   2. 模型只能**缩小/重排**同一段里的句子。卡片上的出处始终是那一段的 `path:line`，
  *      所以「选了哪几句」不会让出处指错文件（候选只从最佳段落摊出来，见 composable）。
  *   3. 失败不吞答案：检索结果照常显示，只多一行结构化原因（超时/额度/格式…）。
+ *   4. 费用只在用户填了单价时出现，并标「≈」：没填价不等于免费，估算也不等于账单。
  */
 import { computed, ref, watch } from 'vue';
 
@@ -55,6 +63,7 @@ import { useModelAnswer } from '@/composables/useModelAnswer';
 import type { AnswerResult } from '@/services/ai-helper/doc-answer';
 import type { ModelFailure } from '@/composables/useModelAnswer';
 import type { ModelConfig } from '@/services/ai-helper/model/config';
+import { formatCost, type ModelPricing } from '@/services/ai-helper/model/pricing';
 
 import AnswerCard from './AnswerCard.vue';
 import ModelSettingsDialog from './ModelSettingsDialog.vue';
@@ -73,11 +82,13 @@ const emit = defineEmits<{
 const {
   config,
   remembered,
+  pricing,
   configured,
   enabled,
   running,
   usage,
   elapsedMs,
+  cost,
   notes,
   droppedNotes,
   failure,
@@ -120,16 +131,28 @@ const displayResult = computed<AnswerResult | null>(() => {
   };
 });
 
+/**
+ * 本次调用的读数：token 与耗时。provider 没回 usage 时不能显示「0 tokens」——
+ * 那会让人以为自己没花钱；显示「未返回用量」才对得上「为什么没有费用」。
+ */
+const usageText = computed(() => {
+  const current = usage.value;
+  if (!current) return '';
+  if (current.totalTokens <= 0) return ui('modelUsageMissing');
+  return uiFormat('modelUsage', { total: current.totalTokens, ms: elapsedMs.value ?? 0 });
+});
+
+/** 估算金额：只有填了单价、且 provider 回了可拆分的用量时才有值。 */
+const costText = computed(() => (cost.value ? uiFormat('modelCost', { cost: formatCost(cost.value) }) : ''));
+
 const statusText = computed(() => {
+  const join = (...parts: string[]): string => parts.filter(Boolean).join(' · ');
   if (!enabled.value) return '';
   if (!configured.value) return ui('modelNotConfigured');
   if (running.value) return ui('modelRunning');
-  if (failure.value) return `${ui('modelErrorPrefix')}${failureText(failure.value)}`;
-  if (selected.value && selected.value.length === 0) return ui('modelDeclined');
-  if (selected.value?.length) {
-    const tokens = usage.value ? uiFormat('modelUsage', { total: usage.value.totalTokens, ms: elapsedMs.value ?? 0 }) : '';
-    return [uiFormat('modelSelected', { n: selected.value.length }), tokens].filter(Boolean).join(' · ');
-  }
+  if (failure.value) return join(`${ui('modelErrorPrefix')}${failureText(failure.value)}`, usageText.value);
+  if (selected.value && selected.value.length === 0) return join(ui('modelDeclined'), usageText.value);
+  if (selected.value?.length) return join(uiFormat('modelSelected', { n: selected.value.length }), usageText.value);
   return '';
 });
 
@@ -150,9 +173,9 @@ function onToggle(event: Event): void {
   if (!checked) resetOutcome();
 }
 
-function onSave(payload: { config: ModelConfig; remember: boolean }): void {
-  // 对话框已用同一个 checkConfig 校验过，这里只负责落存储并关窗。
-  save(payload.config, payload.remember);
+function onSave(payload: { config: ModelConfig; remember: boolean; pricing: ModelPricing | null }): void {
+  // 对话框已用同一个 checkConfig / checkPricing 校验过，这里只负责落存储并关窗。
+  save(payload.config, payload.remember, payload.pricing);
   settingsOpen.value = false;
   if (config.value && !enabled.value) enabled.value = true;
 }
@@ -230,6 +253,12 @@ watch(
 }
 .as-status-error {
   color: var(--color-danger, #d14343);
+}
+/* 费用是读数不是错误：调用失败时金额仍要看得清，别跟着整行变红。虚线提示它能悬浮看口径。 */
+.as-cost {
+  border-bottom: 1px dotted var(--color-border, #d0d3d9);
+  color: var(--color-text-secondary);
+  cursor: help;
 }
 /* 自述块：左侧竖线把它与「逐句引用原文」的答案卡分开——同一张卡里两种东西不能长得一样。 */
 .as-note {

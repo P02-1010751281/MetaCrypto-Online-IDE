@@ -25,6 +25,13 @@ import {
   type StorageLike,
 } from '@/services/ai-helper/model/config';
 import { DEFAULT_MAX_SELECTIONS } from '@/services/ai-helper/model/limits';
+import {
+  estimateCost,
+  loadModelPricing,
+  saveModelPricing,
+  type CostEstimate,
+  type ModelPricing,
+} from '@/services/ai-helper/model/pricing';
 import { callModel, ModelCallError, type TokenUsage } from '@/services/ai-helper/model/provider';
 import type { CandidateSentence, RewriteRequest } from '@/services/ai-helper/model/types';
 import { planNotes, type AuditedNote, type NoteDrop } from '@/services/ai-helper/model/notes';
@@ -116,6 +123,8 @@ export function useModelAnswer() {
   const loaded = loadModelConfig(storages.session, storages.local);
   const config = ref<ModelConfig | null>(loaded.config);
   const remembered = ref(loaded.remembered);
+  /** 单价独立于 key 存储：不是密钥，没必要每开一个标签页重填。 */
+  const pricing = ref<ModelPricing | null>(loadModelPricing(storages.local));
   /** 默认关：用户不勾就不发任何外部请求。 */
   const enabled = ref(false);
   const running = ref(false);
@@ -127,16 +136,28 @@ export function useModelAnswer() {
   const selected = ref<CandidateSentence[] | null>(null);
 
   const configured = computed(() => config.value !== null);
+  /** 本次调用的估算金额；没填单价 / 没有用量时为 null（界面就不显示费用）。 */
+  const cost = computed<CostEstimate | null>(() => estimateCost(usage.value, pricing.value));
 
   function adopt(next: { config: ModelConfig | null; remembered: boolean }): void {
     config.value = next.config;
     remembered.value = next.remembered;
   }
 
-  function save(draft: ModelConfigDraft, remember: boolean): { ok: boolean; issues: readonly ConfigIssue[] } {
+  /**
+   * 保存配置。第三个参数缺省 = 「这次没改单价」，沿用当前值——
+   * 单独保存 key 的路径不该顺手把用户的价目清掉。
+   */
+  function save(
+    draft: ModelConfigDraft,
+    remember: boolean,
+    nextPricing: ModelPricing | null = pricing.value,
+  ): { ok: boolean; issues: readonly ConfigIssue[] } {
     const { check, config: normalized } = checkConfig(draft);
     if (!check.ok) return { ok: false, issues: check.issues };
     saveModelConfig({ config: normalized, remember }, storages.session, storages.local);
+    saveModelPricing(nextPricing, storages.local);
+    pricing.value = nextPricing;
     // 内容没变就保留原对象引用：界面按 `config` 身份触发调用，换引用等于白烧一次额度
     // （「只改记住」也会走到这里，见 config.ts 的 sameModelConfig）。
     const unchanged = sameModelConfig(config.value, normalized);
@@ -227,11 +248,13 @@ export function useModelAnswer() {
   return {
     config,
     remembered,
+    pricing,
     configured,
     enabled,
     running,
     usage,
     elapsedMs,
+    cost,
     notes,
     droppedNotes,
     failure,
