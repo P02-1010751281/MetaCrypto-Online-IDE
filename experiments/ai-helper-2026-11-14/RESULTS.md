@@ -4628,13 +4628,13 @@ SP 800-38B CMAC（0 / 3 / 0，6 处缺口）；合计 2 份标准 / 8 个条款 
 - `components/ai-helper/AnswerSection.vue`：自述块分区显示（左侧竖线 + `模型说明（不进答案证据）` 标签）、
   保留句后面挂依据 id（悬浮 `path:line`）、被丢弃只给 `−n` 计数（悬浮原因）。
 - 测试：`ai-helper-model.test.ts` / `-failure-text.test.ts` / `-provider.test.ts` 改契约；
-  新增 `ai-helper-model-notes.test.ts`（8 组：依据存在、没依据不连累别人、依据越界整句丢、
+  新增 `ai-helper-model-notes.test.ts`（7 组：依据存在、没依据不连累别人、依据越界整句丢、
   空白/重复、上限与覆盖、无自述/空候选、mock 自洽）。
 - 文档：`AI-HELPER.md` / `.en.md` §7.5 重写（三类越界 + 自述逐句要依据 + `−n` 计数），中英各 218 行。
 
 ### 67.4 约束：这一轮**没有**新增任何 locale 键
 
-入口 chunk 只剩 13 字节余量（§66.6：65523 / 65536），而 `ui-messages.ts` 整份进入口 chunk。
+入口 chunk 只剩 13 字节余量（§66.7：65523 / 65536），而 `ui-messages.ts` 整份进入口 chunk。
 所以自述块的文案全部复用既有键（`modelNote` 作标签，`modelVerifyUnsupportedNote` /
 `modelVerifyUnknownSupport` 作丢弃原因的 title），计数只用 `−n` 与数字。build 后入口仍是 **65523 字节**，
 证明「本轮零文案增量」不是估计而是量出来的。按面板拆 locale 块仍挂在 §66.7。
@@ -4662,6 +4662,6 @@ SP 800-38B CMAC（0 / 3 / 0，6 处缺口）；合计 2 份标准 / 8 个条款 
 ### 67.7 没做的
 
 1. 真实 provider 仍未在仓库内验证（仓库不带 key）——与 §7.7 的口径一致，本轮不改变这条。
-2. 费用估算：owner 已裁决**不做**（只显示 token 与耗时），所以 §3.4 的那条待办关闭，不再列为缺口。
+2. 费用估算：仍只显示 token 与耗时，没有单价输入；`PARALLEL-EXECUTION.md` §3.4 的那条待办继续挂着（原写「owner 已裁决不做」查无记录，2026-11-19 对抗层复核后更正）。
 3. 自述的「重复/超上限」两类只有单测，没有在浏览器里造四句去验——不值得为一条计数再起一次假 provider。
 4. locale 拆分（§66.7）没动：本轮靠零新增键绕开，下一轮真要写新文案时仍会红。

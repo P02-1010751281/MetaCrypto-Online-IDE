@@ -4,7 +4,7 @@ This page records the **alignment verdict** for the editor shell and run chain a
 
 ## 1. Conclusions first
 
-1. **The two shells are not the same structure.** MetaCrypto Online IDE's shell root is `src/App.vue` (route `/editor/:id` mounts it directly), with orchestration and components in `src/components/editor/` and `src/composables/`; metacrypt_server's shell root is `frontend/src/features/blockly/views/EditorView.vue`, whose orchestration is split into seven modules and five CSS slices (twelve files) under `views/editor/`.
+1. **The two shells are not the same structure.** MetaCrypto Online IDE's shell root is `src/App.vue` (route `/editor/:id` mounts it directly), with orchestration and components in `src/components/editor/` and `src/composables/`; metacrypt_server's shell root is `frontend/src/features/blockly/views/EditorView.vue`, whose orchestration is split into nine modules and six CSS slices (fifteen files) under `views/editor/`.
 2. **No shell file can be mirrored byte-for-byte.** Every same-named file differs (class A in section 3).
 3. **The run chain is what can be aligned, and it needs adaptation.** The four differences are listed in class B; they cross directories and aliases, so `cp` is not an option.
 4. **`scripts/sync-to-metacrypt.sh` covers the Blockly core** (`blocks/`, `generators/`, `constants/`) **plus the shared layers that can be mirrored whole** (`components/CryptoFunctionPanel.vue`, `services/projects/ProjectStore.ts`, `runtime/`, and, since 2026-11-15, `composables/locale/` and `utils/migration/`). The editor shell is outside that scope and should not be merged into it — the two shells have different host dependencies.
@@ -13,8 +13,8 @@ This page records the **alignment verdict** for the editor shell and run chain a
 
 | Responsibility | MetaCrypto Online IDE | metacrypt_server | Relationship |
 |---|---|---|---|
-| Shell root | `src/App.vue` (487 lines) | `views/EditorView.vue` (491 lines) | Same origin, forked; similar size, different split |
-| Sidebar / toolbar / status bar | `src/components/editor/*` (9 files) | `views/editor/*` (7 modules + 5 CSS files, 12 in total) | Different directories and granularity |
+| Shell root | `src/App.vue` (486 lines) | `views/EditorView.vue` (498 lines) | Same origin, forked; similar size, different split |
+| Sidebar / toolbar / status bar | `src/components/editor/*` (22 files: 12 Vue + 8 TS + 2 CSS) | `views/editor/*` (9 modules + 6 CSS files, 15 in total) | Different directories and granularity |
 | Project data | `src/composables/useProjectDB.ts`, `useProjectFiles.ts` (IndexedDB) | `features/blockly/api/*` (6 backend modules) | **Different storage model** |
 | Run chain | `src/runtime/run-code.ts`, `python-runner.worker.ts`, `js-runner.worker.ts` | `utils/run-code.ts`, `python-runner.worker.ts` | JS worker missing |
 | Pyodide assets | `devDependency pyodide ^0.25.1` + `scripts/copy-pyodide.mjs` + `predev`/`prebuild` | 7 files committed under `frontend/public/pyodide/` | Same version (0.25.1 / Python 3.11.3), different management |

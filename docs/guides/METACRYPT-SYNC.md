@@ -4,7 +4,7 @@
 
 ## 1. 结论先行
 
-1. **两仓编辑器壳不是同一套结构。** MetaCrypto Online IDE 的壳根是 `src/App.vue`（路由 `/editor/:id` 直接挂载），编排与组件放在 `src/components/editor/` 与 `src/composables/`；metacrypt_server 的壳根是 `frontend/src/features/blockly/views/EditorView.vue`，编排已拆成 `views/editor/` 下的 7 个模块与 5 个 CSS 分片（共 12 个文件）。
+1. **两仓编辑器壳不是同一套结构。** MetaCrypto Online IDE 的壳根是 `src/App.vue`（路由 `/editor/:id` 直接挂载），编排与组件放在 `src/components/editor/` 与 `src/composables/`；metacrypt_server 的壳根是 `frontend/src/features/blockly/views/EditorView.vue`，编排已拆成 `views/editor/` 下的 9 个模块与 6 个 CSS 分片（共 15 个文件）。
 2. **因此没有可逐字节镜像的壳文件。** 两侧同名文件实测均不一致（见第 3 节 A 类）。
 3. **可对齐的是运行链，且必须适配移植。** 四项差异见第 3 节 B 类；它们跨目录、跨别名，不能 `cp`。
 4. **`scripts/sync-to-metacrypt.sh` 的范围是 Blockly 核心**（`blocks/`、`generators/`、`constants/`）**加可整目录镜像的共享层**（`components/CryptoFunctionPanel.vue`、`services/projects/ProjectStore.ts`、`runtime/`，以及 2026-11-15 起纳入的 `composables/locale/`、`utils/migration/`），编辑器壳不在其中，也不应直接并入——两侧壳的宿主依赖不同。
@@ -13,8 +13,8 @@
 
 | 职责 | MetaCrypto Online IDE | metacrypt_server | 关系 |
 |---|---|---|---|
-| 壳根 | `src/App.vue`（487 行） | `views/EditorView.vue`（491 行） | 同源分叉，行数接近但拆分不同 |
-| 侧栏/工具栏/状态栏 | `src/components/editor/*`（9 个文件） | `views/editor/*`（7 个模块 + 5 个 CSS，共 12 个文件） | 目录与粒度不同 |
+| 壳根 | `src/App.vue`（486 行） | `views/EditorView.vue`（498 行） | 同源分叉，行数接近但拆分不同 |
+| 侧栏/工具栏/状态栏 | `src/components/editor/*`（22 个文件：12 个 Vue + 8 个 TS + 2 个 CSS） | `views/editor/*`（9 个模块 + 6 个 CSS，共 15 个文件） | 目录与粒度不同 |
 | 项目数据 | `src/composables/useProjectDB.ts`、`useProjectFiles.ts`（IndexedDB） | `features/blockly/api/*`（6 个后端模块） | **存储模型不同** |
 | 运行链 | `src/runtime/run-code.ts`、`python-runner.worker.ts`、`js-runner.worker.ts` | `utils/run-code.ts`、`python-runner.worker.ts` | 缺 JS worker |
 | Pyodide 资源 | `devDependency pyodide ^0.25.1` + `scripts/copy-pyodide.mjs` + `predev`/`prebuild` | `frontend/public/pyodide/` 7 个文件入库 | 版本相同（0.25.1 / Python 3.11.3），管理方式不同 |
