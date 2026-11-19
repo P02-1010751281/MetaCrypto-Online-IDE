@@ -4883,3 +4883,27 @@ SP 800-38B CMAC（0 / 3 / 0，6 处缺口）；合计 2 份标准 / 8 个条款 
 - doc-index 重建把另外两条线未提交的 docs 小改一并计入语料摘要（`fips204-ML-DSA/README.md`
   与两份 `SOURCE-SPLIT-INVENTORY`）；它们落库前若再改，需重跑 `docs:index`。
 - §67.7 的四条没变：真实 provider、费用估算、自述重复/上限的浏览器验证、locale 拆分仍按原状态挂着。
+
+### 68.4 补做 68.3 欠的那条：面板呈现第三份切片的真浏览器验收（同日 14:00 补）
+
+§68.3 写明「B 线 C 侧与 CCM 工程没重跑」。这里补的是**另一件事**：制品从 2 份 / 8 条款变成
+3 份 / 12 条款之后，界面是否真的把第三份列出来、计数是否跟着变、CCM 的锚点是否点到那一行。
+**不等于** CCM 工程的向量重跑——那条仍是 §57 的现场记录。
+
+无头 Firefox + WebDriver BiDi（独立 profile，`vite --port 5211` 干净实例，1440×900）：**18/18**
+
+- 活动条 6 个按钮、第 6 个是「标准 → 工作区」；点开 `.stw-dock`、无 `.stw-overlay`、
+  `aria-modal=false`、`aria-pressed=true`；面板宽 416 = 栏宽 460 − 活动条 44（`--activity-bar-w`），
+  与 §66 记录的 460 同一口径，不是回归。
+- 切片 3 份（FIPS 180-4 / SP 800-38B / SP 800-38C）；默认 SHA-2 计数 **1/3/1/11**、5 条款；
+  切到 CCM 计数 **0/3/1/8**、4 条款。
+- 顶部「构建期机器候选 / 语义等价未验证 / 未签核」在位；面板全文无「已覆盖」。
+- CCM 第 2 条款展开：6 步、缺口区 5 行、2 个锚点，标签 `6.1 · L592–L644` / `6.2 · L645–L715`，
+  `title` 指向 `docs/standards/sp800-38c-ccm/00-Standard-Source.md`。
+- 栏 `window.open` 后点锚点，回退路由落到
+  `#/docs?doc=/docs/standards/sp800-38c-ccm/00-Standard-Source.md&line=592`。
+- 控制台错误 0。截图 `out/stw-ccm-3slices.png`。
+
+探针是一次性的（跑完即删，与 §64/§65/§66 同做法）。另：界面语言取 `navigator.language`，
+`emulation.setLocaleOverride` 在本机无头 Firefox 上没生效，实际渲染成英文——断言因此写成中英兼容，
+不是靠中文文案才通过的。
